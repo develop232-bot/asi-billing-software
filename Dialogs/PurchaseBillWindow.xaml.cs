@@ -182,8 +182,11 @@ namespace AsiErp.Dialogs
             Recalculate();
         }
 
+        private bool _isRecalculating;
+
         private void Line_PropertyChanged(object? sender, PropertyChangedEventArgs e)
         {
+            if (_isRecalculating) return;
             if (e.PropertyName == nameof(PurchaseLine.GrossAmount) ||
                 e.PropertyName == nameof(PurchaseLine.NetAmount) ||
                 e.PropertyName == nameof(PurchaseLine.TaxAmount) ||
@@ -275,23 +278,31 @@ namespace AsiErp.Dialogs
 
         private void Recalculate()
         {
-            double subtotal = 0;
-            double totalTax = 0;
-
-            foreach (var l in Lines)
+            if (_isRecalculating) return;
+            _isRecalculating = true;
+            try
             {
-                l.RecalculateLine();
-                subtotal += l.NetAmount;
-                totalTax += l.TaxAmount;
+                double subtotal = 0;
+                double totalTax = 0;
+
+                foreach (var l in Lines)
+                {
+                    subtotal += l.NetAmount;
+                    totalTax += l.TaxAmount;
+                }
+
+                TxtSubtotal.Text = $"₹{subtotal:N2}";
+                TxtTaxAmount.Text = $"₹{totalTax:N2}";
+                TxtGrossTotal.Text = $"₹{(subtotal + totalTax):N2}";
+
+                if (RbCash.IsChecked == true)
+                {
+                    TxtPaidNow.Text = (subtotal + totalTax).ToString("F2");
+                }
             }
-
-            TxtSubtotal.Text = $"₹{subtotal:N2}";
-            TxtTaxAmount.Text = $"₹{totalTax:N2}";
-            TxtGrossTotal.Text = $"₹{(subtotal + totalTax):N2}";
-
-            if (RbCash.IsChecked == true)
+            finally
             {
-                TxtPaidNow.Text = (subtotal + totalTax).ToString("F2");
+                _isRecalculating = false;
             }
         }
 
