@@ -1,0 +1,170 @@
+<Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.DomesticInvoiceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="New Domestic Tax Invoice" Height="700" Width="920"
+        WindowStartupLocation="CenterOwner" Background="#F1F3F7">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" BorderBrush="#E5A62E" BorderThickness="0,0,0,2" Padding="0,0,0,12" Margin="0,0,0,16">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch">
+                <TextBlock Text="New Domestic Tax Invoice" FontSize="20" FontWeight="Bold" Foreground="#152039"/>
+                <TextBlock Text=" (Within India / GST B2B)" FontSize="13" Foreground="#78839A" VerticalAlignment="Center" Margin="8,0,0,0"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Customer & Invoice Info -->
+        <Border Grid.Row="1" Background="White" Padding="18" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,10">
+                    <TextBlock Text="Customer / Company Name *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtParty" Padding="8" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,10">
+                    <TextBlock Text="Invoice Date" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <DatePicker x:Name="DpDate" Padding="6"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
+                    <TextBlock Text="Invoice Number" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtInvoiceNo" Padding="8" IsReadOnly="True" Background="#F6F7FA" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
+                    <TextBlock Text="Contact Person Name" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtPerson" Padding="8" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
+                    <TextBlock Text="Contact Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtPhone" Padding="8" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="2">
+                    <TextBlock Text="Customer GSTIN" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtGstin" Padding="8" BorderBrush="#E1E5EC" Text="33ABCDE1234F1Z5"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Line Items Table -->
+        <Border Grid.Row="2" Background="White" Padding="14" BorderBrush="#E1E5EC" BorderThickness="1">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Invoice Items" FontWeight="Bold" FontSize="14" Foreground="#152039" VerticalAlignment="Center"/>
+                    <Button Content="+ Add Item" Click="AddLine_Click" Margin="16,0,0,0" Padding="10,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                </StackPanel>
+
+                <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Product / Item" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableProducts}"
+                                              DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Pid, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectionChanged="ProductSelectionChanged" Margin="2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Header="HSN" Binding="{Binding Hsn}" Width="80" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="80"/>
+                        <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="70"/>
+                        <DataGridTextColumn Header="Rate (₹)" Binding="{Binding Rate, UpdateSourceTrigger=PropertyChanged}" Width="90"/>
+                        <DataGridTextColumn Header="Disc %" Binding="{Binding DiscPercent, UpdateSourceTrigger=PropertyChanged}" Width="70"/>
+                        <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent}" Width="65" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Total (₹)" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="100" IsReadOnly="True"/>
+
+                        <DataGridTemplateColumn Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="✕" Click="DeleteLine_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+
+        <!-- Terms & Tax Summary -->
+        <Grid Grid.Row="3" Margin="0,14,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Terms -->
+            <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Payment Terms: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="RbCash" Content="Cash Sale" IsChecked="True" Checked="Terms_Changed" Margin="8,0,12,0"/>
+                    <RadioButton x:Name="RbCredit" Content="Credit Sale" Checked="Terms_Changed"/>
+                </StackPanel>
+
+                <StackPanel x:Name="CreditWrap" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,0,8">
+                    <TextBlock Text="Credit Period: " VerticalAlignment="Center"/>
+                    <TextBox x:Name="TxtCreditDays" Text="30" Width="50" Padding="4" Margin="6,0,6,0" TextChanged="CreditDays_Changed"/>
+                    <TextBlock Text="days" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Place of Supply: " VerticalAlignment="Center"/>
+                    <ComboBox x:Name="CbTaxType" Width="200" SelectionChanged="TaxType_Changed">
+                        <ComboBoxItem Content="Within state (CGST + SGST)" IsSelected="True"/>
+                        <ComboBoxItem Content="Other state (IGST)"/>
+                    </ComboBox>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Totals Box -->
+            <Border Grid.Column="1" Background="White" Padding="14" BorderBrush="#E1E5EC" BorderThickness="1">
+                <StackPanel>
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="Subtotal (Taxable):" Foreground="#48546F"/>
+                        <TextBlock x:Name="TxtSubtotal" Text="₹0.00" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </DockPanel>
+                    <DockPanel Margin="0,2">
+                        <TextBlock x:Name="LblTax" Text="CGST + SGST:" Foreground="#48546F"/>
+                        <TextBlock x:Name="TxtTaxAmount" Text="₹0.00" HorizontalAlignment="Right"/>
+                    </DockPanel>
+                    <Border BorderBrush="#E5A62E" BorderThickness="0,1,0,0" Margin="0,6" Padding="0,6,0,0">
+                        <DockPanel>
+                            <TextBlock Text="Total Invoice Amount:" FontWeight="Bold" FontSize="14" Foreground="#152039"/>
+                            <TextBlock x:Name="TxtGrossTotal" Text="₹0.00" FontWeight="Bold" FontSize="15" Foreground="#152039" HorizontalAlignment="Right"/>
+                        </DockPanel>
+                    </Border>
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="Received Now (₹):" VerticalAlignment="Center"/>
+                        <TextBox x:Name="TxtPaidNow" Text="0.00" Width="90" HorizontalAlignment="Right" Padding="4" TextChanged="PaidNow_Changed"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Action Footer -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
+            <Button Content="Save Domestic Invoice" Click="Save_Click" Padding="18,8" Background="#3D62B8" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>

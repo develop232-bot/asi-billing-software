@@ -1,0 +1,194 @@
+<UserControl x:Class="AsiErp.Views.ProductsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:AsiErp.Converters">
+
+    <UserControl.Resources>
+        <converters:InrCurrencyConverter x:Key="InrConv"/>
+        <converters:TabActiveBackgroundConverter x:Key="TabActiveBgConv"/>
+        <converters:TabActiveForegroundConverter x:Key="TabActiveFgConv"/>
+        <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Header -->
+            <DockPanel Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="Product Master &amp; Items" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Manage finished shoes, readymade apparel, raw materials, packaging, and barcode tags." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="📥 Bulk CSV Import" Command="{Binding BulkImportCommand}" Padding="14,8" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button Content="+ Add New Item" Command="{Binding AddItemCommand}" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="#172443" Opacity="0.2"/>
+                                    </Border.Effect>
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Stat Counters -->
+            <UniformGrid Columns="4" Margin="0,0,0,20">
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Total Active SKUs" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalSkusCount}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                        <TextBlock Text="Across all categories" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Saleable Products" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding SaleProductsCount}" FontSize="24" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
+                        <TextBlock Text="Shoes, apparel &amp; accessories" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Raw Materials (BOM)" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding RawMaterialsCount}" FontSize="24" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
+                        <TextBlock Text="Leather, sole, fabric, trims" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="General &amp; Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding GeneralItemsCount}" FontSize="24" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
+                        <TextBlock Text="Boxes, tape, bags &amp; misc" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Master Table Card -->
+            <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <DockPanel>
+                    <!-- Filter Tools with Dynamic Active Color Chips -->
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6" Margin="0,0,16,0"/>
+
+                        <!-- Type Chips -->
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="All" Command="{Binding SetFilterCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
+                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                            <Button Content="Finished Product" Command="{Binding SetFilterCommand}" CommandParameter="mfg" Margin="0,0,4,0" Padding="12,5"
+                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=mfg}"
+                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=mfg}"
+                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=mfg}"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                            <Button Content="Readymade Product" Command="{Binding SetFilterCommand}" CommandParameter="ready" Margin="0,0,4,0" Padding="12,5"
+                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
+                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
+                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                            <Button Content="Raw Material" Command="{Binding SetFilterCommand}" CommandParameter="raw" Margin="0,0,4,0" Padding="12,5"
+                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
+                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
+                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                            <Button Content="General" Command="{Binding SetFilterCommand}" CommandParameter="gen" Padding="12,5"
+                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
+                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
+                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- Catalog Table -->
+                    <DataGrid ItemsSource="{Binding FilteredRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Item Description" Width="1.5*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Type" Width="135">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="#F1F5F9">
+                                            <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeColor}" FontSize="10.5" FontWeight="SemiBold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Barcode (EAN-13)" Binding="{Binding Barcode}" Width="145" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                            <DataGridTextColumn Header="Pricing Structure" Binding="{Binding PricingDisplay}" Width="2*"/>
+                            <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" Width="90"/>
+                            <DataGridTextColumn Header="Stock" Binding="{Binding StockDisplay}" Width="105" FontWeight="Bold"/>
+
+                            <!-- Actions: Edit and Barcode Label Print -->
+                            <DataGridTemplateColumn Header="Actions" Width="155">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Button Content="🖨️ Barcode" Command="{Binding DataContext.PrintBarcodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Visibility="{Binding CanPrintBarcode, Converter={StaticResource BoolToVis}}"
+                                                    Padding="8,4" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                            <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

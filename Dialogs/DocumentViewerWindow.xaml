@@ -1,0 +1,126 @@
+<Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.DocumentViewerWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Invoice Viewer &amp; Print" Height="780" Width="820"
+        WindowStartupLocation="CenterOwner" Background="#F1F3F7">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Printable Document Area -->
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <Border x:Name="PrintArea" Background="White" Padding="32" BorderBrush="#E1E5EC" BorderThickness="1">
+                <StackPanel>
+                    <!-- Header -->
+                    <Border BorderBrush="#E5A62E" BorderThickness="0,0,0,2" Padding="0,0,0,16" Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <TextBlock Text="Afrah Samiya Industries Pvt Ltd" FontSize="20" FontWeight="Bold" Foreground="#152039"/>
+                                <TextBlock Text="Shoe &amp; Uniform Manufacturers" FontSize="12" Foreground="#48546F" Margin="0,2,0,0"/>
+                                <TextBlock Text="Factory address line, City – PIN code" FontSize="12" Foreground="#78839A"/>
+                                <TextBlock Text="GSTIN: 29XXXXX0000X1ZX" FontSize="12" FontWeight="SemiBold" Foreground="#152039"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                <TextBlock x:Name="TxtDocTypeHeader" Text="TAX INVOICE" FontSize="18" FontWeight="Bold" Foreground="#172443" TextAlignment="Right"/>
+                                <TextBlock x:Name="TxtDocNumber" Text="ASI/DOM/2026-27/0001" FontWeight="Bold" FontSize="13" Foreground="#152039" Margin="0,2,0,0" TextAlignment="Right"/>
+                                <TextBlock x:Name="TxtDocDate" Text="Date: 14 Oct 2026" FontSize="12" Foreground="#78839A" TextAlignment="Right"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Party & Shipment Details -->
+                    <Grid Margin="0,0,0,20">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Border Background="#F6F7FA" Padding="12" Margin="0,0,8,0">
+                            <StackPanel>
+                                <TextBlock Text="BILLED TO:" FontSize="11" FontWeight="Bold" Foreground="#78839A"/>
+                                <TextBlock x:Name="TxtPartyName" Text="Customer Name" FontWeight="Bold" FontSize="14" Foreground="#152039" Margin="0,2,0,0"/>
+                                <TextBlock x:Name="TxtContactPerson" Text="Contact: —" FontSize="12" Foreground="#48546F"/>
+                                <TextBlock x:Name="TxtPhone" Text="Ph: —" FontSize="12" Foreground="#48546F"/>
+                                <TextBlock x:Name="TxtGstin" Text="GSTIN: —" FontSize="12" Foreground="#48546F"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Grid.Column="1" Background="#F6F7FA" Padding="12" Margin="8,0,0,0">
+                            <StackPanel>
+                                <TextBlock Text="TERMS &amp; SHIPMENT:" FontSize="11" FontWeight="Bold" Foreground="#78839A"/>
+                                <TextBlock x:Name="TxtPaymentTerms" Text="Terms: Cash" FontWeight="SemiBold" FontSize="13" Foreground="#152039" Margin="0,2,0,0"/>
+                                <TextBlock x:Name="TxtPaymentDueDate" Text="Due Date: —" FontSize="12" Foreground="#48546F"/>
+                                <TextBlock x:Name="TxtShippingInfo" Text="—" FontSize="12" Foreground="#48546F"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+
+                    <!-- Items Table -->
+                    <DataGrid x:Name="DgInvoiceLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="1" BorderBrush="#E1E5EC" Background="White" RowHeight="32" Margin="0,0,0,20">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Item Description" Binding="{Binding Name}" Width="*"/>
+                            <DataGridTextColumn Header="HSN" Binding="{Binding Hsn}" Width="70"/>
+                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="65"/>
+                            <DataGridTextColumn Header="Qty" Binding="{Binding Qty}" Width="55"/>
+                            <DataGridTextColumn Header="Rate" Binding="{Binding Rate, StringFormat={}{0:N2}}" Width="80"/>
+                            <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, StringFormat={}{0}%}" Width="60"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="100"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <!-- Totals Box -->
+                    <DockPanel LastChildFill="False" Margin="0,0,0,24">
+                        <Border DockPanel.Dock="Right" Width="300" Background="#F6F7FA" Padding="14" BorderBrush="#E1E5EC" BorderThickness="1">
+                            <StackPanel>
+                                <DockPanel Margin="0,2">
+                                    <TextBlock Text="Taxable Subtotal:" Foreground="#48546F"/>
+                                    <TextBlock x:Name="TxtSubtotal" Text="₹0.00" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,2">
+                                    <TextBlock x:Name="LblTax" Text="GST Tax:" Foreground="#48546F"/>
+                                    <TextBlock x:Name="TxtTaxAmount" Text="₹0.00" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <Border BorderBrush="#E5A62E" BorderThickness="0,1,0,0" Margin="0,6" Padding="0,6,0,0">
+                                    <DockPanel>
+                                        <TextBlock Text="Total Payable:" FontWeight="Bold" FontSize="14" Foreground="#152039"/>
+                                        <TextBlock x:Name="TxtGrossTotal" Text="₹0.00" FontWeight="Bold" FontSize="15" Foreground="#152039" HorizontalAlignment="Right"/>
+                                    </DockPanel>
+                                </Border>
+                                <DockPanel x:Name="CurEquivWrap" Margin="0,2" Visibility="Collapsed">
+                                    <TextBlock Text="Rupee Equivalent:" Foreground="#78839A" FontSize="11"/>
+                                    <TextBlock x:Name="TxtRupeeEquiv" Text="₹0.00" HorizontalAlignment="Right" FontSize="11" FontWeight="SemiBold"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,2">
+                                    <TextBlock Text="Amount Paid:" Foreground="#48546F"/>
+                                    <TextBlock x:Name="TxtPaidAmount" Text="₹0.00" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#1B8556"/>
+                                </DockPanel>
+                                <DockPanel Margin="0,2">
+                                    <TextBlock Text="Balance Due:" Foreground="#48546F"/>
+                                    <TextBlock x:Name="TxtBalanceDue" Text="₹0.00" HorizontalAlignment="Right" FontWeight="Bold" Foreground="#C23A32"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                    </DockPanel>
+
+                    <!-- Sign off -->
+                    <TextBlock Text="Thank you for your business. For any inquiries, please contact sales@asi.com." FontSize="11" Foreground="#78839A"/>
+                </StackPanel>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Action Footer -->
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="Close" Click="Close_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
+            <Button Content="🖨️ Print / Save as PDF" Click="Print_Click" Padding="18,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>

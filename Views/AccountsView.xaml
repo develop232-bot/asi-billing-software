@@ -1,0 +1,433 @@
+<UserControl x:Class="AsiErp.Views.AccountsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:AsiErp.Converters">
+
+    <UserControl.Resources>
+        <converters:InrCurrencyConverter x:Key="InrConv"/>
+        <converters:InrShortConverter x:Key="InrShortConv"/>
+        <converters:DateFormatConverter x:Key="DateConv"/>
+        <converters:StatusToBrushConverter x:Key="StatusBrushConv"/>
+        <converters:RouteToActiveIndicatorConverter x:Key="RouteToActiveIndicatorConv"/>
+        <converters:TabActiveBackgroundConverter x:Key="TabActiveBgConv"/>
+        <converters:TabActiveForegroundConverter x:Key="TabActiveFgConv"/>
+        <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Header -->
+            <DockPanel Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="Accounts &amp; Financials" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Commercial financial statements: Income, Expenses, Investments, and Profit &amp; Loss." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Period Dropdown -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <TextBlock Text="Period: " FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#64748B"/>
+                    <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="150" Padding="8,6">
+                        <ComboBoxItem Content="This month" Tag="m0"/>
+                        <ComboBoxItem Content="Last month" Tag="m1"/>
+                        <ComboBoxItem Content="Last 3 months" Tag="q"/>
+                        <ComboBoxItem Content="This FY" Tag="fy"/>
+                        <ComboBoxItem Content="All time" Tag="all"/>
+                    </ComboBox>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- 4 Accounts Subtabs (Dynamically changes active button color and displays only the active section) -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                <Button Content="Income" Command="{Binding SetTabCommand}" CommandParameter="income" Margin="0,0,8,0" Padding="16,8"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=income}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=income}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=income}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
+                <Button Content="Expenses" Command="{Binding SetTabCommand}" CommandParameter="exp" Margin="0,0,8,0" Padding="16,8"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=exp}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=exp}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=exp}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
+                <Button Content="Investments" Command="{Binding SetTabCommand}" CommandParameter="inv" Margin="0,0,8,0" Padding="16,8"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=inv}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=inv}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=inv}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
+                <Button Content="Profit &amp; Loss" Command="{Binding SetTabCommand}" CommandParameter="pl" Padding="16,8"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=pl}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=pl}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=pl}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
+            </StackPanel>
+
+            <!-- TAB 1: INCOME -->
+            <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=income}">
+                <UniformGrid Columns="4" Margin="0,0,0,20">
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Total Income" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding IncomeTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="Taxable revenue (excl. GST)" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Domestic Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding DomesticIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
+                            <TextBlock Text="Indian B2B orders" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Export Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
+                            <TextBlock Text="Overseas shipments" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Retail Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
+                            <TextBlock Text="Showrooms &amp; expos" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="Income Register (Net Revenue without GST)" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <!-- Channel Filter Row Options with Dynamic Active Colors -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="All Channels" Command="{Binding SetIncomeChannelCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                        Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                        BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Domestic" Command="{Binding SetIncomeChannelCommand}" CommandParameter="domestic" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
+                                        Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
+                                        BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Export" Command="{Binding SetIncomeChannelCommand}" CommandParameter="export" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
+                                        Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
+                                        BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Retail" Command="{Binding SetIncomeChannelCommand}" CommandParameter="retail" Padding="12,5"
+                                        Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=retail}"
+                                        Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=retail}"
+                                        BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <DataGrid ItemsSource="{Binding IncomeRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
+                                <DataGridTemplateColumn Header="Document" Width="145">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="{Binding InvoiceNo}" ToolTip="{Binding InvoiceNo}" Command="{Binding DataContext.ViewDocCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Left" Padding="0"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Channel" Binding="{Binding ChannelLabel}" Width="95"/>
+                                <DataGridTemplateColumn Header="Customer" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Party}" ToolTip="{Binding Party}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Taxable Value (₹)" Binding="{Binding NetAmount, Converter={StaticResource InrConv}}" Width="135" FontWeight="SemiBold"/>
+                                <DataGridTextColumn Header="GST (₹)" Binding="{Binding TaxAmount, Converter={StaticResource InrConv}}" Width="110"/>
+                                <DataGridTextColumn Header="Total Billed (₹)" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="130" FontWeight="SemiBold"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- TAB 2: EXPENSES -->
+            <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=exp}">
+                <UniformGrid Columns="4" Margin="0,0,0,20">
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Daily Expenses" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding DailyExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="Running costs, tea, transport" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Monthly Utilities &amp; Salaries" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding MonthlyExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="Salary, EB, water, ESI, rent" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Yearly Licences" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding YearlyExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="Insurance &amp; pollution NOC" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Purchase Bills (Auto)" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#7C3AED" Margin="0,5,0,2"/>
+                            <TextBlock Text="Raw materials &amp; goods" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="Expense Register" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <!-- Frequency Row Options with Dynamic Active Colors -->
+                                <Button Content="All Frequencies" Command="{Binding SetExpenseFreqCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="10,4"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Daily" Command="{Binding SetExpenseFreqCommand}" CommandParameter="daily" Margin="0,0,4,0" Padding="10,4"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=daily}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=daily}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=daily}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Monthly" Command="{Binding SetExpenseFreqCommand}" CommandParameter="monthly" Margin="0,0,4,0" Padding="10,4"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=monthly}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=monthly}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=monthly}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Yearly" Command="{Binding SetExpenseFreqCommand}" CommandParameter="yearly" Margin="0,0,12,0" Padding="10,4"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=yearly}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=yearly}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=yearly}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="+ Add Expense" Command="{Binding AddExpenseCommand}" Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
+                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="160" FontWeight="SemiBold"/>
+                                <DataGridTextColumn Header="Frequency" Binding="{Binding Frequency}" Width="95"/>
+                                <DataGridTextColumn Header="Details / Description" Binding="{Binding Description}" Width="*"/>
+                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="120" FontWeight="Bold"/>
+
+                                <DataGridTemplateColumn Width="75">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Delete" Command="{Binding DataContext.DeleteExpenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- TAB 3: INVESTMENT -->
+            <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=inv}">
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <Border Grid.Column="0" Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Total Capital Invested" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalInvested, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="{Binding PreStartInvestmentCount, StringFormat='Includes {0} pre-operational capital injections'}" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <DockPanel>
+                                <TextBlock Text="Recovered from Net Profit" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding RecoveryPercent, StringFormat='{}{0:F0}%'}" FontSize="18" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
+                            </DockPanel>
+                            <Border Height="8" Background="#F1F5F9" CornerRadius="4" Margin="0,8">
+                                <Border HorizontalAlignment="Left" Width="{Binding RecoveryPercent}" Background="#10B981" CornerRadius="4"/>
+                            </Border>
+                            <TextBlock Text="{Binding AllTimeProfit, StringFormat='Cumulative net profit: ₹{0:N0}'}" FontSize="11" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="Investment Ledger" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <Button Content="+ Add Investment" Command="{Binding AddInvestmentCommand}" HorizontalAlignment="Right" Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
+                        </DockPanel>
+
+                        <DataGrid ItemsSource="{Binding InvestmentRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
+                                <DataGridTextColumn Header="Invested By" Binding="{Binding InvestedBy}" Width="180" FontWeight="SemiBold"/>
+                                <DataGridTextColumn Header="Purpose / Allocation" Binding="{Binding Purpose}" Width="*"/>
+                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold"/>
+
+                                <DataGridTemplateColumn Width="75">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Delete" Command="{Binding DataContext.DeleteInvestmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- TAB 4: PROFIT & LOSS -->
+            <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pl}">
+                <!-- P&L Running Statement -->
+                <Border Background="White" Padding="20" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="{Binding PlPeriodLabel, StringFormat='Profit &amp; Loss Statement · {0}'}" FontWeight="Bold" FontSize="16" Foreground="#0F172A" Margin="0,0,0,16"/>
+
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Expenses Side -->
+                            <Border Grid.Column="0" BorderBrush="#E2E8F0" BorderThickness="0,0,1,0" Padding="0,0,20,0">
+                                <StackPanel>
+                                    <TextBlock Text="Expenses (Trading &amp; Factory)" FontWeight="Bold" FontSize="14" Foreground="#DC2626" Margin="0,0,0,10"/>
+                                    <ItemsControl ItemsSource="{Binding PlExpenseCategories}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <DockPanel Margin="0,4">
+                                                    <TextBlock Text="{Binding Category}" Foreground="#64748B" FontSize="12"/>
+                                                    <TextBlock Text="{Binding Amount, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                                </DockPanel>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+
+                                    <!-- Profit Balancer Line if in profit -->
+                                    <Border Visibility="{Binding PlIsProfit, Converter={StaticResource BoolToVis}}" Background="#FEF3C7" CornerRadius="8" Padding="10,6" Margin="0,10,0,0">
+                                        <DockPanel>
+                                            <TextBlock Text="Net Profit" FontWeight="Bold" Foreground="#92400E"/>
+                                            <TextBlock Text="{Binding PlNetProfit, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" Foreground="#92400E"/>
+                                        </DockPanel>
+                                    </Border>
+
+                                    <Border BorderBrush="#0F172A" BorderThickness="0,2,0,0" Margin="0,10,0,0" Padding="0,6,0,0">
+                                        <DockPanel>
+                                            <TextBlock Text="Total Side" FontWeight="Bold" FontSize="13"/>
+                                            <TextBlock Text="{Binding PlTotalSide, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="13"/>
+                                        </DockPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Income Side -->
+                            <Border Grid.Column="1" Padding="20,0,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="Income (Sales)" FontWeight="Bold" FontSize="14" Foreground="#10B981" Margin="0,0,0,10"/>
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock Text="Retail &amp; Exhibitions" Foreground="#64748B" FontSize="12"/>
+                                        <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock Text="Domestic B2B Sales" Foreground="#64748B" FontSize="12"/>
+                                        <TextBlock Text="{Binding DomesticIncome, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock Text="Export Overseas Sales" Foreground="#64748B" FontSize="12"/>
+                                        <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                                    </DockPanel>
+
+                                    <Border BorderBrush="#0F172A" BorderThickness="0,2,0,0" Margin="0,20,0,0" Padding="0,6,0,0">
+                                        <DockPanel>
+                                            <TextBlock Text="Total Side" FontWeight="Bold" FontSize="13"/>
+                                            <TextBlock Text="{Binding PlTotalSide, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="13"/>
+                                        </DockPanel>
+                                    </Border>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+
+                <!-- Month-by-Month Table -->
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Monthly Financial Breakdown" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
+                        <DataGrid ItemsSource="{Binding PlMonthBreakdowns}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Month" Binding="{Binding MonthLabel}" Width="130" FontWeight="SemiBold"/>
+                                <DataGridTextColumn Header="Income (₹)" Binding="{Binding Income, Converter={StaticResource InrConv}}" Width="140" Foreground="#10B981"/>
+                                <DataGridTextColumn Header="Expenses (₹)" Binding="{Binding Expenses, Converter={StaticResource InrConv}}" Width="140" Foreground="#DC2626"/>
+                                <DataGridTextColumn Header="Net Profit / Loss (₹)" Binding="{Binding ProfitLoss, Converter={StaticResource InrConv}}" Width="170" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="Margin %" Binding="{Binding MarginText}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

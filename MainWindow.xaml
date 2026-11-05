@@ -1,0 +1,700 @@
+<Window x:Class="AsiErp.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:viewmodels="clr-namespace:AsiErp.ViewModels"
+        xmlns:converters="clr-namespace:AsiErp.Converters"
+        Title="ASI ERP · Afrah Samiya Industries Pvt Ltd" Height="780" Width="1240"
+        MinWidth="900" MinHeight="580" WindowState="Maximized"
+        Icon="pack://application:,,,/Assets/app.ico"
+        WindowStartupLocation="CenterScreen" Background="#F8FAFC"
+        TextOptions.TextFormattingMode="Display"
+        RenderOptions.ClearTypeHint="Enabled">
+
+    <Window.DataContext>
+        <viewmodels:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="245"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- MODERN HIGH-CONTRAST SIDEBAR (Always 245px, Prominently Visible) -->
+        <Border Grid.Column="0" Width="245" Background="#0A1128" BorderBrush="#1E293B" BorderThickness="0,0,1.5,0">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="18" Direction="0" ShadowDepth="3" Color="#000000" Opacity="0.18"/>
+            </Border.Effect>
+            <DockPanel>
+                <!-- Brand Header -->
+                <Border DockPanel.Dock="Top" Padding="14,12" BorderBrush="#1E293B" BorderThickness="0,0,0,1" Background="#070D1F">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Border Width="44" Height="44" CornerRadius="10" Margin="0,0,12,0" Background="#0A1128" BorderBrush="#D4AF37" BorderThickness="1.5" ClipToBounds="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="#D4AF37" Opacity="0.4"/>
+                            </Border.Effect>
+                            <Image Source="pack://application:,,,/Assets/logo.png" Stretch="Uniform" Margin="2" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="Afrah Samiya" FontWeight="Bold" FontSize="13.5" Foreground="White"/>
+                            <TextBlock Text="Industries Pvt Ltd" FontWeight="SemiBold" FontSize="10.5" Foreground="#94A3B8"/>
+                            <TextBlock Text="Shoes &amp; Uniforms ERP" FontSize="9.5" Foreground="#F59E0B" FontWeight="Medium"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Sidebar Footer -->
+                <Border DockPanel.Dock="Bottom" Padding="12,10" BorderBrush="#1E293B" BorderThickness="0,1,0,0" Background="#070D1F">
+                    <StackPanel>
+                        <TextBlock Text="ASI ERP v2.0 · Firebase Live" FontSize="10" Foreground="#64748B" Margin="2,0,0,6"/>
+                        <WrapPanel>
+                            <Button Content="Demo Data" Command="{Binding LoadDemoDataCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Show only sample demo data in software"/>
+                            <Button Content="Reset / Clear (DB)" Command="{Binding LoadCloudDbCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#0F766E" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="10" Margin="0,0,4,4" ToolTip="Clear demo data and show real database records from Firebase Firestore"/>
+                            <Button Content="Sync to DB" Command="{Binding SyncToCloudCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Upload all current software data to Firebase"/>
+                            <Button Content="Theme" Command="{Binding ToggleThemeCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4"/>
+                            <Button Content="🚀 Updates" Click="CheckUpdates_Click" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E3A8A" Foreground="#93C5FD" FontWeight="SemiBold" FontSize="10" Margin="0,0,4,4" ToolTip="Check GitHub for software updates via Velopack"/>
+                        </WrapPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Navigation List with Modern Clearly-Visible Dark Scrollbar -->
+                <ScrollViewer Style="{StaticResource ModernDarkScrollViewer}" VerticalScrollBarVisibility="Auto" Padding="10,8">
+                    <StackPanel>
+                        <!-- DASHBOARD (Admin, Finance & Store Keeper) -->
+                        <Button Style="{StaticResource ModernSidebarButton}"
+                                Visibility="{Binding CanAccessDashboard, Converter={StaticResource BoolToVis}}"
+                                Command="{Binding NavigateCommand}" CommandParameter="dashboard"
+                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=dashboard}"
+                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=dashboard}"
+                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=dashboard}"
+                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=dashboard}"
+                                ToolTip="Dashboard Overview &amp; Analytics">
+                            <DockPanel LastChildFill="True">
+                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}"/>
+                                <TextBlock DockPanel.Dock="Left" Text="📊" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Button>
+
+                        <!-- SALES & BILLING (Admin, Finance & Store Keeper) -->
+                        <StackPanel Visibility="{Binding CanAccessBilling, Converter={StaticResource BoolToVis}}">
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="sales"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=sales}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=sales}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=sales}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=sales}"
+                                    ToolTip="Sales Register, Domestic &amp; Export Invoices">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🧾" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Sales &amp; Billing" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="sales:retail"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=sales:retail}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=sales:retail}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=sales:retail}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=sales:retail}"
+                                    ToolTip="Retail Counter Billing (POS)">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:retail}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🛒" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <Border DockPanel.Dock="Right" Background="#10B981" CornerRadius="6" Padding="5,1" Margin="4,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="POS" FontSize="8.5" FontWeight="Bold" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Retail Billing (POS)" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- PURCHASE SECTION -->
+                        <Border Margin="6,12,0,4">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="PURCHASE &amp; SOURCING" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="70"/>
+                            </StackPanel>
+                        </Border>
+
+                        <Button Style="{StaticResource ModernSidebarButton}"
+                                Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
+                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:raw}"
+                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:raw}"
+                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:raw}"
+                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:raw}"
+                                ToolTip="Raw Material Purchase (Leather, Fabric, Hardware)">
+                            <DockPanel LastChildFill="True">
+                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:raw}"/>
+                                <TextBlock DockPanel.Dock="Left" Text="🧵" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Raw Material" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource ModernSidebarButton}"
+                                Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
+                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:ready}"
+                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:ready}"
+                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:ready}"
+                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:ready}"
+                                ToolTip="Readymade Shoes &amp; Uniforms Sourcing">
+                            <DockPanel LastChildFill="True">
+                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:ready}"/>
+                                <TextBlock DockPanel.Dock="Left" Text="👞" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Readymade Products" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Button>
+
+                        <Button Style="{StaticResource ModernSidebarButton}"
+                                Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
+                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:gen}"
+                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:gen}"
+                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:gen}"
+                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:gen}"
+                                ToolTip="Packaging, Boxes &amp; General Supplies">
+                            <DockPanel LastChildFill="True">
+                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:gen}"/>
+                                <TextBlock DockPanel.Dock="Left" Text="📦" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="General Packaging" VerticalAlignment="Center"/>
+                            </DockPanel>
+                        </Button>
+
+                        <!-- MANUFACTURING SECTION (Admin & Store Keeper) -->
+                        <StackPanel Visibility="{Binding IsStoreKeeper, Converter={StaticResource BoolToVis}}">
+                            <Border Margin="6,12,0,4">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="MANUFACTURING" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                    <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="80"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="production"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=production}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=production}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=production}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=production}"
+                                    ToolTip="Production Work Orders &amp; Factory Jobs">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=production}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🏭" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Production Orders" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- INVENTORY SECTION (Admin & Store Keeper) -->
+                        <StackPanel Visibility="{Binding IsStoreKeeper, Converter={StaticResource BoolToVis}}">
+                            <Border Margin="6,12,0,4">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="INVENTORY &amp; STOCK" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                    <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="70"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="stock:raw"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=stock:raw}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=stock:raw}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=stock:raw}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=stock:raw}"
+                                    ToolTip="Raw Material Stock (Fabric, Leather, Soles)">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=stock:raw}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🧶" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Raw Material Stock" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="stock:fg"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=stock:fg}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=stock:fg}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=stock:fg}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=stock:fg}"
+                                    ToolTip="Factory Finished Goods Inventory">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=stock:fg}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="👟" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Finished Goods" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="stock:ready"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=stock:ready}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=stock:ready}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=stock:ready}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=stock:ready}"
+                                    ToolTip="Readymade Footwear &amp; Uniforms Stock">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=stock:ready}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🏪" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Readymade Stock" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="stock:gen"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=stock:gen}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=stock:gen}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=stock:gen}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=stock:gen}"
+                                    ToolTip="Packaging Boxes &amp; Cartons Stock">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=stock:gen}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="📦" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Packaging &amp; Boxes" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- CATALOG SECTION (Admin & Store Keeper) -->
+                        <StackPanel Visibility="{Binding IsStoreKeeper, Converter={StaticResource BoolToVis}}">
+                            <Border Margin="6,12,0,4">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="CATALOG &amp; MASTERS" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                    <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="60"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="products"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=products}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=products}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=products}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=products}"
+                                    ToolTip="Product Master, Categories &amp; Bulk Price Lists">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=products}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🏷️" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Products &amp; Items" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <!-- Direct Add Product Shortcut with Barcode badge -->
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg"
+                                    Foreground="#A5B4FC"
+                                    ToolTip="Add new footwear, uniform, or readymade product with auto barcode">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Left" Text="➕" FontSize="11" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="#38BDF8"/>
+                                    <Border DockPanel.Dock="Right" Background="#312E81" CornerRadius="6" Padding="5,1" Margin="4,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="Barcode" FontSize="8.5" FontWeight="Bold" Foreground="#A5B4FC"/>
+                                    </Border>
+                                    <TextBlock Text="Add New Product" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- ACCOUNTS SECTION (Admin & Finance ONLY) -->
+                        <StackPanel Visibility="{Binding IsFinance, Converter={StaticResource BoolToVis}}">
+                            <Border Margin="6,12,0,4">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="FINANCE &amp; ACCOUNTS" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                    <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="60"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:income"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:income}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:income}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:income}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:income}"
+                                    ToolTip="Income Register &amp; Customer Collections">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:income}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="📈" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Income Register" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:exp"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:exp}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:exp}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:exp}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:exp}"
+                                    ToolTip="Expense Register &amp; Factory Overheads">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:exp}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="📉" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Expense Register" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:inv"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:inv}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:inv}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:inv}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:inv}"
+                                    ToolTip="Investment Capital &amp; Partner ROI">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:inv}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="💼" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Investment &amp; ROI" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:pl"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:pl}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:pl}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:pl}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:pl}"
+                                    ToolTip="Profit &amp; Loss Statement">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:pl}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="⚖️" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Profit &amp; Loss" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+
+                        <!-- ADMINISTRATION SECTION (Admin ONLY) -->
+                        <StackPanel Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}">
+                            <Border Margin="6,12,0,4">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="ADMINISTRATION" FontSize="9.5" FontWeight="Bold" Foreground="#818CF8" VerticalAlignment="Center"/>
+                                    <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="60"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding OpenUserManagementCommand}"
+                                    Background="#1E293B" BorderBrush="#334155" Foreground="#C7D2FE"
+                                    ToolTip="Create and manage logins for Store Keeper and Finance staff">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Left" Text="👥" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <Border DockPanel.Dock="Right" Background="#4F46E5" CornerRadius="6" Padding="5,1" Margin="4,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="Admin" FontSize="8.5" FontWeight="Bold" Foreground="White"/>
+                                    </Border>
+                                    <TextBlock Text="Staff Logins &amp; Roles" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- MAIN AREA -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="64"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Topbar -->
+            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="24,0">
+                <DockPanel LastChildFill="False">
+                    <!-- Section Breadcrumb Pill -->
+                    <Border VerticalAlignment="Center" Background="#F1F5F9" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14,7">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border Width="7" Height="7" CornerRadius="3.5" Background="#2563EB" Margin="0,0,9,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CurrentBreadcrumb}" FontSize="13.5" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Right Controls -->
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Data Mode Pill (Demo vs Live DB) -->
+                        <Button Command="{Binding ToggleDataModeCommand}" Margin="0,0,10,0" Padding="10,4"
+                                Background="{Binding DataModeBgColor}" BorderBrush="{Binding DataModeBorderColor}" BorderThickness="1"
+                                Cursor="Hand" ToolTip="Click to switch between Demo Sample Data and Live Cloud Database">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="14" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="6" Height="6" CornerRadius="3" Background="{Binding DataModeDotColor}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding DataModeLabel}" Foreground="{Binding DataModeFgColor}" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Firebase Pill -->
+                        <Button Command="{Binding TestFirebaseCommand}" Margin="0,0,10,0" Padding="11,5" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Click to check or sync with Firebase Cloud Firestore">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="16" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="7" Height="7" CornerRadius="3.5" Background="{Binding FirebaseStatusDotColor}" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="{Binding FirebaseStatusBadge}" Foreground="#065F46" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Live Date Display -->
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="12,4" Margin="0,0,12,0">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="📅" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding CurrentDateFormatted}" FontWeight="SemiBold" FontSize="11.5" Foreground="#1E293B"/>
+                                    <TextBlock Text="{Binding CurrentDayOfWeek}" FontSize="9.5" Foreground="#64748B"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Update Check Button -->
+                        <Button Click="CheckUpdates_Click" Height="36" Padding="10,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" Margin="0,0,10,0" ToolTip="Check for software updates on GitHub via Velopack">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="🚀" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Updates" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <!-- Notification Bell Button -->
+                        <Grid Margin="0,0,12,0">
+                            <Button Command="{Binding ToggleNotificationsCommand}" Width="36" Height="36" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Notifications">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                                <TextBlock Text="🔔" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Button>
+                            <Border Visibility="{Binding HasNotifications, Converter={StaticResource BoolToVis}}"
+                                    Background="#EF4444" CornerRadius="8" Padding="5,1" Margin="22,-4,-4,0" HorizontalAlignment="Right" VerticalAlignment="Top" IsHitTestVisible="False">
+                                <TextBlock Text="{Binding NotificationCount}" Foreground="White" FontSize="9" FontWeight="Bold"/>
+                            </Border>
+                        </Grid>
+
+                        <!-- + NEW Menu Button -->
+                        <Button Content="+ New" Command="{Binding ToggleNewMenuCommand}" Height="36" Padding="14,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="12" Cursor="Hand" Margin="0,0,14,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="#172443" Opacity="0.2"/>
+                                        </Border.Effect>
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
+                        <!-- User Avatar & Profile Button -->
+                        <Button Command="{Binding ToggleUserMenuCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="4">
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Border Width="34" Height="34" CornerRadius="17" Background="{Binding LoggedInRoleColor}" Margin="0,0,8,0">
+                                    <TextBlock Text="{Binding LoggedInUserInitials}" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="{Binding LoggedInUserName}" FontWeight="SemiBold" FontSize="12.5" Foreground="#1E293B"/>
+                                    <TextBlock Text="{Binding LoggedInRoleBadge}" FontSize="9.5" FontWeight="SemiBold" Foreground="#64748B"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+
+            <!-- Main Dynamic View (Optimized with Cached View Presenter) -->
+            <ContentControl x:Name="MainContentArea" Grid.Row="1"/>
+
+            <!-- NOTIFICATION DROPDOWN POPUP -->
+            <Border Grid.Row="1" Visibility="{Binding IsNotificationPopupOpen, Converter={StaticResource BoolToVis}}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Width="320" MaxHeight="420" Background="White" Margin="0,8,120,0"
+                    BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#0F172A" Opacity="0.14"/>
+                </Border.Effect>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock Text="Notifications" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                        <Button Content="✕" Command="{Binding ToggleNotificationsCommand}" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Cursor="Hand" Foreground="#94A3B8" FontWeight="Bold"/>
+                    </DockPanel>
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding Notifications}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border Padding="0,8" BorderBrush="#F1F5F9" BorderThickness="0,0,0,1">
+                                        <DockPanel>
+                                            <Border Width="8" Height="8" CornerRadius="4" Background="{Binding BadgeColor}" Margin="0,5,10,0" VerticalAlignment="Top"/>
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Title}" FontWeight="Bold" FontSize="12" Foreground="#0F172A"/>
+                                                <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#475569" TextWrapping="Wrap" Margin="0,2,0,0"/>
+                                                <TextBlock Text="{Binding Date, Converter={StaticResource DateConv}}" FontSize="10" Foreground="#94A3B8" Margin="0,3,0,0"/>
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- + NEW ACTIONS DROPDOWN POPUP -->
+            <Border Grid.Row="1" Visibility="{Binding IsNewMenuOpen, Converter={StaticResource BoolToVis}}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Width="230" Background="White" Margin="0,8,70,0"
+                    BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="8">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#0F172A" Opacity="0.14"/>
+                </Border.Effect>
+                <StackPanel>
+                    <Button Content="🛒  New Retail Bill" Command="{Binding NavigateCommand}" CommandParameter="sales:retail" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🧾  Domestic Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🌐  Export Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Separator Margin="0,4" Background="#F1F5F9"/>
+                    <Button Content="🛍️  Purchase · Raw Material" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🛍️  Purchase · Readymade" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🛍️  Purchase · General" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_gen" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Separator Margin="0,4" Background="#F1F5F9"/>
+                    <Button Content="🏭  New Work Order" Command="{Binding OpenDialogCommand}" CommandParameter="work_order" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="💸  Add Expense" Command="{Binding OpenDialogCommand}" CommandParameter="expense_add" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🏷️  Add Product / Item" Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                </StackPanel>
+            </Border>
+
+            <!-- USER PROFILE DROPDOWN POPUP -->
+            <Border Grid.Row="1" Visibility="{Binding IsUserMenuOpen, Converter={StaticResource BoolToVis}}"
+                    HorizontalAlignment="Right" VerticalAlignment="Top" Width="280" Background="White" Margin="0,8,16,0"
+                    BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#0F172A" Opacity="0.14"/>
+                </Border.Effect>
+                <StackPanel>
+                    <DockPanel Margin="0,0,0,12">
+                        <Border Width="40" Height="40" CornerRadius="20" Background="{Binding LoggedInRoleColor}" Margin="0,0,12,0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding LoggedInUserInitials}" Foreground="White" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="{Binding LoggedInUserName}" FontWeight="Bold" FontSize="13.5" Foreground="#0F172A"/>
+                            <TextBlock Text="{Binding LoggedInRoleBadge}" FontSize="11" FontWeight="SemiBold" Foreground="#64748B"/>
+                            <TextBlock Text="{Binding LoggedInUserHandle, StringFormat='@\{0\}'}" FontSize="10.5" Foreground="#94A3B8"/>
+                        </StackPanel>
+                    </DockPanel>
+
+                    <Border Background="#F1F5F9" Height="1" Margin="0,4,0,10"/>
+
+                    <!-- Admin Only: Manage Staff Logins -->
+                    <Button Content="👥 Manage Staff Logins" Command="{Binding OpenUserManagementCommand}"
+                            Visibility="{Binding IsAdmin, Converter={StaticResource BoolToVis}}"
+                            Height="36" Background="#EEF2FF" Foreground="#4338CA" FontWeight="SemiBold" FontSize="11.5"
+                            BorderThickness="0" Margin="0,0,0,8" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <!-- Sign Out Button -->
+                    <Button Content="🚪 Sign Out / Switch Panel" Command="{Binding LogoutCommand}"
+                            Height="36" Background="#FEF2F2" Foreground="#DC2626" FontWeight="SemiBold" FontSize="11.5"
+                            BorderThickness="0" Cursor="Hand">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ============================================== -->
+        <!-- MULTI-ROLE LOGIN SCREEN OVERLAY (AUTO-LOGIN CAPABLE) -->
+        <!-- ============================================== -->
+        <Grid x:Name="LoginOverlay" Visibility="{Binding IsLoggedIn, Converter={StaticResource InverseBoolToVis}}"
+              Panel.ZIndex="999" Background="#090E1A" Grid.ColumnSpan="2">
+            <Border Width="460" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="#111827" BorderBrush="#1F2937" BorderThickness="1" CornerRadius="16" Padding="32">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="40" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.5"/>
+                </Border.Effect>
+                <StackPanel>
+                    <!-- Brand Header -->
+                    <StackPanel HorizontalAlignment="Center" Margin="0,0,0,18">
+                        <Border Width="72" Height="72" CornerRadius="18" Background="#0A1128" BorderBrush="#D4AF37" BorderThickness="2" HorizontalAlignment="Center" Margin="0,0,0,12" ClipToBounds="True">
+                            <Border.Effect>
+                                <DropShadowEffect BlurRadius="20" ShadowDepth="2" Direction="270" Color="#D4AF37" Opacity="0.4"/>
+                            </Border.Effect>
+                            <Image Source="pack://application:,,,/Assets/logo.png" Stretch="Uniform" Margin="4" RenderOptions.BitmapScalingMode="HighQuality"/>
+                        </Border>
+                        <TextBlock Text="Afrah Samiya Industries Pvt Ltd" FontSize="16" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Shoes &amp; Uniforms ERP · Multi-Role Sign In" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                    </StackPanel>
+
+                    <!-- Role Preset Chips -->
+                    <TextBlock Text="Select Panel or enter credentials:" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,8"/>
+                    <UniformGrid Columns="3" Margin="0,0,0,10">
+                        <Button Click="AdminFill_Click" Margin="0,0,4,0" Height="32" Background="#1E293B" BorderBrush="#4338CA" BorderThickness="1" Foreground="#C7D2FE" FontSize="10.5" FontWeight="SemiBold" Cursor="Hand" Content="👑 Admin">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                        </Button>
+                        <Button Click="StoreFill_Click" Margin="2,0,2,0" Height="32" Background="#1E293B" BorderBrush="#0D9488" BorderThickness="1" Foreground="#99F6E4" FontSize="10.5" FontWeight="SemiBold" Cursor="Hand" Content="📦 Store">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                        </Button>
+                        <Button Click="FinanceFill_Click" Margin="4,0,0,0" Height="32" Background="#1E293B" BorderBrush="#B45309" BorderThickness="1" Foreground="#FDE68A" FontSize="10.5" FontWeight="SemiBold" Cursor="Hand" Content="💼 Finance">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                        </Button>
+                    </UniformGrid>
+                    <TextBlock Text="💡 Quick presets auto-fill username &amp; password (e.g. admin / admin)" FontSize="10" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,0,0,12"/>
+
+                    <!-- Inputs -->
+                    <TextBlock Text="Username / Login ID" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                    <TextBox x:Name="LoginUsernameBox" Text="admin" Height="38" Background="#030712" Foreground="#FFFFFF" BorderBrush="#374151" BorderThickness="1" Padding="10,8" Margin="0,0,0,12" VerticalContentAlignment="Center" KeyDown="LoginInput_KeyDown"/>
+
+                    <TextBlock Text="Password" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,4"/>
+                    <PasswordBox x:Name="LoginPasswordBox" Height="38" Background="#030712" Foreground="#FFFFFF" BorderBrush="#374151" BorderThickness="1" Padding="10,8" Margin="0,0,0,12" VerticalContentAlignment="Center" KeyDown="LoginInput_KeyDown"/>
+
+                    <!-- Remember Me / Auto-login -->
+                    <CheckBox x:Name="LoginRememberCheckBox" IsChecked="True" Margin="0,0,0,16" Foreground="#CBD5E1" FontSize="11.5" Cursor="Hand">
+                        <TextBlock Text="Keep me signed in (Auto-login next time)" VerticalAlignment="Center"/>
+                    </CheckBox>
+
+                    <!-- Error Text -->
+                    <TextBlock x:Name="LoginErrorText" Text="" Foreground="#F87171" FontSize="11" FontWeight="SemiBold" Visibility="Collapsed" Margin="0,0,0,12" TextWrapping="Wrap"/>
+
+                    <!-- Sign In Button -->
+                    <Button Click="LoginButton_Click" Height="42" Background="#2563EB" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" Cursor="Hand" BorderThickness="0" Content="Sign In to ERP">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <!-- Status note -->
+                    <TextBlock Text="Offline-capable · Synchronizes with Firebase Cloud Firestore" FontSize="10" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,16,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

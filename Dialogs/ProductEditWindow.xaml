@@ -1,0 +1,246 @@
+<Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.ProductEditWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Product / Item Editor" Height="750" Width="840"
+        WindowStartupLocation="CenterOwner" Background="#F1F3F7">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" BorderBrush="#3D62B8" BorderThickness="0,0,0,2" Padding="0,0,0,12" Margin="0,0,0,16">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="📥 Bulk CSV Upload" Click="BulkUpload_Click"
+                        Padding="14,6" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
+                        Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" VerticalAlignment="Center">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="6"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <TextBlock x:Name="TxtTitle" Text="Add Product / Item" FontSize="20" FontWeight="Bold" Foreground="#152039" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+
+        <!-- Body ScrollViewer -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <!-- Type Selection -->
+                <Border Background="White" Padding="14" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
+                    <StackPanel>
+                        <TextBlock Text="Item Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,6"/>
+                        <ComboBox x:Name="CbItemType" SelectionChanged="ItemType_Changed" Padding="8">
+                            <ComboBoxItem Content="Finished Product (Made in Factory)" Tag="mfg" IsSelected="True"/>
+                            <ComboBoxItem Content="Readymade Product (Purchased for Resale)" Tag="ready"/>
+                            <ComboBoxItem Content="Raw Material (Leather, Sole, Fabric, Trims)" Tag="raw"/>
+                            <ComboBoxItem Content="General / Packaging (Boxes, Bags, Tape)" Tag="gen"/>
+                        </ComboBox>
+                    </StackPanel>
+                </Border>
+
+                <!-- Basic Fields -->
+                <Border Background="White" Padding="16" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,10">
+                            <TextBlock Text="Item Name *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtName" Padding="8" BorderBrush="#E1E5EC"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="CatWrap" Grid.Row="1" Grid.Column="0" Margin="0,0,12,10">
+                            <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="CbCategory" SelectionChanged="Category_Changed" Padding="8">
+                                <ComboBoxItem Content="Shoe" IsSelected="True"/>
+                                <ComboBoxItem Content="Formal Shoes"/>
+                                <ComboBoxItem Content="School Shoes"/>
+                                <ComboBoxItem Content="Sports Footwear"/>
+                                <ComboBoxItem Content="Safety Shoes"/>
+                                <ComboBoxItem Content="Uniform"/>
+                                <ComboBoxItem Content="Apparel"/>
+                                <ComboBoxItem Content="Accessory"/>
+                                <ComboBoxItem Content="Other"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,10">
+                            <TextBlock Text="Unit of Measurement *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <ComboBox x:Name="TxtUnit" IsEditable="True" Text="pair" Padding="8" BorderBrush="#E1E5EC">
+                                <ComboBoxItem Content="pair"/>
+                                <ComboBoxItem Content="pcs"/>
+                                <ComboBoxItem Content="set"/>
+                                <ComboBoxItem Content="box"/>
+                                <ComboBoxItem Content="meter"/>
+                                <ComboBoxItem Content="sq.ft"/>
+                                <ComboBoxItem Content="kg"/>
+                                <ComboBoxItem Content="sheet"/>
+                                <ComboBoxItem Content="roll"/>
+                                <ComboBoxItem Content="dozen"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <StackPanel x:Name="SizesWrap" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,10">
+                            <DockPanel Margin="0,0,0,4">
+                                <TextBlock Text="Sizes (Comma separated, e.g. 6,7,8,9,10,11)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" VerticalAlignment="Center"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                    <Button Content="Adults 6-11" Click="SizePreset_Click" Tag="6,7,8,9,10,11" Padding="6,2" FontSize="10.5" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" Margin="0,0,4,0"/>
+                                    <Button Content="Kids 1-5" Click="SizePreset_Click" Tag="1,2,3,4,5" Padding="6,2" FontSize="10.5" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" Margin="0,0,4,0"/>
+                                    <Button Content="S to XXL" Click="SizePreset_Click" Tag="S,M,L,XL,XXL" Padding="6,2" FontSize="10.5" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" Margin="0,0,4,0"/>
+                                    <Button Content="Free Size" Click="SizePreset_Click" Tag="Free Size" Padding="6,2" FontSize="10.5" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand"/>
+                                </StackPanel>
+                            </DockPanel>
+                            <TextBox x:Name="TxtSizes" Text="6,7,8,9,10,11" Padding="8" BorderBrush="#E1E5EC"/>
+                        </StackPanel>
+
+                        <!-- SKU & Auto Barcode Row -->
+                        <Grid x:Name="SkuBarcodeWrap" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                                <DockPanel Margin="0,0,0,4">
+                                    <TextBlock Text="Product SKU *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" VerticalAlignment="Center"/>
+                                    <Button Content="⚡ Auto SKU" Click="AutoSku_Click" HorizontalAlignment="Right" Padding="6,2" FontSize="11" Background="#E8EEFA" Foreground="#2A5C99" BorderThickness="0" Cursor="Hand"/>
+                                </DockPanel>
+                                <TextBox x:Name="TxtSku" Padding="8" BorderBrush="#E1E5EC"/>
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <DockPanel Margin="0,0,0,4">
+                                    <TextBlock Text="Barcode (EAN-13) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" VerticalAlignment="Center"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <Button Content="⚡ Auto Barcode" Click="AutoBarcode_Click" Padding="6,2" FontSize="11" Background="#E8EEFA" Foreground="#2A5C99" BorderThickness="0" Cursor="Hand" Margin="0,0,6,0"/>
+                                        <Button Content="🖨️ Print Label" Click="PrintBarcode_Click" Padding="6,2" FontSize="11" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand"/>
+                                    </StackPanel>
+                                </DockPanel>
+                                <TextBox x:Name="TxtBarcode" Padding="8" BorderBrush="#E1E5EC" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- Pricing & Inventory Section -->
+                <Border Background="White" Padding="16" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Product Prices -->
+                        <StackPanel x:Name="RetailPriceWrap" Grid.Row="0" Grid.Column="0" Margin="0,0,8,10">
+                            <TextBlock Text="Retail MRP (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtRetailPrice" Text="0" Padding="8"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="BulkPriceWrap" Grid.Row="0" Grid.Column="1" Margin="0,0,8,10">
+                            <TextBlock Text="Bulk Retail (₹ 10+)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtBulkPrice" Text="0" Padding="8"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="DomesticPriceWrap" Grid.Row="0" Grid.Column="2" Margin="0,0,8,10">
+                            <TextBlock Text="Domestic Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtDomPrice" Text="0" Padding="8"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="ExportPriceWrap" Grid.Row="0" Grid.Column="3" Margin="0,0,0,10">
+                            <TextBlock Text="Export Price ($)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtExpPrice" Text="0.00" Padding="8"/>
+                        </StackPanel>
+
+                        <!-- Raw / Gen Rate -->
+                        <StackPanel x:Name="RateWrap" Grid.Row="0" Grid.Column="0" Margin="0,0,8,10" Visibility="Collapsed">
+                            <TextBlock Text="Purchase Rate (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtRate" Text="0" Padding="8"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="GstWrap" Grid.Row="0" Grid.Column="1" Margin="0,0,8,10" Visibility="Collapsed">
+                            <TextBlock Text="GST Rate %" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtGst" Text="5" Padding="8"/>
+                        </StackPanel>
+
+                        <!-- Stock Info -->
+                        <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Current / Opening Stock" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtStock" Text="0" Padding="8"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,8,0">
+                            <TextBlock Text="Reorder Alert Level" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtReorder" Text="50" Padding="8"/>
+                        </StackPanel>
+
+                        <StackPanel x:Name="HsnWrap" Grid.Row="1" Grid.Column="2" Margin="0,0,8,0">
+                            <TextBlock Text="HSN Code" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                            <TextBox x:Name="TxtHsn" Text="6403" Padding="8"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- BOM Material Recipe (for manufactured products) -->
+                <Border x:Name="BomBorder" Background="White" Padding="16" BorderBrush="#E1E5EC" BorderThickness="1">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                            <TextBlock Text="Material Recipe (BOM per unit)" FontWeight="Bold" FontSize="14" Foreground="#152039" VerticalAlignment="Center"/>
+                            <Button Content="+ Add Raw Material" Click="AddBomLine_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                        </DockPanel>
+
+                        <DataGrid x:Name="DgBom" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Raw Material" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableRawMaterials}"
+                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Id, UpdateSourceTrigger=PropertyChanged}"
+                                                      SelectionChanged="BomMaterialSelectionChanged" Margin="2"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="70" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Qty per Unit" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+
+                                <DataGridTemplateColumn Width="40">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="✕" Click="DeleteBomLine_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <DockPanel Grid.Row="2" Margin="0,16,0,0">
+            <Button x:Name="BtnFooterPrintBarcode" Content="🖨️ Print Barcode Label" Click="PrintBarcode_Click" Padding="14,8" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
+                <Button Content="Save Item" Click="Save_Click" Padding="18,8" Background="#3D62B8" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+            </StackPanel>
+        </DockPanel>
+    </Grid>
+</Window>

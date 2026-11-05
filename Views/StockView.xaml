@@ -1,0 +1,164 @@
+<UserControl x:Class="AsiErp.Views.StockView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:AsiErp.Converters">
+
+    <UserControl.Resources>
+        <converters:InrCurrencyConverter x:Key="InrConv"/>
+        <converters:InrShortConverter x:Key="InrShortConv"/>
+        <converters:StatusToBrushConverter x:Key="StatusBrushConv"/>
+        <converters:StatusToBackgroundConverter x:Key="StatusBgConv"/>
+        <converters:TabActiveBackgroundConverter x:Key="TabActiveBgConv"/>
+        <converters:TabActiveForegroundConverter x:Key="TabActiveFgConv"/>
+        <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Header -->
+            <DockPanel Margin="0,0,0,18">
+                <StackPanel>
+                    <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="{Binding Subtitle}" FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
+                    <Button Content="+ Add Item" Command="{Binding AddItemCommand}" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Subtabs -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                <Button Content="Raw Material Stock" Command="{Binding SetTabCommand}" CommandParameter="raw" Margin="0,0,8,0" Padding="14,6"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+                <Button Content="Finished Goods (Factory)" Command="{Binding SetTabCommand}" CommandParameter="fg" Margin="0,0,8,0" Padding="14,6"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=fg}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=fg}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=fg}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+                <Button Content="Readymade Stock" Command="{Binding SetTabCommand}" CommandParameter="ready" Margin="0,0,8,0" Padding="14,6"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+                <Button Content="Packaging &amp; General" Command="{Binding SetTabCommand}" CommandParameter="gen" Padding="14,6"
+                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
+                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
+                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
+                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+            </StackPanel>
+
+            <!-- 4 Stats Tiles -->
+            <UniformGrid Columns="4" Margin="0,0,0,20">
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Total SKUs / Items" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding Items.Count}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                        <TextBlock Text="Categories in group" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Total Stock Value" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                        <TextBlock Text="Valued at purchase / cost rate" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Low or Out of Stock" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding LowStockCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
+                        <TextBlock Text="Below reorder threshold" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Units on Hand" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding TotalUnitsOnHand, StringFormat={}{0:N0}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,2"/>
+                        <TextBlock Text="Physical inventory count" FontSize="11" Foreground="#94A3B8"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Table Container -->
+            <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6"/>
+                    </DockPanel>
+
+                    <!-- Stock Table -->
+                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                        <DataGrid.Columns>
+                            <DataGridTemplateColumn Header="Item Description" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
+                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="In Stock" Binding="{Binding Stock, StringFormat={}{0:N0}}" Width="95" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Reorder At" Binding="{Binding ReorderLevel, StringFormat={}{0:N0}}" Width="90"/>
+                            <DataGridTextColumn Header="Cost / Rate" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="100"/>
+                            <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="110" FontWeight="SemiBold"/>
+
+                            <DataGridTemplateColumn Header="Level Meter" Width="120">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Height="6" Background="#F1F5F9" CornerRadius="3" VerticalAlignment="Center">
+                                            <Border HorizontalAlignment="Left" Width="{Binding LevelPercent}" Background="{Binding StatusLevel, Converter={StaticResource StatusBrushConv}}" CornerRadius="3"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Status" Width="95">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="{Binding StatusLevel, Converter={StaticResource StatusBgConv}}">
+                                            <TextBlock Text="{Binding StatusLevelText}" Foreground="{Binding StatusLevel, Converter={StaticResource StatusBrushConv}}" FontSize="10.5" FontWeight="Bold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Width="85">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="Adjust" Command="{Binding DataContext.AdjustStockCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

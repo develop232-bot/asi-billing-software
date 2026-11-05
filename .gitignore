@@ -1,0 +1,20 @@
+## Secrets / Credentials
+firebase-key.json
+*.key
+*.pfx
+
+## Visual Studio / .NET
+bin/
+obj/
+publish/
+*.user
+*.suo
+.vs/
+
+## Velopack local packages (upload via vpk or GitHub Releases)
+Releases/*.nupkg
+Releases/*.zip
+Releases/*.exe
+
+## Logs
+*.log

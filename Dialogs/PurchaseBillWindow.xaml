@@ -1,0 +1,159 @@
+<Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.PurchaseBillWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="New Purchase Bill" Height="680" Width="880"
+        WindowStartupLocation="CenterOwner" Background="#F1F3F7">
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" BorderBrush="#8B5CF6" BorderThickness="0,0,0,2" Padding="0,0,0,12" Margin="0,0,0,16">
+            <TextBlock x:Name="TxtTitle" Text="New Purchase Bill" FontSize="20" FontWeight="Bold" Foreground="#152039"/>
+        </Border>
+
+        <!-- Vendor & Bill Info -->
+        <Border Grid.Row="1" Background="White" Padding="18" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,10">
+                    <TextBlock Text="Vendor Name *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtParty" Padding="8" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,10">
+                    <TextBlock Text="Bill Date" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <DatePicker x:Name="DpDate" Padding="6"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
+                    <TextBlock Text="Vendor Invoice / Bill No." FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtRef" Text="INV-1001" Padding="8" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
+                    <TextBlock Text="Vendor Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtPhone" Padding="8" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
+                    <TextBlock Text="Purchase Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <ComboBox x:Name="CbKind" SelectionChanged="Kind_SelectionChanged" Padding="8">
+                        <ComboBoxItem Content="Raw Material" Tag="raw" IsSelected="True"/>
+                        <ComboBoxItem Content="Readymade Product" Tag="ready"/>
+                        <ComboBoxItem Content="General Packaging" Tag="gen"/>
+                    </ComboBox>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Grid.Column="2">
+                    <TextBlock Text="System Bill Number" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtBillNo" Padding="8" IsReadOnly="True" Background="#F6F7FA" BorderBrush="#E1E5EC"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Line Items Table -->
+        <Border Grid.Row="2" Background="White" Padding="14" BorderBrush="#E1E5EC" BorderThickness="1">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
+                    <TextBlock Text="Bill Items" FontWeight="Bold" FontSize="14" Foreground="#152039" VerticalAlignment="Center"/>
+                    <Button Content="+ Add Item" Click="AddLine_Click" Margin="16,0,0,0" Padding="10,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
+                </StackPanel>
+
+                <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Item" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableItems}"
+                                              DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, UpdateSourceTrigger=PropertyChanged}"
+                                              SelectionChanged="ItemSelectionChanged" IsEditable="True" Margin="2"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="70" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        <DataGridTextColumn Header="Rate (₹)" Binding="{Binding Rate, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                        <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        <DataGridTextColumn Header="Total (₹)" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="110" IsReadOnly="True"/>
+
+                        <DataGridTemplateColumn Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="✕" Click="DeleteLine_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </Border>
+
+        <!-- Terms & Totals Summary -->
+        <Grid Grid.Row="3" Margin="0,14,0,14">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <TextBlock Text="Payment Terms: " FontWeight="SemiBold" VerticalAlignment="Center"/>
+                    <RadioButton x:Name="RbCash" Content="Cash Purchase" IsChecked="True" Checked="Terms_Changed" Margin="8,0,12,0"/>
+                    <RadioButton x:Name="RbCredit" Content="Credit Purchase" Checked="Terms_Changed"/>
+                </StackPanel>
+
+                <StackPanel x:Name="CreditWrap" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,0,8">
+                    <TextBlock Text="Credit Period: " VerticalAlignment="Center"/>
+                    <TextBox x:Name="TxtCreditDays" Text="30" Width="50" Padding="4" Margin="6,0,6,0"/>
+                    <TextBlock Text="days" VerticalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+
+            <Border Grid.Column="1" Background="White" Padding="14" BorderBrush="#E1E5EC" BorderThickness="1">
+                <StackPanel>
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="Subtotal (Taxable):" Foreground="#48546F"/>
+                        <TextBlock x:Name="TxtSubtotal" Text="₹0.00" HorizontalAlignment="Right" FontWeight="SemiBold"/>
+                    </DockPanel>
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="GST (Input Credit):" Foreground="#48546F"/>
+                        <TextBlock x:Name="TxtTaxAmount" Text="₹0.00" HorizontalAlignment="Right"/>
+                    </DockPanel>
+                    <Border BorderBrush="#E5A62E" BorderThickness="0,1,0,0" Margin="0,6" Padding="0,6,0,0">
+                        <DockPanel>
+                            <TextBlock Text="Total Bill Amount:" FontWeight="Bold" FontSize="14" Foreground="#152039"/>
+                            <TextBlock x:Name="TxtGrossTotal" Text="₹0.00" FontWeight="Bold" FontSize="15" Foreground="#152039" HorizontalAlignment="Right"/>
+                        </DockPanel>
+                    </Border>
+                    <DockPanel Margin="0,2">
+                        <TextBlock Text="Paid Now (₹):" VerticalAlignment="Center"/>
+                        <TextBox x:Name="TxtPaidNow" Text="0.00" Width="90" HorizontalAlignment="Right" Padding="4"/>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- Action Footer -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
+            <Button Content="Save Purchase Bill" Click="Save_Click" Padding="18,8" Background="#8B5CF6" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+        </StackPanel>
+    </Grid>
+</Window>
