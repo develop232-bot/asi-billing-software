@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -16,9 +15,6 @@ namespace AsiErp.Dialogs
         private string _type = "mfg"; // mfg, ready, raw, gen
         private readonly bool _isEdit;
 
-        public List<RawMaterialItem> AvailableRawMaterials { get; }
-        public ObservableCollection<BomItem> BomLines { get; } = new();
-
         public ProductEditWindow(string type = "mfg", object? existing = null)
         {
             InitializeComponent();
@@ -26,9 +22,6 @@ namespace AsiErp.Dialogs
             _type = type;
             _existingItem = existing;
             _isEdit = existing != null;
-
-            AvailableRawMaterials = _dataService.RawMaterials.ToList();
-            DgBom.ItemsSource = BomLines;
 
             // Set combobox
             foreach (ComboBoxItem item in CbItemType.Items)
@@ -75,12 +68,6 @@ namespace AsiErp.Dialogs
                 foreach (ComboBoxItem itm in CbCategory.Items)
                 {
                     if (itm.Content?.ToString() == p.Category) { CbCategory.SelectedItem = itm; break; }
-                }
-
-                if (p.Bom != null)
-                {
-                    foreach (var b in p.Bom)
-                        BomLines.Add(new BomItem { Id = b.Id, Name = b.Name, Unit = b.Unit, Qty = b.Qty });
                 }
             }
             else if (_existingItem is RawMaterialItem r)
@@ -181,7 +168,6 @@ namespace AsiErp.Dialogs
         private void UpdateFieldsForType()
         {
             bool isProd = _type == "mfg" || _type == "ready";
-            bool isMfg = _type == "mfg";
 
             if (CatWrap != null) CatWrap.Visibility = isProd ? Visibility.Visible : Visibility.Collapsed;
             if (SizesWrap != null) SizesWrap.Visibility = isProd ? Visibility.Visible : Visibility.Collapsed;
@@ -194,7 +180,6 @@ namespace AsiErp.Dialogs
 
             if (RateWrap != null) RateWrap.Visibility = !isProd ? Visibility.Visible : Visibility.Collapsed;
             if (GstWrap != null) GstWrap.Visibility = !isProd ? Visibility.Visible : Visibility.Collapsed;
-            if (BomBorder != null) BomBorder.Visibility = isMfg ? Visibility.Visible : Visibility.Collapsed;
             if (BtnFooterPrintBarcode != null) BtnFooterPrintBarcode.Visibility = isProd ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -209,36 +194,6 @@ namespace AsiErp.Dialogs
                     "Uniform" => "S,M,L,XL,XXL",
                     _ => ""
                 };
-            }
-        }
-
-        private void AddBomLine_Click(object sender, RoutedEventArgs e)
-        {
-            var first = AvailableRawMaterials.FirstOrDefault();
-            if (first != null)
-            {
-                BomLines.Add(new BomItem { Id = first.Id, Name = first.Name, Unit = first.Unit, Qty = 1 });
-            }
-        }
-
-        private void DeleteBomLine_Click(object sender, RoutedEventArgs e)
-        {
-            if (sender is Button btn && btn.DataContext is BomItem item)
-            {
-                BomLines.Remove(item);
-            }
-        }
-
-        private void BomMaterialSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (sender is ComboBox cb && cb.DataContext is BomItem line && cb.SelectedValue is string rId)
-            {
-                var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == rId);
-                if (rm != null)
-                {
-                    line.Name = rm.Name;
-                    line.Unit = rm.Unit;
-                }
             }
         }
 
@@ -313,7 +268,7 @@ namespace AsiErp.Dialogs
                 prod.ReorderLevel = reorder;
                 prod.Hsn = TxtHsn.Text.Trim();
                 prod.Gst = retail <= 2500 ? 5 : 18;
-                prod.Bom = BomLines.Where(b => !string.IsNullOrEmpty(b.Id) && b.Qty > 0).ToList();
+                prod.Bom = new();
 
                 await _dataService.SaveProductAsync(prod);
             }

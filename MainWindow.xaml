@@ -356,12 +356,12 @@
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:inv}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:inv}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:inv}"
-                                    ToolTip="Investment Capital &amp; Partner ROI">
+                                    ToolTip="Capital Investment &amp; Funding">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:inv}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="💼" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Investment &amp; ROI" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Investment" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 

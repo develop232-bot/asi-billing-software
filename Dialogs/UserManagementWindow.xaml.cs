@@ -205,7 +205,23 @@ namespace AsiErp.Dialogs
             }
         }
 
-        private void Close_Click(object sender, RoutedEventArgs e)
+        
+        private void CardRoleAdmin_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (RbRoleAdmin != null) RbRoleAdmin.IsChecked = true;
+        }
+
+        private void CardRoleStore_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (RbRoleStore != null) RbRoleStore.IsChecked = true;
+        }
+
+        private void CardRoleFinance_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (RbRoleFinance != null) RbRoleFinance.IsChecked = true;
+        }
+
+private void Close_Click(object sender, RoutedEventArgs e)
         {
             Close();
         }

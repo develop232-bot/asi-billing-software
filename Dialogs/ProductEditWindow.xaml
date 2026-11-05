@@ -196,41 +196,6 @@
                         </StackPanel>
                     </Grid>
                 </Border>
-
-                <!-- BOM Material Recipe (for manufactured products) -->
-                <Border x:Name="BomBorder" Background="White" Padding="16" BorderBrush="#E1E5EC" BorderThickness="1">
-                    <DockPanel>
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
-                            <TextBlock Text="Material Recipe (BOM per unit)" FontWeight="Bold" FontSize="14" Foreground="#152039" VerticalAlignment="Center"/>
-                            <Button Content="+ Add Raw Material" Click="AddBomLine_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
-                        </DockPanel>
-
-                        <DataGrid x:Name="DgBom" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="Raw Material" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableRawMaterials}"
-                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Id, UpdateSourceTrigger=PropertyChanged}"
-                                                      SelectionChanged="BomMaterialSelectionChanged" Margin="2"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="70" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Qty per Unit" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-
-                                <DataGridTemplateColumn Width="40">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="✕" Click="DeleteBomLine_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </DockPanel>
-                </Border>
             </StackPanel>
         </ScrollViewer>
 

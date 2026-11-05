@@ -172,13 +172,29 @@ namespace AsiErp.ViewModels
                 try
                 {
                     var sb = new System.Text.StringBuilder();
-                    sb.AppendLine("BillNo,Date,VendorName,VendorBillRef,Phone,PaymentTerms,TaxableAmount,TaxAmount,GrossAmount,PaidAmount,BalanceAmount,PaymentStatus");
+                    // Professional CSV Header with proper column formatting
+                    sb.AppendLine("Bill No,Bill Date,Category,Vendor Name,Vendor Bill Ref,Vendor Phone,Payment Terms,Taxable Net Amount (Rs),GST Input Tax (Rs),Total Bill Amount (Rs),Paid Amount (Rs),Balance Due (Rs),Status,Items Purchased");
+                    
                     foreach (var b in FilteredPurchases)
                     {
-                        sb.AppendLine($"\"{EscapeCsv(b.BillNo)}\",\"{b.Date}\",\"{EscapeCsv(b.Party)}\",\"{EscapeCsv(b.VendorBillRef)}\",\"{EscapeCsv(b.Phone)}\",\"{EscapeCsv(b.SaleType)}\",{b.NetAmount},{b.TaxAmount},{b.GrossAmount},{b.PaidAmount},{b.BalanceAmount},\"{EscapeCsv(b.Status)}\"");
+                        string catName = b.Kind switch
+                        {
+                            "raw" => "Raw Material",
+                            "ready" => "Readymade Product",
+                            "gen" => "Packaging & General",
+                            _ => b.Kind
+                        };
+
+                        string itemsSummary = b.Lines != null && b.Lines.Any()
+                            ? string.Join("; ", b.Lines.Select(l => $"{l.Name} (Qty: {l.Qty} {l.Unit} @ Rs.{l.Rate:F2})"))
+                            : "";
+
+                        sb.AppendLine($"\"{EscapeCsv(b.BillNo)}\",\"{b.Date}\",\"{catName}\",\"{EscapeCsv(b.Party)}\",\"{EscapeCsv(b.VendorBillRef)}\",\"{EscapeCsv(b.Phone)}\",\"{EscapeCsv(b.SaleType)}\",{b.NetAmount:F2},{b.TaxAmount:F2},{b.GrossAmount:F2},{b.PaidAmount:F2},{b.BalanceAmount:F2},\"{EscapeCsv(b.Status)}\",\"{EscapeCsv(itemsSummary)}\"");
                     }
 
-                    System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), System.Text.Encoding.UTF8);
+                    // Use UTF-8 with BOM so Excel opens it with correct formatting
+                    var utf8WithBom = new System.Text.UTF8Encoding(true);
+                    System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), utf8WithBom);
 
                     var res = System.Windows.MessageBox.Show($"Purchase bills CSV exported successfully to:\n{sfd.FileName}\n\nWould you like to open the file now?",
                         "Export Complete", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Information);

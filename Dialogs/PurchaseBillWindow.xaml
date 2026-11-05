@@ -75,23 +75,26 @@
                     <Button Content="+ Add Item" Click="AddLine_Click" Margin="16,0,0,0" Padding="10,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
                 </StackPanel>
 
-                <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
+                          GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36"
+                          CellEditEnding="DgLines_CellEditEnding">
                     <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Item" Width="*">
+                        <DataGridTemplateColumn Header="Item (Select or Type)" Width="*">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableItems}"
-                                              DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, UpdateSourceTrigger=PropertyChanged}"
-                                              SelectionChanged="ItemSelectionChanged" IsEditable="True" Margin="2"/>
+                                              DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, Mode=TwoWay}"
+                                              SelectionChanged="ItemSelectionChanged" LostFocus="ItemComboBox_LostFocus"
+                                              IsEditable="True" Margin="2"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="70" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
-                        <DataGridTextColumn Header="Rate (₹)" Binding="{Binding Rate, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
-                        <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
-                        <DataGridTextColumn Header="Total (₹)" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="110" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit, Mode=TwoWay}" Width="70"/>
+                        <DataGridTextColumn Header="Qty" Binding="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        <DataGridTextColumn Header="Rate (₹)" Binding="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="100"/>
+                        <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="80"/>
+                        <DataGridTextColumn Header="Total (₹)" Binding="{Binding GrossAmount, Mode=OneWay, StringFormat={}{0:N2}}" Width="110" IsReadOnly="True"/>
 
                         <DataGridTemplateColumn Width="50">
                             <DataGridTemplateColumn.CellTemplate>

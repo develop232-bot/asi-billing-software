@@ -100,7 +100,7 @@
                         <TextBlock Text="Panel Role &amp; Permissions *" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,6"/>
                         <StackPanel Margin="0,0,0,14">
                             <!-- Administrator Option -->
-                            <Border x:Name="CardRoleAdmin" Background="#EFF6FF" BorderBrush="#3B82F6" BorderThickness="1.5" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
+                            <Border x:Name="CardRoleAdmin" Cursor="Hand" MouseLeftButtonDown="CardRoleAdmin_MouseDown" Background="#EFF6FF" BorderBrush="#3B82F6" BorderThickness="1.5" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
                                 <RadioButton x:Name="RbRoleAdmin" GroupName="StaffRole" IsChecked="True" Checked="RoleRadio_Checked" Tag="admin" Cursor="Hand">
                                     <StackPanel Margin="6,0,0,0">
                                         <TextBlock Text="👑 Administrator (Full Access)" FontWeight="Bold" FontSize="12" Foreground="#1E3A8A"/>
@@ -110,7 +110,7 @@
                             </Border>
 
                             <!-- Store Keeper Option -->
-                            <Border x:Name="CardRoleStore" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
+                            <Border x:Name="CardRoleStore" Cursor="Hand" MouseLeftButtonDown="CardRoleStore_MouseDown" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
                                 <RadioButton x:Name="RbRoleStore" GroupName="StaffRole" Checked="RoleRadio_Checked" Tag="storekeeper" Cursor="Hand">
                                     <StackPanel Margin="6,0,0,0">
                                         <TextBlock Text="📦 Store Keeper (Stock &amp; Billing)" FontWeight="Bold" FontSize="12" Foreground="#0F172A"/>
@@ -120,7 +120,7 @@
                             </Border>
 
                             <!-- Finance Option -->
-                            <Border x:Name="CardRoleFinance" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
+                            <Border x:Name="CardRoleFinance" Cursor="Hand" MouseLeftButtonDown="CardRoleFinance_MouseDown" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Padding="10,8" Margin="0,0,0,6">
                                 <RadioButton x:Name="RbRoleFinance" GroupName="StaffRole" Checked="RoleRadio_Checked" Tag="finance" Cursor="Hand">
                                     <StackPanel Margin="6,0,0,0">
                                         <TextBlock Text="💰 Finance &amp; Accounts (Billing &amp; Financials)" FontWeight="Bold" FontSize="12" Foreground="#0F172A"/>
