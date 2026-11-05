@@ -20,6 +20,17 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <!-- AUTOMATIC SILENT UPDATE BANNER -->
+        <Border x:Name="AutoUpdateBanner" Grid.ColumnSpan="2" Height="36" Background="#1E3A8A" BorderBrush="#3B82F6" BorderThickness="0,0,0,1" Visibility="Collapsed" Panel.ZIndex="3000" VerticalAlignment="Top">
+            <DockPanel Margin="18,0">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🚀" FontSize="13" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtAutoUpdateStatus" Text="New update detected. Installing in background..." Foreground="#FFFFFF" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
+                </StackPanel>
+                <ProgressBar x:Name="PbAutoUpdate" Width="140" Height="6" Margin="16,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Right" Background="#0F172A" Foreground="#38BDF8"/>
+            </DockPanel>
+        </Border>
+
         <!-- MODERN HIGH-CONTRAST SIDEBAR (Always 245px, Prominently Visible) -->
         <Border Grid.Column="0" Width="245" Background="#0A1128" BorderBrush="#1E293B" BorderThickness="0,0,1.5,0">
             <Border.Effect>

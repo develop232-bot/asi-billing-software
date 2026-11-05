@@ -22,16 +22,39 @@ namespace AsiErp
             // Pre-fill default admin password so user can sign in immediately
             LoginPasswordBox.Password = "admin";
 
-            // Check for updates in background on startup if configured
+            // Wire up silent auto-update status banner
+            UpdateService.Instance.StatusChanged += status =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    if (UpdateService.Instance.IsDownloading || status.Contains("New version") || status.Contains("Restarting"))
+                    {
+                        AutoUpdateBanner.Visibility = Visibility.Visible;
+                        TxtAutoUpdateStatus.Text = status;
+                    }
+                    else
+                    {
+                        AutoUpdateBanner.Visibility = Visibility.Collapsed;
+                    }
+                });
+            };
+
+            UpdateService.Instance.DownloadProgressChanged += percent =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    AutoUpdateBanner.Visibility = Visibility.Visible;
+                    PbAutoUpdate.Value = percent;
+                });
+            };
+
+            // Check for updates automatically in background immediately on startup
             if (UpdateService.Instance.Config.AutoCheckOnStartup)
             {
                 _ = System.Threading.Tasks.Task.Run(async () =>
                 {
-                    await System.Threading.Tasks.Task.Delay(3500);
-                    Dispatcher.Invoke(async () =>
-                    {
-                        await UpdateService.Instance.CheckForUpdatesAsync(isManualCheck: false);
-                    });
+                    await System.Threading.Tasks.Task.Delay(1000);
+                    await UpdateService.Instance.CheckForUpdatesAsync(isManualCheck: false);
                 });
             }
 

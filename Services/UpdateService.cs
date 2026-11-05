@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using System.Windows;
 using Velopack;
 using Velopack.Sources;
 
@@ -69,7 +68,6 @@ namespace AsiErp.Services
         {
             if (IsChecking || IsDownloading) return false;
             IsChecking = true;
-            StatusChanged?.Invoke("Checking GitHub for updates...");
 
             try
             {
@@ -78,60 +76,29 @@ namespace AsiErp.Services
 
                 if (!mgr.IsInstalled)
                 {
-                    if (isManualCheck)
-                    {
-                        MessageBox.Show(
-                            "The application is running in portable or development mode.\n\n" +
-                            "Velopack auto-updates are active when installed via the Velopack Setup package.\n\n" +
-                            $"Configured GitHub Remote: {Config.GithubRepoUrl}",
-                            "Velopack Update Check",
-                            MessageBoxButton.OK,
-                            MessageBoxImage.Information);
-                    }
                     StatusChanged?.Invoke("Running in portable/dev mode");
                     return false;
                 }
 
+                StatusChanged?.Invoke("Checking GitHub for updates...");
                 var updateInfo = await mgr.CheckForUpdatesAsync();
                 if (updateInfo == null)
                 {
-                    StatusChanged?.Invoke("You are using the latest version.");
-                    if (isManualCheck)
-                    {
-                        MessageBox.Show("Your software is up to date! No new versions found on GitHub.",
-                            "Software Up to Date", MessageBoxButton.OK, MessageBoxImage.Information);
-                    }
+                    StatusChanged?.Invoke("Software is up to date");
                     return false;
                 }
 
                 PendingUpdate = updateInfo;
-                string newVer = updateInfo.TargetFullRelease?.Version.ToString() ?? "New";
-                StatusChanged?.Invoke($"New version available: v{newVer}");
+                string newVer = updateInfo.TargetFullRelease?.Version.ToString() ?? "latest";
+                StatusChanged?.Invoke($"🚀 New version found (v{newVer})! Updating automatically...");
 
-                var result = MessageBox.Show(
-                    $"🚀 A new update (v{newVer}) is available on GitHub!\n\n" +
-                    $"Would you like to download and install this update now?",
-                    "Update Available",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
-
-                if (result == MessageBoxResult.Yes)
-                {
-                    await DownloadAndApplyAsync(mgr, updateInfo);
-                    return true;
-                }
+                // 100% Fully automatic: download and restart without any prompts
+                await DownloadAndApplyAsync(mgr, updateInfo);
+                return true;
             }
             catch (Exception ex)
             {
-                StatusChanged?.Invoke($"Update check failed: {ex.Message}");
-                if (isManualCheck)
-                {
-                    MessageBox.Show(
-                        $"Could not check GitHub releases: {ex.Message}\n\nRepository: {Config.GithubRepoUrl}",
-                        "Update Check Error",
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
+                StatusChanged?.Invoke($"Update check: {ex.Message}");
             }
             finally
             {
@@ -143,9 +110,9 @@ namespace AsiErp.Services
 
         public async Task DownloadAndApplyAsync(UpdateManager mgr, UpdateInfo updateInfo)
         {
+            if (IsDownloading) return;
             IsDownloading = true;
             DownloadPercent = 0;
-            StatusChanged?.Invoke("Downloading update from GitHub...");
 
             try
             {
@@ -156,23 +123,15 @@ namespace AsiErp.Services
                     StatusChanged?.Invoke($"Downloading update: {progress}%");
                 });
 
-                StatusChanged?.Invoke("Update ready! Restarting application...");
+                StatusChanged?.Invoke("Update complete! Restarting ASI ERP now...");
+                await Task.Delay(1000);
 
-                var restartChoice = MessageBox.Show(
-                    "Update downloaded successfully!\n\nRestart ASI ERP now to apply the update?",
-                    "Restart to Update",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Information);
-
-                if (restartChoice == MessageBoxResult.Yes)
-                {
-                    mgr.ApplyUpdatesAndRestart(updateInfo.TargetFullRelease);
-                }
+                // Automatically restart into the new version
+                mgr.ApplyUpdatesAndRestart(updateInfo.TargetFullRelease);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Failed to download or apply update: {ex.Message}", "Update Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                StatusChanged?.Invoke($"Update error: {ex.Message}");
+                StatusChanged?.Invoke($"Auto-update error: {ex.Message}");
             }
             finally
             {
