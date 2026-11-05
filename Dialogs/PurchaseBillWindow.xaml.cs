@@ -17,6 +17,8 @@ namespace AsiErp.Dialogs
         public string Unit { get; set; } = string.Empty;
         public double Rate { get; set; }
         public double Gst { get; set; }
+
+        public override string ToString() => Name;
     }
 
     public partial class PurchaseBillWindow : Window
@@ -191,7 +193,8 @@ namespace AsiErp.Dialogs
                 e.PropertyName == nameof(PurchaseLine.NetAmount) ||
                 e.PropertyName == nameof(PurchaseLine.TaxAmount) ||
                 e.PropertyName == nameof(PurchaseLine.Rate) ||
-                e.PropertyName == nameof(PurchaseLine.Qty))
+                e.PropertyName == nameof(PurchaseLine.Qty) ||
+                e.PropertyName == nameof(PurchaseLine.GstPercent))
             {
                 Recalculate();
             }
@@ -220,26 +223,22 @@ namespace AsiErp.Dialogs
             {
                 if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
                 {
-                    string? selectedId = cb.SelectedValue as string;
-                    if (string.IsNullOrEmpty(selectedId) && cb.SelectedItem is PurchaseItemOption opt)
+                    PurchaseItemOption? selectedOpt = cb.SelectedItem as PurchaseItemOption;
+                    if (selectedOpt == null && !string.IsNullOrEmpty(cb.SelectedValue as string))
                     {
-                        selectedId = opt.Id;
+                        selectedOpt = AvailableItems.FirstOrDefault(x => x.Id == cb.SelectedValue.ToString());
                     }
 
-                    if (!string.IsNullOrEmpty(selectedId))
+                    if (selectedOpt != null)
                     {
-                        var it = AvailableItems.FirstOrDefault(x => x.Id == selectedId);
-                        if (it != null)
-                        {
-                            line.ItemId = it.Id;
-                            line.Name = it.Name;
-                            line.Unit = it.Unit;
-                            if (it.Rate > 0) line.Rate = it.Rate;
-                            line.GstPercent = it.Gst;
-                            line.RecalculateLine();
-                            Recalculate();
-                            return;
-                        }
+                        line.ItemId = selectedOpt.Id;
+                        line.Name = selectedOpt.Name;
+                        if (!string.IsNullOrWhiteSpace(selectedOpt.Unit)) line.Unit = selectedOpt.Unit;
+                        if (selectedOpt.Rate > 0) line.Rate = selectedOpt.Rate;
+                        line.GstPercent = selectedOpt.Gst;
+                        line.RecalculateLine();
+                        Recalculate();
+                        return;
                     }
 
                     if (!string.IsNullOrWhiteSpace(cb.Text))
@@ -258,10 +257,18 @@ namespace AsiErp.Dialogs
         {
             if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
             {
-                if (!string.IsNullOrWhiteSpace(cb.Text) && cb.SelectedItem == null)
+                if (!string.IsNullOrWhiteSpace(cb.Text))
                 {
                     line.Name = cb.Text.Trim();
-                    if (string.IsNullOrEmpty(line.ItemId) || line.ItemId.StartsWith("pur_item_"))
+                    var match = AvailableItems.FirstOrDefault(x => string.Equals(x.Name, line.Name, StringComparison.OrdinalIgnoreCase));
+                    if (match != null)
+                    {
+                        line.ItemId = match.Id;
+                        if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
+                        if (line.Rate <= 0 && match.Rate > 0) line.Rate = match.Rate;
+                        if (line.GstPercent <= 0) line.GstPercent = match.Gst;
+                    }
+                    else if (string.IsNullOrEmpty(line.ItemId) || line.ItemId.StartsWith("pur_item_"))
                     {
                         line.ItemId = "custom_" + Guid.NewGuid().ToString("N")[..6];
                     }
