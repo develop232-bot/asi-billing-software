@@ -1,0 +1,335 @@
+<UserControl x:Class="AsiErp.Views.ExportInvoiceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:AsiErp.Converters">
+
+    <UserControl.Resources>
+        <converters:InrCurrencyConverter x:Key="InrConv"/>
+        <converters:DateFormatConverter x:Key="DateConv"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+        <StackPanel>
+            <!-- Top Header & Navigation -->
+            <DockPanel Margin="0,0,0,16">
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="⬅ Back to Sales &amp; Billing" Command="{Binding BackToSalesCommand}"
+                            Padding="12,6" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,14,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Overseas Export Invoice" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                        <TextBlock Text="Global &amp; Middle East Supply (Zero-Rated GST under LUT)" FontSize="11.5" Foreground="#64748B" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="🔄 Reset" Command="{Binding ResetFormCommand}"
+                            Padding="12,6" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Content="💾 Save Export Invoice" Command="{Binding SaveInvoiceCommand}"
+                            Padding="16,8" Background="#0D9488" Foreground="#FFFFFF" BorderThickness="0"
+                            Cursor="Hand" FontWeight="Bold" FontSize="12">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Buyer & Shipping Information Card -->
+            <Border Background="White" Padding="18" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Buyer Company Name -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,14,12">
+                        <TextBlock Text="Buyer / Overseas Company Name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding BuyerName, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" BorderBrush="#CBD5E1"/>
+                    </StackPanel>
+
+                    <!-- Invoice Date -->
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,14,12">
+                        <TextBlock Text="Invoice Date *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <DatePicker SelectedDate="{Binding InvoiceDate, Mode=TwoWay}" Padding="6,4"/>
+                    </StackPanel>
+
+                    <!-- Invoice Number -->
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="Invoice Number" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding InvoiceNo}" IsReadOnly="True" Background="#F8FAFC" Padding="8,6" BorderBrush="#CBD5E1" FontWeight="SemiBold"/>
+                    </StackPanel>
+
+                    <!-- Destination Country -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,14,12">
+                        <TextBlock Text="Destination Country" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <ComboBox Text="{Binding Country, Mode=TwoWay}" IsEditable="True" Padding="8,6">
+                            <ComboBoxItem Content="UAE"/>
+                            <ComboBoxItem Content="Saudi Arabia"/>
+                            <ComboBoxItem Content="Qatar"/>
+                            <ComboBoxItem Content="Oman"/>
+                            <ComboBoxItem Content="Kuwait"/>
+                            <ComboBoxItem Content="Bahrain"/>
+                            <ComboBoxItem Content="United States"/>
+                            <ComboBoxItem Content="United Kingdom"/>
+                            <ComboBoxItem Content="Europe"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Currency & FX Rate -->
+                    <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,14,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Currency" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                            <ComboBox Text="{Binding Currency, Mode=TwoWay}" IsEditable="True" Padding="6,5">
+                                <ComboBoxItem Content="AED"/>
+                                <ComboBoxItem Content="SAR"/>
+                                <ComboBoxItem Content="QAR"/>
+                                <ComboBoxItem Content="USD"/>
+                                <ComboBoxItem Content="EUR"/>
+                                <ComboBoxItem Content="GBP"/>
+                                <ComboBoxItem Content="OMR"/>
+                                <ComboBoxItem Content="KWD"/>
+                                <ComboBoxItem Content="BHD"/>
+                            </ComboBox>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="FX Rate (₹ / Cur)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding FxRate, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}" Padding="6,6" BorderBrush="#CBD5E1" FontWeight="SemiBold"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Incoterm -->
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="Incoterm" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <ComboBox Text="{Binding Incoterm, Mode=TwoWay}" IsEditable="True" Padding="8,6">
+                            <ComboBoxItem Content="FOB"/>
+                            <ComboBoxItem Content="CIF"/>
+                            <ComboBoxItem Content="CFR"/>
+                            <ComboBoxItem Content="EXW"/>
+                            <ComboBoxItem Content="DDP"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Port of Loading -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,14,0">
+                        <TextBlock Text="Port of Loading" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding PortOfLoading, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" BorderBrush="#CBD5E1"/>
+                    </StackPanel>
+
+                    <!-- Port of Discharge -->
+                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,14,0">
+                        <TextBlock Text="Port of Discharge" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding PortOfDischarge, UpdateSourceTrigger=PropertyChanged}" Padding="8,6" BorderBrush="#CBD5E1"/>
+                    </StackPanel>
+
+                    <!-- Contact Person & Phone -->
+                    <Grid Grid.Row="2" Grid.Column="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" Margin="0,0,8,0">
+                            <TextBlock Text="Contact Person" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding ContactPerson, UpdateSourceTrigger=PropertyChanged}" Padding="6,6" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="1">
+                            <TextBlock Text="Contact Phone *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding PhoneNumber, UpdateSourceTrigger=PropertyChanged}" Padding="6,6" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+
+            <!-- Line Items Table Card -->
+            <Border Background="White" Padding="18" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                        <TextBlock Text="Export Line Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
+                        <Button Content="➕ Add Item" Command="{Binding AddLineCommand}" HorizontalAlignment="Right"
+                                Padding="14,6" Background="#0F172A" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                        </Button>
+                    </DockPanel>
+
+                    <DataGrid ItemsSource="{Binding Lines}" AutoGenerateColumns="False" CanUserAddRows="False"
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                        <DataGrid.Columns>
+                            <!-- Product Name Selection -->
+                            <DataGridTemplateColumn Header="Product (Select or Type)" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AvailableProducts}"
+                                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Pid, Mode=TwoWay}"
+                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  IsEditable="True" Height="30" Padding="8,4" VerticalContentAlignment="Center" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Size -->
+                            <DataGridTemplateColumn Header="Size" Width="70">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Qty -->
+                            <DataGridTemplateColumn Header="Qty" Width="85">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Unit -->
+                            <DataGridTemplateColumn Header="Unit" Width="75">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Rate (Foreign Currency) -->
+                            <DataGridTemplateColumn Header="Rate (Cur)" Width="105">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}"
+                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Disc % -->
+                            <DataGridTemplateColumn Header="Disc %" Width="75">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding DiscPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Total (₹ INR) -->
+                            <DataGridTemplateColumn Header="Total (₹ INR)" Width="130">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F1F5F9" Padding="8,4" CornerRadius="4" Margin="2,0">
+                                            <TextBlock Text="{Binding GrossAmount, Converter={StaticResource InrConv}}"
+                                                       FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Delete -->
+                            <DataGridTemplateColumn Width="45">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="✕" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.DeleteLineCommand}" CommandParameter="{Binding}"
+                                                Foreground="#DC2626" Background="#FEF2F2" BorderBrush="#FECACA" BorderThickness="1"
+                                                Width="28" Height="28" Cursor="Hand" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </Border>
+
+            <!-- Bottom Summary & Actions -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="380"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Payment Terms -->
+                <Border Grid.Column="0" Background="White" Padding="18" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <StackPanel>
+                        <TextBlock Text="Export Payment Terms" FontWeight="Bold" FontSize="13" Foreground="#0F172A" Margin="0,0,0,10"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <RadioButton Content="Advance / Cash" IsChecked="{Binding IsCash, Mode=TwoWay}" GroupName="ExportTerms" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                            <RadioButton Content="LC / Credit Period" IsChecked="{Binding IsCredit, Mode=TwoWay}" GroupName="ExportTerms" VerticalAlignment="Center"/>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVis}}" Margin="0,0,0,8">
+                            <TextBlock Text="Credit / LC Period:" VerticalAlignment="Center" Foreground="#475569" Margin="0,0,8,0"/>
+                            <TextBox Text="{Binding CreditDays, UpdateSourceTrigger=PropertyChanged}" Width="60" Padding="6,4" TextAlignment="Center" BorderBrush="#CBD5E1"/>
+                            <TextBlock Text="days" VerticalAlignment="Center" Foreground="#475569" Margin="8,0,0,0"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Right: Totals Box -->
+                <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <StackPanel>
+                        <DockPanel Margin="0,2">
+                            <TextBlock Text="Total Foreign Amount:" Foreground="#64748B"/>
+                            <TextBlock HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="#0F172A">
+                                <Run Text="{Binding Currency, Mode=OneWay}"/>
+                                <Run Text=" "/>
+                                <Run Text="{Binding GrossAmountCurrency, StringFormat='{}{0:N2}', Mode=OneWay}"/>
+                            </TextBlock>
+                        </DockPanel>
+                        <DockPanel Margin="0,4">
+                            <TextBlock Text="Exchange Rate Applied:" Foreground="#64748B"/>
+                            <TextBlock HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#1E293B">
+                                <Run Text="1 "/>
+                                <Run Text="{Binding Currency, Mode=OneWay}"/>
+                                <Run Text=" = ₹"/>
+                                <Run Text="{Binding FxRate, StringFormat='{}{0:F2}', Mode=OneWay}"/>
+                            </TextBlock>
+                        </DockPanel>
+                        <Border Background="#E2E8F0" Height="1" Margin="0,8"/>
+                        <DockPanel Margin="0,4">
+                            <TextBlock Text="Total Invoice (INR):" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                            <TextBlock Text="{Binding GrossAmountInr, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="17" Foreground="#0D9488"/>
+                        </DockPanel>
+
+                        <DockPanel Margin="0,10,0,14" VerticalAlignment="Center">
+                            <TextBlock Text="Paid Now (₹):" Foreground="#64748B" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding PaidNow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}"
+                                     Width="130" HorizontalAlignment="Right" Padding="6,4" TextAlignment="Right" BorderBrush="#CBD5E1" FontWeight="SemiBold"/>
+                        </DockPanel>
+
+                        <Button Content="💾 Save Export Invoice" Command="{Binding SaveInvoiceCommand}"
+                                Height="42" Background="#0D9488" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="13">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

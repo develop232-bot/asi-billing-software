@@ -53,6 +53,7 @@ namespace AsiErp.ViewModels
     {
         private readonly AppDataService _dataService;
         private readonly Action<string, object?> _openDialogAction;
+        private readonly Action<string>? _navigateAction;
 
         private string _searchQuery = string.Empty;
         private string _scannedBarcode = string.Empty;
@@ -173,11 +174,15 @@ namespace AsiErp.ViewModels
         public RelayCommand CompleteSaleCommand { get; }
         public RelayCommand ViewBillCommand { get; }
         public RelayCommand AddNewProductCommand { get; }
+        public RelayCommand BackToSalesCommand { get; }
 
-        public PosViewModel(AppDataService dataService, Action<string, object?> openDialogAction)
+        public PosViewModel(AppDataService dataService, Action<string, object?> openDialogAction, Action<string>? navigateAction = null)
         {
             _dataService = dataService;
             _openDialogAction = openDialogAction;
+            _navigateAction = navigateAction;
+
+            BackToSalesCommand = new RelayCommand(_ => _navigateAction?.Invoke("sales"));
 
             SetCategoryCommand = new RelayCommand(p => SelectedCategory = p?.ToString() ?? "all");
 

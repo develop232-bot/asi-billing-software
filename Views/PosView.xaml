@@ -17,11 +17,18 @@
         <StackPanel>
             <!-- Header -->
             <DockPanel Margin="0,0,0,18">
-                <StackPanel>
-                    <TextBlock Text="Retail Billing (POS)" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Showroom and exhibition counter. Fast billing with automatic barcode scanning and bulk rates." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="⬅ Back to Sales &amp; Billing" Command="{Binding BackToSalesCommand}"
+                            Padding="12,6" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,14,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <StackPanel VerticalAlignment="Center">
+                        <TextBlock Text="Retail Billing (POS)" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                        <TextBlock Text="Showroom and exhibition counter. Fast billing with automatic barcode scanning and bulk rates." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                    </StackPanel>
                 </StackPanel>
-                <Border HorizontalAlignment="Right" Background="#FEF3C7" CornerRadius="10" Padding="14,6" BorderBrush="#F59E0B" BorderThickness="1">
+                <Border HorizontalAlignment="Right" Background="#FEF3C7" CornerRadius="10" Padding="14,6" BorderBrush="#F59E0B" BorderThickness="1" VerticalAlignment="Center">
                     <TextBlock Text="{Binding NextBillNo, StringFormat='Next Bill: {0}'}" FontWeight="Bold" Foreground="#92400E" FontSize="12"/>
                 </Border>
             </DockPanel>

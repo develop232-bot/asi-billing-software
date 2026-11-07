@@ -26,6 +26,8 @@ namespace AsiErp.ViewModels
         public DashboardViewModel DashboardVM { get; }
         public PosViewModel PosVM { get; }
         public SalesViewModel SalesVM { get; }
+        public DomesticInvoiceViewModel DomesticInvoiceVM { get; }
+        public ExportInvoiceViewModel ExportInvoiceVM { get; }
         public PurchaseViewModel PurchaseVM { get; }
         public ProductionViewModel ProductionVM { get; }
         public StockViewModel StockVM { get; }
@@ -201,8 +203,10 @@ namespace AsiErp.ViewModels
             _dataService = AppDataService.Instance;
 
             DashboardVM = new DashboardViewModel(_dataService, NavigateTo, OpenDialog);
-            PosVM = new PosViewModel(_dataService, OpenDialog);
+            PosVM = new PosViewModel(_dataService, OpenDialog, NavigateTo);
             SalesVM = new SalesViewModel(_dataService, NavigateTo, OpenDialog);
+            DomesticInvoiceVM = new DomesticInvoiceViewModel(_dataService, NavigateTo, OpenDialog);
+            ExportInvoiceVM = new ExportInvoiceViewModel(_dataService, NavigateTo, OpenDialog);
             PurchaseVM = new PurchaseViewModel(_dataService, OpenDialog, "raw");
             ProductionVM = new ProductionViewModel(_dataService, OpenDialog);
             StockVM = new StockViewModel(_dataService, OpenDialog, "raw");
@@ -516,32 +520,25 @@ namespace AsiErp.ViewModels
                 SalesVM.SelectedChannel = "all";
                 CurrentView = SalesVM;
             }
-            else if (route == "sales:retail")
+            else if (route == "sales:retail" || route == "pos")
             {
-                ActiveRoute = route;
+                ActiveRoute = "sales:retail";
                 CurrentBreadcrumb = "Sales & Billing · Retail Billing";
-                SalesVM.SelectedChannel = "retail";
-                CurrentView = SalesVM;
+                CurrentView = PosVM;
             }
             else if (route == "sales:domestic")
             {
                 ActiveRoute = route;
                 CurrentBreadcrumb = "Sales & Billing · Domestic Invoice";
-                SalesVM.SelectedChannel = "domestic";
-                CurrentView = SalesVM;
+                DomesticInvoiceVM.ResetForm();
+                CurrentView = DomesticInvoiceVM;
             }
             else if (route == "sales:export")
             {
                 ActiveRoute = route;
                 CurrentBreadcrumb = "Sales & Billing · Export Invoice";
-                SalesVM.SelectedChannel = "export";
-                CurrentView = SalesVM;
-            }
-            else if (route == "pos")
-            {
-                ActiveRoute = "sales:retail";
-                CurrentBreadcrumb = "Retail Billing (POS)";
-                CurrentView = PosVM;
+                ExportInvoiceVM.ResetForm();
+                CurrentView = ExportInvoiceVM;
             }
             else if (route == "purchase")
             {

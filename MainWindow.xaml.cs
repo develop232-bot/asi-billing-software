@@ -18,6 +18,7 @@ namespace AsiErp
         public MainWindow()
         {
             InitializeComponent();
+            Closed += (s, e) => Application.Current.Shutdown();
 
             // Pre-fill default admin password so user can sign in immediately
             LoginPasswordBox.Password = "admin";
@@ -84,6 +85,8 @@ namespace AsiErp
                 {
                     nameof(DashboardViewModel) => new Views.DashboardView(),
                     nameof(PosViewModel) => new Views.PosView(),
+                    nameof(DomesticInvoiceViewModel) => new Views.DomesticInvoiceView(),
+                    nameof(ExportInvoiceViewModel) => new Views.ExportInvoiceView(),
                     nameof(SalesViewModel) => new Views.SalesView(),
                     nameof(PurchaseViewModel) => new Views.PurchaseView(),
                     nameof(ProductionViewModel) => new Views.ProductionView(),

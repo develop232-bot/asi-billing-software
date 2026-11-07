@@ -5,7 +5,7 @@
              xmlns:views="clr-namespace:AsiErp.Views"
              xmlns:converters="clr-namespace:AsiErp.Converters"
              xmlns:helpers="clr-namespace:AsiErp.Helpers"
-             ShutdownMode="OnMainWindowClose">
+             ShutdownMode="OnLastWindowClose">
     <Application.Resources>
         <!-- Converters -->
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>

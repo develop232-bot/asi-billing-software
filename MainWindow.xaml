@@ -608,8 +608,8 @@
                 </Border.Effect>
                 <StackPanel>
                     <Button Content="🛒  New Retail Bill" Command="{Binding NavigateCommand}" CommandParameter="sales:retail" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🧾  Domestic Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🌐  Export Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🧾  Domestic Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🌐  Export Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
                     <Button Content="🛍️  Purchase · Raw Material" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Button Content="🛍️  Purchase · Readymade" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
