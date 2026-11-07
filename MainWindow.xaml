@@ -95,16 +95,17 @@
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=sales}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=sales}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=sales}"
-                                    ToolTip="Sales Register, Domestic &amp; Export Invoices">
+                                    ToolTip="Sales Register &amp; Complete Billing Overview">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="🧾" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Sales &amp; Billing" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Sales &amp; Billing" FontWeight="Bold" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 
-                            <Button Style="{StaticResource ModernSidebarButton}"
+                            <!-- Sub-item 1: Retail Billing -->
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
                                     Command="{Binding NavigateCommand}" CommandParameter="sales:retail"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=sales:retail}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=sales:retail}"
@@ -114,67 +115,110 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:retail}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="🛒" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <Border DockPanel.Dock="Right" Background="#10B981" CornerRadius="6" Padding="5,1" Margin="4,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="POS" FontSize="8.5" FontWeight="Bold" Foreground="White"/>
-                                    </Border>
-                                    <TextBlock Text="Retail Billing (POS)" VerticalAlignment="Center"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🛒" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Retail Billing" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <!-- Sub-item 2: Domestic Invoice -->
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
+                                    Command="{Binding NavigateCommand}" CommandParameter="sales:domestic"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=sales:domestic}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=sales:domestic}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=sales:domestic}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=sales:domestic}"
+                                    ToolTip="Domestic Wholesale Invoices">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:domestic}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🇮🇳" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Domestic Invoice" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <!-- Sub-item 3: Export Invoice -->
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
+                                    Command="{Binding NavigateCommand}" CommandParameter="sales:export"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=sales:export}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=sales:export}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=sales:export}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=sales:export}"
+                                    ToolTip="Overseas Export Invoices">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:export}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="✈️" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Export Invoice" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
                         </StackPanel>
 
-                        <!-- PURCHASE SECTION -->
-                        <Border Margin="6,12,0,4">
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="PURCHASE &amp; SOURCING" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
-                                <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="70"/>
-                            </StackPanel>
-                        </Border>
+                        <!-- PURCHASE & SOURCING SECTION -->
+                        <StackPanel Margin="0,4,0,0">
+                            <!-- Main Header Button: Purchase & Sourcing -->
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="purchase"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=purchase}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=purchase}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=purchase}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=purchase}"
+                                    ToolTip="Purchase Register &amp; Sourcing Overview">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=purchase}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🛍️" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Purchase &amp; Sourcing" FontWeight="Bold" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
 
-                        <Button Style="{StaticResource ModernSidebarButton}"
-                                Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
-                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:raw}"
-                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:raw}"
-                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:raw}"
-                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:raw}"
-                                ToolTip="Raw Material Purchase (Leather, Fabric, Hardware)">
-                            <DockPanel LastChildFill="True">
-                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
-                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:raw}"/>
-                                <TextBlock DockPanel.Dock="Left" Text="🧵" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Raw Material" VerticalAlignment="Center"/>
-                            </DockPanel>
-                        </Button>
+                            <!-- Sub-item 1: Raw Material -->
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
+                                    Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:raw}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:raw}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:raw}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:raw}"
+                                    ToolTip="Raw Material Purchase (Leather, Fabric, Hardware)">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:raw}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🧵" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Raw Material" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
 
-                        <Button Style="{StaticResource ModernSidebarButton}"
-                                Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
-                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:ready}"
-                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:ready}"
-                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:ready}"
-                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:ready}"
-                                ToolTip="Readymade Shoes &amp; Uniforms Sourcing">
-                            <DockPanel LastChildFill="True">
-                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
-                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:ready}"/>
-                                <TextBlock DockPanel.Dock="Left" Text="👞" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Readymade Products" VerticalAlignment="Center"/>
-                            </DockPanel>
-                        </Button>
+                            <!-- Sub-item 2: Ready Made Products -->
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
+                                    Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:ready}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:ready}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:ready}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:ready}"
+                                    ToolTip="Readymade Shoes &amp; Uniforms Sourcing">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:ready}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="👞" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Ready Made Products" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
 
-                        <Button Style="{StaticResource ModernSidebarButton}"
-                                Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
-                                Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:gen}"
-                                BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:gen}"
-                                Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:gen}"
-                                FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:gen}"
-                                ToolTip="Packaging, Boxes &amp; General Supplies">
-                            <DockPanel LastChildFill="True">
-                                <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
-                                        Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:gen}"/>
-                                <TextBlock DockPanel.Dock="Left" Text="📦" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="General Packaging" VerticalAlignment="Center"/>
-                            </DockPanel>
-                        </Button>
+                            <!-- Sub-item 3: General Packaging -->
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
+                                    Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:gen}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:gen}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:gen}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:gen}"
+                                    ToolTip="Packaging, Boxes &amp; General Supplies">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:gen}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="📦" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="General Packaging" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+                        </StackPanel>
 
                         <!-- MANUFACTURING SECTION (Admin & Store Keeper) -->
                         <StackPanel Visibility="{Binding IsStoreKeeper, Converter={StaticResource BoolToVis}}">

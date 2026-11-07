@@ -16,137 +16,251 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
         <StackPanel>
-            <!-- Title & Subtitle -->
+            <!-- 1. Header with Top 3 Action Buttons -->
             <DockPanel Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="Sales &amp; Billing" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Domestic wholesale invoices, overseas export invoices, and showroom retail counter bills." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                    <TextBlock Text="Retail counter billing, domestic wholesale tax invoices, and overseas export orders." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="+ Retail Billing" Command="{Binding NavigateCommand}" CommandParameter="sales:retail" Padding="14,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Margin="0,0,8,0"/>
-                    <Button Content="+ Domestic Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice" Padding="14,8" Background="#2563EB" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Margin="0,0,8,0"/>
-                    <Button Content="+ Export Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice" Padding="14,8" Background="#0D9488" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
+
+                <!-- Top 3 Action Buttons requested by user -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="🛒 Retail Billing" Command="{Binding NavigateCommand}" CommandParameter="pos"
+                            Padding="14,8" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
+                        <Button.Resources>
+                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="🇮🇳 Domestic Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice"
+                            Padding="14,8" Background="#2563EB" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
+                        <Button.Resources>
+                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                        </Button.Resources>
+                    </Button>
+
+                    <Button Content="✈️ Export Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice"
+                            Padding="14,8" Background="#0D9488" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12">
+                        <Button.Resources>
+                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                        </Button.Resources>
+                    </Button>
                 </StackPanel>
             </DockPanel>
 
-            <!-- 4 Stats Tiles -->
-            <UniformGrid Columns="4" Margin="0,0,0,20">
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Billed This Month" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding BilledThisMonth, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Current calendar month" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
+            <!-- 2. Particular Month Sale Amount Section (Always Reflects) -->
+            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="0,0,0,20">
+                <StackPanel>
+                    <!-- Month Selector & Header -->
+                    <DockPanel Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="📅 Particular Month Sales:" FontWeight="Bold" FontSize="13.5" Foreground="#1E293B" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedMonthDisplay}" FontWeight="Bold" FontSize="13.5" Foreground="#2563EB" Margin="6,0,12,0" VerticalAlignment="Center"/>
+                            <Button Content="◀ Prev" Command="{Binding PreviousMonthCommand}" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0"/>
+                            <Button Content="Next ▶" Command="{Binding NextMonthCommand}" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0"/>
+                            <Button Content="Current Month" Command="{Binding CurrentMonthCommand}" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5"/>
+                        </StackPanel>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Outstanding to Receive" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding OutstandingTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                        <TextBlock Text="{Binding OutstandingCount, StringFormat='From {0} open invoices'}" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
+                        <TextBlock Text="Live monthly revenue summary across all 3 billing channels" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </DockPanel>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Channel Distribution" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock FontSize="18" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2">
-                            <Run Text="{Binding RetailCount, Mode=OneWay}"/>
-                            <Run Text=" · " Foreground="#F59E0B"/>
-                            <Run Text="{Binding DomesticCount, Mode=OneWay}"/>
-                            <Run Text=" · " Foreground="#2563EB"/>
-                            <Run Text="{Binding ExportCount, Mode=OneWay}"/>
-                        </TextBlock>
-                        <TextBlock Text="Retail · Domestic · Export" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
+                    <!-- 4 Summary KPI Cards -->
+                    <UniformGrid Columns="4">
+                        <!-- Retail Sale -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="🛒 Retail Billing" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="POS" FontSize="9" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthRetailTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,2"/>
+                                <TextBlock Text="Showroom retail sales" FontSize="10.5" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
 
-                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Invoices to Date" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TotalInvoicesCount}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Total records generated" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
-            </UniformGrid>
+                        <!-- Domestic Invoice -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="🇮🇳 Domestic Invoice" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="B2B" FontSize="9" FontWeight="Bold" Foreground="#2563EB" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthDomesticTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#2563EB" Margin="0,6,0,2"/>
+                                <TextBlock Text="Domestic tax invoices" FontSize="10.5" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
 
-            <!-- Table Container -->
+                        <!-- Export Invoice -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="✈️ Export Invoice" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="GLOBAL" FontSize="9" FontWeight="Bold" Foreground="#0D9488" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthExportTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0D9488" Margin="0,6,0,2"/>
+                                <TextBlock Text="Overseas shipments" FontSize="10.5" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Total Month Sales -->
+                        <Border Background="#F0FDF4" Padding="14,12" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="💰 Total Month Sales" FontSize="11.5" Foreground="#166534" FontWeight="Bold"/>
+                                    <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#16A34A" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#15803D" Margin="0,6,0,2"/>
+                                <TextBlock Text="All 3 channels billed" FontSize="10.5" Foreground="#16A34A"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- 3. Custom Report & Data Table Section -->
             <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
+
                 <DockPanel>
-                    <!-- Filter Tools -->
-                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6" Margin="0,0,16,0"/>
+                    <!-- Custom Report Filter Bar -->
+                    <Border DockPanel.Dock="Top" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
 
-                        <!-- Channel Chips -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
-                            <Button Content="All" Command="{Binding SetChannelCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
-                                    Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
-                                    Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
-                                    BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Retail" Command="{Binding SetChannelCommand}" CommandParameter="retail" Margin="0,0,4,0" Padding="12,5"
-                                    Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=retail}"
-                                    Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=retail}"
-                                    BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Domestic" Command="{Binding SetChannelCommand}" CommandParameter="domestic" Margin="0,0,4,0" Padding="12,5"
-                                    Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
-                                    Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
-                                    BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Export" Command="{Binding SetChannelCommand}" CommandParameter="export" Padding="12,5"
-                                    Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
-                                    Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
-                                    BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel>
+                            <!-- Row 1: Title & Download buttons -->
+                            <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="📊 Custom Report:" FontWeight="Bold" FontSize="13" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Filter by custom dates &amp; category, then export" FontSize="11" Foreground="#64748B" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
 
-                        <!-- Status Chips -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="All Status" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="10,5"
-                                    Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
-                                    Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
-                                    BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,4,0" Padding="10,5"
-                                    Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Unpaid}"
-                                    Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Unpaid}"
-                                    BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Unpaid}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Partial" Command="{Binding SetStatusCommand}" CommandParameter="Partial" Margin="0,0,4,0" Padding="10,5"
-                                    Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Partial}"
-                                    Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Partial}"
-                                    BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Partial}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Padding="10,5"
-                                    Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Paid}"
-                                    Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Paid}"
-                                    BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Paid}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                        </StackPanel>
+                                <!-- Download File Buttons (PDF & EXCEL) -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <TextBlock Text="Download file:" FontWeight="SemiBold" FontSize="11" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                    <Button Content="📄 PDF" Command="{Binding ExportPdfCommand}"
+                                            Padding="12,5" Background="#DC2626" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11" Margin="0,0,6,0">
+                                        <Button.Resources>
+                                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                                        </Button.Resources>
+                                    </Button>
+
+                                    <Button Content="📊 EXCEL" Command="{Binding ExportExcelCommand}"
+                                            Padding="12,5" Background="#16A34A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11">
+                                        <Button.Resources>
+                                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+                            </DockPanel>
+
+                            <!-- Row 2: From, To, Category Chips, Status, Search -->
+                            <WrapPanel Grid.Row="1" VerticalAlignment="Center">
+                                <!-- From Date -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,6">
+                                    <TextBlock Text="From:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <DatePicker SelectedDate="{Binding ReportFromDate, Mode=TwoWay}" Width="120" Height="28" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- To Date -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
+                                    <TextBlock Text="To:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <DatePicker SelectedDate="{Binding ReportToDate, Mode=TwoWay}" Width="120" Height="28" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Category Chips: All, Retail, Domestic, Export -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
+                                    <TextBlock Text="Category:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
+
+                                    <Button Content="🌐 All" Command="{Binding SetChannelCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="10,4"
+                                            Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                            Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="🛒 Retail" Command="{Binding SetChannelCommand}" CommandParameter="retail" Margin="0,0,4,0" Padding="10,4"
+                                            Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=retail}"
+                                            Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=retail}"
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="🇮🇳 Domestic" Command="{Binding SetChannelCommand}" CommandParameter="domestic" Margin="0,0,4,0" Padding="10,4"
+                                            Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
+                                            Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="✈️ Export" Command="{Binding SetChannelCommand}" CommandParameter="export" Padding="10,4"
+                                            Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
+                                            Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Status Filter -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
+                                    <Button Content="All Status" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,3,0" Padding="8,4"
+                                            Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                            Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,3,0" Padding="8,4"
+                                            Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Unpaid}"
+                                            Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Unpaid}"
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Unpaid}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Padding="8,4"
+                                            Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Paid}"
+                                            Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Paid}"
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Paid}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Search Box -->
+                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="180" Height="28" Padding="6,4"
+                                         VerticalContentAlignment="Center" Margin="0,0,8,6"/>
+
+                                <!-- Reset Dates / Filters -->
+                                <Button Content="Reset" Command="{Binding ResetFilterDatesCommand}" Padding="8,4" Background="#F1F5F9"
+                                        BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,0,6"/>
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Summary Bar -->
+                    <DockPanel DockPanel.Dock="Top" Margin="2,0,2,8">
+                        <TextBlock Text="{Binding FilteredSales.Count, StringFormat='Showing {0} Invoices'}" FontSize="12" FontWeight="SemiBold" Foreground="#475569"/>
                     </DockPanel>
 
-                    <!-- Invoices Table -->
-                    <DataGrid ItemsSource="{Binding FilteredSales}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                    <!-- 4. Table Columns in EXACT requested order: -->
+                    <!-- | DATE | Channel | Invoice | Customer/ buyer | Contact no | Amount | Rest all same like before | -->
+                    <DataGrid ItemsSource="{Binding FilteredSales}" AutoGenerateColumns="False" CanUserAddRows="False"
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Invoice No" Binding="{Binding InvoiceNo}" Width="150" FontWeight="Bold"/>
+                            <!-- 1. DATE -->
+                            <DataGridTextColumn Header="DATE" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="100"/>
 
-                            <DataGridTemplateColumn Header="Channel" Width="95">
+                            <!-- 2. Channel -->
+                            <DataGridTemplateColumn Header="Channel" Width="110">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="{Binding Type, Converter={StaticResource StatusBgConv}}">
@@ -156,7 +270,11 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Customer / Buyer" Width="*">
+                            <!-- 3. Invoice -->
+                            <DataGridTextColumn Header="Invoice" Binding="{Binding InvoiceNo}" Width="145" FontWeight="Bold"/>
+
+                            <!-- 4. Customer/ buyer -->
+                            <DataGridTemplateColumn Header="Customer/ buyer" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding Party}" ToolTip="{Binding Party}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
@@ -164,10 +282,16 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
-                            <DataGridTextColumn Header="Amount (₹)" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="120" FontWeight="Bold"/>
+                            <!-- 5. Contact no -->
+                            <DataGridTextColumn Header="Contact no" Binding="{Binding Phone}" Width="125"/>
+
+                            <!-- 6. Amount -->
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="125" FontWeight="Bold"/>
+
+                            <!-- 7. Terms -->
                             <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="85"/>
 
+                            <!-- 8. Payment -->
                             <DataGridTemplateColumn Header="Payment" Width="90">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -178,14 +302,19 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
+                            <!-- 9. Actions -->
                             <DataGridTemplateColumn Width="140">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Content="View" Command="{Binding DataContext.ViewSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0"/>
+                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                             <Button Content="Receive" Command="{Binding DataContext.ReceivePaymentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11"/>
+                                                    Padding="10,4" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

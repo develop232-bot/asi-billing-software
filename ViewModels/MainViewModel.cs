@@ -513,13 +513,42 @@ namespace AsiErp.ViewModels
             {
                 ActiveRoute = route;
                 CurrentBreadcrumb = "Sales & Billing";
+                SalesVM.SelectedChannel = "all";
                 CurrentView = SalesVM;
             }
             else if (route == "sales:retail")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Retail Billing";
+                CurrentBreadcrumb = "Sales & Billing · Retail Billing";
+                SalesVM.SelectedChannel = "retail";
+                CurrentView = SalesVM;
+            }
+            else if (route == "sales:domestic")
+            {
+                ActiveRoute = route;
+                CurrentBreadcrumb = "Sales & Billing · Domestic Invoice";
+                SalesVM.SelectedChannel = "domestic";
+                CurrentView = SalesVM;
+            }
+            else if (route == "sales:export")
+            {
+                ActiveRoute = route;
+                CurrentBreadcrumb = "Sales & Billing · Export Invoice";
+                SalesVM.SelectedChannel = "export";
+                CurrentView = SalesVM;
+            }
+            else if (route == "pos")
+            {
+                ActiveRoute = "sales:retail";
+                CurrentBreadcrumb = "Retail Billing (POS)";
                 CurrentView = PosVM;
+            }
+            else if (route == "purchase")
+            {
+                ActiveRoute = route;
+                CurrentBreadcrumb = "Purchase & Sourcing";
+                PurchaseVM.ActiveKind = "all";
+                CurrentView = PurchaseVM;
             }
             else if (route.StartsWith("pur:"))
             {

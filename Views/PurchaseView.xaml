@@ -16,108 +16,259 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
         <StackPanel>
-            <!-- Header -->
+            <!-- 1. Header with Top 3 Action Buttons -->
             <DockPanel Margin="0,0,0,18">
                 <StackPanel>
-                    <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="{Binding Subtitle}" FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                    <TextBlock Text="Purchase &amp; Sourcing" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Vendor bills register across Raw Material, Ready Made Products &amp; General Packaging." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
-                    <Button Content="+ New Purchase Bill" Command="{Binding NewPurchaseBillCommand}" Padding="16,8" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
+
+                <!-- Top 3 Action Buttons requested by user -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="🧵 Raw Material" Command="{Binding NewPurchaseWithKindCommand}" CommandParameter="raw"
+                            Padding="12,8" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Content="👞 Ready Made Products" Command="{Binding NewPurchaseWithKindCommand}" CommandParameter="ready"
+                            Padding="12,8" Background="#4F46E5" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Content="📦 General Packaging" Command="{Binding NewPurchaseWithKindCommand}" CommandParameter="gen"
+                            Padding="12,8" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Content="+ New Purchase Bill" Command="{Binding NewPurchaseBillCommand}"
+                            Padding="14,8" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
                 </StackPanel>
             </DockPanel>
 
-            <!-- Subtabs -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-                <Button Content="Raw Material" Command="{Binding SetKindCommand}" CommandParameter="raw" Margin="0,0,8,0" Padding="14,6"
-                        Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
-                        Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
-                        BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Readymade Product" Command="{Binding SetKindCommand}" CommandParameter="ready" Margin="0,0,8,0" Padding="14,6"
-                        Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
-                        Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
-                        BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen" Padding="14,6"
-                        Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
-                        Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
-                        BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-            </StackPanel>
+            <!-- 2. Particular Month Purchase Amount Section (Always Reflects) -->
+            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="0,0,0,20">
+                <StackPanel>
+                    <!-- Month Selector & Header -->
+                    <DockPanel Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="📅 Particular Month Purchase:" FontWeight="Bold" FontSize="13.5" Foreground="#1E293B" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedMonthDisplay}" FontWeight="Bold" FontSize="13.5" Foreground="#7C3AED" Margin="6,0,12,0" VerticalAlignment="Center"/>
+                            <Button Content="◀ Prev" Command="{Binding PreviousMonthCommand}" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0"/>
+                            <Button Content="Next ▶" Command="{Binding NextMonthCommand}" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0"/>
+                            <Button Content="Current Month" Command="{Binding CurrentMonthCommand}" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5"/>
+                        </StackPanel>
 
-            <!-- 4 Stats Tiles -->
-            <UniformGrid Columns="4" Margin="0,0,0,20">
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Bought This Month" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding BoughtThisMonth, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Current calendar month" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
+                        <TextBlock Text="Live monthly spend breakdown across all 3 sourcing categories" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    </DockPanel>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="To Pay Vendors" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding ToPayVendors, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                        <TextBlock Text="{Binding OpenBillsCount, StringFormat='From {0} open bills'}" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
+                    <!-- 4 Summary KPI Cards -->
+                    <UniformGrid Columns="4">
+                        <!-- Raw Material -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="🧵 Raw Material" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="FACTORY" FontSize="9" FontWeight="Bold" Foreground="#3B82F6" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthRawTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,2"/>
+                                <TextBlock Text="Leather, soles, fabrics" FontSize="10.5" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Bills to Date" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding BillsToDate}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Total vendor invoices" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
+                        <!-- Ready Made Products -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="👞 Ready Made" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="TRADING" FontSize="9" FontWeight="Bold" Foreground="#4F46E5" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthReadyTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#4F46E5" Margin="0,6,0,2"/>
+                                <TextBlock Text="Shoes &amp; uniform stock" FontSize="10.5" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
 
-                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Active Vendors" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding UniqueVendorsCount}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Registered suppliers" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
-            </UniformGrid>
+                        <!-- General Packaging -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="📦 General Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="SUPPLIES" FontSize="9" FontWeight="Bold" Foreground="#0891B2" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthGenTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0891B2" Margin="0,6,0,2"/>
+                                <TextBlock Text="Boxes, covers, tags &amp; tape" FontSize="10.5" Foreground="#94A3B8"/>
+                            </StackPanel>
+                        </Border>
 
-            <!-- Table Container -->
+                        <!-- Total Month Purchase -->
+                        <Border Background="#FAF5FF" Padding="14,12" BorderBrush="#E9D5FF" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="💰 Total Month Sourced" FontSize="11.5" Foreground="#6B21A8" FontWeight="Bold"/>
+                                    <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#9333EA" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#7E22CE" Margin="0,6,0,2"/>
+                                <TextBlock Text="All 3 categories total" FontSize="10.5" Foreground="#9333EA"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+                </StackPanel>
+            </Border>
+
+            <!-- 3. Custom Report & Data Table Section -->
             <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
-                <DockPanel>
-                    <!-- Filter Tools -->
-                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6" Margin="0,0,16,0"/>
 
-                        <!-- Status Chips -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="All" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11"/>
-                            <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,4,0" Padding="12,5" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
-                            <Button Content="Partial" Command="{Binding SetStatusCommand}" CommandParameter="Partial" Margin="0,0,4,0" Padding="12,5" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
-                            <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Padding="12,5" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
-                        </StackPanel>
+                <DockPanel>
+                    <!-- Custom Report Filter Bar -->
+                    <Border DockPanel.Dock="Top" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- Row 1: Title & Download buttons -->
+                            <DockPanel Grid.Row="0" Margin="0,0,0,10">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="📊 Custom Report:" FontWeight="Bold" FontSize="13" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Filter by custom dates &amp; sourcing category, then export" FontSize="11" Foreground="#64748B" Margin="8,0,0,0" VerticalAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Download File Buttons (PDF & EXCEL) -->
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <TextBlock Text="Download file:" FontWeight="SemiBold" FontSize="11" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,8,0"/>
+
+                                    <Button Content="📄 PDF" Command="{Binding ExportPdfCommand}"
+                                            Padding="12,5" Background="#DC2626" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11" Margin="0,0,6,0">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="📊 EXCEL" Command="{Binding ExportExcelCommand}"
+                                            Padding="12,5" Background="#16A34A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
+                                </StackPanel>
+                            </DockPanel>
+
+                            <!-- Row 2: From, To, Category Chips, Status, Search -->
+                            <WrapPanel Grid.Row="1" VerticalAlignment="Center">
+                                <!-- From Date -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,6">
+                                    <TextBlock Text="From:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <DatePicker SelectedDate="{Binding ReportFromDate, Mode=TwoWay}" Width="120" Height="28" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- To Date -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
+                                    <TextBlock Text="To:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                    <DatePicker SelectedDate="{Binding ReportToDate, Mode=TwoWay}" Width="120" Height="28" VerticalContentAlignment="Center"/>
+                                </StackPanel>
+
+                                <!-- Category Chips: All, Raw Material, Ready Made Products, General Packaging -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
+                                    <TextBlock Text="Category:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
+
+                                    <Button Content="🌐 All" Command="{Binding SetKindCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="10,4"
+                                            Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                            Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                            BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="🧵 Raw Material" Command="{Binding SetKindCommand}" CommandParameter="raw" Margin="0,0,4,0" Padding="10,4"
+                                            Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
+                                            Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
+                                            BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="👞 Ready Made" Command="{Binding SetKindCommand}" CommandParameter="ready" Margin="0,0,4,0" Padding="10,4"
+                                            Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
+                                            Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
+                                            BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+
+                                    <Button Content="📦 General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen" Padding="10,4"
+                                            Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
+                                            Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
+                                            BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Status Filter -->
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
+                                    <Button Content="All Status" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,3,0" Padding="8,4"
+                                            Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                            Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,3,0" Padding="8,4"
+                                            Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Unpaid}"
+                                            Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Unpaid}"
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Unpaid}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Padding="8,4"
+                                            Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Paid}"
+                                            Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Paid}"
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Paid}"
+                                            BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                    </Button>
+                                </StackPanel>
+
+                                <!-- Search Box -->
+                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="180" Height="28" Padding="6,4"
+                                         VerticalContentAlignment="Center" Margin="0,0,8,6"/>
+
+                                <!-- Reset Dates / Filters -->
+                                <Button Content="Reset" Command="{Binding ResetFilterDatesCommand}" Padding="8,4" Background="#F1F5F9"
+                                        BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,0,6"/>
+                            </WrapPanel>
+                        </Grid>
+                    </Border>
+
+                    <!-- Table Summary Bar -->
+                    <DockPanel DockPanel.Dock="Top" Margin="2,0,2,8">
+                        <TextBlock Text="{Binding FilteredPurchases.Count, StringFormat='Showing {0} Purchase Bills'}" FontSize="12" FontWeight="SemiBold" Foreground="#475569"/>
                     </DockPanel>
 
-                    <!-- Purchase Table -->
-                    <DataGrid ItemsSource="{Binding FilteredPurchases}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                    <!-- 4. Table Columns in EXACT requested order: -->
+                    <!-- | DATE | Channel | Invoice | Vendor | Contact no | Amount | Rest in purchase (Vendor Ref, Terms, Payment, Actions) | -->
+                    <DataGrid ItemsSource="{Binding FilteredPurchases}" AutoGenerateColumns="False" CanUserAddRows="False"
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Bill No" Binding="{Binding BillNo}" Width="120" FontWeight="Bold"/>
-                            <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
+                            <!-- 1. DATE -->
+                            <DataGridTextColumn Header="DATE" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="100"/>
+
+                            <!-- 2. Channel -->
+                            <DataGridTemplateColumn Header="Channel" Width="145">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="#EEF2FF">
+                                            <TextBlock Text="{Binding KindLabel}" Foreground="#4338CA" FontSize="10.5" FontWeight="SemiBold"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- 3. Invoice -->
+                            <DataGridTextColumn Header="Invoice" Binding="{Binding BillNo}" Width="135" FontWeight="Bold"/>
+
+                            <!-- 4. Vendor -->
                             <DataGridTemplateColumn Header="Vendor" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -125,11 +276,20 @@
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
-                            <DataGridTextColumn Header="Vendor Ref" Binding="{Binding VendorBillRef}" Width="110"/>
-                            <DataGridTextColumn Header="Phone" Binding="{Binding Phone}" Width="110"/>
-                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="85"/>
-                            <DataGridTextColumn Header="Amount (₹)" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="115" FontWeight="Bold"/>
 
+                            <!-- 5. Contact no -->
+                            <DataGridTextColumn Header="Contact no" Binding="{Binding Phone}" Width="125"/>
+
+                            <!-- 6. Amount -->
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="125" FontWeight="Bold"/>
+
+                            <!-- 7. Vendor Ref -->
+                            <DataGridTextColumn Header="Vendor Ref" Binding="{Binding VendorBillRef}" Width="110"/>
+
+                            <!-- 8. Terms -->
+                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="85"/>
+
+                            <!-- 9. Payment -->
                             <DataGridTemplateColumn Header="Payment" Width="90">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -140,14 +300,19 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
+                            <!-- 10. Actions -->
                             <DataGridTemplateColumn Width="135">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Content="View" Command="{Binding DataContext.ViewPurchaseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0"/>
+                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                             <Button Content="Pay" Command="{Binding DataContext.PayBillCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11"/>
+                                                    Padding="10,4" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
