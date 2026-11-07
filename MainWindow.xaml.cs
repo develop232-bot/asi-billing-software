@@ -362,9 +362,5 @@ namespace AsiErp
             LoginErrorText.Visibility = Visibility.Collapsed;
         }
 
-        private async void CheckUpdates_Click(object sender, RoutedEventArgs e)
-        {
-            await UpdateService.Instance.CheckForUpdatesAsync(isManualCheck: true);
-        }
     }
 }

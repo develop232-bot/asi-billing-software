@@ -1,0 +1,57 @@
+<Window x:Class="AsiErp.Views.StartupSplashWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="ASI ERP"
+        Height="270" Width="460"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ShowInTaskbar="True"
+        Icon="pack://application:,,,/Assets/app.ico"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Border Margin="16" Background="#0A1024" BorderBrush="#1E293B" BorderThickness="1.5" CornerRadius="16" Padding="24,20">
+        <Border.Effect>
+            <DropShadowEffect Color="#000000" BlurRadius="24" ShadowDepth="6" Opacity="0.45"/>
+        </Border.Effect>
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Brand Header -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,4,0,14">
+                <Border Width="44" Height="44" CornerRadius="10" Background="#1E3A8A" Margin="0,0,14,0" VerticalAlignment="Center">
+                    <TextBlock Text="ASI" Foreground="#60A5FA" FontWeight="Bold" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="AFRAH SAMIYA INDUSTRIES" FontWeight="Bold" FontSize="14" Foreground="#FFFFFF"/>
+                    <TextBlock Text="Shoes &amp; Uniforms ERP" FontSize="11" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Middle Status & Progress -->
+            <StackPanel Grid.Row="1" VerticalAlignment="Center" Margin="10,0">
+                <TextBlock x:Name="TxtStatus" Text="Scanning for updates..."
+                           Foreground="#38BDF8" FontSize="12" FontWeight="SemiBold"
+                           HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+                <Border CornerRadius="3" ClipToBounds="True" Height="6" Background="#1E293B">
+                    <ProgressBar x:Name="PbProgress" Height="6" BorderThickness="0" Background="Transparent"
+                                 Foreground="#38BDF8" IsIndeterminate="True" Minimum="0" Maximum="100"/>
+                </Border>
+            </StackPanel>
+
+            <!-- Version & Mode info -->
+            <DockPanel Grid.Row="2" Margin="4,12,4,0">
+                <TextBlock Text="v2.0 · Live Database" FontSize="10" Foreground="#64748B"/>
+                <TextBlock Text="Automated Startup" FontSize="10" Foreground="#475569" HorizontalAlignment="Right"/>
+            </DockPanel>
+        </Grid>
+    </Border>
+</Window>

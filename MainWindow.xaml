@@ -63,7 +63,6 @@
                             <Button Content="Reset / Clear (DB)" Command="{Binding LoadCloudDbCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#0F766E" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="10" Margin="0,0,4,4" ToolTip="Clear demo data and show real database records from Firebase Firestore"/>
                             <Button Content="Sync to DB" Command="{Binding SyncToCloudCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Upload all current software data to Firebase"/>
                             <Button Content="Theme" Command="{Binding ToggleThemeCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4"/>
-                            <Button Content="🚀 Updates" Click="CheckUpdates_Click" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E3A8A" Foreground="#93C5FD" FontWeight="SemiBold" FontSize="10" Margin="0,0,4,4" ToolTip="Check GitHub for software updates via Velopack"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -470,21 +469,6 @@
                                 </StackPanel>
                             </StackPanel>
                         </Border>
-
-                        <!-- Update Check Button -->
-                        <Button Click="CheckUpdates_Click" Height="36" Padding="10,0" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" Margin="0,0,10,0" ToolTip="Check for software updates on GitHub via Velopack">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="🚀" FontSize="12" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Updates" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
 
                         <!-- Notification Bell Button -->
                         <Grid Margin="0,0,12,0">
