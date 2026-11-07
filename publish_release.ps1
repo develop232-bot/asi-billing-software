@@ -9,7 +9,7 @@
     GitHub repository URL (default: https://github.com/Qnext232/AsiErp).
 #>
 param(
-    [string]$Version = "2.0.3",
+    [string]$Version = "2.0.4",
     [string]$GithubToken = "",
     [string]$RepoUrl = "https://github.com/develop232-bot/asi-billing-software"
 )
@@ -23,9 +23,14 @@ Write-Host "==========================================================" -Foregro
 Write-Host " 🚀 ASI ERP - Velopack Release Builder (v$Version)" -ForegroundColor Yellow
 Write-Host "==========================================================" -ForegroundColor Cyan
 
-# 1. Clean previous release artifacts for this version
-if (Test-Path $ReleasesDir) {
-    Write-Host "[1/4] Cleaning previous release folder..." -ForegroundColor Gray
+# 1. Fetch previous release assets from GitHub for delta generation
+if (-not [string]::IsNullOrWhiteSpace($GithubToken)) {
+    Write-Host "[1/4] Fetching latest release assets from GitHub..." -ForegroundColor Gray
+    try {
+        vpk download github --repoUrl "$RepoUrl" --token "$GithubToken" --outputDir "$ReleasesDir"
+    } catch {
+        Write-Host "Note: Proceeding with full release build." -ForegroundColor Gray
+    }
 }
 
 # 2. Publish standalone binary
@@ -60,3 +65,8 @@ if (-not [string]::IsNullOrWhiteSpace($GithubToken)) {
 }
 
 Write-Host "`n🎉 Velopack Setup file: $ReleasesDir\AsiErp-win-Setup.exe" -ForegroundColor Green
+$desktopSetup = "C:\Users\DELL\Desktop\AsiErp-win-Setup.exe"
+if (Test-Path "$ReleasesDir\AsiErp-win-Setup.exe") {
+    Copy-Item "$ReleasesDir\AsiErp-win-Setup.exe" $desktopSetup -Force
+    Write-Host "✅ Copied updated setup installer to: $desktopSetup" -ForegroundColor Cyan
+}
