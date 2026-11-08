@@ -90,6 +90,8 @@
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableItems}"
                                               DisplayMemberPath="Name"
+                                              SelectedValuePath="Id"
+                                              SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                               SelectionChanged="ItemSelectionChanged"
                                               LostFocus="ItemComboBox_LostFocus"
