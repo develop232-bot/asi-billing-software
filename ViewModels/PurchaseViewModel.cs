@@ -20,6 +20,8 @@ namespace AsiErp.ViewModels
         private string _selectedStatus = "all"; // all, Paid, Partial, Unpaid
         private string _searchQuery = string.Empty;
         private DateTime _selectedMonth = DateTime.Now;
+        private DateTime? _summaryFromDate;
+        private DateTime? _summaryToDate;
         private DateTime? _reportFromDate;
         private DateTime? _reportToDate;
 
@@ -64,16 +66,63 @@ namespace AsiErp.ViewModels
             {
                 if (SetField(ref _selectedMonth, value))
                 {
-                    OnPropertyChanged(nameof(SelectedMonthDisplay));
-                    OnPropertyChanged(nameof(MonthRawTotal));
-                    OnPropertyChanged(nameof(MonthReadyTotal));
-                    OnPropertyChanged(nameof(MonthGenTotal));
-                    OnPropertyChanged(nameof(MonthGrandTotal));
+                    NotifySummaryPeriodChanged();
                 }
             }
         }
 
-        public string SelectedMonthDisplay => SelectedMonth.ToString("MMMM yyyy");
+        public DateTime? SummaryFromDate
+        {
+            get => _summaryFromDate;
+            set
+            {
+                if (SetField(ref _summaryFromDate, value))
+                {
+                    NotifySummaryPeriodChanged();
+                }
+            }
+        }
+
+        public DateTime? SummaryToDate
+        {
+            get => _summaryToDate;
+            set
+            {
+                if (SetField(ref _summaryToDate, value))
+                {
+                    NotifySummaryPeriodChanged();
+                }
+            }
+        }
+
+        public string SelectedMonthDisplay
+        {
+            get
+            {
+                if (SummaryFromDate.HasValue && SummaryToDate.HasValue)
+                {
+                    return $"{SummaryFromDate.Value:dd MMM yyyy} - {SummaryToDate.Value:dd MMM yyyy}";
+                }
+                if (SummaryFromDate.HasValue)
+                {
+                    return $"From {SummaryFromDate.Value:dd MMM yyyy}";
+                }
+                if (SummaryToDate.HasValue)
+                {
+                    return $"Up to {SummaryToDate.Value:dd MMM yyyy}";
+                }
+                return SelectedMonth.ToString("MMMM yyyy");
+            }
+        }
+
+        private void NotifySummaryPeriodChanged()
+        {
+            OnPropertyChanged(nameof(SelectedMonthDisplay));
+            OnPropertyChanged(nameof(MonthRawTotal));
+            OnPropertyChanged(nameof(MonthReadyTotal));
+            OnPropertyChanged(nameof(MonthGenTotal));
+            OnPropertyChanged(nameof(MonthGrandTotal));
+        }
 
         public DateTime? ReportFromDate
         {
@@ -110,18 +159,18 @@ namespace AsiErp.ViewModels
         };
 
         // ==========================================
-        // PARTICULAR MONTH PURCHASE SUMMARY AMOUNTS
+        // PARTICULAR PERIOD / MONTH PURCHASE SUMMARY AMOUNTS
         // ==========================================
         public double MonthRawTotal => _dataService.Purchases
-            .Where(p => p.Kind == "raw" && IsInSelectedMonth(p.Date))
+            .Where(p => p.Kind == "raw" && IsInSelectedPeriod(p.Date))
             .Sum(p => p.GrossAmount);
 
         public double MonthReadyTotal => _dataService.Purchases
-            .Where(p => p.Kind == "ready" && IsInSelectedMonth(p.Date))
+            .Where(p => p.Kind == "ready" && IsInSelectedPeriod(p.Date))
             .Sum(p => p.GrossAmount);
 
         public double MonthGenTotal => _dataService.Purchases
-            .Where(p => p.Kind == "gen" && IsInSelectedMonth(p.Date))
+            .Where(p => p.Kind == "gen" && IsInSelectedPeriod(p.Date))
             .Sum(p => p.GrossAmount);
 
         public double MonthGrandTotal => MonthRawTotal + MonthReadyTotal + MonthGenTotal;
@@ -152,6 +201,7 @@ namespace AsiErp.ViewModels
         public RelayCommand PreviousMonthCommand { get; }
         public RelayCommand NextMonthCommand { get; }
         public RelayCommand CurrentMonthCommand { get; }
+        public RelayCommand ResetSummaryDatesCommand { get; }
         public RelayCommand ResetFilterDatesCommand { get; }
         public RelayCommand ExportExcelCommand { get; }
         public RelayCommand ExportPdfCommand { get; }
@@ -187,9 +237,38 @@ namespace AsiErp.ViewModels
                 if (p is PurchaseDoc doc) _openDialogAction("payment_purchase", doc);
             });
 
-            PreviousMonthCommand = new RelayCommand(_ => SelectedMonth = SelectedMonth.AddMonths(-1));
-            NextMonthCommand = new RelayCommand(_ => SelectedMonth = SelectedMonth.AddMonths(1));
-            CurrentMonthCommand = new RelayCommand(_ => SelectedMonth = DateTime.Now);
+            PreviousMonthCommand = new RelayCommand(_ =>
+            {
+                _summaryFromDate = null;
+                _summaryToDate = null;
+                OnPropertyChanged(nameof(SummaryFromDate));
+                OnPropertyChanged(nameof(SummaryToDate));
+                SelectedMonth = SelectedMonth.AddMonths(-1);
+            });
+            NextMonthCommand = new RelayCommand(_ =>
+            {
+                _summaryFromDate = null;
+                _summaryToDate = null;
+                OnPropertyChanged(nameof(SummaryFromDate));
+                OnPropertyChanged(nameof(SummaryToDate));
+                SelectedMonth = SelectedMonth.AddMonths(1);
+            });
+            CurrentMonthCommand = new RelayCommand(_ =>
+            {
+                _summaryFromDate = null;
+                _summaryToDate = null;
+                OnPropertyChanged(nameof(SummaryFromDate));
+                OnPropertyChanged(nameof(SummaryToDate));
+                SelectedMonth = DateTime.Now;
+            });
+            ResetSummaryDatesCommand = new RelayCommand(_ =>
+            {
+                _summaryFromDate = null;
+                _summaryToDate = null;
+                OnPropertyChanged(nameof(SummaryFromDate));
+                OnPropertyChanged(nameof(SummaryToDate));
+                SelectedMonth = DateTime.Now;
+            });
 
             ResetFilterDatesCommand = new RelayCommand(_ =>
             {
@@ -220,10 +299,18 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(UniqueVendorsCount));
         }
 
-        private bool IsInSelectedMonth(string? dateStr)
+        private bool IsInSelectedPeriod(string? dateStr)
         {
             if (DateTime.TryParse(dateStr, out var dt))
             {
+                if (SummaryFromDate.HasValue || SummaryToDate.HasValue)
+                {
+                    var dateOnly = dt.Date;
+                    if (SummaryFromDate.HasValue && dateOnly < SummaryFromDate.Value.Date) return false;
+                    if (SummaryToDate.HasValue && dateOnly > SummaryToDate.Value.Date) return false;
+                    return true;
+                }
+
                 return dt.Year == SelectedMonth.Year && dt.Month == SelectedMonth.Month;
             }
             return false;
