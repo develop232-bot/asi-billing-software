@@ -1,18 +1,59 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using AsiErp.Models;
 using AsiErp.Services;
 
 namespace AsiErp.Dialogs
 {
+    public class MultiSelectProductItem : INotifyPropertyChanged
+    {
+        public ProductItem Product { get; set; } = null!;
+        private bool _isSelected;
+        private int _copies = 1;
+        private string _selectedSize = "";
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set { _isSelected = value; OnPropertyChanged(nameof(IsSelected)); }
+        }
+
+        public int Copies
+        {
+            get => _copies;
+            set { _copies = Math.Max(1, value); OnPropertyChanged(nameof(Copies)); }
+        }
+
+        public string SelectedSize
+        {
+            get => _selectedSize;
+            set { _selectedSize = value; OnPropertyChanged(nameof(SelectedSize)); }
+        }
+
+        public string Name => Product.Name;
+        public string Sku => Product.Sku;
+        public string Barcode => Product.DisplayBarcode;
+        public double RetailPrice => Product.RetailPrice;
+        public List<string> AvailableSizes => Product.Sizes != null && Product.Sizes.Any() ? Product.Sizes : new List<string> { "Free size" };
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged(string propName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propName));
+    }
+
     public partial class BarcodePrintChoiceWindow : Window
     {
         private readonly List<ProductItem> _products;
         private ProductItem? _currentProduct;
+
+        private readonly List<MultiSelectProductItem> _allMultiItems = new();
+        public ObservableCollection<MultiSelectProductItem> FilteredMultiItems { get; } = new();
 
         public class ProductComboItem
         {
@@ -25,16 +66,54 @@ namespace AsiErp.Dialogs
             InitializeComponent();
             _products = allProducts?.Where(p => p != null).ToList() ?? new List<ProductItem>();
 
-            PopulateProducts(preselectedId);
+            InitMultiSelectItems(preselectedId);
+            PopulateSingleProducts(preselectedId);
             UpdateBatchSummary();
             UpdateTileStyles();
         }
 
-        private void PopulateProducts(string? preselectedId)
+        private void InitMultiSelectItems(string? preselectedId)
+        {
+            _allMultiItems.Clear();
+            FilteredMultiItems.Clear();
+
+            foreach (var p in _products)
+            {
+                var item = new MultiSelectProductItem
+                {
+                    Product = p,
+                    IsSelected = !string.IsNullOrEmpty(preselectedId) && p.Id == preselectedId,
+                    Copies = 1,
+                    SelectedSize = p.Sizes?.FirstOrDefault() ?? "Free size"
+                };
+                item.PropertyChanged += (s, e) =>
+                {
+                    if (e.PropertyName == nameof(MultiSelectProductItem.IsSelected) || e.PropertyName == nameof(MultiSelectProductItem.Copies))
+                    {
+                        UpdateMultiSummary();
+                    }
+                };
+                _allMultiItems.Add(item);
+                FilteredMultiItems.Add(item);
+            }
+
+            DgMultiProducts.ItemsSource = FilteredMultiItems;
+            UpdateMultiSummary();
+        }
+
+        private void PopulateSingleProducts(string? preselectedId)
         {
             CbProduct.Items.Clear();
 
-            var comboItems = _products.Select(p => new ProductComboItem { Product = p }).ToList();
+            string q = TxtSearchSingle?.Text?.Trim().ToLowerInvariant() ?? "";
+            var filtered = _products.Where(p =>
+                string.IsNullOrEmpty(q) ||
+                p.Name.ToLowerInvariant().Contains(q) ||
+                p.Sku.ToLowerInvariant().Contains(q) ||
+                (p.Barcode != null && p.Barcode.ToLowerInvariant().Contains(q))
+            ).ToList();
+
+            var comboItems = filtered.Select(p => new ProductComboItem { Product = p }).ToList();
             foreach (var item in comboItems)
             {
                 CbProduct.Items.Add(item);
@@ -54,6 +133,11 @@ namespace AsiErp.Dialogs
             {
                 CbProduct.SelectedIndex = 0;
             }
+        }
+
+        private void TxtSearchSingle_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            PopulateSingleProducts(_currentProduct?.Id);
         }
 
         private void CbProduct_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -108,44 +192,158 @@ namespace AsiErp.Dialogs
             }
         }
 
-        private void SelectSingle_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            RbSingle.IsChecked = true;
-        }
+        // ==================== MODE SWITCHING ====================
 
-        private void SelectAll_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
-        {
-            RbAll.IsChecked = true;
-        }
+        private void SelectSingle_Click(object sender, MouseButtonEventArgs e) => RbSingle.IsChecked = true;
+        private void SelectMultiple_Click(object sender, MouseButtonEventArgs e) => RbMultiple.IsChecked = true;
+        private void SelectAll_Click(object sender, MouseButtonEventArgs e) => RbAll.IsChecked = true;
 
         private void Mode_Checked(object sender, RoutedEventArgs e)
         {
-            if (PanelSingle == null || PanelAll == null) return;
+            if (PanelSingle == null || PanelMultiple == null || PanelAll == null) return;
 
             bool isSingle = RbSingle.IsChecked == true;
+            bool isMulti = RbMultiple.IsChecked == true;
+            bool isAll = RbAll.IsChecked == true;
+
             PanelSingle.Visibility = isSingle ? Visibility.Visible : Visibility.Collapsed;
-            PanelAll.Visibility = isSingle ? Visibility.Collapsed : Visibility.Visible;
+            PanelMultiple.Visibility = isMulti ? Visibility.Visible : Visibility.Collapsed;
+            PanelAll.Visibility = isAll ? Visibility.Visible : Visibility.Collapsed;
 
             UpdateTileStyles();
         }
 
         private void UpdateTileStyles()
         {
-            if (BorderSingle == null || BorderAll == null) return;
+            if (BorderSingle == null || BorderMultiple == null || BorderAll == null) return;
 
             bool isSingle = RbSingle.IsChecked == true;
+            bool isMulti = RbMultiple.IsChecked == true;
+            bool isAll = RbAll.IsChecked == true;
 
-            BorderSingle.BorderBrush = isSingle ? new SolidColorBrush(Color.FromRgb(79, 70, 229)) : new SolidColorBrush(Color.FromRgb(226, 232, 240));
-            BorderSingle.Background = isSingle ? new SolidColorBrush(Color.FromRgb(238, 242, 255)) : Brushes.White;
+            var activeBorder = new SolidColorBrush(Color.FromRgb(79, 70, 229));
+            var inactiveBorder = new SolidColorBrush(Color.FromRgb(226, 232, 240));
+            var activeBg = new SolidColorBrush(Color.FromRgb(238, 242, 255));
 
-            BorderAll.BorderBrush = !isSingle ? new SolidColorBrush(Color.FromRgb(79, 70, 229)) : new SolidColorBrush(Color.FromRgb(226, 232, 240));
-            BorderAll.Background = !isSingle ? new SolidColorBrush(Color.FromRgb(238, 242, 255)) : Brushes.White;
+            BorderSingle.BorderBrush = isSingle ? activeBorder : inactiveBorder;
+            BorderSingle.Background = isSingle ? activeBg : Brushes.White;
+
+            BorderMultiple.BorderBrush = isMulti ? activeBorder : inactiveBorder;
+            BorderMultiple.Background = isMulti ? activeBg : Brushes.White;
+
+            BorderAll.BorderBrush = isAll ? activeBorder : inactiveBorder;
+            BorderAll.Background = isAll ? activeBg : Brushes.White;
 
             if (BtnPrint != null)
             {
-                BtnPrint.Content = isSingle ? "🖨️ Print Label" : "🖨️ Print All Labels";
+                if (isSingle) BtnPrint.Content = "🖨️ Print Label";
+                else if (isMulti)
+                {
+                    int total = _allMultiItems.Where(x => x.IsSelected).Sum(x => x.Copies);
+                    BtnPrint.Content = total > 0 ? $"🖨️ Print Selected ({total} Labels)" : "🖨️ Print Selected";
+                }
+                else BtnPrint.Content = "🖨️ Print All Labels";
             }
         }
+
+        // ==================== MULTI-SELECT ACTIONS ====================
+
+        private void TxtSearchMulti_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            string q = TxtSearchMulti.Text.Trim().ToLowerInvariant();
+            FilteredMultiItems.Clear();
+
+            foreach (var item in _allMultiItems)
+            {
+                if (string.IsNullOrEmpty(q) ||
+                    item.Name.ToLowerInvariant().Contains(q) ||
+                    item.Sku.ToLowerInvariant().Contains(q) ||
+                    (item.Barcode != null && item.Barcode.ToLowerInvariant().Contains(q)))
+                {
+                    FilteredMultiItems.Add(item);
+                }
+            }
+        }
+
+        private void SelectAllMulti_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in FilteredMultiItems) item.IsSelected = true;
+            UpdateMultiSummary();
+        }
+
+        private void DeselectAllMulti_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in FilteredMultiItems) item.IsSelected = false;
+            UpdateMultiSummary();
+        }
+
+        private void MultiItemCheck_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateMultiSummary();
+        }
+
+        private void UpdateMultiSummary()
+        {
+            if (TxtMultiSummaryBadge == null) return;
+
+            int selectedCount = _allMultiItems.Count(x => x.IsSelected);
+            int totalLabels = _allMultiItems.Where(x => x.IsSelected).Sum(x => x.Copies);
+
+            TxtMultiSummaryBadge.Text = $"{selectedCount} items selected · {totalLabels} total labels";
+            if (RbMultiple?.IsChecked == true && BtnPrint != null)
+            {
+                BtnPrint.Content = totalLabels > 0 ? $"🖨️ Print Selected ({totalLabels} Labels)" : "🖨️ Print Selected";
+            }
+        }
+
+        private void IncMultiDefaultCopies_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(TxtMultiDefaultCopies.Text, out int c)) TxtMultiDefaultCopies.Text = (c + 1).ToString();
+            else TxtMultiDefaultCopies.Text = "1";
+        }
+
+        private void DecMultiDefaultCopies_Click(object sender, RoutedEventArgs e)
+        {
+            if (int.TryParse(TxtMultiDefaultCopies.Text, out int c) && c > 1) TxtMultiDefaultCopies.Text = (c - 1).ToString();
+            else TxtMultiDefaultCopies.Text = "1";
+        }
+
+        private void ApplyDefaultCopies_Click(object sender, RoutedEventArgs e)
+        {
+            int.TryParse(TxtMultiDefaultCopies.Text, out int c);
+            if (c < 1) c = 1;
+
+            foreach (var item in _allMultiItems.Where(x => x.IsSelected))
+            {
+                item.Copies = c;
+            }
+            UpdateMultiSummary();
+        }
+
+        private void RowIncCopies_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is MultiSelectProductItem item)
+            {
+                item.Copies++;
+                UpdateMultiSummary();
+            }
+        }
+
+        private void RowDecCopies_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is MultiSelectProductItem item && item.Copies > 1)
+            {
+                item.Copies--;
+                UpdateMultiSummary();
+            }
+        }
+
+        private void RowCopies_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            UpdateMultiSummary();
+        }
+
+        // ==================== BATCH ALL PRODUCTS ====================
 
         private void UpdateBatchSummary()
         {
@@ -163,51 +361,27 @@ namespace AsiErp.Dialogs
 
         private void IncCopies_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(TxtCopies.Text, out int c))
-            {
-                TxtCopies.Text = (c + 1).ToString();
-            }
-            else
-            {
-                TxtCopies.Text = "1";
-            }
+            if (int.TryParse(TxtCopies.Text, out int c)) TxtCopies.Text = (c + 1).ToString();
+            else TxtCopies.Text = "1";
         }
 
         private void DecCopies_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(TxtCopies.Text, out int c) && c > 1)
-            {
-                TxtCopies.Text = (c - 1).ToString();
-            }
-            else
-            {
-                TxtCopies.Text = "1";
-            }
+            if (int.TryParse(TxtCopies.Text, out int c) && c > 1) TxtCopies.Text = (c - 1).ToString();
+            else TxtCopies.Text = "1";
         }
 
         private void IncBatchCopies_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(TxtBatchCopies.Text, out int c))
-            {
-                TxtBatchCopies.Text = (c + 1).ToString();
-            }
-            else
-            {
-                TxtBatchCopies.Text = "1";
-            }
+            if (int.TryParse(TxtBatchCopies.Text, out int c)) TxtBatchCopies.Text = (c + 1).ToString();
+            else TxtBatchCopies.Text = "1";
             UpdateBatchSummary();
         }
 
         private void DecBatchCopies_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(TxtBatchCopies.Text, out int c) && c > 1)
-            {
-                TxtBatchCopies.Text = (c - 1).ToString();
-            }
-            else
-            {
-                TxtBatchCopies.Text = "1";
-            }
+            if (int.TryParse(TxtBatchCopies.Text, out int c) && c > 1) TxtBatchCopies.Text = (c - 1).ToString();
+            else TxtBatchCopies.Text = "1";
             UpdateBatchSummary();
         }
 
@@ -215,6 +389,8 @@ namespace AsiErp.Dialogs
         {
             UpdateBatchSummary();
         }
+
+        // ==================== EXECUTE PRINTING ====================
 
         private void Print_Click(object sender, RoutedEventArgs e)
         {
@@ -240,6 +416,31 @@ namespace AsiErp.Dialogs
                     }
 
                     MessageBox.Show($"Printed {copies} barcode label(s) for '{_currentProduct.Name}' successfully!", "Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Close();
+                }
+                else if (RbMultiple.IsChecked == true)
+                {
+                    var selected = _allMultiItems.Where(x => x.IsSelected).ToList();
+                    if (!selected.Any())
+                    {
+                        MessageBox.Show("Please select at least one product using the checkboxes to print.", "No Products Selected", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return;
+                    }
+
+                    int totalPrinted = 0;
+                    foreach (var item in selected)
+                    {
+                        string size = !string.IsNullOrWhiteSpace(item.SelectedSize) ? item.SelectedSize : (item.Product.Sizes?.FirstOrDefault() ?? "Free size");
+                        var visual = CreateLabelVisual(item.Product, size);
+
+                        for (int i = 0; i < item.Copies; i++)
+                        {
+                            pd.PrintVisual(visual, $"Barcode_{item.Sku}_{i + 1}");
+                            totalPrinted++;
+                        }
+                    }
+
+                    MessageBox.Show($"Successfully sent {totalPrinted} barcode labels across {selected.Count} selected products to printer continuously!", "Continuous Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     Close();
                 }
                 else
