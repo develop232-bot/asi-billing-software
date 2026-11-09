@@ -285,8 +285,13 @@ namespace AsiErp.ViewModels
 
         private void ScanBarcode()
         {
-            if (string.IsNullOrWhiteSpace(ScannedBarcode)) return;
-            string code = ScannedBarcode.Trim();
+            ScanBarcodeDirect(ScannedBarcode);
+        }
+
+        public bool ScanBarcodeDirect(string? code)
+        {
+            if (string.IsNullOrWhiteSpace(code)) return false;
+            code = code.Trim();
 
             var prod = BarcodeService.FindProductByBarcodeOrSku(code, _dataService.Products);
             if (prod != null)
@@ -294,15 +299,17 @@ namespace AsiErp.ViewModels
                 try { System.Media.SystemSounds.Beep.Play(); } catch { }
                 AddProductToCart(prod);
                 ScannedBarcode = string.Empty;
+                return true;
             }
             else
             {
                 try { System.Media.SystemSounds.Hand.Play(); } catch { }
                 MessageBox.Show($"No product found with barcode or SKU '{code}'.\n\nPlease ensure the product is registered with this barcode in the Products catalog.", "Item Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
+                return false;
             }
         }
 
-        private void AddProductToCart(ProductItem prod, int qty = 1)
+        public void AddProductToCart(ProductItem prod, int qty = 1)
         {
             if (prod.Stock <= 0)
             {

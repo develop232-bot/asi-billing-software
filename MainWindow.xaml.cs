@@ -15,6 +15,10 @@ namespace AsiErp
         private readonly Dictionary<Type, FrameworkElement> _viewCache = new();
 
         private MainViewModel? _viewModel => DataContext as MainViewModel;
+
+        private readonly System.Text.StringBuilder _scannerBuffer = new();
+        private DateTime _lastScannerKeystroke = DateTime.MinValue;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -72,6 +76,50 @@ namespace AsiErp
                 if (vm.CurrentView != null)
                 {
                     SwitchView(vm.CurrentView);
+                }
+            }
+        }
+
+        protected override void OnPreviewTextInput(TextCompositionEventArgs e)
+        {
+            base.OnPreviewTextInput(e);
+
+            if (_viewModel == null || !_viewModel.IsLoggedIn) return;
+            if (OwnedWindows.Cast<Window>().Any(w => w.IsVisible)) return;
+
+            // Barcode scanners send keystrokes within ~30ms of each other.
+            // If more than 110ms elapsed, reset buffer.
+            if ((DateTime.Now - _lastScannerKeystroke).TotalMilliseconds > 110)
+            {
+                _scannerBuffer.Clear();
+            }
+
+            _lastScannerKeystroke = DateTime.Now;
+            if (!string.IsNullOrEmpty(e.Text))
+            {
+                _scannerBuffer.Append(e.Text);
+            }
+        }
+
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            base.OnPreviewKeyDown(e);
+
+            if (_viewModel == null || !_viewModel.IsLoggedIn) return;
+            if (OwnedWindows.Cast<Window>().Any(w => w.IsVisible)) return;
+
+            if (e.Key == Key.Return || e.Key == Key.Enter)
+            {
+                string scanned = _scannerBuffer.ToString().Trim();
+                _scannerBuffer.Clear();
+
+                if (scanned.Length >= 3)
+                {
+                    bool handled = _viewModel.HandleGlobalBarcodeScan(scanned);
+                    if (handled)
+                    {
+                        e.Handled = true;
+                    }
                 }
             }
         }
@@ -275,6 +323,15 @@ namespace AsiErp
                         break;
                     }
 
+                case "print_barcode_options":
+                    {
+                        string? preselectedId = (parameter as UnifiedProductRow)?.Id;
+                        var prods = _viewModel?.DataService.Products.ToList() ?? new List<ProductItem>();
+                        var dlg = new BarcodePrintChoiceWindow(prods, preselectedId) { Owner = this };
+                        dlg.ShowDialog();
+                        break;
+                    }
+
                 case "view_doc":
                 case "view_purchase_doc":
                     {
@@ -364,6 +421,5 @@ namespace AsiErp
             LoginPasswordBox.Password = "finance";
             LoginErrorText.Visibility = Visibility.Collapsed;
         }
-
     }
 }

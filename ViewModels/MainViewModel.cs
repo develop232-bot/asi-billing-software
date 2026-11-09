@@ -592,6 +592,28 @@ namespace AsiErp.ViewModels
             }
         }
 
+        public AppDataService DataService => _dataService;
+
+        public bool HandleGlobalBarcodeScan(string barcode)
+        {
+            if (string.IsNullOrWhiteSpace(barcode)) return false;
+            barcode = barcode.Trim();
+
+            var prod = BarcodeService.FindProductByBarcodeOrSku(barcode, _dataService.Products);
+            if (prod != null)
+            {
+                NavigateTo("sales:retail");
+                PosVM.AddProductToCart(prod);
+                try { System.Media.SystemSounds.Beep.Play(); } catch { }
+                return true;
+            }
+            else
+            {
+                NavigateTo("sales:retail");
+                return PosVM.ScanBarcodeDirect(barcode);
+            }
+        }
+
         public void OpenDialog(string dialogType, object? parameter)
         {
             RequestOpenDialog?.Invoke(dialogType, parameter);

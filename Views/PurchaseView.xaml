@@ -36,7 +36,12 @@
                     </Button>
 
                     <Button Content="📦 General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen"
-                            Padding="14,8" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12">
+                            Padding="14,8" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Content="+ New Purchase Bill" Command="{Binding NewPurchaseBillCommand}"
+                            Padding="16,8" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
                     </Button>
                 </StackPanel>

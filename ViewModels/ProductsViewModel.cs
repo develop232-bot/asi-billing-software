@@ -65,6 +65,13 @@ namespace AsiErp.ViewModels
             }
         }
 
+        private UnifiedProductRow? _selectedRow;
+        public UnifiedProductRow? SelectedRow
+        {
+            get => _selectedRow;
+            set => SetField(ref _selectedRow, value);
+        }
+
         public int SaleProductsCount => _dataService.Products.Count;
         public int RawMaterialsCount => _dataService.RawMaterials.Count;
         public int GeneralItemsCount => _dataService.GeneralItems.Count;
@@ -74,6 +81,7 @@ namespace AsiErp.ViewModels
         public RelayCommand AddItemCommand { get; }
         public RelayCommand EditItemCommand { get; }
         public RelayCommand PrintBarcodeCommand { get; }
+        public RelayCommand PrintBarcodeOptionsCommand { get; }
         public RelayCommand BulkImportCommand { get; }
         public RelayCommand ExportCsvCommand { get; }
 
@@ -122,6 +130,11 @@ namespace AsiErp.ViewModels
                         _openDialogAction("print_barcode", prod);
                     }
                 }
+            });
+
+            PrintBarcodeOptionsCommand = new RelayCommand(_ =>
+            {
+                _openDialogAction("print_barcode_options", SelectedRow);
             });
 
             _dataService.DataChanged += RefreshData;
