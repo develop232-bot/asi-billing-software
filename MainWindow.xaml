@@ -275,12 +275,12 @@
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=stock:fg}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=stock:fg}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=stock:fg}"
-                                    ToolTip="Factory Finished Goods Inventory">
+                                    ToolTip="Factory Finished Products Inventory">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=stock:fg}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="👟" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Finished Goods" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Finished Products" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 

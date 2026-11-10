@@ -12,19 +12,24 @@ namespace AsiErp.ViewModels
         public string Id { get; set; } = string.Empty;
         public string Kind { get; set; } = "raw"; // raw, gen, prod
         public string Name { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
         public string Subtitle { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public double Stock { get; set; }
         public double ReorderLevel { get; set; }
         public double RateOrCost { get; set; }
         public double TotalValue => Stock * RateOrCost;
+        public object? RawItem { get; set; }
 
         public string StatusLevel
         {
             get
             {
-                if (Stock <= 0) return "out";
-                if (Stock <= ReorderLevel) return "low";
+                // Below 10 -> Red
+                if (Stock < 10 || LevelPercent < 10) return "out";
+                // Medium -> Amber / Orange
+                if (Stock <= ReorderLevel || LevelPercent < 50) return "low";
+                // Above average -> Green
                 return "ok";
             }
         }
@@ -34,7 +39,8 @@ namespace AsiErp.ViewModels
             get
             {
                 if (Stock <= 0) return "Out";
-                if (Stock <= ReorderLevel) return "Low";
+                if (Stock < 10 || LevelPercent < 10) return "Low";
+                if (Stock <= ReorderLevel || LevelPercent < 50) return "Medium";
                 return "In stock";
             }
         }
@@ -43,8 +49,17 @@ namespace AsiErp.ViewModels
         {
             get
             {
-                double target = Math.Max(ReorderLevel, 1) * 2.5;
+                double target = Math.Max(ReorderLevel, 1) * 2.0;
                 return Math.Min(100, Math.Max(0, (Stock / target) * 100));
+            }
+        }
+
+        public double LevelMeterWidth
+        {
+            get
+            {
+                if (Stock <= 0) return 6;
+                return Math.Max(8, Math.Min(100, LevelPercent));
             }
         }
     }
@@ -88,20 +103,13 @@ namespace AsiErp.ViewModels
         public string Title => ActiveTab switch
         {
             "raw" => "Raw Material Stock",
-            "fg" => "Finished Goods Stock",
-            "ready" => "Readymade (Purchased) Stock",
-            "gen" => "Other Stock",
+            "fg" => "Finished Products",
+            "ready" => "Readymade Stock",
+            "gen" => "Packaging & General",
             _ => "Stock"
         };
 
-        public string Subtitle => ActiveTab switch
-        {
-            "raw" => "Leather, soles, fabrics, thread and other material used in production.",
-            "fg" => "Shoes and uniforms made in our own factory, ready to sell.",
-            "ready" => "Finished products bought from vendors for resale.",
-            "gen" => "Shoe boxes, uniform covers, tissue paper, ASI logo bags, single-shoe covers and similar packing items.",
-            _ => "Inventory on hand."
-        };
+        public string Subtitle => string.Empty;
 
         public double TotalValue => Items.Sum(x => x.TotalValue);
         public int LowStockCount => Items.Count(x => x.StatusLevel != "ok");
@@ -109,6 +117,7 @@ namespace AsiErp.ViewModels
 
         public RelayCommand SetTabCommand { get; }
         public RelayCommand AdjustStockCommand { get; }
+        public RelayCommand EditItemCommand { get; }
         public RelayCommand AddItemCommand { get; }
         public RelayCommand BuyItemCommand { get; }
         public RelayCommand ExportCsvCommand { get; }
@@ -124,6 +133,33 @@ namespace AsiErp.ViewModels
             AdjustStockCommand = new RelayCommand(p =>
             {
                 if (p is StockDisplayItem item) _openDialogAction("stock_adjust", item);
+            });
+
+            EditItemCommand = new RelayCommand(p =>
+            {
+                if (p is StockDisplayItem item)
+                {
+                    string dlgType = item.Kind switch
+                    {
+                        "raw" => "product_edit_raw",
+                        "gen" => "product_edit_gen",
+                        "ready" => "product_edit_ready",
+                        _ => "product_edit_mfg"
+                    };
+
+                    object? raw = item.RawItem;
+                    if (raw == null)
+                    {
+                        raw = item.Kind switch
+                        {
+                            "raw" => _dataService.RawMaterials.FirstOrDefault(x => x.Id == item.Id),
+                            "gen" => _dataService.GeneralItems.FirstOrDefault(x => x.Id == item.Id),
+                            _ => _dataService.Products.FirstOrDefault(x => x.Id == item.Id)
+                        };
+                    }
+
+                    _openDialogAction(dlgType, raw);
+                }
             });
 
             AddItemCommand = new RelayCommand(_ =>
@@ -178,11 +214,13 @@ namespace AsiErp.ViewModels
                     Id = r.Id,
                     Kind = "raw",
                     Name = r.Name,
+                    Sku = !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku : $"ASI-RAW-{r.Id.Replace("r", "").PadLeft(3, '0')}",
                     Subtitle = $"Rate: ₹{r.Rate:N0} / {r.Unit} · GST {r.Gst}%",
                     Unit = r.Unit,
                     Stock = r.Stock,
                     ReorderLevel = r.ReorderLevel,
-                    RateOrCost = r.Rate
+                    RateOrCost = r.Rate,
+                    RawItem = r
                 }).ToList();
             }
             else if (ActiveTab == "gen")
@@ -192,11 +230,13 @@ namespace AsiErp.ViewModels
                     Id = g.Id,
                     Kind = "gen",
                     Name = g.Name,
+                    Sku = !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku : $"ASI-PKG-{g.Id.Replace("g", "").PadLeft(3, '0')}",
                     Subtitle = $"Rate: ₹{g.Rate:N0} / {g.Unit} · GST {g.Gst}%",
                     Unit = g.Unit,
                     Stock = g.Stock,
                     ReorderLevel = g.ReorderLevel,
-                    RateOrCost = g.Rate
+                    RateOrCost = g.Rate,
+                    RawItem = g
                 }).ToList();
             }
             else if (ActiveTab == "fg")
@@ -206,11 +246,13 @@ namespace AsiErp.ViewModels
                     Id = p.Id,
                     Kind = "prod",
                     Name = p.Name,
-                    Subtitle = $"{p.Sku} · {p.Category} · Sizes: {p.SizesDisplay}",
+                    Sku = p.Sku,
+                    Subtitle = $"{p.Category} · Sizes: {p.SizesDisplay}",
                     Unit = p.Unit,
                     Stock = p.Stock,
                     ReorderLevel = p.ReorderLevel,
-                    RateOrCost = p.EffectiveCost
+                    RateOrCost = p.EffectiveCost,
+                    RawItem = p
                 }).ToList();
             }
             else if (ActiveTab == "ready")
@@ -220,17 +262,19 @@ namespace AsiErp.ViewModels
                     Id = p.Id,
                     Kind = "prod",
                     Name = p.Name,
-                    Subtitle = $"{p.Sku} · {p.Category} · Sizes: {p.SizesDisplay}",
+                    Sku = p.Sku,
+                    Subtitle = $"{p.Category} · Sizes: {p.SizesDisplay}",
                     Unit = p.Unit,
                     Stock = p.Stock,
                     ReorderLevel = p.ReorderLevel,
-                    RateOrCost = p.Cost
+                    RateOrCost = p.Cost,
+                    RawItem = p
                 }).ToList();
             }
 
             foreach (var it in list)
             {
-                if (string.IsNullOrEmpty(q) || (it.Name + it.Subtitle).ToLowerInvariant().Contains(q))
+                if (string.IsNullOrEmpty(q) || (it.Name + " " + it.Sku + " " + it.Subtitle).ToLowerInvariant().Contains(q))
                 {
                     Items.Add(it);
                 }

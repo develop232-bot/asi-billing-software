@@ -68,9 +68,9 @@ namespace AsiErp.Converters
             string s = value?.ToString() ?? string.Empty;
             return s switch
             {
-                "Paid" or "Completed" or "In stock" or "ok" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1B8556")),
-                "Partial" or "Low" or "low" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E5A62E")),
-                "Unpaid" or "Out" or "out" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#C23A32")),
+                "Paid" or "Completed" or "In stock" or "ok" or "green" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981")),
+                "Partial" or "Low" or "low" or "medium" or "Medium" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#F59E0B")),
+                "Unpaid" or "Out" or "out" or "red" or "critical" or "Critical" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444")),
                 "Auto" or "domestic" or "Domestic" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3D62B8")),
                 "export" or "Export" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#23968A")),
                 "retail" or "Retail" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E5A62E")),
@@ -88,9 +88,9 @@ namespace AsiErp.Converters
             string s = value?.ToString() ?? string.Empty;
             return s switch
             {
-                "Paid" or "Completed" or "In stock" or "ok" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E1F2EA")),
-                "Partial" or "Low" or "low" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FBF0D6")),
-                "Unpaid" or "Out" or "out" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FBE5E2")),
+                "Paid" or "Completed" or "In stock" or "ok" or "green" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DCFCE7")),
+                "Partial" or "Low" or "low" or "medium" or "Medium" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEF3C7")),
+                "Unpaid" or "Out" or "out" or "red" or "critical" or "Critical" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FEE2E2")),
                 "Auto" or "domestic" or "Domestic" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E6ECF9")),
                 "export" or "Export" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E0F5F2")),
                 "retail" or "Retail" => new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FBF0D6")),

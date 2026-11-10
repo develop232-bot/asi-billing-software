@@ -19,11 +19,9 @@
             <DockPanel Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="{Binding Subtitle}" FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0"/>
-                    <Button Content="+ Add Item" Command="{Binding AddItemCommand}" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12"/>
                 </StackPanel>
             </DockPanel>
 
@@ -34,7 +32,7 @@
                         Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
                         BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
                         BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Finished Goods (Factory)" Command="{Binding SetTabCommand}" CommandParameter="fg" Margin="0,0,8,0" Padding="14,6"
+                <Button Content="Finished Products" Command="{Binding SetTabCommand}" CommandParameter="fg" Margin="0,0,8,0" Padding="14,6"
                         Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=fg}"
                         Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=fg}"
                         BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=fg}"
@@ -122,16 +120,16 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="In Stock" Binding="{Binding Stock, StringFormat={}{0:N0}}" Width="95" FontWeight="Bold"/>
-                            <DataGridTextColumn Header="Reorder At" Binding="{Binding ReorderLevel, StringFormat={}{0:N0}}" Width="90"/>
-                            <DataGridTextColumn Header="Cost / Rate" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="100"/>
-                            <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="110" FontWeight="SemiBold"/>
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="130" FontWeight="SemiBold" Foreground="#334155"/>
+                            <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="85" Foreground="#475569"/>
+                            <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="110" FontWeight="SemiBold"/>
+                            <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="115" FontWeight="Bold" Foreground="#0F172A"/>
 
                             <DataGridTemplateColumn Header="Level Meter" Width="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Height="6" Background="#F1F5F9" CornerRadius="3" VerticalAlignment="Center">
-                                            <Border HorizontalAlignment="Left" Width="{Binding LevelPercent}" Background="{Binding StatusLevel, Converter={StaticResource StatusBrushConv}}" CornerRadius="3"/>
+                                            <Border HorizontalAlignment="Left" Width="{Binding LevelMeterWidth}" Background="{Binding StatusLevel, Converter={StaticResource StatusBrushConv}}" CornerRadius="3"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -147,11 +145,11 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Width="85">
+                            <DataGridTemplateColumn Header="Action" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Adjust" Command="{Binding DataContext.AdjustStockCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
+                                        <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                Padding="12,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Foreground="#0F172A" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
