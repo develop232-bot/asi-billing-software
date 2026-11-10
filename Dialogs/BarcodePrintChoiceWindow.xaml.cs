@@ -399,6 +399,10 @@ namespace AsiErp.Dialogs
                 var pd = new PrintDialog();
                 if (pd.ShowDialog() != true) return;
 
+                double targetWidth = pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 500
+                    ? pd.PrintableAreaWidth
+                    : 210;
+
                 if (RbSingle.IsChecked == true)
                 {
                     if (_currentProduct == null)
@@ -410,9 +414,11 @@ namespace AsiErp.Dialogs
                     int.TryParse(TxtCopies.Text, out int copies);
                     if (copies < 1) copies = 1;
 
+                    string size = CbSize?.SelectedItem?.ToString() ?? (_currentProduct.Sizes?.FirstOrDefault() ?? "Free size");
                     for (int i = 0; i < copies; i++)
                     {
-                        pd.PrintVisual(PrintableLabel, $"Barcode_{_currentProduct.Sku}_Copy{i + 1}");
+                        var visual = CreateLabelVisual(_currentProduct, size, targetWidth);
+                        pd.PrintVisual(visual, $"Barcode_{_currentProduct.Sku}_Copy{i + 1}");
                     }
 
                     MessageBox.Show($"Printed {copies} barcode label(s) for '{_currentProduct.Name}' successfully!", "Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -431,7 +437,7 @@ namespace AsiErp.Dialogs
                     foreach (var item in selected)
                     {
                         string size = !string.IsNullOrWhiteSpace(item.SelectedSize) ? item.SelectedSize : (item.Product.Sizes?.FirstOrDefault() ?? "Free size");
-                        var visual = CreateLabelVisual(item.Product, size);
+                        var visual = CreateLabelVisual(item.Product, size, targetWidth);
 
                         for (int i = 0; i < item.Copies; i++)
                         {
@@ -458,7 +464,7 @@ namespace AsiErp.Dialogs
                     foreach (var prod in _products)
                     {
                         string size = prod.Sizes?.FirstOrDefault() ?? "Free size";
-                        var visual = CreateLabelVisual(prod, size);
+                        var visual = CreateLabelVisual(prod, size, targetWidth);
 
                         for (int i = 0; i < batchCopies; i++)
                         {
@@ -477,16 +483,18 @@ namespace AsiErp.Dialogs
             }
         }
 
-        private FrameworkElement CreateLabelVisual(ProductItem prod, string size)
+        private FrameworkElement CreateLabelVisual(ProductItem prod, string size, double targetWidth = 210)
         {
+            if (targetWidth <= 50 || double.IsNaN(targetWidth) || double.IsInfinity(targetWidth))
+            {
+                targetWidth = 210;
+            }
+
             var border = new Border
             {
                 Background = Brushes.White,
-                Width = 340,
-                CornerRadius = new CornerRadius(8),
-                Padding = new Thickness(14, 10, 14, 10),
-                BorderBrush = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
-                BorderThickness = new Thickness(1)
+                Width = targetWidth,
+                Padding = new Thickness(6, 6, 6, 6)
             };
 
             var stack = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
@@ -495,38 +503,28 @@ namespace AsiErp.Dialogs
             {
                 Text = "AFRAH SAMIYA INDUSTRIES",
                 FontWeight = FontWeights.Bold,
-                FontSize = 10.5,
-                Foreground = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+                FontSize = 9.5,
+                Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Center
             });
 
-            stack.Children.Add(new TextBlock
-            {
-                Text = "SHOES & UNIFORMS · FOOTWEAR DIVISION",
-                FontSize = 8,
-                Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 1, 0, 5)
-            });
-
-            stack.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.FromRgb(226, 232, 240)), Margin = new Thickness(0, 0, 0, 5) });
+            stack.Children.Add(new Border { Height = 1, Background = Brushes.Black, Margin = new Thickness(0, 3, 0, 3) });
 
             stack.Children.Add(new TextBlock
             {
                 Text = prod.Name,
                 FontWeight = FontWeights.Bold,
-                FontSize = 12.5,
-                Foreground = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+                FontSize = 11,
+                Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
                 TextWrapping = TextWrapping.Wrap,
-                MaxWidth = 310
+                MaxWidth = targetWidth - 12
             });
 
-            var dockTag = new DockPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 3, 0, 5) };
-            dockTag.Children.Add(new TextBlock { Text = $"SKU: {prod.Sku}", FontSize = 9.5, Foreground = new SolidColorBrush(Color.FromRgb(71, 85, 105)), Margin = new Thickness(0, 0, 8, 0) });
-            dockTag.Children.Add(new TextBlock { Text = "·", Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)), Margin = new Thickness(0, 0, 8, 0) });
-            dockTag.Children.Add(new TextBlock { Text = $"Size: {size}", FontWeight = FontWeights.Bold, FontSize = 9.5, Foreground = new SolidColorBrush(Color.FromRgb(30, 41, 59)) });
+            var dockTag = new DockPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 3) };
+            dockTag.Children.Add(new TextBlock { Text = $"SKU: {prod.Sku}", FontSize = 8.5, Foreground = Brushes.Black, Margin = new Thickness(0, 0, 6, 0) });
+            dockTag.Children.Add(new TextBlock { Text = $"· Size: {size}", FontWeight = FontWeights.Bold, FontSize = 8.5, Foreground = Brushes.Black });
             stack.Children.Add(dockTag);
 
             string barcode = prod.DisplayBarcode;
@@ -534,31 +532,33 @@ namespace AsiErp.Dialogs
             {
                 barcode = BarcodeService.GenerateBarcode(prod.Category, prod.SourceType);
             }
+            int bcWidth = (int)Math.Max(150, targetWidth - 20);
             var barcodeImage = new Image
             {
-                Width = 240,
-                Height = 68,
+                Width = bcWidth,
+                Height = 55,
                 Stretch = Stretch.Uniform,
-                Source = BarcodeService.GenerateBarcodeImage(barcode, width: 260, height: 70)
+                Source = BarcodeService.GenerateBarcodeImage(barcode, width: bcWidth, height: 60),
+                HorizontalAlignment = HorizontalAlignment.Center,
+                Margin = new Thickness(0, 2, 0, 2)
             };
-            var imgBorder = new Border { Background = Brushes.White, Padding = new Thickness(4, 2, 4, 2), HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 0, 0, 4) };
-            imgBorder.Child = barcodeImage;
-            stack.Children.Add(imgBorder);
+            stack.Children.Add(barcodeImage);
 
-            stack.Children.Add(new Border { Height = 1, Background = new SolidColorBrush(Color.FromRgb(226, 232, 240)), Margin = new Thickness(0, 2, 0, 5) });
+            stack.Children.Add(new Border { Height = 1, Background = Brushes.Black, Margin = new Thickness(0, 3, 0, 3) });
 
-            var dockPrice = new DockPanel { HorizontalAlignment = HorizontalAlignment.Stretch, Margin = new Thickness(6, 0, 6, 0) };
+            var dockPrice = new DockPanel { HorizontalAlignment = HorizontalAlignment.Stretch, Width = targetWidth - 16 };
             var priceStack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-            priceStack.Children.Add(new TextBlock { Text = "MAX RETAIL PRICE", FontSize = 7.5, Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)), FontWeight = FontWeights.SemiBold });
-            priceStack.Children.Add(new TextBlock { Text = "(Incl. of all taxes)", FontSize = 7, Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)) });
+            priceStack.Children.Add(new TextBlock { Text = "MAX RETAIL PRICE", FontSize = 7.5, FontWeight = FontWeights.Bold, Foreground = Brushes.Black });
+            priceStack.Children.Add(new TextBlock { Text = "(Incl. of all taxes)", FontSize = 6.5, Foreground = Brushes.Black });
+            DockPanel.SetDock(priceStack, Dock.Left);
             dockPrice.Children.Add(priceStack);
 
             var mrpBlock = new TextBlock
             {
                 Text = $"₹ {prod.RetailPrice:N2}",
                 FontWeight = FontWeights.Bold,
-                FontSize = 14,
-                Foreground = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+                FontSize = 13,
+                Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center
             };
@@ -568,8 +568,8 @@ namespace AsiErp.Dialogs
             border.Child = stack;
 
             // Measure and arrange so it's fully rendered for printing
-            border.Measure(new Size(340, 280));
-            border.Arrange(new Rect(0, 0, 340, 280));
+            border.Measure(new Size(targetWidth, double.PositiveInfinity));
+            border.Arrange(new Rect(new Point(0, 0), border.DesiredSize));
             border.UpdateLayout();
 
             return border;
