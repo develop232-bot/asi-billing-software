@@ -36,28 +36,11 @@
                 </StackPanel>
             </DockPanel>
 
-            <!-- 4 Accounts Subtabs (Dynamically changes active button color and displays only the active section) -->
+            <!-- Active Section Pill at Top (Displays active page; other 3 are removed, navigation via sidebar) -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-                <Button Content="Income" Command="{Binding SetTabCommand}" CommandParameter="income" Margin="0,0,8,0" Padding="16,8"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=income}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=income}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=income}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
-                <Button Content="Expenses" Command="{Binding SetTabCommand}" CommandParameter="exp" Margin="0,0,8,0" Padding="16,8"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=exp}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=exp}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=exp}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
-                <Button Content="Investments" Command="{Binding SetTabCommand}" CommandParameter="inv" Margin="0,0,8,0" Padding="16,8"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=inv}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=inv}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=inv}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
-                <Button Content="Profit &amp; Loss" Command="{Binding SetTabCommand}" CommandParameter="pl" Padding="16,8"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=pl}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=pl}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=pl}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
+                <Border Background="#172443" CornerRadius="8" Padding="16,8">
+                    <TextBlock Text="{Binding ActiveTabTitle}" Foreground="White" FontWeight="Bold" FontSize="12"/>
+                </Border>
             </StackPanel>
 
             <!-- TAB 1: INCOME -->
@@ -173,9 +156,9 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Daily Expenses" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DailyExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Running costs, tea, transport" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Salary" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding SalaryExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="Staff &amp; worker salaries" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
@@ -183,9 +166,9 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Monthly Utilities &amp; Salaries" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding MonthlyExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Salary, EB, water, ESI, rent" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Utilities" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding UtilitiesExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="EB, water, rent, everyday, tea" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
@@ -203,7 +186,7 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Purchase Bills (Auto)" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="Purchase" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#7C3AED" Margin="0,5,0,2"/>
                             <TextBlock Text="Raw materials &amp; goods" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
@@ -218,26 +201,31 @@
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
                             <TextBlock Text="Expense Register" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <!-- Frequency Row Options with Dynamic Active Colors -->
-                                <Button Content="All Frequencies" Command="{Binding SetExpenseFreqCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="10,4"
+                                <!-- Filter Tabs: All, Salary, Utilities, Yearly, Purchase -->
+                                <Button Content="All" Command="{Binding SetExpenseFreqCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
                                         Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                         Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                         BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Daily" Command="{Binding SetExpenseFreqCommand}" CommandParameter="daily" Margin="0,0,4,0" Padding="10,4"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=daily}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=daily}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=daily}"
+                                <Button Content="Salary" Command="{Binding SetExpenseFreqCommand}" CommandParameter="salary" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=salary}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=salary}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=salary}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Monthly" Command="{Binding SetExpenseFreqCommand}" CommandParameter="monthly" Margin="0,0,4,0" Padding="10,4"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=monthly}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=monthly}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=monthly}"
+                                <Button Content="Utilities" Command="{Binding SetExpenseFreqCommand}" CommandParameter="utilities" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=utilities}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=utilities}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=utilities}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Yearly" Command="{Binding SetExpenseFreqCommand}" CommandParameter="yearly" Margin="0,0,12,0" Padding="10,4"
+                                <Button Content="Yearly" Command="{Binding SetExpenseFreqCommand}" CommandParameter="yearly" Margin="0,0,4,0" Padding="12,5"
                                         Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=yearly}"
                                         Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=yearly}"
                                         BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=yearly}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Purchase" Command="{Binding SetExpenseFreqCommand}" CommandParameter="purchase" Margin="0,0,12,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=purchase}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=purchase}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=purchase}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
                                 <Button Content="+ Add Expense" Command="{Binding AddExpenseCommand}" Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
                             </StackPanel>
@@ -245,11 +233,10 @@
 
                         <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
-                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="160" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Frequency" Binding="{Binding Frequency}" Width="95"/>
-                                <DataGridTextColumn Header="Details / Description" Binding="{Binding Description}" Width="*"/>
-                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="120" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="100"/>
+                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="180" FontWeight="SemiBold"/>
+                                <DataGridTextColumn Header="Items" Binding="{Binding Description}" Width="*"/>
+                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="130" FontWeight="Bold"/>
 
                                 <DataGridTemplateColumn Width="75">
                                     <DataGridTemplateColumn.CellTemplate>

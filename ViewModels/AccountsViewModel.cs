@@ -52,9 +52,22 @@ namespace AsiErp.ViewModels
             get => _activeTab;
             set
             {
-                if (SetField(ref _activeTab, value)) RefreshData();
+                if (SetField(ref _activeTab, value))
+                {
+                    OnPropertyChanged(nameof(ActiveTabTitle));
+                    RefreshData();
+                }
             }
         }
+
+        public string ActiveTabTitle => ActiveTab switch
+        {
+            "income" => "Income",
+            "exp" => "Expenses",
+            "inv" => "Investments",
+            "pl" => "Profit & Loss",
+            _ => "Accounts"
+        };
 
         public string SelectedPeriod
         {
@@ -90,10 +103,12 @@ namespace AsiErp.ViewModels
         public double RetailIncome { get; private set; }
 
         // --- EXPENSE STATS ---
-        public double DailyExpenseTotal { get; private set; }
-        public double MonthlyExpenseTotal { get; private set; }
+        public double SalaryExpenseTotal { get; private set; }
+        public double UtilitiesExpenseTotal { get; private set; }
         public double YearlyExpenseTotal { get; private set; }
         public double PurchaseExpenseTotal { get; private set; }
+        public double DailyExpenseTotal { get; private set; }
+        public double MonthlyExpenseTotal { get; private set; }
 
         // --- INVESTMENT STATS ---
         public double TotalInvested { get; private set; }
@@ -210,15 +225,19 @@ namespace AsiErp.ViewModels
                 .Where(e => string.Compare(e.Date, range.from) >= 0 && string.Compare(e.Date, range.to) <= 0)
                 .ToList();
 
+            SalaryExpenseTotal = allExpenses.Where(IsSalary).Sum(e => e.Amount);
+            UtilitiesExpenseTotal = allExpenses.Where(IsUtilities).Sum(e => e.Amount);
+            YearlyExpenseTotal = allExpenses.Where(IsYearly).Sum(e => e.Amount);
+            PurchaseExpenseTotal = allExpenses.Where(IsPurchase).Sum(e => e.Amount);
             DailyExpenseTotal = allExpenses.Where(e => e.Frequency == "Daily").Sum(e => e.Amount);
             MonthlyExpenseTotal = allExpenses.Where(e => e.Frequency == "Monthly").Sum(e => e.Amount);
-            YearlyExpenseTotal = allExpenses.Where(e => e.Frequency == "Yearly").Sum(e => e.Amount);
-            PurchaseExpenseTotal = allExpenses.Where(e => e.Frequency == "Purchase").Sum(e => e.Amount);
 
-            OnPropertyChanged(nameof(DailyExpenseTotal));
-            OnPropertyChanged(nameof(MonthlyExpenseTotal));
+            OnPropertyChanged(nameof(SalaryExpenseTotal));
+            OnPropertyChanged(nameof(UtilitiesExpenseTotal));
             OnPropertyChanged(nameof(YearlyExpenseTotal));
             OnPropertyChanged(nameof(PurchaseExpenseTotal));
+            OnPropertyChanged(nameof(DailyExpenseTotal));
+            OnPropertyChanged(nameof(MonthlyExpenseTotal));
 
             ApplyExpenseFilter();
 
@@ -294,6 +313,23 @@ namespace AsiErp.ViewModels
             }
         }
 
+        private static bool IsSalary(ExpenseItem e) =>
+            !e.IsAuto && (e.Category.IndexOf("Salary", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                          e.Description.IndexOf("Salary", StringComparison.OrdinalIgnoreCase) >= 0);
+
+        private static bool IsPurchase(ExpenseItem e) =>
+            e.IsAuto || e.Frequency.Equals("Purchase", StringComparison.OrdinalIgnoreCase) ||
+            e.Category.IndexOf("Purchase", StringComparison.OrdinalIgnoreCase) >= 0;
+
+        private static bool IsYearly(ExpenseItem e) =>
+            !e.IsAuto && !IsSalary(e) &&
+            (e.Frequency.Equals("Yearly", StringComparison.OrdinalIgnoreCase) ||
+             e.Category.IndexOf("Licence", StringComparison.OrdinalIgnoreCase) >= 0 ||
+             e.Category.IndexOf("Insurance", StringComparison.OrdinalIgnoreCase) >= 0);
+
+        private static bool IsUtilities(ExpenseItem e) =>
+            !e.IsAuto && !IsSalary(e) && !IsYearly(e);
+
         private void ApplyExpenseFilter()
         {
             ExpenseRows.Clear();
@@ -303,7 +339,18 @@ namespace AsiErp.ViewModels
             {
                 if (string.Compare(e.Date, range.from) >= 0 && string.Compare(e.Date, range.to) <= 0)
                 {
-                    if (SelectedExpenseFreq == "all" || e.Frequency.Equals(SelectedExpenseFreq, StringComparison.OrdinalIgnoreCase))
+                    bool match = SelectedExpenseFreq.ToLowerInvariant() switch
+                    {
+                        "salary" => IsSalary(e),
+                        "utilities" => IsUtilities(e),
+                        "yearly" => IsYearly(e),
+                        "purchase" => IsPurchase(e),
+                        "daily" => e.Frequency.Equals("Daily", StringComparison.OrdinalIgnoreCase),
+                        "monthly" => e.Frequency.Equals("Monthly", StringComparison.OrdinalIgnoreCase),
+                        _ => true
+                    };
+
+                    if (match)
                     {
                         ExpenseRows.Add(e);
                     }
