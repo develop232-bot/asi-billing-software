@@ -382,6 +382,7 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = r.ReorderLevel;
                     MediumAlertLevel = r.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
+                    HsnCode = r.Hsn;
                 }
                 else if (_existingItem is GeneralItem g)
                 {
@@ -399,6 +400,7 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = g.ReorderLevel;
                     MediumAlertLevel = g.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
+                    HsnCode = g.Hsn;
                 }
 
                 OnPropertyChanged(nameof(ItemType));
@@ -518,6 +520,7 @@ namespace AsiErp.ViewModels
                     rm.Gst = GstPercent;
                     rm.Stock = Quantity;
                     rm.ReorderLevel = LowAlertLevel;
+                    rm.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "6406" : HsnCode.Trim();
                     rm.Sku = string.IsNullOrWhiteSpace(Sku)
                         ? "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3")
                         : Sku.Trim();
@@ -533,6 +536,7 @@ namespace AsiErp.ViewModels
                     gi.Gst = GstPercent;
                     gi.Stock = Quantity;
                     gi.ReorderLevel = LowAlertLevel;
+                    gi.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "4819" : HsnCode.Trim();
                     gi.Sku = string.IsNullOrWhiteSpace(Sku)
                         ? "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3")
                         : Sku.Trim();

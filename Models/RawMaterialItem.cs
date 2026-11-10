@@ -20,6 +20,9 @@ namespace AsiErp.Models
             set => _sku = value;
         }
 
+        [FirestoreProperty("hsn")]
+        public string Hsn { get; set; } = string.Empty;
+
         [FirestoreProperty("name")]
         public string Name { get; set; } = string.Empty;
 

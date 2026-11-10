@@ -16,11 +16,11 @@
             <DockPanel Margin="0,0,0,18">
                 <StackPanel>
                     <TextBlock Text="Product Master &amp; Items" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Manage finished shoes, readymade apparel, raw materials, packaging, and barcode tags." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                    <TextBlock Text="Manage Raw Materials, Finished Products, General Packaging." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="🖨️ Print Barcodes" Command="{Binding PrintBarcodeOptionsCommand}" Padding="14,8" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1" Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,8,0">
+                    <Button Content="📥 Upload" Command="{Binding BulkImportCommand}" Padding="14,8" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
@@ -30,17 +30,7 @@
                         </Button.Template>
                     </Button>
 
-                    <Button Content="📥 Bulk CSV Import" Command="{Binding BulkImportCommand}" Padding="14,8" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-
-                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
+                    <Button Content="📤 Download" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
@@ -209,7 +199,10 @@
                             <!-- 5. SKU -->
                             <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="120" MinWidth="80" FontWeight="SemiBold"/>
 
-                            <!-- 6. Barcode -->
+                            <!-- 6. HSN -->
+                            <DataGridTextColumn Header="HSN" Binding="{Binding HsnDisplay}" Width="85" MinWidth="60"/>
+
+                            <!-- 7. Barcode -->
                             <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="130" MinWidth="80" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
 
                             <!-- 7. Cost Price -->

@@ -16,6 +16,7 @@ namespace AsiErp.ViewModels
         public string Name { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public string Sku { get; set; } = string.Empty;
+        public string Hsn { get; set; } = string.Empty;
         public string Barcode { get; set; } = string.Empty;
         public double CostPrice { get; set; }
         public double SellingPrice { get; set; }
@@ -23,6 +24,7 @@ namespace AsiErp.ViewModels
         public double Quantity { get; set; }
 
         public string DateDisplay => string.IsNullOrWhiteSpace(Date) ? DateTime.Now.ToString("yyyy-MM-dd") : Date;
+        public string HsnDisplay => !string.IsNullOrWhiteSpace(Hsn) ? Hsn : "—";
         public string CostPriceDisplay => CostPrice > 0 ? $"₹{CostPrice:N0}" : "₹0";
         public string SellingPriceDisplay => SellingPrice > 0 ? $"₹{SellingPrice:N0}" : "₹0";
         public string GstDisplay => $"{Gst}%";
@@ -251,6 +253,7 @@ namespace AsiErp.ViewModels
                     Name = p.Name,
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit,
                     Sku = p.Sku,
+                    Hsn = string.IsNullOrWhiteSpace(p.Hsn) ? "6403" : p.Hsn,
                     Barcode = p.DisplayBarcode,
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice * 0.7),
                     SellingPrice = p.RetailPrice,
@@ -270,6 +273,7 @@ namespace AsiErp.ViewModels
                     Name = r.Name,
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "meter" : r.Unit,
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku,
+                    Hsn = r.Hsn,
                     Barcode = "—",
                     CostPrice = r.Rate,
                     SellingPrice = r.Rate,
@@ -289,6 +293,7 @@ namespace AsiErp.ViewModels
                     Name = g.Name,
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit,
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku,
+                    Hsn = g.Hsn,
                     Barcode = "—",
                     CostPrice = g.Rate,
                     SellingPrice = g.Rate,

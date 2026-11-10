@@ -12,6 +12,11 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="🖨️ Print Barcode" Command="{Binding PrintBarcodeCommand}"
+                            Visibility="{Binding ProductVisibility}"
+                            Padding="14,8" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,10,0"/>
+
                     <Button Content="📥 Bulk CSV Upload" Command="{Binding BulkUploadCommand}"
                             Padding="14,8" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
                             Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0"/>
