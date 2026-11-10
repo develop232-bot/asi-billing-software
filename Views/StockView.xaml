@@ -107,9 +107,9 @@
                     </DockPanel>
 
                     <!-- Stock Table -->
-                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Item Description" Width="*">
+                            <DataGridTemplateColumn Header="Item Description" Width="260" MinWidth="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel VerticalAlignment="Center">
@@ -120,12 +120,12 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="130" FontWeight="SemiBold" Foreground="#334155"/>
-                            <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="85" Foreground="#475569"/>
-                            <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="110" FontWeight="SemiBold"/>
-                            <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="115" FontWeight="Bold" Foreground="#0F172A"/>
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="130" MinWidth="80" FontWeight="SemiBold" Foreground="#334155"/>
+                            <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="85" MinWidth="50" Foreground="#475569"/>
+                            <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="110" MinWidth="70" FontWeight="SemiBold"/>
+                            <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="115" MinWidth="80" FontWeight="Bold" Foreground="#0F172A"/>
 
-                            <DataGridTemplateColumn Header="Level Meter" Width="120">
+                            <DataGridTemplateColumn Header="Level Meter" Width="120" MinWidth="80">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Height="6" Background="#F1F5F9" CornerRadius="3" VerticalAlignment="Center">
@@ -135,7 +135,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Status" Width="95">
+                            <DataGridTemplateColumn Header="Status" Width="95" MinWidth="70">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="{Binding StatusLevel, Converter={StaticResource StatusBgConv}}">
@@ -145,7 +145,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Action" Width="85">
+                            <DataGridTemplateColumn Header="Action" Width="85" MinWidth="60">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
