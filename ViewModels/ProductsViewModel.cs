@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using AsiErp.Commands;
@@ -10,30 +11,41 @@ namespace AsiErp.ViewModels
     public class UnifiedProductRow
     {
         public string Id { get; set; } = string.Empty;
-        public string TypeKey { get; set; } = "mfg"; // mfg, ready, raw, gen
+        public string TypeKey { get; set; } = "mfg"; // raw, mfg, ready, gen
+        public string Date { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
-        public string Subtitle { get; set; } = string.Empty;
+        public string Unit { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
         public string Barcode { get; set; } = string.Empty;
-        public string PricingDisplay { get; set; } = string.Empty;
-        public string GstDisplay { get; set; } = string.Empty;
-        public string StockDisplay { get; set; } = string.Empty;
+        public double CostPrice { get; set; }
+        public double SellingPrice { get; set; }
+        public double Gst { get; set; }
+        public double Quantity { get; set; }
+
+        public string DateDisplay => string.IsNullOrWhiteSpace(Date) ? DateTime.Now.ToString("yyyy-MM-dd") : Date;
+        public string CostPriceDisplay => CostPrice > 0 ? $"₹{CostPrice:N0}" : "₹0";
+        public string SellingPriceDisplay => SellingPrice > 0 ? $"₹{SellingPrice:N0}" : "₹0";
+        public string GstDisplay => $"{Gst}%";
+        public string QuantityDisplay => $"{Quantity:N0}";
 
         public bool CanPrintBarcode => TypeKey == "mfg" || TypeKey == "ready";
 
         public string TypeLabel => TypeKey switch
         {
-            "mfg" => "Finished product",
-            "ready" => "Readymade product",
-            "raw" => "Raw material",
-            "gen" => "General",
+            "raw" => "Raw Material",
+            "mfg" => "Finished Product",
+            "ready" => "Readymade Product",
+            "gen" => "General Packaging",
             _ => TypeKey
         };
 
         public string TypeColor => TypeKey switch
         {
-            "mfg" => "#3D62B8",
-            "ready" => "#1B8556",
-            _ => "#78839A"
+            "raw" => "#0D9488",
+            "mfg" => "#2563EB",
+            "ready" => "#059669",
+            "gen" => "#D97706",
+            _ => "#64748B"
         };
     }
 
@@ -42,8 +54,10 @@ namespace AsiErp.ViewModels
         private readonly AppDataService _dataService;
         private readonly Action<string, object?> _openDialogAction;
 
-        private string _activeFilter = "all"; // all, mfg, ready, raw, gen
+        private string _activeFilter = "all"; // all, raw, mfg, ready, gen
         private string _searchQuery = string.Empty;
+        private DateTime? _fromDate;
+        private DateTime? _toDate;
 
         public ObservableCollection<UnifiedProductRow> FilteredRows { get; } = new();
 
@@ -65,6 +79,24 @@ namespace AsiErp.ViewModels
             }
         }
 
+        public DateTime? FromDate
+        {
+            get => _fromDate;
+            set
+            {
+                if (SetField(ref _fromDate, value)) ApplyFilter();
+            }
+        }
+
+        public DateTime? ToDate
+        {
+            get => _toDate;
+            set
+            {
+                if (SetField(ref _toDate, value)) ApplyFilter();
+            }
+        }
+
         private UnifiedProductRow? _selectedRow;
         public UnifiedProductRow? SelectedRow
         {
@@ -72,10 +104,40 @@ namespace AsiErp.ViewModels
             set => SetField(ref _selectedRow, value);
         }
 
-        public int SaleProductsCount => _dataService.Products.Count;
-        public int RawMaterialsCount => _dataService.RawMaterials.Count;
-        public int GeneralItemsCount => _dataService.GeneralItems.Count;
-        public int TotalSkusCount => SaleProductsCount + RawMaterialsCount + GeneralItemsCount;
+        private int _totalSkusCount;
+        public int TotalSkusCount
+        {
+            get => _totalSkusCount;
+            private set => SetField(ref _totalSkusCount, value);
+        }
+
+        private int _rawMaterialsCount;
+        public int RawMaterialsCount
+        {
+            get => _rawMaterialsCount;
+            private set => SetField(ref _rawMaterialsCount, value);
+        }
+
+        private int _finishedProductsCount;
+        public int FinishedProductsCount
+        {
+            get => _finishedProductsCount;
+            private set => SetField(ref _finishedProductsCount, value);
+        }
+
+        private int _readymadeProductsCount;
+        public int ReadymadeProductsCount
+        {
+            get => _readymadeProductsCount;
+            private set => SetField(ref _readymadeProductsCount, value);
+        }
+
+        private int _generalItemsCount;
+        public int GeneralItemsCount
+        {
+            get => _generalItemsCount;
+            private set => SetField(ref _generalItemsCount, value);
+        }
 
         public RelayCommand SetFilterCommand { get; }
         public RelayCommand AddItemCommand { get; }
@@ -84,6 +146,7 @@ namespace AsiErp.ViewModels
         public RelayCommand PrintBarcodeOptionsCommand { get; }
         public RelayCommand BulkImportCommand { get; }
         public RelayCommand ExportCsvCommand { get; }
+        public RelayCommand ClearDateFilterCommand { get; }
 
         public ProductsViewModel(AppDataService dataService, Action<string, object?> openDialogAction)
         {
@@ -91,17 +154,27 @@ namespace AsiErp.ViewModels
             _openDialogAction = openDialogAction;
 
             SetFilterCommand = new RelayCommand(p => ActiveFilter = p?.ToString() ?? "all");
+            ClearDateFilterCommand = new RelayCommand(_ =>
+            {
+                _fromDate = null;
+                _toDate = null;
+                OnPropertyChanged(nameof(FromDate));
+                OnPropertyChanged(nameof(ToDate));
+                ApplyFilter();
+            });
+
             AddItemCommand = new RelayCommand(_ =>
             {
                 string dlg = ActiveFilter switch
                 {
-                    "ready" => "product_edit_ready",
                     "raw" => "product_edit_raw",
+                    "ready" => "product_edit_ready",
                     "gen" => "product_edit_gen",
                     _ => "product_edit_mfg"
                 };
                 _openDialogAction(dlg, null);
             });
+
             BulkImportCommand = new RelayCommand(_ => _openDialogAction("bulk_csv_import", null));
             ExportCsvCommand = new RelayCommand(_ => ExportCsv());
 
@@ -144,10 +217,19 @@ namespace AsiErp.ViewModels
         public void RefreshData()
         {
             ApplyFilter();
-            OnPropertyChanged(nameof(SaleProductsCount));
-            OnPropertyChanged(nameof(RawMaterialsCount));
-            OnPropertyChanged(nameof(GeneralItemsCount));
-            OnPropertyChanged(nameof(TotalSkusCount));
+        }
+
+        private bool MatchDate(string? dateStr)
+        {
+            if (!FromDate.HasValue && !ToDate.HasValue) return true;
+            if (string.IsNullOrWhiteSpace(dateStr)) return true;
+            if (DateTime.TryParse(dateStr, out var d))
+            {
+                if (FromDate.HasValue && d.Date < FromDate.Value.Date) return false;
+                if (ToDate.HasValue && d.Date > ToDate.Value.Date) return false;
+                return true;
+            }
+            return true;
         }
 
         private void ApplyFilter()
@@ -155,21 +237,25 @@ namespace AsiErp.ViewModels
             FilteredRows.Clear();
             string q = SearchQuery.Trim().ToLowerInvariant();
 
-            var all = new System.Collections.Generic.List<UnifiedProductRow>();
+            var all = new List<UnifiedProductRow>();
 
             // Products (Finished and Readymade)
             foreach (var p in _dataService.Products)
             {
+                bool isMfg = p.IsManufactured;
                 all.Add(new UnifiedProductRow
                 {
                     Id = p.Id,
-                    TypeKey = p.IsManufactured ? "mfg" : "ready",
+                    TypeKey = isMfg ? "mfg" : "ready",
+                    Date = string.IsNullOrWhiteSpace(p.CreatedAt) ? DateTime.Now.ToString("yyyy-MM-dd") : p.CreatedAt,
                     Name = p.Name,
+                    Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit,
+                    Sku = p.Sku,
                     Barcode = p.DisplayBarcode,
-                    Subtitle = $"{p.Sku} · {p.Category} · Barcode: {p.DisplayBarcode} · Sizes: {p.SizesDisplay}",
-                    PricingDisplay = $"Retail: ₹{p.RetailPrice:N0} · Dom: ₹{p.DomesticPrice:N0} · Exp: ${p.ExportPrice:F2}",
-                    GstDisplay = $"Auto ({p.AutoGstRate}%)",
-                    StockDisplay = $"{p.Stock:N0} {p.Unit}"
+                    CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice * 0.7),
+                    SellingPrice = p.RetailPrice,
+                    Gst = p.AutoGstRate,
+                    Quantity = p.Stock
                 });
             }
 
@@ -180,12 +266,15 @@ namespace AsiErp.ViewModels
                 {
                     Id = r.Id,
                     TypeKey = "raw",
+                    Date = string.IsNullOrWhiteSpace(r.CreatedAt) ? DateTime.Now.ToString("yyyy-MM-dd") : r.CreatedAt,
                     Name = r.Name,
+                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "meter" : r.Unit,
+                    Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku,
                     Barcode = "—",
-                    Subtitle = r.Unit,
-                    PricingDisplay = $"₹{r.Rate:N0} / {r.Unit}",
-                    GstDisplay = $"{r.Gst}%",
-                    StockDisplay = $"{r.Stock:N0} {r.Unit}"
+                    CostPrice = r.Rate,
+                    SellingPrice = r.Rate,
+                    Gst = r.Gst,
+                    Quantity = r.Stock
                 });
             }
 
@@ -196,19 +285,74 @@ namespace AsiErp.ViewModels
                 {
                     Id = g.Id,
                     TypeKey = "gen",
+                    Date = string.IsNullOrWhiteSpace(g.CreatedAt) ? DateTime.Now.ToString("yyyy-MM-dd") : g.CreatedAt,
                     Name = g.Name,
+                    Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit,
+                    Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku,
                     Barcode = "—",
-                    Subtitle = g.Unit,
-                    PricingDisplay = $"₹{g.Rate:N0} / {g.Unit}",
-                    GstDisplay = $"{g.Gst}%",
-                    StockDisplay = $"{g.Stock:N0} {g.Unit}"
+                    CostPrice = g.Rate,
+                    SellingPrice = g.Rate,
+                    Gst = g.Gst,
+                    Quantity = g.Stock
                 });
             }
 
-            foreach (var row in all)
+            // Filter all candidates by the date range
+            var dateFiltered = all.Where(r => MatchDate(r.Date)).ToList();
+
+            // Counts matching date filter
+            int rawCount = dateFiltered.Count(x => x.TypeKey == "raw");
+            int mfgCount = dateFiltered.Count(x => x.TypeKey == "mfg");
+            int readyCount = dateFiltered.Count(x => x.TypeKey == "ready");
+            int genCount = dateFiltered.Count(x => x.TypeKey == "gen");
+
+            if (ActiveFilter == "all")
+            {
+                RawMaterialsCount = rawCount;
+                FinishedProductsCount = mfgCount;
+                ReadymadeProductsCount = readyCount;
+                GeneralItemsCount = genCount;
+                TotalSkusCount = rawCount + mfgCount + readyCount + genCount;
+            }
+            else if (ActiveFilter == "raw")
+            {
+                RawMaterialsCount = rawCount;
+                FinishedProductsCount = 0;
+                ReadymadeProductsCount = 0;
+                GeneralItemsCount = 0;
+                TotalSkusCount = rawCount;
+            }
+            else if (ActiveFilter == "mfg")
+            {
+                RawMaterialsCount = 0;
+                FinishedProductsCount = mfgCount;
+                ReadymadeProductsCount = 0;
+                GeneralItemsCount = 0;
+                TotalSkusCount = mfgCount;
+            }
+            else if (ActiveFilter == "ready")
+            {
+                RawMaterialsCount = 0;
+                FinishedProductsCount = 0;
+                ReadymadeProductsCount = readyCount;
+                GeneralItemsCount = 0;
+                TotalSkusCount = readyCount;
+            }
+            else if (ActiveFilter == "gen")
+            {
+                RawMaterialsCount = 0;
+                FinishedProductsCount = 0;
+                ReadymadeProductsCount = 0;
+                GeneralItemsCount = genCount;
+                TotalSkusCount = genCount;
+            }
+
+            // Populate FilteredRows by ActiveFilter and SearchQuery
+            foreach (var row in dateFiltered)
             {
                 bool matchType = ActiveFilter == "all" || row.TypeKey == ActiveFilter;
-                bool matchQ = string.IsNullOrEmpty(q) || (row.Name + " " + row.Subtitle + " " + row.Barcode).ToLowerInvariant().Contains(q);
+                bool matchQ = string.IsNullOrEmpty(q) ||
+                              (row.Name + " " + row.Sku + " " + row.Barcode + " " + row.Unit + " " + row.TypeLabel).ToLowerInvariant().Contains(q);
 
                 if (matchType && matchQ)
                 {
@@ -232,51 +376,10 @@ namespace AsiErp.ViewModels
                 {
                     var sb = new System.Text.StringBuilder();
 
-                    if (ActiveFilter == "raw")
+                    sb.AppendLine("Date,Item Description,Unit of Measurement,Type,SKU,Barcode,Cost Price,Selling Price,GST,Quantity");
+                    foreach (var r in FilteredRows)
                     {
-                        sb.AppendLine("Name,Unit,Stock,ReorderLevel,Rate,Gst");
-                        foreach (var r in _dataService.RawMaterials)
-                        {
-                            sb.AppendLine($"\"{EscapeCsv(r.Name)}\",\"{EscapeCsv(r.Unit)}\",{r.Stock},{r.ReorderLevel},{r.Rate},{r.Gst}");
-                        }
-                    }
-                    else if (ActiveFilter == "gen")
-                    {
-                        sb.AppendLine("Name,Unit,Stock,ReorderLevel,Rate,Gst");
-                        foreach (var g in _dataService.GeneralItems)
-                        {
-                            sb.AppendLine($"\"{EscapeCsv(g.Name)}\",\"{EscapeCsv(g.Unit)}\",{g.Stock},{g.ReorderLevel},{g.Rate},{g.Gst}");
-                        }
-                    }
-                    else if (ActiveFilter == "mfg" || ActiveFilter == "ready")
-                    {
-                        bool isReady = ActiveFilter == "ready";
-                        var list = _dataService.Products.Where(p => isReady ? p.IsReadymade : p.IsManufactured).ToList();
-                        sb.AppendLine("Name,SKU,Category,Subcategory,Unit,Sizes,Cost,RetailPrice,WholesalePrice,Stock,ReorderLevel,Barcode");
-                        foreach (var p in list)
-                        {
-                            string sizes = string.Join(",", p.Sizes ?? new System.Collections.Generic.List<string>());
-                            sb.AppendLine($"\"{EscapeCsv(p.Name)}\",\"{EscapeCsv(p.Sku)}\",\"{EscapeCsv(p.Category)}\",\"Formal\",\"{EscapeCsv(p.Unit)}\",\"{EscapeCsv(sizes)}\",{p.Cost},{p.RetailPrice},{p.BulkPrice},{p.Stock},{p.ReorderLevel},\"{EscapeCsv(p.Barcode)}\"");
-                        }
-                    }
-                    else
-                    {
-                        // All items unified export matching standard bulk format
-                        sb.AppendLine("ItemType,Name,SKU,Barcode,Category,Unit,Sizes,CostPrice,RetailMRP,WholesalePrice,DomesticPrice,ExportPriceUSD,Stock,ReorderLevel,GST");
-                        foreach (var p in _dataService.Products)
-                        {
-                            string type = p.IsReadymade ? "Readymade" : "Manufactured";
-                            string sizes = string.Join(",", p.Sizes ?? new System.Collections.Generic.List<string>());
-                            sb.AppendLine($"\"{type}\",\"{EscapeCsv(p.Name)}\",\"{EscapeCsv(p.Sku)}\",\"{EscapeCsv(p.Barcode)}\",\"{EscapeCsv(p.Category)}\",\"{EscapeCsv(p.Unit)}\",\"{EscapeCsv(sizes)}\",{p.Cost},{p.RetailPrice},{p.BulkPrice},{p.DomesticPrice},{p.ExportPrice},{p.Stock},{p.ReorderLevel},{p.Gst}");
-                        }
-                        foreach (var r in _dataService.RawMaterials)
-                        {
-                            sb.AppendLine($"\"Raw Material\",\"{EscapeCsv(r.Name)}\",\"\",\"\",\"Material\",\"{EscapeCsv(r.Unit)}\",\"\",{r.Rate},0,0,0,0,{r.Stock},{r.ReorderLevel},{r.Gst}");
-                        }
-                        foreach (var g in _dataService.GeneralItems)
-                        {
-                            sb.AppendLine($"\"General Packaging\",\"{EscapeCsv(g.Name)}\",\"\",\"\",\"Packaging\",\"{EscapeCsv(g.Unit)}\",\"\",{g.Rate},0,0,0,0,{g.Stock},{g.ReorderLevel},{g.Gst}");
-                        }
+                        sb.AppendLine($"\"{EscapeCsv(r.DateDisplay)}\",\"{EscapeCsv(r.Name)}\",\"{EscapeCsv(r.Unit)}\",\"{EscapeCsv(r.TypeLabel)}\",\"{EscapeCsv(r.Sku)}\",\"{EscapeCsv(r.Barcode)}\",{r.CostPrice},{r.SellingPrice},{r.Gst},{r.Quantity}");
                     }
 
                     System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), System.Text.Encoding.UTF8);
@@ -300,6 +403,10 @@ namespace AsiErp.ViewModels
             }
         }
 
-        private static string EscapeCsv(string? val) => (val ?? string.Empty).Replace("\"", "\"\"");
+        private static string EscapeCsv(string val)
+        {
+            if (string.IsNullOrEmpty(val)) return "";
+            return val.Replace("\"", "\"\"");
+        }
     }
 }

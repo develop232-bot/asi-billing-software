@@ -341,10 +341,15 @@
 
                             <!-- Direct Add Product Shortcut with Barcode badge -->
                             <Button Style="{StaticResource ModernSidebarButton}"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=product:editor}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=product:editor}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=product:editor}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=product:editor}"
                                     Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg"
-                                    Foreground="#A5B4FC"
                                     ToolTip="Add new footwear, uniform, or readymade product with auto barcode">
                                 <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=product:editor}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="➕" FontSize="11" Margin="0,0,10,0" VerticalAlignment="Center" Foreground="#38BDF8"/>
                                     <Border DockPanel.Dock="Right" Background="#312E81" CornerRadius="6" Padding="5,1" Margin="4,0,0,0" VerticalAlignment="Center">
                                         <TextBlock Text="Barcode" FontSize="8.5" FontWeight="Bold" Foreground="#A5B4FC"/>

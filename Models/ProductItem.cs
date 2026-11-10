@@ -11,6 +11,9 @@ namespace AsiErp.Models
         [FirestoreProperty("id")]
         public string Id { get; set; } = string.Empty;
 
+        [FirestoreProperty("createdAt")]
+        public string CreatedAt { get; set; } = DateTime.Now.ToString("yyyy-MM-dd");
+
         [FirestoreProperty("sku")]
         public string Sku { get; set; } = string.Empty;
 

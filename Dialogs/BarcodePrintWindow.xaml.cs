@@ -11,12 +11,16 @@ namespace AsiErp.Dialogs
     {
         private readonly ProductItem _product;
 
-        public BarcodePrintWindow(ProductItem product)
+        public BarcodePrintWindow(ProductItem product, int initialCopies = 1)
         {
             InitializeComponent();
             _product = product ?? throw new ArgumentNullException(nameof(product));
 
             LoadProductInfo();
+            if (initialCopies > 0 && TxtCopies != null)
+            {
+                TxtCopies.Text = initialCopies.ToString();
+            }
         }
 
         private void LoadProductInfo()

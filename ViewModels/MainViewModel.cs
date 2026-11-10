@@ -28,6 +28,7 @@ namespace AsiErp.ViewModels
         public SalesViewModel SalesVM { get; }
         public DomesticInvoiceViewModel DomesticInvoiceVM { get; }
         public ExportInvoiceViewModel ExportInvoiceVM { get; }
+        public ProductItemEditorViewModel ProductItemEditorVM { get; }
         public PurchaseViewModel PurchaseVM { get; }
         public ProductionViewModel ProductionVM { get; }
         public StockViewModel StockVM { get; }
@@ -207,6 +208,7 @@ namespace AsiErp.ViewModels
             SalesVM = new SalesViewModel(_dataService, NavigateTo, OpenDialog);
             DomesticInvoiceVM = new DomesticInvoiceViewModel(_dataService, NavigateTo, OpenDialog);
             ExportInvoiceVM = new ExportInvoiceViewModel(_dataService, NavigateTo, OpenDialog);
+            ProductItemEditorVM = new ProductItemEditorViewModel(_dataService, NavigateTo, OpenDialog);
             PurchaseVM = new PurchaseViewModel(_dataService, OpenDialog, "raw");
             ProductionVM = new ProductionViewModel(_dataService, OpenDialog);
             StockVM = new StockViewModel(_dataService, OpenDialog, "raw");
@@ -575,6 +577,10 @@ namespace AsiErp.ViewModels
                 CurrentBreadcrumb = "Products";
                 CurrentView = ProductsVM;
             }
+            else if (route == "product:editor" || route == "product:new")
+            {
+                NavigateToProductEditor("mfg", null, "products");
+            }
             else if (route.StartsWith("acc:"))
             {
                 string tab = route.Split(':')[1];
@@ -614,8 +620,24 @@ namespace AsiErp.ViewModels
             }
         }
 
+        public void NavigateToProductEditor(string type, object? existingItem = null, string returnRoute = "products")
+        {
+            IsNotificationPopupOpen = false;
+            IsNewMenuOpen = false;
+            ProductItemEditorVM.LoadItem(type, existingItem, returnRoute);
+            ActiveRoute = "product:editor";
+            CurrentBreadcrumb = existingItem != null ? $"Products · {ProductItemEditorVM.Title}" : "Products · Add New Item";
+            CurrentView = ProductItemEditorVM;
+        }
+
         public void OpenDialog(string dialogType, object? parameter)
         {
+            if (dialogType.StartsWith("product_edit_"))
+            {
+                string type = dialogType.Replace("product_edit_", "");
+                NavigateToProductEditor(type, parameter, ActiveRoute);
+                return;
+            }
             RequestOpenDialog?.Invoke(dialogType, parameter);
         }
 

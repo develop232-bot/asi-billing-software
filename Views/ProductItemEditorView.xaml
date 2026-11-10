@@ -1,0 +1,278 @@
+<UserControl x:Class="AsiErp.Views.ProductItemEditorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,20,28,32">
+        <StackPanel MaxWidth="1050" HorizontalAlignment="Stretch">
+            <!-- Top Header & Navigation Bar -->
+            <DockPanel Margin="0,0,0,20">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Product &amp; Item Master Record Editor" FontSize="12" Foreground="#64748B" Margin="0,3,0,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="📥 Bulk CSV Upload" Command="{Binding BulkUploadCommand}"
+                            Padding="14,8" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0"/>
+
+                    <Button Content="💾 Save Item" Command="{Binding SaveCommand}"
+                            Padding="20,9" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
+                            Cursor="Hand" FontWeight="Bold" FontSize="12.5"/>
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Card 1: Item Classification / Type -->
+            <Border Background="White" Padding="20" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <StackPanel>
+                    <TextBlock Text="ITEM CLASSIFICATION" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
+                    <ComboBox SelectedValue="{Binding ItemType, Mode=TwoWay}" SelectedValuePath="Tag"
+                              IsEnabled="{Binding CanChangeType}" Padding="10,9" FontSize="13" BorderBrush="#CBD5E1">
+                        <ComboBoxItem Content="Raw Material" Tag="raw"/>
+                        <ComboBoxItem Content="Finished Product" Tag="mfg"/>
+                        <ComboBoxItem Content="Readymade Product" Tag="ready"/>
+                        <ComboBoxItem Content="General Packaging" Tag="gen"/>
+                    </ComboBox>
+                </StackPanel>
+            </Border>
+
+            <!-- Card 2: Details & Inventory -->
+            <Border Background="White" Padding="20" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="10" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <StackPanel>
+                    <!-- ============================================== -->
+                    <!-- FINISHED PRODUCT & READYMADE PRODUCT FORM      -->
+                    <!-- ============================================== -->
+                    <Grid Visibility="{Binding ProductVisibility}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ROW 0: Category, Unit, Item Name in that order -->
+                        <!-- Category (Only for products, same size as Unit) -->
+                        <StackPanel Grid.Row="0" Grid.Column="0" Width="220" Margin="0,0,14,16">
+                            <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                            <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Category, Mode=TwoWay}" Padding="10,8" FontSize="12.5" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- Unit of Measurement (Manual input, same size as Category) -->
+                        <StackPanel Grid.Row="0" Grid.Column="1" Width="220" Margin="0,0,14,16">
+                            <TextBlock Text="Unit of Measurement *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                            <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- Item Name (Full remaining width) -->
+                        <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,16">
+                            <TextBlock Text="Item Name *" FontWeight="SemiBold" FontSize="12.5" Foreground="#334155" Margin="0,0,0,6"/>
+                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- ROW 1: Sizes and Quantity in row (same size) -->
+                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Sizes -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Sizes" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Sizes, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="12.5" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Quantity -->
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ROW 2: SKU, HSN, Barcode in down next row -->
+                        <Grid Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- SKU -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="12.5" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- HSN -->
+                            <StackPanel Grid.Column="1" Margin="0,0,14,0">
+                                <TextBlock Text="HSN" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding HsnCode, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Barcode -->
+                            <StackPanel Grid.Column="2">
+                                <DockPanel Margin="0,0,0,6">
+                                    <TextBlock Text="Barcode" FontWeight="SemiBold" FontSize="12" Foreground="#334155" VerticalAlignment="Center"/>
+                                    <Button Content="🖨️ Print Label" Command="{Binding PrintBarcodeCommand}" HorizontalAlignment="Right" Padding="8,3" FontSize="11" Background="#F1F5F9" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand"/>
+                                </DockPanel>
+                                <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ROW 3: Cost price, Selling price in next down row -->
+                        <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Cost Price -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Cost Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Selling Price -->
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Selling Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding SellingPrice, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ROW 4: Low Alert, Medium Alert in down row -->
+                        <Grid Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Low Alert -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Low Alert" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding LowAlertLevel, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Medium Alert -->
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Medium Alert" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding MediumAlertLevel, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+                    </Grid>
+
+                    <!-- ============================================== -->
+                    <!-- RAW MATERIAL & GENERAL / PACKAGING FORM        -->
+                    <!-- ============================================== -->
+                    <StackPanel Visibility="{Binding RawOrGenVisibility}">
+                        <!-- ROW 0: Item Name (Long size / full width as Item Classification) -->
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="Item Name *" FontWeight="SemiBold" FontSize="12.5" Foreground="#334155" Margin="0,0,0,6"/>
+                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- ROW 1: Unit of Measurement & Quantity below Item Name (both same size) -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Unit of Measurement -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Unit of Measurement *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Quantity -->
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ROW 2: SKU (Long size as Item Name below Unit & Quantity) -->
+                        <StackPanel Margin="0,0,0,16">
+                            <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                            <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="12.5" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- ROW 3: Cost Price & Selling Price below SKU -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Cost Price -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Cost Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Selling Price -->
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Selling Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding SellingPrice, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- ROW 4: Low Alert & Medium Alert (without numbers) -->
+                        <Grid Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Low Alert -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Low Alert" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding LowAlertLevel, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+
+                            <!-- Medium Alert -->
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="Medium Alert" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding MediumAlertLevel, UpdateSourceTrigger=PropertyChanged}" Padding="10,8" FontSize="13" BorderBrush="#CBD5E1"/>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- Bottom Sticky Action Bar -->
+            <Border Background="White" Padding="18,14" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.05"/>
+                </Border.Effect>
+                <DockPanel>
+                    <Button Content="🖨️ Print Barcode Label" Command="{Binding PrintBarcodeCommand}"
+                            Visibility="{Binding ProductVisibility}"
+                            Padding="16,9" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="12"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancel" Command="{Binding CancelCommand}"
+                                Padding="18,9" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1"
+                                Cursor="Hand" FontWeight="SemiBold" FontSize="12.5" Margin="0,0,12,0"/>
+
+                        <Button Content="💾 Save Item" Command="{Binding SaveCommand}"
+                                Padding="24,9" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
+                                Cursor="Hand" FontWeight="Bold" FontSize="12.5"/>
+                    </StackPanel>
+                </DockPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

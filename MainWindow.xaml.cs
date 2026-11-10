@@ -140,6 +140,7 @@ namespace AsiErp
                     nameof(ProductionViewModel) => new Views.ProductionView(),
                     nameof(StockViewModel) => new Views.StockView(),
                     nameof(ProductsViewModel) => new Views.ProductsView(),
+                    nameof(ProductItemEditorViewModel) => new Views.ProductItemEditorView(),
                     nameof(AccountsViewModel) => new Views.AccountsView(),
                     _ => null
                 };
@@ -218,30 +219,12 @@ namespace AsiErp
                     }
 
                 case "product_edit_mfg":
-                    {
-                        var dlg = new ProductEditWindow("mfg", parameter) { Owner = this };
-                        dlg.ShowDialog();
-                        break;
-                    }
-
                 case "product_edit_ready":
-                    {
-                        var dlg = new ProductEditWindow("ready", parameter) { Owner = this };
-                        dlg.ShowDialog();
-                        break;
-                    }
-
                 case "product_edit_raw":
-                    {
-                        var dlg = new ProductEditWindow("raw", parameter) { Owner = this };
-                        dlg.ShowDialog();
-                        break;
-                    }
-
                 case "product_edit_gen":
                     {
-                        var dlg = new ProductEditWindow("gen", parameter) { Owner = this };
-                        dlg.ShowDialog();
+                        string type = dialogType.Replace("product_edit_", "");
+                        _viewModel?.NavigateToProductEditor(type, parameter, _viewModel.ActiveRoute);
                         break;
                     }
 

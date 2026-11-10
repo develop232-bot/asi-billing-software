@@ -9,7 +9,7 @@
     GitHub repository URL (default: https://github.com/Qnext232/AsiErp).
 #>
 param(
-    [string]$Version = "2.1.0",
+    [string]$Version = "2.1.1",
     [string]$GithubToken = "",
     [string]$RepoUrl = "https://github.com/develop232-bot/asi-billing-software"
 )
@@ -55,7 +55,7 @@ vpk pack --packId AsiErp `
 # 4. Upload to GitHub if token provided
 if (-not [string]::IsNullOrWhiteSpace($GithubToken)) {
     Write-Host "[4/4] Uploading release v$Version to GitHub ($RepoUrl)..." -ForegroundColor Yellow
-    vpk upload github --repoUrl "$RepoUrl" --token "$GithubToken" --outputDir "$ReleasesDir" --publish
+    vpk upload github --repoUrl "$RepoUrl" --token "$GithubToken" --outputDir "$ReleasesDir" --tag "$Version" --releaseName "ASI ERP v$Version" --publish
     Write-Host "✅ Successfully published release v$Version to GitHub!" -ForegroundColor Green
 } else {
     Write-Host "[4/4] Release generated locally in '$ReleasesDir'." -ForegroundColor Cyan

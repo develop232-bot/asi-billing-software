@@ -65,9 +65,10 @@
                 </StackPanel>
             </DockPanel>
 
-            <!-- Stat Counters -->
-            <UniformGrid Columns="4" Margin="0,0,0,20">
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+            <!-- Stat Counters (5 KPI Boxes) -->
+            <UniformGrid Columns="5" Margin="0,0,0,20">
+                <!-- 1. Total Active SKUs -->
+                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
@@ -78,36 +79,47 @@
                     </StackPanel>
                 </Border>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- 2. Raw Materials -->
+                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Saleable Products" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding SaleProductsCount}" FontSize="24" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
-                        <TextBlock Text="Shoes, apparel &amp; accessories" FontSize="11" Foreground="#94A3B8"/>
-                    </StackPanel>
-                </Border>
-
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Raw Materials (BOM)" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="Raw Materials" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding RawMaterialsCount}" FontSize="24" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
-                        <TextBlock Text="Leather, sole, fabric, trims" FontSize="11" Foreground="#94A3B8"/>
                     </StackPanel>
                 </Border>
 
-                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- 3. Finished Products -->
+                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="General &amp; Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="Finished Products" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding FinishedProductsCount}" FontSize="24" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 4. Readymade Products -->
+                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Readymade Products" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding ReadymadeProductsCount}" FontSize="24" FontWeight="Bold" Foreground="#059669" Margin="0,5,0,2"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- 5. General Packaging -->
+                <Border Background="White" Padding="16,14" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="General Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding GeneralItemsCount}" FontSize="24" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
-                        <TextBlock Text="Boxes, tape, bags &amp; misc" FontSize="11" Foreground="#94A3B8"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
@@ -118,16 +130,32 @@
                     <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
                 <DockPanel>
-                    <!-- Filter Tools with Dynamic Active Color Chips -->
+                    <!-- Filter Bar: Search, Date Range (From - To), and Category Tabs -->
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6" Margin="0,0,16,0"/>
+                        <!-- Left: Search Box -->
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="200" Padding="10,6" Margin="0,0,14,0" VerticalAlignment="Center"/>
 
-                        <!-- Type Chips -->
-                        <StackPanel Orientation="Horizontal">
+                        <!-- Center: Date Filter (From - To) -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
+                            <TextBlock Text="From:" VerticalAlignment="Center" FontSize="11.5" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,5,0"/>
+                            <DatePicker SelectedDate="{Binding FromDate, Mode=TwoWay}" Width="120" FontSize="11.5" VerticalAlignment="Center"/>
+                            <TextBlock Text="To:" VerticalAlignment="Center" FontSize="11.5" FontWeight="SemiBold" Foreground="#64748B" Margin="10,0,5,0"/>
+                            <DatePicker SelectedDate="{Binding ToDate, Mode=TwoWay}" Width="120" FontSize="11.5" VerticalAlignment="Center"/>
+                            <Button Content="✕" Command="{Binding ClearDateFilterCommand}" ToolTip="Reset Date Filter"
+                                    Padding="6,3" Margin="6,0,0,0" Background="#F1F5F9" Foreground="#64748B" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11"/>
+                        </StackPanel>
+
+                        <!-- Right: Type Tabs (Order: All, Raw Material, Finished Product, Readymade Product, General Packaging) -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                             <Button Content="All" Command="{Binding SetFilterCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                            <Button Content="Raw Material" Command="{Binding SetFilterCommand}" CommandParameter="raw" Margin="0,0,4,0" Padding="12,5"
+                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
+                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
+                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
                                     BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
                             <Button Content="Finished Product" Command="{Binding SetFilterCommand}" CommandParameter="mfg" Margin="0,0,4,0" Padding="12,5"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=mfg}"
@@ -139,12 +167,7 @@
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
                                     BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Raw Material" Command="{Binding SetFilterCommand}" CommandParameter="raw" Margin="0,0,4,0" Padding="12,5"
-                                    Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
-                                    Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
-                                    BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="General" Command="{Binding SetFilterCommand}" CommandParameter="gen" Padding="12,5"
+                            <Button Content="General Packaging" Command="{Binding SetFilterCommand}" CommandParameter="gen" Padding="12,5"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
@@ -152,37 +175,57 @@
                         </StackPanel>
                     </DockPanel>
 
-                    <!-- Catalog Table -->
-                    <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                    <!-- Catalog Table: Date / item description / unit of measurement / Type / SKU / barcode / cost price / selling price / GST / quantity -->
+                    <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                              AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Item Description" Width="1.5*">
+                            <!-- 1. Date -->
+                            <DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="95"/>
+
+                            <!-- 2. Item Description -->
+                            <DataGridTemplateColumn Header="Item Description" Width="1.8*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <StackPanel VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
-                                        </StackPanel>
+                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Type" Width="135">
+                            <!-- 3. Unit of Measurement -->
+                            <DataGridTextColumn Header="Unit of Measurement" Binding="{Binding Unit}" Width="135"/>
+
+                            <!-- 4. Type -->
+                            <DataGridTemplateColumn Header="Type" Width="130">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="#F1F5F9">
+                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="#F1F5F9" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeColor}" FontSize="10.5" FontWeight="SemiBold"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTextColumn Header="Barcode (EAN-13)" Binding="{Binding Barcode}" Width="145" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
-                            <DataGridTextColumn Header="Pricing Structure" Binding="{Binding PricingDisplay}" Width="2*"/>
-                            <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" Width="90"/>
-                            <DataGridTextColumn Header="Stock" Binding="{Binding StockDisplay}" Width="105" FontWeight="Bold"/>
+                            <!-- 5. SKU -->
+                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="110" FontWeight="SemiBold"/>
 
-                            <!-- Actions: Edit and Barcode Label Print -->
-                            <DataGridTemplateColumn Header="Actions" Width="155">
+                            <!-- 6. Barcode -->
+                            <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="125" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+
+                            <!-- 7. Cost Price -->
+                            <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPriceDisplay}" Width="100"/>
+
+                            <!-- 8. Selling Price -->
+                            <DataGridTextColumn Header="Selling Price" Binding="{Binding SellingPriceDisplay}" Width="100"/>
+
+                            <!-- 9. GST -->
+                            <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" Width="75"/>
+
+                            <!-- 10. Quantity -->
+                            <DataGridTextColumn Header="Quantity" Binding="{Binding QuantityDisplay}" Width="90" FontWeight="Bold"/>
+
+                            <!-- 11. Actions -->
+                            <DataGridTemplateColumn Header="Actions" Width="145">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
