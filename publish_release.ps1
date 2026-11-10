@@ -9,7 +9,7 @@
     GitHub repository URL (default: https://github.com/Qnext232/AsiErp).
 #>
 param(
-    [string]$Version = "2.1.1",
+    [string]$Version = "2.1.2",
     [string]$GithubToken = "",
     [string]$RepoUrl = "https://github.com/develop232-bot/asi-billing-software"
 )

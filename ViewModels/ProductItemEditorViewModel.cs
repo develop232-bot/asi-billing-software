@@ -518,7 +518,9 @@ namespace AsiErp.ViewModels
                     rm.Gst = GstPercent;
                     rm.Stock = Quantity;
                     rm.ReorderLevel = LowAlertLevel;
-                    rm.Sku = string.IsNullOrWhiteSpace(Sku) ? rm.Id : Sku.Trim();
+                    rm.Sku = string.IsNullOrWhiteSpace(Sku)
+                        ? "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3")
+                        : Sku.Trim();
 
                     await _dataService.SaveRawMaterialAsync(rm);
                 }
@@ -531,7 +533,9 @@ namespace AsiErp.ViewModels
                     gi.Gst = GstPercent;
                     gi.Stock = Quantity;
                     gi.ReorderLevel = LowAlertLevel;
-                    gi.Sku = string.IsNullOrWhiteSpace(Sku) ? gi.Id : Sku.Trim();
+                    gi.Sku = string.IsNullOrWhiteSpace(Sku)
+                        ? "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3")
+                        : Sku.Trim();
 
                     await _dataService.SaveGeneralItemAsync(gi);
                 }
