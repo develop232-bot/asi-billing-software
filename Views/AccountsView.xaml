@@ -156,7 +156,7 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Salary" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="Salaries" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding SalaryExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
                             <TextBlock Text="Staff &amp; worker salaries" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
@@ -176,9 +176,9 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Yearly Licences" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding YearlyExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Insurance &amp; pollution NOC" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Miscellaneous" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding MiscellaneousExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="Licences, insurance &amp; general" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
                     <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
@@ -201,26 +201,26 @@
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
                             <TextBlock Text="Expense Register" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <!-- Filter Tabs: All, Salary, Utilities, Yearly, Purchase -->
+                                <!-- Filter Tabs: All, Salaries, Utilities, Miscellaneous, Purchase -->
                                 <Button Content="All" Command="{Binding SetExpenseFreqCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
                                         Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                         Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                         BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Salary" Command="{Binding SetExpenseFreqCommand}" CommandParameter="salary" Margin="0,0,4,0" Padding="12,5"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=salary}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=salary}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=salary}"
+                                <Button Content="Salaries" Command="{Binding SetExpenseFreqCommand}" CommandParameter="salaries" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=salaries}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=salaries}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=salaries}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
                                 <Button Content="Utilities" Command="{Binding SetExpenseFreqCommand}" CommandParameter="utilities" Margin="0,0,4,0" Padding="12,5"
                                         Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=utilities}"
                                         Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=utilities}"
                                         BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=utilities}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Yearly" Command="{Binding SetExpenseFreqCommand}" CommandParameter="yearly" Margin="0,0,4,0" Padding="12,5"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=yearly}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=yearly}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=yearly}"
+                                <Button Content="Miscellaneous" Command="{Binding SetExpenseFreqCommand}" CommandParameter="misc" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=misc}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=misc}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=misc}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
                                 <Button Content="Purchase" Command="{Binding SetExpenseFreqCommand}" CommandParameter="purchase" Margin="0,0,12,0" Padding="12,5"
                                         Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=purchase}"

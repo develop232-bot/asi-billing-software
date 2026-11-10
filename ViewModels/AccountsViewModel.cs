@@ -106,6 +106,7 @@ namespace AsiErp.ViewModels
         public double SalaryExpenseTotal { get; private set; }
         public double UtilitiesExpenseTotal { get; private set; }
         public double YearlyExpenseTotal { get; private set; }
+        public double MiscellaneousExpenseTotal => YearlyExpenseTotal;
         public double PurchaseExpenseTotal { get; private set; }
         public double DailyExpenseTotal { get; private set; }
         public double MonthlyExpenseTotal { get; private set; }
@@ -235,6 +236,7 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(SalaryExpenseTotal));
             OnPropertyChanged(nameof(UtilitiesExpenseTotal));
             OnPropertyChanged(nameof(YearlyExpenseTotal));
+            OnPropertyChanged(nameof(MiscellaneousExpenseTotal));
             OnPropertyChanged(nameof(PurchaseExpenseTotal));
             OnPropertyChanged(nameof(DailyExpenseTotal));
             OnPropertyChanged(nameof(MonthlyExpenseTotal));
@@ -341,9 +343,9 @@ namespace AsiErp.ViewModels
                 {
                     bool match = SelectedExpenseFreq.ToLowerInvariant() switch
                     {
-                        "salary" => IsSalary(e),
+                        "salary" or "salaries" => IsSalary(e),
                         "utilities" => IsUtilities(e),
-                        "yearly" => IsYearly(e),
+                        "yearly" or "misc" or "miscellaneous" => IsYearly(e),
                         "purchase" => IsPurchase(e),
                         "daily" => e.Frequency.Equals("Daily", StringComparison.OrdinalIgnoreCase),
                         "monthly" => e.Frequency.Equals("Monthly", StringComparison.OrdinalIgnoreCase),
