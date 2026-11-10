@@ -21,32 +21,15 @@
                     <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Content="📤 Export CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12"/>
+                    <Button Content="📤 Download CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12"/>
                 </StackPanel>
             </DockPanel>
 
-            <!-- Subtabs -->
+            <!-- Active Category Option / Pill at Top -->
             <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-                <Button Content="Raw Material Stock" Command="{Binding SetTabCommand}" CommandParameter="raw" Margin="0,0,8,0" Padding="14,6"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Finished Products" Command="{Binding SetTabCommand}" CommandParameter="fg" Margin="0,0,8,0" Padding="14,6"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=fg}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=fg}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=fg}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Readymade Stock" Command="{Binding SetTabCommand}" CommandParameter="ready" Margin="0,0,8,0" Padding="14,6"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Packaging &amp; General" Command="{Binding SetTabCommand}" CommandParameter="gen" Padding="14,6"
-                        Background="{Binding ActiveTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
-                        Foreground="{Binding ActiveTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
-                        BorderBrush="{Binding ActiveTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
-                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+                <Border Background="#172443" CornerRadius="8" Padding="14,7">
+                    <TextBlock Text="{Binding Title}" Foreground="White" FontWeight="SemiBold" FontSize="12"/>
+                </Border>
             </StackPanel>
 
             <!-- 4 Stats Tiles -->
@@ -57,8 +40,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Total SKUs / Items" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding Items.Count}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Categories in group" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding Items.Count}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -68,8 +50,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Total Stock Value" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TotalValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Valued at purchase / cost rate" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding TotalValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -79,8 +60,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Low or Out of Stock" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding LowStockCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                        <TextBlock Text="Below reorder threshold" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding LowStockCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -90,8 +70,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Units on Hand" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TotalUnitsOnHand, StringFormat={}{0:N0}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,2"/>
-                        <TextBlock Text="Physical inventory count" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding TotalUnitsOnHand, StringFormat={}{0:N0}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
@@ -103,7 +82,7 @@
                 </Border.Effect>
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6"/>
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" HorizontalAlignment="Left" Padding="10,6"/>
                     </DockPanel>
 
                     <!-- Stock Table -->
@@ -122,6 +101,7 @@
 
                             <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="130" MinWidth="80" FontWeight="SemiBold" Foreground="#334155"/>
                             <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="85" MinWidth="50" Foreground="#475569"/>
+                            <DataGridTextColumn Header="Stock" Binding="{Binding Stock, StringFormat={}{0:N0}}" Width="95" MinWidth="60" FontWeight="Bold" Foreground="#0F172A"/>
                             <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="110" MinWidth="70" FontWeight="SemiBold"/>
                             <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="115" MinWidth="80" FontWeight="Bold" Foreground="#0F172A"/>
 
