@@ -19,6 +19,16 @@ namespace AsiErp.Helpers
         public static bool GetIsSmoothScrollEnabled(DependencyObject obj) => (bool)obj.GetValue(IsSmoothScrollEnabledProperty);
         public static void SetIsSmoothScrollEnabled(DependencyObject obj, bool value) => obj.SetValue(IsSmoothScrollEnabledProperty, value);
 
+        public static readonly DependencyProperty BubbleMouseWheelProperty =
+            DependencyProperty.RegisterAttached(
+                "BubbleMouseWheel",
+                typeof(bool),
+                typeof(SmoothScrollHelper),
+                new PropertyMetadata(false, OnBubbleMouseWheelChanged));
+
+        public static bool GetBubbleMouseWheel(DependencyObject obj) => (bool)obj.GetValue(BubbleMouseWheelProperty);
+        public static void SetBubbleMouseWheel(DependencyObject obj, bool value) => obj.SetValue(BubbleMouseWheelProperty, value);
+
         private static readonly DependencyProperty TargetOffsetProperty =
             DependencyProperty.RegisterAttached(
                 "TargetOffset",
@@ -40,7 +50,14 @@ namespace AsiErp.Helpers
                 typeof(SmoothScrollHelper),
                 new PropertyMetadata(1.0));
 
-        private static readonly DependencyProperty CurrentVerticalOffsetProperty =
+        private static readonly DependencyProperty IsAnimatingProperty =
+            DependencyProperty.RegisterAttached(
+                "IsAnimating",
+                typeof(bool),
+                typeof(SmoothScrollHelper),
+                new PropertyMetadata(false));
+
+        public static readonly DependencyProperty CurrentVerticalOffsetProperty =
             DependencyProperty.RegisterAttached(
                 "CurrentVerticalOffset",
                 typeof(double),
@@ -73,14 +90,60 @@ namespace AsiErp.Helpers
             }
         }
 
+        private static void OnBubbleMouseWheelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is UIElement element)
+            {
+                if ((bool)e.NewValue)
+                {
+                    element.PreviewMouseWheel += Element_PreviewMouseWheel;
+                }
+                else
+                {
+                    element.PreviewMouseWheel -= Element_PreviewMouseWheel;
+                }
+            }
+        }
+
+        private static void Element_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is not UIElement element || e.Handled) return;
+
+            // Find parent ScrollViewer
+            DependencyObject current = element;
+            ScrollViewer? parentScroll = null;
+            while (current != null)
+            {
+                current = System.Windows.Media.VisualTreeHelper.GetParent(current);
+                if (current is ScrollViewer sv)
+                {
+                    parentScroll = sv;
+                    break;
+                }
+            }
+
+            if (parentScroll != null && parentScroll.ScrollableHeight > 0)
+            {
+                // Forward the event to parent ScrollViewer smoothly
+                var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
+                {
+                    RoutedEvent = UIElement.MouseWheelEvent,
+                    Source = sender
+                };
+                parentScroll.RaiseEvent(eventArg);
+                e.Handled = true;
+            }
+        }
+
         private static void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             if (sender is not ScrollViewer scrollViewer) return;
 
-            // If user scrolled via scrollbar thumb drag or keyboard, keep target in sync
-            if (Math.Abs(e.VerticalChange) > 0 && Math.Abs(e.VerticalOffset - (double)scrollViewer.GetValue(TargetOffsetProperty)) > 250)
+            // Only sync target if the user manually dragged the scrollbar thumb or used page keys (not during animation)
+            bool isAnimating = (bool)scrollViewer.GetValue(IsAnimatingProperty);
+            if (!isAnimating && Math.Abs(e.VerticalChange) > 0)
             {
-                scrollViewer.SetValue(TargetOffsetProperty, e.VerticalOffset);
+                scrollViewer.SetValue(TargetOffsetProperty, scrollViewer.VerticalOffset);
             }
         }
 
@@ -96,14 +159,14 @@ namespace AsiErp.Helpers
             long lastTime = (long)scrollViewer.GetValue(LastWheelTimeProperty);
             scrollViewer.SetValue(LastWheelTimeProperty, now);
 
-            // Calculate elapsed time in ms between consecutive wheel clicks
+            // Elapsed milliseconds between wheel notches
             double elapsedMs = (lastTime > 0) ? (now - lastTime) * 1000.0 / Stopwatch.Frequency : 1000.0;
 
-            // Velocity acceleration: rapid scrolling speeds up naturally (up to 2.5x)
+            // Momentum acceleration: continuous flicks accelerate smoothly up to 2.8x
             double multiplier = (double)scrollViewer.GetValue(VelocityMultiplierProperty);
-            if (elapsedMs < 160)
+            if (elapsedMs < 180)
             {
-                multiplier = Math.Min(2.5, multiplier + 0.45);
+                multiplier = Math.Min(2.8, multiplier + 0.35);
             }
             else
             {
@@ -111,13 +174,15 @@ namespace AsiErp.Helpers
             }
             scrollViewer.SetValue(VelocityMultiplierProperty, multiplier);
 
-            // Fast, satisfying base step: 180px per wheel click * multiplier
-            double step = -(delta / 120.0) * 180.0 * multiplier;
+            // Web-like continuous scroll step: ~135px per notch * multiplier
+            double step = -(delta / 120.0) * 135.0 * multiplier;
 
             double currentTarget = (double)scrollViewer.GetValue(TargetOffsetProperty);
 
-            // If direction changed (scrolling other way), snap target to current offset immediately
-            if ((step > 0 && currentTarget < scrollViewer.VerticalOffset) ||
+            // If animation wasn't running or direction reversed, start from actual current position
+            bool isAnimating = (bool)scrollViewer.GetValue(IsAnimatingProperty);
+            if (!isAnimating ||
+                (step > 0 && currentTarget < scrollViewer.VerticalOffset) ||
                 (step < 0 && currentTarget > scrollViewer.VerticalOffset))
             {
                 currentTarget = scrollViewer.VerticalOffset;
@@ -125,14 +190,21 @@ namespace AsiErp.Helpers
 
             double newTarget = Math.Clamp(currentTarget + step, 0, scrollViewer.ScrollableHeight);
             scrollViewer.SetValue(TargetOffsetProperty, newTarget);
+            scrollViewer.SetValue(IsAnimatingProperty, true);
 
-            // Snappy, silky-smooth animation: 120ms with QuadraticEase
+            // Silky-smooth website-like glide: 260ms with CubicEase Out
             var animation = new DoubleAnimation
             {
                 From = scrollViewer.VerticalOffset,
                 To = newTarget,
-                Duration = TimeSpan.FromMilliseconds(120),
-                EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+                Duration = TimeSpan.FromMilliseconds(260),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+
+            animation.Completed += (s, args) =>
+            {
+                scrollViewer.SetValue(IsAnimatingProperty, false);
+                scrollViewer.SetValue(TargetOffsetProperty, scrollViewer.VerticalOffset);
             };
 
             scrollViewer.BeginAnimation(CurrentVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);

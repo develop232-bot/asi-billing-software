@@ -639,6 +639,19 @@
             <Setter Property="SelectionMode" Value="Single"/>
             <Setter Property="SelectionUnit" Value="FullRow"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+            <Setter Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="True"/>
+            <Setter Property="helpers:SmoothScrollHelper.BubbleMouseWheel" Value="True"/>
+        </Style>
+
+        <Style TargetType="{x:Type ListBox}">
+            <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+            <Setter Property="helpers:SmoothScrollHelper.BubbleMouseWheel" Value="True"/>
+        </Style>
+
+        <Style TargetType="{x:Type ListView}">
+            <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+            <Setter Property="helpers:SmoothScrollHelper.BubbleMouseWheel" Value="True"/>
         </Style>
 
         <!-- ============================================== -->

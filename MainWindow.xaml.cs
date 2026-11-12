@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using AsiErp.Dialogs;
 using AsiErp.Models;
 using AsiErp.Services;
@@ -153,7 +155,25 @@ namespace AsiErp
             if (view != null)
             {
                 view.DataContext = currentVm;
-                MainContentArea.Content = view;
+                if (!ReferenceEquals(MainContentArea.Content, view))
+                {
+                    MainContentArea.Content = view;
+                    var translate = new TranslateTransform(0, 8);
+                    view.RenderTransform = translate;
+                    view.Opacity = 0.0;
+
+                    var fadeIn = new System.Windows.Media.Animation.DoubleAnimation(0.0, 1.0, TimeSpan.FromMilliseconds(220))
+                    {
+                        EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
+                    };
+                    var slideIn = new System.Windows.Media.Animation.DoubleAnimation(8.0, 0.0, TimeSpan.FromMilliseconds(220))
+                    {
+                        EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
+                    };
+
+                    view.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+                    translate.BeginAnimation(TranslateTransform.YProperty, slideIn);
+                }
             }
         }
 
