@@ -25,6 +25,8 @@ namespace AsiErp.Services
         public List<WorkOrderDoc> WorkOrders { get; set; } = new();
         public List<ExpenseItem> Expenses { get; set; } = new();
         public List<InvestmentItem> Investments { get; set; } = new();
+        public List<LoanItem> Loans { get; set; } = new();
+        public List<AssetItem> Assets { get; set; } = new();
         public Dictionary<string, int> Sequences { get; set; } = new();
 
         public bool IsSampleDataLoaded { get; set; } = true;
@@ -100,6 +102,8 @@ namespace AsiErp.Services
                     WorkOrders,
                     Expenses,
                     Investments,
+                    Loans,
+                    Assets,
                     Sequences,
                     IsSampleDataLoaded
                 };
@@ -135,6 +139,10 @@ namespace AsiErp.Services
                         Expenses = JsonSerializer.Deserialize<List<ExpenseItem>>(eElem.GetRawText()) ?? new();
                     if (root.TryGetProperty("Investments", out var iElem))
                         Investments = JsonSerializer.Deserialize<List<InvestmentItem>>(iElem.GetRawText()) ?? new();
+                    if (root.TryGetProperty("Loans", out var lElem))
+                        Loans = JsonSerializer.Deserialize<List<LoanItem>>(lElem.GetRawText()) ?? new();
+                    if (root.TryGetProperty("Assets", out var aElem))
+                        Assets = JsonSerializer.Deserialize<List<AssetItem>>(aElem.GetRawText()) ?? new();
                     if (root.TryGetProperty("Sequences", out var sqElem))
                         Sequences = JsonSerializer.Deserialize<Dictionary<string, int>>(sqElem.GetRawText()) ?? new();
                     if (root.TryGetProperty("IsSampleDataLoaded", out var smElem))
@@ -175,6 +183,8 @@ namespace AsiErp.Services
             WorkOrders.Clear();
             Expenses.Clear();
             Investments.Clear();
+            Loans.Clear();
+            Assets.Clear();
             Sequences.Clear();
             IsSampleDataLoaded = false;
             SyncQueue.ClearQueue();
@@ -190,6 +200,8 @@ namespace AsiErp.Services
             Purchases = new();
             Expenses = new();
             Investments = new();
+            Loans = new();
+            Assets = new();
             WorkOrders = new();
             Sequences = new();
 
@@ -634,6 +646,45 @@ namespace AsiErp.Services
             {
                 SyncQueue.EnqueueDelete("investments", id);
             }
+            return Task.CompletedTask;
+        }
+
+        public Task AddLoanAsync(LoanItem loan)
+        {
+            Loans.Insert(0, loan);
+            NotifyDataChanged();
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteLoanAsync(string id)
+        {
+            Loans.RemoveAll(x => x.Id == id);
+            NotifyDataChanged();
+            return Task.CompletedTask;
+        }
+
+        public Task AddLoanRepaymentAsync(string loanId, LoanRepayment rep)
+        {
+            var loan = Loans.FirstOrDefault(l => l.Id == loanId);
+            if (loan != null)
+            {
+                loan.Repayments.Add(rep);
+                NotifyDataChanged();
+            }
+            return Task.CompletedTask;
+        }
+
+        public Task AddAssetAsync(AssetItem asset)
+        {
+            Assets.Insert(0, asset);
+            NotifyDataChanged();
+            return Task.CompletedTask;
+        }
+
+        public Task DeleteAssetAsync(string id)
+        {
+            Assets.RemoveAll(x => x.Id == id);
+            NotifyDataChanged();
             return Task.CompletedTask;
         }
 

@@ -296,6 +296,30 @@ namespace AsiErp
                         break;
                     }
 
+                case "loan_add":
+                    {
+                        var dlg = new AddLoanWindow { Owner = this };
+                        dlg.ShowDialog();
+                        break;
+                    }
+
+                case "loan_repay":
+                    {
+                        if (parameter is LoanItem loan)
+                        {
+                            var dlg = new RepayLoanWindow(loan) { Owner = this };
+                            dlg.ShowDialog();
+                        }
+                        break;
+                    }
+
+                case "asset_add":
+                    {
+                        var dlg = new AddAssetWindow { Owner = this };
+                        dlg.ShowDialog();
+                        break;
+                    }
+
                 case "print_barcode":
                     {
                         if (parameter is ProductItem prod)

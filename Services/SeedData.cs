@@ -202,6 +202,48 @@ namespace AsiErp.Services
             ds.Investments.Add(new() { Id = "inv4", Date = now.AddMonths(-4).ToString("yyyy-MM-18"), InvestedBy = "Promoter – Director 1", Purpose = "Working capital cash", Amount = 500000, IsPreStart = true });
             ds.Investments.Add(new() { Id = "inv5", Date = now.AddMonths(-3).ToString("yyyy-MM-10"), InvestedBy = "Promoter – Director 2", Purpose = "Legal, GST registration & licences", Amount = 85000, IsPreStart = true });
 
+            // Loans
+            var sampleLoan = new LoanItem
+            {
+                Id = "l0",
+                Lender = "State Bank term loan",
+                Date = now.AddDays(-140).ToString("yyyy-MM-dd"),
+                Amount = 1000000,
+                InterestRate = 10.5,
+                Note = "Machinery loan",
+                Repayments = new List<LoanRepayment>
+                {
+                    new()
+                    {
+                        Id = "lp0",
+                        Date = now.AddDays(-20).ToString("yyyy-MM-dd"),
+                        Principal = 50000,
+                        Interest = 8750
+                    }
+                }
+            };
+            ds.Loans.Add(sampleLoan);
+
+            // Assets
+            ds.Assets.Add(new AssetItem
+            {
+                Id = "a0",
+                Name = "Stitching & lasting machines",
+                Kind = "Machinery",
+                Date = now.AddDays(-150).ToString("yyyy-MM-dd"),
+                Cost = 1850000,
+                DepreciationRate = 15
+            });
+            ds.Assets.Add(new AssetItem
+            {
+                Id = "a1",
+                Name = "Factory interiors & furniture",
+                Kind = "Furniture",
+                Date = now.AddDays(-145).ToString("yyyy-MM-dd"),
+                Cost = 600000,
+                DepreciationRate = 10
+            });
+
             // Expenses across past months
             for (int m = 5; m >= 0; m--)
             {

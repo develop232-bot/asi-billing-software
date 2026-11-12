@@ -1,0 +1,85 @@
+<Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.AddAssetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Add Asset" Height="520" Width="520"
+        WindowStartupLocation="CenterOwner" Background="#F1F3F7" ResizeMode="CanResizeWithGrip"
+        MinWidth="460" MinHeight="440">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" BorderBrush="#E1E5EC" BorderThickness="0,0,0,1" Padding="0,0,0,10" Margin="0,0,0,14">
+            <DockPanel>
+                <TextBlock Text="🏭" FontSize="20" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Add Asset" FontSize="16" FontWeight="Bold" Foreground="#152039"/>
+                    <TextBlock Text="Record long-term capital assets: machines, vehicles, buildings, computers." FontSize="11" Foreground="#64748B"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Body -->
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel>
+                <StackPanel Margin="0,0,0,12">
+                    <TextBlock Text="What is it? (Asset Name) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtName" Padding="8" BorderBrush="#E1E5EC" FontSize="12.5"/>
+                </StackPanel>
+
+                <Grid Margin="0,0,0,12">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="Kind *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="CbKind" SelectionChanged="CbKind_SelectionChanged" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
+                            <ComboBoxItem Content="Machinery" Tag="15"/>
+                            <ComboBoxItem Content="Building" Tag="10"/>
+                            <ComboBoxItem Content="Vehicle" Tag="15"/>
+                            <ComboBoxItem Content="Furniture" Tag="10"/>
+                            <ComboBoxItem Content="Computer" Tag="40"/>
+                            <ComboBoxItem Content="Other" Tag="10"/>
+                        </ComboBox>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Bought On *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpDate" Padding="6"/>
+                    </StackPanel>
+                </Grid>
+
+                <Grid Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="Cost (₹) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtCost" Padding="8" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="1">
+                        <TextBlock Text="Loses Value % / Year (Depreciation) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtRate" Text="15.0" Padding="8" BorderBrush="#E1E5EC" FontSize="12.5"/>
+                    </StackPanel>
+                </Grid>
+
+                <Border Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="6" Padding="10">
+                    <TextBlock Text="Assets lose value every year (depreciation), which is counted as an expense in Profit &amp; Loss and reflected on the Balance Sheet." FontSize="11" Foreground="#1E40AF" TextWrapping="Wrap"/>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Footer -->
+        <Border Grid.Row="2" BorderBrush="#E1E5EC" BorderThickness="0,1,0,0" Padding="0,12,0,0" Margin="0,10,0,0">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand" FontWeight="SemiBold"/>
+                <Button Content="Save Asset" Click="Save_Click" Padding="20,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

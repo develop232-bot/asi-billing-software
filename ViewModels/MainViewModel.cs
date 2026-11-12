@@ -256,11 +256,15 @@ namespace AsiErp.ViewModels
                     }
                     CurrentBreadcrumb = AccountsVM.ActiveTab switch
                     {
-                        "income" => "Accounts · Income",
-                        "exp" => "Accounts · Expenses",
-                        "inv" => "Accounts · Investment",
-                        "pl" => "Accounts · Profit & Loss",
-                        _ => "Accounts"
+                        "dashboard" => "Finance & Accounts · Dashboard",
+                        "income" => "Finance & Accounts · Income",
+                        "exp" => "Finance & Accounts · Expenses",
+                        "inv" => "Finance & Accounts · Investment",
+                        "loans" => "Finance & Accounts · Loans",
+                        "assets" => "Finance & Accounts · Assets",
+                        "pl" => "Finance & Accounts · Profit & Loss",
+                        "bs" => "Finance & Accounts · Balance Sheet",
+                        _ => "Finance & Accounts"
                     };
                 }
             };
@@ -581,18 +585,22 @@ namespace AsiErp.ViewModels
             {
                 NavigateToProductEditor("mfg", null, "products");
             }
-            else if (route.StartsWith("acc:"))
+            else if (route.StartsWith("acc:") || route == "finance" || route == "acc")
             {
-                string tab = route.Split(':')[1];
+                string tab = route.Contains(':') ? route.Split(':')[1] : "dashboard";
                 AccountsVM.ActiveTab = tab;
-                ActiveRoute = route;
+                ActiveRoute = "acc:" + tab;
                 CurrentBreadcrumb = tab switch
                 {
-                    "income" => "Accounts · Income",
-                    "exp" => "Accounts · Expenses",
-                    "inv" => "Accounts · Investment",
-                    "pl" => "Accounts · Profit & Loss",
-                    _ => "Accounts"
+                    "dashboard" => "Finance & Accounts · Dashboard",
+                    "income" => "Finance & Accounts · Income",
+                    "exp" => "Finance & Accounts · Expenses",
+                    "inv" => "Finance & Accounts · Investment",
+                    "loans" => "Finance & Accounts · Loans",
+                    "assets" => "Finance & Accounts · Assets",
+                    "pl" => "Finance & Accounts · Profit & Loss",
+                    "bs" => "Finance & Accounts · Balance Sheet",
+                    _ => "Finance & Accounts"
                 };
                 CurrentView = AccountsVM;
             }

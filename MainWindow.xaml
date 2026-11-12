@@ -361,50 +361,62 @@
 
                         <!-- ACCOUNTS SECTION (Admin & Finance ONLY) -->
                         <StackPanel Visibility="{Binding IsFinance, Converter={StaticResource BoolToVis}}">
-                            <Border Margin="6,12,0,4">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="FINANCE &amp; ACCOUNTS" FontSize="9.5" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
-                                    <Border Background="#1E293B" Height="1" Margin="8,0,0,0" HorizontalAlignment="Stretch" VerticalAlignment="Center" Width="60"/>
-                                </StackPanel>
-                            </Border>
+                            <!-- Clickable Header: FINANCE & ACCOUNTS -> Opens Dashboard -->
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:dashboard"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:dashboard}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:dashboard}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:dashboard}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:dashboard}"
+                                    Margin="0,8,0,2" ToolTip="Finance &amp; Accounts Dashboard">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:dashboard}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="📊" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="FINANCE &amp; ACCOUNTS" FontSize="10" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
 
+                            <!-- 1. Income -->
                             <Button Style="{StaticResource ModernSidebarButton}"
                                     Command="{Binding NavigateCommand}" CommandParameter="acc:income"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:income}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:income}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:income}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:income}"
-                                    ToolTip="Income Register &amp; Customer Collections">
+                                    ToolTip="Income">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:income}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="📈" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Income Register" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Income" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 
+                            <!-- 2. Expenses -->
                             <Button Style="{StaticResource ModernSidebarButton}"
                                     Command="{Binding NavigateCommand}" CommandParameter="acc:exp"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:exp}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:exp}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:exp}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:exp}"
-                                    ToolTip="Expense Register &amp; Factory Overheads">
+                                    ToolTip="Expenses">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:exp}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="📉" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Expense Register" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Expenses" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 
+                            <!-- 3. Investment -->
                             <Button Style="{StaticResource ModernSidebarButton}"
                                     Command="{Binding NavigateCommand}" CommandParameter="acc:inv"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:inv}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:inv}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:inv}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:inv}"
-                                    ToolTip="Capital Investment &amp; Funding">
+                                    ToolTip="Investment">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:inv}"/>
@@ -413,18 +425,67 @@
                                 </DockPanel>
                             </Button>
 
+                            <!-- 4. Loans -->
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:loans"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:loans}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:loans}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:loans}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:loans}"
+                                    ToolTip="Loans">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:loans}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🏦" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Loans" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <!-- 5. Assets -->
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:assets"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:assets}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:assets}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:assets}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:assets}"
+                                    ToolTip="Assets">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:assets}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🏭" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Assets" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <!-- 6. Profit & Loss -->
                             <Button Style="{StaticResource ModernSidebarButton}"
                                     Command="{Binding NavigateCommand}" CommandParameter="acc:pl"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:pl}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:pl}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:pl}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:pl}"
-                                    ToolTip="Profit &amp; Loss Statement">
+                                    ToolTip="Profit &amp; Loss">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:pl}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="⚖️" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Profit &amp; Loss" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
+
+                            <!-- 7. Balance Sheet -->
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding NavigateCommand}" CommandParameter="acc:bs"
+                                    Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=acc:bs}"
+                                    BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=acc:bs}"
+                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=acc:bs}"
+                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=acc:bs}"
+                                    ToolTip="Balance Sheet">
+                                <DockPanel LastChildFill="True">
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                            Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=acc:bs}"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="📑" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Balance Sheet" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
                         </StackPanel>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
@@ -29,7 +30,7 @@ namespace AsiErp.ViewModels
         private readonly AppDataService _dataService;
         private readonly Action<string, object?> _openDialogAction;
 
-        private string _activeTab = "income"; // income, exp, inv, pl
+        private string _activeTab = "dashboard"; // dashboard, income, exp, inv, loans, assets, pl, bs
         private string _selectedPeriod = "m0"; // m0, m1, q, fy, all
         private string _selectedIncomeChannel = "all";
         private string _selectedExpenseFreq = "all";
@@ -42,6 +43,12 @@ namespace AsiErp.ViewModels
 
         // Investment collections
         public ObservableCollection<InvestmentItem> InvestmentRows { get; } = new();
+
+        // Loan collections
+        public ObservableCollection<LoanItem> LoanRows { get; } = new();
+
+        // Asset collections
+        public ObservableCollection<AssetItem> AssetRows { get; } = new();
 
         // P&L collections
         public ObservableCollection<PlExpenseCategoryRow> PlExpenseCategories { get; } = new();
@@ -62,11 +69,15 @@ namespace AsiErp.ViewModels
 
         public string ActiveTabTitle => ActiveTab switch
         {
+            "dashboard" => "Finance & Accounts Dashboard",
             "income" => "Income",
             "exp" => "Expenses",
             "inv" => "Investments",
+            "loans" => "Loans",
+            "assets" => "Assets",
             "pl" => "Profit & Loss",
-            _ => "Accounts"
+            "bs" => "Balance Sheet",
+            _ => "Finance & Accounts"
         };
 
         public string SelectedPeriod
@@ -117,6 +128,20 @@ namespace AsiErp.ViewModels
         public double RecoveryPercent { get; private set; }
         public int PreStartInvestmentCount { get; private set; }
 
+        // --- LOAN STATS ---
+        public double TotalLoansTaken { get; private set; }
+        public double TotalLoanInterestPaid { get; private set; }
+        public double TotalLoanPrincipalPaid { get; private set; }
+        public double TotalLoansOutstanding { get; private set; }
+        public int OpenLoansCount { get; private set; }
+        public int LoansCount { get; private set; }
+
+        // --- ASSET STATS ---
+        public int AssetsCount { get; private set; }
+        public double TotalAssetsCost { get; private set; }
+        public double TotalAssetsDepreciation { get; private set; }
+        public double TotalAssetsBookValue { get; private set; }
+
         // --- P&L STATS ---
         public double PlTotalIncome { get; private set; }
         public double PlTotalExpense { get; private set; }
@@ -125,23 +150,62 @@ namespace AsiErp.ViewModels
         public bool PlIsProfit => PlNetProfit >= 0;
         public string PlPeriodLabel { get; private set; } = "This month";
 
+        // --- BALANCE SHEET STATS ---
+        public double BsCap { get; private set; }
+        public double BsProfit { get; private set; }
+        public double BsStock { get; private set; }
+        public double BsLoans { get; private set; }
+        public double BsPay { get; private set; }
+        public double BsGst { get; private set; }
+        public double BsLiabilitiesTotal { get; private set; }
+
+        public double BsFixedAssets { get; private set; }
+        public double BsRecv { get; private set; }
+        public double BsCash { get; private set; }
+        public double BsAssetsTotal { get; private set; }
+
+        public double BsDifference => Math.Abs(BsAssetsTotal - BsLiabilitiesTotal);
+        public bool BsIsBalanced => BsDifference < 1.0;
+        public string BsTodayDate => DateTime.Now.ToString("dd MMM yyyy");
+
+        // --- DASHBOARD SHORTCUTS ---
+        public double DashReceivables => BsRecv;
+        public double DashPayables => BsPay;
+        public double DashCashBank => BsCash;
+        public double DashFixedAssets => BsFixedAssets;
+        public double DashStockValue => BsStock;
+        public double DashTotalLoans => BsLoans;
+        public double DashCapital => BsCap;
+        public double DashAllTimeProfit => BsProfit;
+
+        // Commands
         public RelayCommand SetTabCommand { get; }
         public RelayCommand SetPeriodCommand { get; }
         public RelayCommand SetIncomeChannelCommand { get; }
         public RelayCommand SetExpenseFreqCommand { get; }
+
         public RelayCommand AddExpenseCommand { get; }
         public RelayCommand DeleteExpenseCommand { get; }
+
         public RelayCommand AddInvestmentCommand { get; }
         public RelayCommand DeleteInvestmentCommand { get; }
+
+        public RelayCommand AddLoanCommand { get; }
+        public RelayCommand RepayLoanCommand { get; }
+        public RelayCommand DeleteLoanCommand { get; }
+
+        public RelayCommand AddAssetCommand { get; }
+        public RelayCommand DeleteAssetCommand { get; }
+
         public RelayCommand ViewDocCommand { get; }
 
-        public AccountsViewModel(AppDataService dataService, Action<string, object?> openDialogAction, string initialTab = "income")
+        public AccountsViewModel(AppDataService dataService, Action<string, object?> openDialogAction, string initialTab = "dashboard")
         {
             _dataService = dataService;
             _openDialogAction = openDialogAction;
             _activeTab = initialTab;
 
-            SetTabCommand = new RelayCommand(p => ActiveTab = p?.ToString() ?? "income");
+            SetTabCommand = new RelayCommand(p => ActiveTab = p?.ToString() ?? "dashboard");
             SetPeriodCommand = new RelayCommand(p => SelectedPeriod = p?.ToString() ?? "m0");
             SetIncomeChannelCommand = new RelayCommand(p => SelectedIncomeChannel = p?.ToString() ?? "all");
             SetExpenseFreqCommand = new RelayCommand(p => SelectedExpenseFreq = p?.ToString() ?? "all");
@@ -161,6 +225,38 @@ namespace AsiErp.ViewModels
                 if (p is InvestmentItem inv)
                 {
                     await _dataService.DeleteInvestmentAsync(inv.Id);
+                }
+            });
+
+            AddLoanCommand = new RelayCommand(_ => _openDialogAction("loan_add", null));
+            RepayLoanCommand = new RelayCommand(p =>
+            {
+                if (p is LoanItem loan) _openDialogAction("loan_repay", loan);
+            });
+            DeleteLoanCommand = new RelayCommand(async p =>
+            {
+                if (p is LoanItem loan)
+                {
+                    var res = MessageBox.Show($"Delete loan from '{loan.Lender}'?\nIt will also be removed from the balance sheet.",
+                        "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        await _dataService.DeleteLoanAsync(loan.Id);
+                    }
+                }
+            });
+
+            AddAssetCommand = new RelayCommand(_ => _openDialogAction("asset_add", null));
+            DeleteAssetCommand = new RelayCommand(async p =>
+            {
+                if (p is AssetItem asset)
+                {
+                    var res = MessageBox.Show($"Delete asset '{asset.Name}'?\nIt will also be removed from the balance sheet.",
+                        "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        await _dataService.DeleteAssetAsync(asset.Id);
+                    }
                 }
             });
 
@@ -260,6 +356,100 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(AllTimeProfit));
             OnPropertyChanged(nameof(RecoveryPercent));
             OnPropertyChanged(nameof(PreStartInvestmentCount));
+
+            // Compute Loans
+            LoanRows.Clear();
+            foreach (var l in _dataService.Loans.OrderByDescending(x => x.Date))
+            {
+                LoanRows.Add(l);
+            }
+            TotalLoansTaken = _dataService.Loans.Sum(l => l.Amount);
+            TotalLoanInterestPaid = _dataService.Loans.Sum(l => l.TotalInterestPaid);
+            TotalLoanPrincipalPaid = _dataService.Loans.Sum(l => l.TotalPrincipalPaid);
+            TotalLoansOutstanding = _dataService.Loans.Sum(l => l.BalanceRemaining);
+            OpenLoansCount = _dataService.Loans.Count(l => l.IsOpen);
+            LoansCount = _dataService.Loans.Count;
+
+            OnPropertyChanged(nameof(TotalLoansTaken));
+            OnPropertyChanged(nameof(TotalLoanInterestPaid));
+            OnPropertyChanged(nameof(TotalLoanPrincipalPaid));
+            OnPropertyChanged(nameof(TotalLoansOutstanding));
+            OnPropertyChanged(nameof(OpenLoansCount));
+            OnPropertyChanged(nameof(LoansCount));
+
+            // Compute Assets
+            AssetRows.Clear();
+            foreach (var a in _dataService.Assets.OrderByDescending(x => x.Date))
+            {
+                AssetRows.Add(a);
+            }
+            AssetsCount = _dataService.Assets.Count;
+            TotalAssetsCost = _dataService.Assets.Sum(a => a.Cost);
+            TotalAssetsDepreciation = _dataService.Assets.Sum(a => a.DepreciationSoFar);
+            TotalAssetsBookValue = _dataService.Assets.Sum(a => a.BookValue);
+
+            OnPropertyChanged(nameof(AssetsCount));
+            OnPropertyChanged(nameof(TotalAssetsCost));
+            OnPropertyChanged(nameof(TotalAssetsDepreciation));
+            OnPropertyChanged(nameof(TotalAssetsBookValue));
+
+            // Compute Balance Sheet metrics
+            double loanIn = TotalLoansTaken;
+            double prin = TotalLoanPrincipalPaid;
+            double loanInt = TotalLoanInterestPaid;
+            double cap = TotalInvested;
+
+            double salesPaid = _dataService.Sales.Sum(s => s.PaidAmount);
+            double purchasesPaid = _dataService.Purchases.Sum(p => p.PaidAmount);
+            double expensesPaid = _dataService.Expenses.Where(e => !e.IsAuto).Sum(e => e.Amount);
+            double assetsCost = TotalAssetsCost;
+
+            BsCap = cap;
+            BsLoans = Math.Max(0, loanIn - prin);
+            BsPay = _dataService.Purchases.Sum(p => Math.Max(0, p.GrossAmount - p.PaidAmount));
+            BsGst = _dataService.Sales.Sum(s => s.TaxAmount) - _dataService.Purchases.Sum(p => p.TaxAmount);
+
+            // Stock in hand at cost
+            double rawVal = _dataService.RawMaterials.Sum(r => Math.Max(0, r.Stock) * r.Rate);
+            double genVal = _dataService.GeneralItems.Sum(g => Math.Max(0, g.Stock) * g.Rate);
+            double prodVal = _dataService.Products.Sum(p => Math.Max(0, p.Stock) * (p.Cost > 0 ? p.Cost : p.DomesticPrice));
+            BsStock = rawVal + genVal + prodVal;
+
+            // Profit so far after loan interest and depreciation
+            BsProfit = allTimeTotals.profit - loanInt - TotalAssetsDepreciation;
+
+            BsLiabilitiesTotal = BsPay + BsLoans + BsGst + BsCap + BsProfit + BsStock;
+
+            BsFixedAssets = TotalAssetsBookValue;
+            BsRecv = _dataService.Sales.Sum(s => Math.Max(0, s.GrossAmount - s.PaidAmount));
+            BsCash = cap + loanIn - prin - loanInt + salesPaid - purchasesPaid - expensesPaid - assetsCost;
+
+            BsAssetsTotal = BsCash + BsStock + BsRecv + BsFixedAssets;
+
+            OnPropertyChanged(nameof(BsCap));
+            OnPropertyChanged(nameof(BsProfit));
+            OnPropertyChanged(nameof(BsStock));
+            OnPropertyChanged(nameof(BsLoans));
+            OnPropertyChanged(nameof(BsPay));
+            OnPropertyChanged(nameof(BsGst));
+            OnPropertyChanged(nameof(BsLiabilitiesTotal));
+            OnPropertyChanged(nameof(BsFixedAssets));
+            OnPropertyChanged(nameof(BsRecv));
+            OnPropertyChanged(nameof(BsCash));
+            OnPropertyChanged(nameof(BsAssetsTotal));
+            OnPropertyChanged(nameof(BsDifference));
+            OnPropertyChanged(nameof(BsIsBalanced));
+            OnPropertyChanged(nameof(BsTodayDate));
+
+            // Dashboard
+            OnPropertyChanged(nameof(DashReceivables));
+            OnPropertyChanged(nameof(DashPayables));
+            OnPropertyChanged(nameof(DashCashBank));
+            OnPropertyChanged(nameof(DashFixedAssets));
+            OnPropertyChanged(nameof(DashStockValue));
+            OnPropertyChanged(nameof(DashTotalLoans));
+            OnPropertyChanged(nameof(DashCapital));
+            OnPropertyChanged(nameof(DashAllTimeProfit));
 
             // Compute P&L
             PlTotalIncome = totals.totalIncome;
