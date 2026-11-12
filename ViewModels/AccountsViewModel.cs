@@ -451,10 +451,12 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(DashCapital));
             OnPropertyChanged(nameof(DashAllTimeProfit));
 
-            // Compute P&L
+            // Compute P&L with extra financial items (Loan Interest & Asset Depreciation)
+            var (fxInterest, fxDepr) = GetFinancialExtra(range.from, range.to);
+
             PlTotalIncome = totals.totalIncome;
-            PlTotalExpense = totals.totalExpense;
-            PlNetProfit = totals.profit;
+            PlTotalExpense = totals.totalExpense + fxInterest + fxDepr;
+            PlNetProfit = PlTotalIncome - PlTotalExpense;
 
             OnPropertyChanged(nameof(PlTotalIncome));
             OnPropertyChanged(nameof(PlTotalExpense));
@@ -466,9 +468,18 @@ namespace AsiErp.ViewModels
             PlExpenseCategories.Clear();
             var expByCat = allExpenses.GroupBy(e => e.Category)
                 .Select(g => new PlExpenseCategoryRow { Category = g.Key, Amount = g.Sum(x => x.Amount) })
-                .OrderByDescending(x => x.Amount);
+                .ToList();
 
-            foreach (var r in expByCat) PlExpenseCategories.Add(r);
+            if (fxInterest > 0.01)
+            {
+                expByCat.Add(new PlExpenseCategoryRow { Category = "Loan interest", Amount = fxInterest });
+            }
+            if (fxDepr > 0.01)
+            {
+                expByCat.Add(new PlExpenseCategoryRow { Category = "Depreciation of assets", Amount = fxDepr });
+            }
+
+            foreach (var r in expByCat.OrderByDescending(x => x.Amount)) PlExpenseCategories.Add(r);
 
             PlMonthBreakdowns.Clear();
             var now = DateTime.Now;
@@ -479,13 +490,62 @@ namespace AsiErp.ViewModels
                 string mEnd = new DateTime(dt.Year, dt.Month, DateTime.DaysInMonth(dt.Year, dt.Month)).ToString("yyyy-MM-dd");
 
                 var mTotals = _dataService.GetFinancialTotals(mStart, mEnd);
+                var (mInt, mDepr) = GetFinancialExtra(mStart, mEnd);
+                double mExp = mTotals.totalExpense + mInt + mDepr;
+
                 PlMonthBreakdowns.Add(new PlMonthSummaryRow
                 {
                     MonthLabel = dt.ToString("MMM yyyy"),
                     Income = mTotals.totalIncome,
-                    Expenses = mTotals.totalExpense
+                    Expenses = mExp
                 });
             }
+        }
+
+        private (double interest, double depr) GetFinancialExtra(string fromDate, string toDate)
+        {
+            // Interest paid on loans in period
+            double interest = _dataService.Loans
+                .SelectMany(l => l.Repayments)
+                .Where(r => string.Compare(r.Date, fromDate) >= 0 && string.Compare(r.Date, toDate) <= 0)
+                .Sum(r => r.Interest);
+
+            // Asset depreciation in period
+            double depr = 0;
+            string todayIso = DateTime.Today.ToString("yyyy-MM-dd");
+            string toIso = string.Compare(toDate, todayIso) > 0 ? todayIso : toDate;
+
+            DateTime? dtFrom = DateTime.TryParse(fromDate, out var dF) ? dF : null;
+            DateTime? dtTo = DateTime.TryParse(toIso, out var dT) ? dT : null;
+
+            if (dtTo.HasValue)
+            {
+                foreach (var a in _dataService.Assets)
+                {
+                    if (string.Compare(toIso, a.Date) < 0) continue;
+
+                    double deprTo = CalculateDepreciationTo(a, dtTo.Value);
+                    double deprFrom = 0;
+                    if (dtFrom.HasValue && string.Compare(fromDate, "1900-01-01") > 0)
+                    {
+                        deprFrom = CalculateDepreciationTo(a, dtFrom.Value.AddDays(-1));
+                    }
+
+                    depr += Math.Max(0, deprTo - deprFrom);
+                }
+            }
+
+            return (interest, depr);
+        }
+
+        private static double CalculateDepreciationTo(AssetItem a, DateTime targetDate)
+        {
+            if (DateTime.TryParse(a.Date, out var boughtDt))
+            {
+                double days = Math.Max(0, (targetDate.Date - boughtDt.Date).TotalDays);
+                return Math.Min(a.Cost, a.Cost * (a.DepreciationRate / 100.0) * (days / 365.0));
+            }
+            return 0;
         }
 
         private void ApplyIncomeFilter()
