@@ -293,7 +293,33 @@ namespace AsiErp.Services
 
         public List<ExpenseItem> GetAllExpenses()
         {
-            var list = new List<ExpenseItem>(Expenses);
+            var list = new List<ExpenseItem>();
+            foreach (var e in Expenses)
+            {
+                if (string.IsNullOrEmpty(e.Group))
+                {
+                    if (e.Category.IndexOf("Salary", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        e.Description.IndexOf("Salary", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                        e.Category.IndexOf("OT", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        e.Group = "Employee";
+                    }
+                    else if (e.Category.IndexOf("Rent", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             e.Category.IndexOf("EB", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             e.Category.IndexOf("Water", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             e.Category.IndexOf("Phone", StringComparison.OrdinalIgnoreCase) >= 0 ||
+                             e.Category.IndexOf("Internet", StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        e.Group = "Utility";
+                    }
+                    else
+                    {
+                        e.Group = "Misc Exp";
+                    }
+                }
+                list.Add(e);
+            }
+
             foreach (var b in Purchases)
             {
                 string kindLbl = b.Kind switch
@@ -306,7 +332,8 @@ namespace AsiErp.Services
                 {
                     Id = "auto_" + b.Id,
                     Date = b.Date,
-                    Category = "Purchase · " + kindLbl,
+                    Group = "Purchase",
+                    Category = kindLbl,
                     Frequency = "Purchase",
                     Description = $"{b.BillNo} · {b.Party}",
                     Amount = b.NetAmount,

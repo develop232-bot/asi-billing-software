@@ -330,99 +330,155 @@
 
             <!-- TAB 2: EXPENSES -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=exp}">
+                <!-- Subtitle -->
+                <TextBlock Text="Employee, utility and miscellaneous costs. Purchase bills are added automatically." FontSize="12.5" Foreground="#64748B" Margin="0,0,0,16"/>
+
+                <!-- 4 KPI Cards: Employee, Utility, Misc Exp, Purchase bills -->
                 <UniformGrid Columns="4" Margin="0,0,0,20">
+                    <!-- Employee -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Salaries" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding SalaryExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Staff &amp; worker salaries" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Employee" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding EmployeeExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="salary, OT, allowances" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- Utility -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Utilities" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding UtilitiesExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="EB, water, rent, everyday, tea" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Utility" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding UtilityExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="rent, EB, water, phone, internet" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- Misc Exp -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Miscellaneous" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding MiscellaneousExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Licences, insurance &amp; general" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Misc Exp" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding MiscExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="tea, water, others" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- Purchase bills -->
                     <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Purchase" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#7C3AED" Margin="0,5,0,2"/>
-                            <TextBlock Text="Raw materials &amp; goods" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Purchase bills" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
+                            <TextBlock Text="raw, readymade, general" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
 
+                <!-- Expense Table with Search & Chips -->
                 <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <DockPanel>
+                        <!-- Controls Row: Search on Left, Filter Chips & Add Expense on Right -->
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                            <TextBlock Text="Expense Register" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                <!-- Filter Tabs: All, Salaries, Utilities, Miscellaneous, Purchase -->
+                            <!-- Search... Box -->
+                            <Border DockPanel.Dock="Left" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Width="220" VerticalAlignment="Center">
+                                <Grid>
+                                    <TextBox x:Name="TxtExpSearch" Text="{Binding ExpenseSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                             Padding="8,6" Background="Transparent" BorderThickness="0" FontSize="12" Foreground="#0F172A"/>
+                                    <TextBlock Text="Search..." Foreground="#94A3B8" FontSize="12" Margin="10,6" IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=TxtExpSearch}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                </Grid>
+                            </Border>
+
+                            <!-- Chips: All, Employee, Utility, Misc Exp, Purchase bills + Add Expense -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                 <Button Content="All" Command="{Binding SetExpenseFreqCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
                                         Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                         Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                         BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Salaries" Command="{Binding SetExpenseFreqCommand}" CommandParameter="salaries" Margin="0,0,4,0" Padding="12,5"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=salaries}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=salaries}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=salaries}"
+                                <Button Content="Employee" Command="{Binding SetExpenseFreqCommand}" CommandParameter="Employee" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Employee}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Employee}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Employee}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Utilities" Command="{Binding SetExpenseFreqCommand}" CommandParameter="utilities" Margin="0,0,4,0" Padding="12,5"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=utilities}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=utilities}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=utilities}"
+                                <Button Content="Utility" Command="{Binding SetExpenseFreqCommand}" CommandParameter="Utility" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Utility}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Utility}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Utility}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Miscellaneous" Command="{Binding SetExpenseFreqCommand}" CommandParameter="misc" Margin="0,0,4,0" Padding="12,5"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=misc}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=misc}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=misc}"
+                                <Button Content="Misc Exp" Command="{Binding SetExpenseFreqCommand}" CommandParameter="Misc Exp" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Misc Exp}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Misc Exp}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Misc Exp}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Purchase" Command="{Binding SetExpenseFreqCommand}" CommandParameter="purchase" Margin="0,0,12,0" Padding="12,5"
-                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=purchase}"
-                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=purchase}"
-                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=purchase}"
+                                <Button Content="Purchase bills" Command="{Binding SetExpenseFreqCommand}" CommandParameter="Purchase" Margin="0,0,12,0" Padding="12,5"
+                                        Background="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Purchase}"
+                                        Foreground="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Purchase}"
+                                        BorderBrush="{Binding SelectedExpenseFreq, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Purchase}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
                                 <Button Content="+ Add Expense" Command="{Binding AddExpenseCommand}" Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
                             </StackPanel>
                         </DockPanel>
 
-                        <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                        <!-- DataGrid with Columns: Date, Category, Type, Details, Amount, Delete -->
+                        <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="44">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="100"/>
-                                <DataGridTextColumn Header="Category" Binding="{Binding Category}" Width="180" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Items" Binding="{Binding Description}" Width="*"/>
-                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="130" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
 
-                                <DataGridTemplateColumn Width="75">
+                                <DataGridTemplateColumn Header="Category" Width="120">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Background="{Binding GroupPillBackground}" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding GroupDisplay}" Foreground="{Binding GroupPillBrush}" FontWeight="SemiBold" FontSize="11"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Type" Width="200">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Category}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="12"/>
+                                                <TextBlock Text="{Binding EmployeeSubtitle}" Foreground="#64748B" FontSize="10.5"
+                                                           Visibility="{Binding HasEmployeeInfo, Converter={StaticResource BoolToVis}}"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTextColumn Header="Details" Binding="{Binding DisplayDetails}" Width="*" Foreground="#475569"/>
+                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold" Foreground="#0F172A"/>
+
+                                <DataGridTemplateColumn Width="80">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Content="Delete" Command="{Binding DataContext.DeleteExpenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11"/>
+                                                    Visibility="{Binding IsAuto, Converter={StaticResource InverseBoolToVis}}"
+                                                    Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

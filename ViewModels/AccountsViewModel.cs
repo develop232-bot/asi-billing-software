@@ -34,6 +34,16 @@ namespace AsiErp.ViewModels
         private string _selectedPeriod = "m0"; // m0, m1, q, fy, all
         private string _selectedIncomeChannel = "all";
         private string _selectedExpenseFreq = "all";
+        private string _expenseSearchText = string.Empty;
+
+        public string ExpenseSearchText
+        {
+            get => _expenseSearchText;
+            set
+            {
+                if (SetField(ref _expenseSearchText, value)) ApplyExpenseFilter();
+            }
+        }
 
         // Income collections
         public ObservableCollection<SaleDoc> IncomeRows { get; } = new();
@@ -114,11 +124,15 @@ namespace AsiErp.ViewModels
         public double RetailIncome { get; private set; }
 
         // --- EXPENSE STATS ---
-        public double SalaryExpenseTotal { get; private set; }
-        public double UtilitiesExpenseTotal { get; private set; }
-        public double YearlyExpenseTotal { get; private set; }
-        public double MiscellaneousExpenseTotal => YearlyExpenseTotal;
+        public double EmployeeExpenseTotal { get; private set; }
+        public double UtilityExpenseTotal { get; private set; }
+        public double MiscExpenseTotal { get; private set; }
         public double PurchaseExpenseTotal { get; private set; }
+
+        public double SalaryExpenseTotal => EmployeeExpenseTotal;
+        public double UtilitiesExpenseTotal => UtilityExpenseTotal;
+        public double YearlyExpenseTotal => MiscExpenseTotal;
+        public double MiscellaneousExpenseTotal => MiscExpenseTotal;
         public double DailyExpenseTotal { get; private set; }
         public double MonthlyExpenseTotal { get; private set; }
 
@@ -322,20 +336,19 @@ namespace AsiErp.ViewModels
                 .Where(e => string.Compare(e.Date, range.from) >= 0 && string.Compare(e.Date, range.to) <= 0)
                 .ToList();
 
-            SalaryExpenseTotal = allExpenses.Where(IsSalary).Sum(e => e.Amount);
-            UtilitiesExpenseTotal = allExpenses.Where(IsUtilities).Sum(e => e.Amount);
-            YearlyExpenseTotal = allExpenses.Where(IsYearly).Sum(e => e.Amount);
-            PurchaseExpenseTotal = allExpenses.Where(IsPurchase).Sum(e => e.Amount);
-            DailyExpenseTotal = allExpenses.Where(e => e.Frequency == "Daily").Sum(e => e.Amount);
-            MonthlyExpenseTotal = allExpenses.Where(e => e.Frequency == "Monthly").Sum(e => e.Amount);
+            EmployeeExpenseTotal = allExpenses.Where(e => e.Group.Equals("Employee", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
+            UtilityExpenseTotal = allExpenses.Where(e => e.Group.Equals("Utility", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
+            MiscExpenseTotal = allExpenses.Where(e => e.Group.Equals("Misc Exp", StringComparison.OrdinalIgnoreCase) || e.Group.Equals("Misc", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
+            PurchaseExpenseTotal = allExpenses.Where(e => e.Group.Equals("Purchase", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
 
+            OnPropertyChanged(nameof(EmployeeExpenseTotal));
+            OnPropertyChanged(nameof(UtilityExpenseTotal));
+            OnPropertyChanged(nameof(MiscExpenseTotal));
+            OnPropertyChanged(nameof(PurchaseExpenseTotal));
             OnPropertyChanged(nameof(SalaryExpenseTotal));
             OnPropertyChanged(nameof(UtilitiesExpenseTotal));
             OnPropertyChanged(nameof(YearlyExpenseTotal));
             OnPropertyChanged(nameof(MiscellaneousExpenseTotal));
-            OnPropertyChanged(nameof(PurchaseExpenseTotal));
-            OnPropertyChanged(nameof(DailyExpenseTotal));
-            OnPropertyChanged(nameof(MonthlyExpenseTotal));
 
             ApplyExpenseFilter();
 
@@ -586,26 +599,31 @@ namespace AsiErp.ViewModels
         {
             ExpenseRows.Clear();
             var range = GetDateRange(SelectedPeriod);
+            string q = (ExpenseSearchText ?? "").Trim().ToLowerInvariant();
 
             foreach (var e in _dataService.GetAllExpenses())
             {
                 if (string.Compare(e.Date, range.from) >= 0 && string.Compare(e.Date, range.to) <= 0)
                 {
-                    bool match = SelectedExpenseFreq.ToLowerInvariant() switch
+                    bool groupMatch = SelectedExpenseFreq.ToLowerInvariant() switch
                     {
-                        "salary" or "salaries" => IsSalary(e),
-                        "utilities" => IsUtilities(e),
-                        "yearly" or "misc" or "miscellaneous" => IsYearly(e),
-                        "purchase" => IsPurchase(e),
-                        "daily" => e.Frequency.Equals("Daily", StringComparison.OrdinalIgnoreCase),
-                        "monthly" => e.Frequency.Equals("Monthly", StringComparison.OrdinalIgnoreCase),
+                        "all" => true,
+                        "employee" or "salaries" or "salary" => e.Group.Equals("Employee", StringComparison.OrdinalIgnoreCase),
+                        "utility" or "utilities" => e.Group.Equals("Utility", StringComparison.OrdinalIgnoreCase),
+                        "misc exp" or "misc" or "miscellaneous" => e.Group.Equals("Misc Exp", StringComparison.OrdinalIgnoreCase) || e.Group.Equals("Misc", StringComparison.OrdinalIgnoreCase),
+                        "purchase" => e.Group.Equals("Purchase", StringComparison.OrdinalIgnoreCase),
                         _ => true
                     };
 
-                    if (match)
+                    if (!groupMatch) continue;
+
+                    if (!string.IsNullOrEmpty(q))
                     {
-                        ExpenseRows.Add(e);
+                        string haystack = $"{e.Group} {e.Category} {e.Description} {e.EmployeeName} {e.Position}".ToLowerInvariant();
+                        if (!haystack.Contains(q)) continue;
                     }
+
+                    ExpenseRows.Add(e);
                 }
             }
         }
