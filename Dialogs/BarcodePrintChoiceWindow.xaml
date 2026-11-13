@@ -96,9 +96,12 @@
                         <StackPanel Grid.Column="1" Margin="10,0,0,0">
                             <TextBlock Text="Label Copies" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="−" Click="DecCopies_Click" Width="30" Height="30" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold"/>
-                                <TextBox x:Name="TxtCopies" Text="1" Width="55" Height="30" Margin="6,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="13"/>
-                                <Button Content="+" Click="IncCopies_Click" Width="30" Height="30" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold"/>
+                                <Button Content="−" Click="DecCopies_Click" Width="32" Height="32" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="14"/>
+                                <TextBox x:Name="TxtCopies" Text="1" Width="60" Height="32" Margin="6,0" Padding="0"
+                                         Background="White" Foreground="#0F172A" CaretBrush="#0F172A"
+                                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                         FontWeight="Bold" FontSize="15" BorderBrush="#0284C7" BorderThickness="1.5"/>
+                                <Button Content="+" Click="IncCopies_Click" Width="32" Height="32" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="14"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -237,9 +240,11 @@
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Button Content="−" Tag="{Binding}" Click="RowDecCopies_Click" Width="22" Height="22" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="10"/>
-                                        <TextBox Text="{Binding Copies, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RowCopies_TextChanged" Width="36" Height="22" Margin="3,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="11"/>
-                                        <Button Content="+" Tag="{Binding}" Click="RowIncCopies_Click" Width="22" Height="22" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="10"/>
+                                        <Button Content="−" Tag="{Binding}" Click="RowDecCopies_Click" Width="24" Height="24" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="11"/>
+                                        <TextBox Text="{Binding Copies, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextChanged="RowCopies_TextChanged" Width="40" Height="24" Margin="3,0" Padding="0"
+                                                 Background="White" Foreground="#0F172A" CaretBrush="#0F172A"
+                                                 HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="12" BorderBrush="#CBD5E1" BorderThickness="1"/>
+                                        <Button Content="+" Tag="{Binding}" Click="RowIncCopies_Click" Width="24" Height="24" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="11"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -274,9 +279,11 @@
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="Copies per Product:" FontSize="11" Foreground="#64748B" FontWeight="SemiBold" Margin="0,0,0,4"/>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="−" Click="DecBatchCopies_Click" Width="28" Height="28" Background="White" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold"/>
-                                <TextBox x:Name="TxtBatchCopies" Text="1" TextChanged="TxtBatchCopies_TextChanged" Width="45" Height="28" Margin="6,0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="12"/>
-                                <Button Content="+" Click="IncBatchCopies_Click" Width="28" Height="28" Background="White" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold"/>
+                                <Button Content="−" Click="DecBatchCopies_Click" Width="32" Height="32" Background="White" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="14"/>
+                                <TextBox x:Name="TxtBatchCopies" Text="1" TextChanged="TxtBatchCopies_TextChanged" Width="60" Height="32" Margin="6,0" Padding="0"
+                                         Background="White" Foreground="#0F172A" CaretBrush="#0F172A"
+                                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="15" BorderBrush="#0284C7" BorderThickness="1.5"/>
+                                <Button Content="+" Click="IncBatchCopies_Click" Width="32" Height="32" Background="White" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="14"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>

@@ -21,10 +21,9 @@ namespace AsiErp.ViewModels
         private string _selectedChannel = "all"; // all, retail, domestic, export
         private string _selectedStatus = "all"; // all, Paid, Partial, Unpaid
         private DateTime _selectedMonth = DateTime.Now;
-        private DateTime? _summaryFromDate;
-        private DateTime? _summaryToDate;
         private DateTime? _reportFromDate;
         private DateTime? _reportToDate;
+        private bool _isSyncingDates = false;
 
         public ObservableCollection<SaleDoc> FilteredSales { get; } = new();
 
@@ -62,50 +61,61 @@ namespace AsiErp.ViewModels
             {
                 if (SetField(ref _selectedMonth, value))
                 {
+                    if (!_isSyncingDates)
+                    {
+                        _isSyncingDates = true;
+                        try
+                        {
+                            _reportFromDate = new DateTime(value.Year, value.Month, 1);
+                            _reportToDate = new DateTime(value.Year, value.Month, DateTime.DaysInMonth(value.Year, value.Month));
+                            OnPropertyChanged(nameof(ReportFromDate));
+                            OnPropertyChanged(nameof(ReportToDate));
+                        }
+                        finally
+                        {
+                            _isSyncingDates = false;
+                        }
+                    }
                     NotifySummaryPeriodChanged();
+                    ApplyFilter();
                 }
             }
         }
 
         public DateTime? SummaryFromDate
         {
-            get => _summaryFromDate;
-            set
-            {
-                if (SetField(ref _summaryFromDate, value))
-                {
-                    NotifySummaryPeriodChanged();
-                }
-            }
+            get => _reportFromDate;
+            set => ReportFromDate = value;
         }
 
         public DateTime? SummaryToDate
         {
-            get => _summaryToDate;
-            set
-            {
-                if (SetField(ref _summaryToDate, value))
-                {
-                    NotifySummaryPeriodChanged();
-                }
-            }
+            get => _reportToDate;
+            set => ReportToDate = value;
         }
 
         public string SelectedMonthDisplay
         {
             get
             {
-                if (SummaryFromDate.HasValue && SummaryToDate.HasValue)
+                if (ReportFromDate.HasValue && ReportToDate.HasValue)
                 {
-                    return $"{SummaryFromDate.Value:dd MMM yyyy} - {SummaryToDate.Value:dd MMM yyyy}";
+                    if (ReportFromDate.Value.Day == 1 &&
+                        ReportToDate.Value.Day == DateTime.DaysInMonth(ReportFromDate.Value.Year, ReportFromDate.Value.Month) &&
+                        ReportFromDate.Value.Year == ReportToDate.Value.Year &&
+                        ReportFromDate.Value.Month == ReportToDate.Value.Month)
+                    {
+                        return ReportFromDate.Value.ToString("MMMM yyyy");
+                    }
+                    return $"{ReportFromDate.Value:dd MMM yyyy} - {ReportToDate.Value:dd MMM yyyy}";
                 }
-                if (SummaryFromDate.HasValue)
+                if (ReportFromDate.HasValue)
                 {
-                    return $"From {SummaryFromDate.Value:dd MMM yyyy}";
+                    return $"From {ReportFromDate.Value:dd MMM yyyy}";
                 }
-                if (SummaryToDate.HasValue)
+                if (ReportToDate.HasValue)
                 {
-                    return $"Up to {SummaryToDate.Value:dd MMM yyyy}";
+                    return $"Up to {ReportToDate.Value:dd MMM yyyy}";
                 }
                 return SelectedMonth.ToString("MMMM yyyy");
             }
@@ -125,7 +135,24 @@ namespace AsiErp.ViewModels
             get => _reportFromDate;
             set
             {
-                if (SetField(ref _reportFromDate, value)) ApplyFilter();
+                if (SetField(ref _reportFromDate, value))
+                {
+                    if (!_isSyncingDates && value.HasValue)
+                    {
+                        _isSyncingDates = true;
+                        try
+                        {
+                            _selectedMonth = value.Value;
+                            OnPropertyChanged(nameof(SelectedMonth));
+                        }
+                        finally
+                        {
+                            _isSyncingDates = false;
+                        }
+                    }
+                    NotifySummaryPeriodChanged();
+                    ApplyFilter();
+                }
             }
         }
 
@@ -134,7 +161,11 @@ namespace AsiErp.ViewModels
             get => _reportToDate;
             set
             {
-                if (SetField(ref _reportToDate, value)) ApplyFilter();
+                if (SetField(ref _reportToDate, value))
+                {
+                    NotifySummaryPeriodChanged();
+                    ApplyFilter();
+                }
             }
         }
 
@@ -204,46 +235,50 @@ namespace AsiErp.ViewModels
                 if (p is SaleDoc sale) _openDialogAction("payment_sale", sale);
             });
 
+            var now = DateTime.Now;
+            _selectedMonth = now;
+            _reportFromDate = new DateTime(now.Year, now.Month, 1);
+            _reportToDate = new DateTime(now.Year, now.Month, DateTime.DaysInMonth(now.Year, now.Month));
+
             PreviousMonthCommand = new RelayCommand(_ =>
             {
-                _summaryFromDate = null;
-                _summaryToDate = null;
-                OnPropertyChanged(nameof(SummaryFromDate));
-                OnPropertyChanged(nameof(SummaryToDate));
                 SelectedMonth = SelectedMonth.AddMonths(-1);
             });
             NextMonthCommand = new RelayCommand(_ =>
             {
-                _summaryFromDate = null;
-                _summaryToDate = null;
-                OnPropertyChanged(nameof(SummaryFromDate));
-                OnPropertyChanged(nameof(SummaryToDate));
                 SelectedMonth = SelectedMonth.AddMonths(1);
             });
             CurrentMonthCommand = new RelayCommand(_ =>
             {
-                _summaryFromDate = null;
-                _summaryToDate = null;
-                OnPropertyChanged(nameof(SummaryFromDate));
-                OnPropertyChanged(nameof(SummaryToDate));
                 SelectedMonth = DateTime.Now;
             });
             ResetSummaryDatesCommand = new RelayCommand(_ =>
             {
-                _summaryFromDate = null;
-                _summaryToDate = null;
-                OnPropertyChanged(nameof(SummaryFromDate));
-                OnPropertyChanged(nameof(SummaryToDate));
                 SelectedMonth = DateTime.Now;
             });
 
             ResetFilterDatesCommand = new RelayCommand(_ =>
             {
-                ReportFromDate = null;
-                ReportToDate = null;
+                _isSyncingDates = true;
+                try
+                {
+                    var resetNow = DateTime.Now;
+                    _selectedMonth = resetNow;
+                    _reportFromDate = new DateTime(resetNow.Year, resetNow.Month, 1);
+                    _reportToDate = new DateTime(resetNow.Year, resetNow.Month, DateTime.DaysInMonth(resetNow.Year, resetNow.Month));
+                    OnPropertyChanged(nameof(SelectedMonth));
+                    OnPropertyChanged(nameof(ReportFromDate));
+                    OnPropertyChanged(nameof(ReportToDate));
+                }
+                finally
+                {
+                    _isSyncingDates = false;
+                }
                 SelectedChannel = "all";
                 SelectedStatus = "all";
                 SearchQuery = string.Empty;
+                NotifySummaryPeriodChanged();
+                ApplyFilter();
             });
 
             ExportExcelCommand = new RelayCommand(_ => ExportExcel());
@@ -269,15 +304,14 @@ namespace AsiErp.ViewModels
         {
             if (DateTime.TryParse(dateStr, out var dt))
             {
-                if (SummaryFromDate.HasValue || SummaryToDate.HasValue)
+                var dateOnly = dt.Date;
+                if (ReportFromDate.HasValue && dateOnly < ReportFromDate.Value.Date) return false;
+                if (ReportToDate.HasValue && dateOnly > ReportToDate.Value.Date) return false;
+                if (!ReportFromDate.HasValue && !ReportToDate.HasValue)
                 {
-                    var dateOnly = dt.Date;
-                    if (SummaryFromDate.HasValue && dateOnly < SummaryFromDate.Value.Date) return false;
-                    if (SummaryToDate.HasValue && dateOnly > SummaryToDate.Value.Date) return false;
-                    return true;
+                    return dt.Year == SelectedMonth.Year && dt.Month == SelectedMonth.Month;
                 }
-
-                return dt.Year == SelectedMonth.Year && dt.Month == SelectedMonth.Month;
+                return true;
             }
             return false;
         }
@@ -291,13 +325,13 @@ namespace AsiErp.ViewModels
         private void ApplyFilter()
         {
             FilteredSales.Clear();
-            string q = SearchQuery.Trim().ToLowerInvariant();
+            string q = (SearchQuery ?? string.Empty).Trim().ToLowerInvariant();
+            var tokens = string.IsNullOrEmpty(q) ? Array.Empty<string>() : q.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             foreach (var s in _dataService.Sales)
             {
                 bool matchChan = SelectedChannel == "all" || s.Type.Equals(SelectedChannel, StringComparison.OrdinalIgnoreCase);
                 bool matchStat = SelectedStatus == "all" || s.Status.Equals(SelectedStatus, StringComparison.OrdinalIgnoreCase);
-                bool matchQ = string.IsNullOrEmpty(q) || (s.InvoiceNo + s.Party + s.Phone + s.ContactPerson + s.Event).ToLowerInvariant().Contains(q);
 
                 bool matchDate = true;
                 if (ReportFromDate.HasValue || ReportToDate.HasValue)
@@ -305,6 +339,50 @@ namespace AsiErp.ViewModels
                     var dt = ParseDate(s.Date);
                     if (ReportFromDate.HasValue && dt.Date < ReportFromDate.Value.Date) matchDate = false;
                     if (ReportToDate.HasValue && dt.Date > ReportToDate.Value.Date) matchDate = false;
+                }
+
+                bool matchQ = true;
+                if (tokens.Length > 0)
+                {
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append(s.InvoiceNo).Append(' ');
+                    sb.Append(s.Party).Append(' ');
+                    sb.Append(s.Phone).Append(' ');
+                    sb.Append(s.ContactPerson).Append(' ');
+                    sb.Append(s.CustomerGstin).Append(' ');
+                    sb.Append(s.Event).Append(' ');
+                    sb.Append(s.Type).Append(' ');
+                    sb.Append(s.ChannelLabel).Append(' ');
+                    sb.Append(s.Status).Append(' ');
+                    sb.Append(s.SaleType).Append(' ');
+                    sb.Append(s.PaymentMode).Append(' ');
+                    sb.Append(s.VehicleNo).Append(' ');
+                    sb.Append(s.Country).Append(' ');
+                    sb.Append(s.Date).Append(' ');
+                    if (DateTime.TryParse(s.Date, out var sdt))
+                    {
+                        sb.Append(sdt.ToString("dd MMM yyyy")).Append(' ');
+                        sb.Append(sdt.ToString("dd MMM yy")).Append(' ');
+                        sb.Append(sdt.ToString("MMMM yyyy")).Append(' ');
+                    }
+                    sb.Append(s.GrossAmount.ToString("0.##")).Append(' ');
+                    sb.Append(s.GrossAmount.ToString("N2")).Append(' ');
+                    sb.Append(s.GrossAmount.ToString("N0")).Append(' ');
+                    sb.Append(s.BalanceAmount.ToString("0.##")).Append(' ');
+
+                    if (s.Lines != null)
+                    {
+                        foreach (var line in s.Lines)
+                        {
+                            sb.Append(line.Name).Append(' ');
+                            sb.Append(line.Pid).Append(' ');
+                            sb.Append(line.Size).Append(' ');
+                            sb.Append(line.Hsn).Append(' ');
+                        }
+                    }
+
+                    string combined = sb.ToString().ToLowerInvariant();
+                    matchQ = tokens.All(token => combined.Contains(token));
                 }
 
                 if (matchChan && matchStat && matchQ && matchDate)

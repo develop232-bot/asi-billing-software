@@ -411,17 +411,40 @@ namespace AsiErp.Dialogs
                         return;
                     }
 
-                    int.TryParse(TxtCopies.Text, out int copies);
-                    if (copies < 1) copies = 1;
-
-                    string size = CbSize?.SelectedItem?.ToString() ?? (_currentProduct.Sizes?.FirstOrDefault() ?? "Free size");
-                    for (int i = 0; i < copies; i++)
+                    if (!int.TryParse(TxtCopies.Text, out int copies) || copies < 1)
                     {
-                        var visual = CreateLabelVisual(_currentProduct, size, targetWidth);
-                        pd.PrintVisual(visual, $"Barcode_{_currentProduct.Sku}_Copy{i + 1}");
+                        copies = 1;
                     }
 
-                    MessageBox.Show($"Printed {copies} barcode label(s) for '{_currentProduct.Name}' successfully!", "Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 400)
+                        ? pd.PrintableAreaWidth
+                        : 185;
+                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 250)
+                        ? Math.Min(pd.PrintableAreaHeight, 92)
+                        : 90;
+
+                    string size = CbSize?.SelectedItem?.ToString() ?? (_currentProduct.Sizes?.FirstOrDefault() ?? "Free size");
+
+                    var fixedDoc = new System.Windows.Documents.FixedDocument();
+                    for (int i = 0; i < copies; i++)
+                    {
+                        var page = new System.Windows.Documents.FixedPage
+                        {
+                            Width = labelWidth,
+                            Height = labelHeight
+                        };
+                        var visual = CreateLabelVisual(_currentProduct, size, labelWidth, labelHeight);
+                        System.Windows.Controls.Canvas.SetLeft(visual, 0);
+                        System.Windows.Controls.Canvas.SetTop(visual, 0);
+                        page.Children.Add(visual);
+
+                        var pageContent = new System.Windows.Documents.PageContent();
+                        ((System.Windows.Markup.IAddChild)pageContent).AddChild(page);
+                        fixedDoc.Pages.Add(pageContent);
+                    }
+
+                    pd.PrintDocument(fixedDoc.DocumentPaginator, $"Barcode_{_currentProduct.Sku}_{copies}Labels");
+                    MessageBox.Show($"Sent {copies} barcode label(s) for '{_currentProduct.Name}' to printer successfully!", "Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     Close();
                 }
                 else if (RbMultiple.IsChecked == true)
@@ -433,20 +456,42 @@ namespace AsiErp.Dialogs
                         return;
                     }
 
+                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 400)
+                        ? pd.PrintableAreaWidth
+                        : 185;
+                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 250)
+                        ? Math.Min(pd.PrintableAreaHeight, 92)
+                        : 90;
+
                     int totalPrinted = 0;
+                    var fixedDoc = new System.Windows.Documents.FixedDocument();
+
                     foreach (var item in selected)
                     {
                         string size = !string.IsNullOrWhiteSpace(item.SelectedSize) ? item.SelectedSize : (item.Product.Sizes?.FirstOrDefault() ?? "Free size");
-                        var visual = CreateLabelVisual(item.Product, size, targetWidth);
+                        int itemCopies = Math.Max(1, item.Copies);
 
-                        for (int i = 0; i < item.Copies; i++)
+                        for (int i = 0; i < itemCopies; i++)
                         {
-                            pd.PrintVisual(visual, $"Barcode_{item.Sku}_{i + 1}");
+                            var page = new System.Windows.Documents.FixedPage
+                            {
+                                Width = labelWidth,
+                                Height = labelHeight
+                            };
+                            var visual = CreateLabelVisual(item.Product, size, labelWidth, labelHeight);
+                            System.Windows.Controls.Canvas.SetLeft(visual, 0);
+                            System.Windows.Controls.Canvas.SetTop(visual, 0);
+                            page.Children.Add(visual);
+
+                            var pageContent = new System.Windows.Documents.PageContent();
+                            ((System.Windows.Markup.IAddChild)pageContent).AddChild(page);
+                            fixedDoc.Pages.Add(pageContent);
                             totalPrinted++;
                         }
                     }
 
-                    MessageBox.Show($"Successfully sent {totalPrinted} barcode labels across {selected.Count} selected products to printer continuously!", "Continuous Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
+                    pd.PrintDocument(fixedDoc.DocumentPaginator, $"Barcode_Batch_{totalPrinted}Labels");
+                    MessageBox.Show($"Successfully sent {totalPrinted} barcode labels across {selected.Count} selected products to printer!", "Continuous Print Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     Close();
                 }
                 else
@@ -457,22 +502,45 @@ namespace AsiErp.Dialogs
                         return;
                     }
 
-                    int.TryParse(TxtBatchCopies.Text, out int batchCopies);
-                    if (batchCopies < 1) batchCopies = 1;
+                    if (!int.TryParse(TxtBatchCopies.Text, out int batchCopies) || batchCopies < 1)
+                    {
+                        batchCopies = 1;
+                    }
+
+                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 400)
+                        ? pd.PrintableAreaWidth
+                        : 185;
+                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 250)
+                        ? Math.Min(pd.PrintableAreaHeight, 92)
+                        : 90;
 
                     int totalPrinted = 0;
+                    var fixedDoc = new System.Windows.Documents.FixedDocument();
+
                     foreach (var prod in _products)
                     {
                         string size = prod.Sizes?.FirstOrDefault() ?? "Free size";
-                        var visual = CreateLabelVisual(prod, size, targetWidth);
 
                         for (int i = 0; i < batchCopies; i++)
                         {
-                            pd.PrintVisual(visual, $"Barcode_{prod.Sku}_{i + 1}");
+                            var page = new System.Windows.Documents.FixedPage
+                            {
+                                Width = labelWidth,
+                                Height = labelHeight
+                            };
+                            var visual = CreateLabelVisual(prod, size, labelWidth, labelHeight);
+                            System.Windows.Controls.Canvas.SetLeft(visual, 0);
+                            System.Windows.Controls.Canvas.SetTop(visual, 0);
+                            page.Children.Add(visual);
+
+                            var pageContent = new System.Windows.Documents.PageContent();
+                            ((System.Windows.Markup.IAddChild)pageContent).AddChild(page);
+                            fixedDoc.Pages.Add(pageContent);
                             totalPrinted++;
                         }
                     }
 
+                    pd.PrintDocument(fixedDoc.DocumentPaginator, $"Barcode_Catalog_{totalPrinted}Labels");
                     MessageBox.Show($"Successfully sent {totalPrinted} barcode labels ({_products.Count} products) to printer!", "Batch Printing Complete", MessageBoxButton.OK, MessageBoxImage.Information);
                     Close();
                 }
@@ -483,73 +551,103 @@ namespace AsiErp.Dialogs
             }
         }
 
-        private FrameworkElement CreateLabelVisual(ProductItem prod, string size, double targetWidth = 210)
+        private FrameworkElement CreateLabelVisual(ProductItem prod, string size, double targetWidth, double targetHeight)
         {
             if (targetWidth <= 50 || double.IsNaN(targetWidth) || double.IsInfinity(targetWidth))
             {
-                targetWidth = 210;
+                targetWidth = 185;
+            }
+            if (targetHeight <= 40 || double.IsNaN(targetHeight) || double.IsInfinity(targetHeight))
+            {
+                targetHeight = 90;
             }
 
             var border = new Border
             {
                 Background = Brushes.White,
                 Width = targetWidth,
-                Padding = new Thickness(6, 6, 6, 6)
+                Height = targetHeight,
+                Padding = new Thickness(4, 2, 4, 2),
+                ClipToBounds = true
             };
 
-            var stack = new StackPanel { HorizontalAlignment = HorizontalAlignment.Center };
+            var stack = new StackPanel
+            {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Width = targetWidth - 6
+            };
 
+            // 1. Company Brand Name
             stack.Children.Add(new TextBlock
             {
                 Text = "AFRAH SAMIYA INDUSTRIES",
                 FontWeight = FontWeights.Bold,
-                FontSize = 9.5,
+                FontSize = 8,
                 Foreground = Brushes.Black,
-                HorizontalAlignment = HorizontalAlignment.Center
+                HorizontalAlignment = HorizontalAlignment.Center,
+                TextAlignment = TextAlignment.Center
             });
 
-            stack.Children.Add(new Border { Height = 1, Background = Brushes.Black, Margin = new Thickness(0, 3, 0, 3) });
-
+            // 2. Product Name
             stack.Children.Add(new TextBlock
             {
                 Text = prod.Name,
                 FontWeight = FontWeights.Bold,
-                FontSize = 11,
+                FontSize = 8.5,
                 Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
-                TextWrapping = TextWrapping.Wrap,
-                MaxWidth = targetWidth - 12
+                TextTrimming = TextTrimming.CharacterEllipsis,
+                MaxHeight = 13
             });
 
-            var dockTag = new DockPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 2, 0, 3) };
-            dockTag.Children.Add(new TextBlock { Text = $"SKU: {prod.Sku}", FontSize = 8.5, Foreground = Brushes.Black, Margin = new Thickness(0, 0, 6, 0) });
-            dockTag.Children.Add(new TextBlock { Text = $"· Size: {size}", FontWeight = FontWeights.Bold, FontSize = 8.5, Foreground = Brushes.Black });
+            // 3. SKU & Size Line
+            var dockTag = new DockPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 1, 0, 1) };
+            dockTag.Children.Add(new TextBlock
+            {
+                Text = $"SKU: {prod.Sku}",
+                FontSize = 7.5,
+                Foreground = Brushes.Black,
+                Margin = new Thickness(0, 0, 6, 0)
+            });
+            dockTag.Children.Add(new TextBlock
+            {
+                Text = $"· Size: {size}",
+                FontWeight = FontWeights.Bold,
+                FontSize = 7.5,
+                Foreground = Brushes.Black
+            });
             stack.Children.Add(dockTag);
 
+            // 4. Barcode Image
             string barcode = prod.DisplayBarcode;
             if (string.IsNullOrWhiteSpace(barcode))
             {
                 barcode = BarcodeService.GenerateBarcode(prod.Category, prod.SourceType);
             }
-            int bcWidth = (int)Math.Max(150, targetWidth - 20);
+            int bcWidth = (int)Math.Min(145, targetWidth - 16);
             var barcodeImage = new Image
             {
                 Width = bcWidth,
-                Height = 55,
+                Height = 32,
                 Stretch = Stretch.Uniform,
-                Source = BarcodeService.GenerateBarcodeImage(barcode, width: bcWidth, height: 60),
+                Source = BarcodeService.GenerateBarcodeImage(barcode, width: bcWidth, height: 32),
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(0, 2, 0, 2)
+                Margin = new Thickness(0, 1, 0, 1)
             };
             stack.Children.Add(barcodeImage);
 
-            stack.Children.Add(new Border { Height = 1, Background = Brushes.Black, Margin = new Thickness(0, 3, 0, 3) });
-
-            var dockPrice = new DockPanel { HorizontalAlignment = HorizontalAlignment.Stretch, Width = targetWidth - 16 };
-            var priceStack = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
-            priceStack.Children.Add(new TextBlock { Text = "MAX RETAIL PRICE", FontSize = 7.5, FontWeight = FontWeights.Bold, Foreground = Brushes.Black });
-            priceStack.Children.Add(new TextBlock { Text = "(Incl. of all taxes)", FontSize = 6.5, Foreground = Brushes.Black });
+            // 5. MRP & Taxes
+            var dockPrice = new DockPanel { HorizontalAlignment = HorizontalAlignment.Stretch, Width = targetWidth - 10 };
+            var priceStack = new TextBlock
+            {
+                Text = "MRP (Incl. taxes):",
+                FontSize = 7,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = Brushes.Black,
+                VerticalAlignment = VerticalAlignment.Center
+            };
             DockPanel.SetDock(priceStack, Dock.Left);
             dockPrice.Children.Add(priceStack);
 
@@ -557,7 +655,7 @@ namespace AsiErp.Dialogs
             {
                 Text = $"₹ {prod.RetailPrice:N2}",
                 FontWeight = FontWeights.Bold,
-                FontSize = 13,
+                FontSize = 9.5,
                 Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center
@@ -567,9 +665,8 @@ namespace AsiErp.Dialogs
 
             border.Child = stack;
 
-            // Measure and arrange so it's fully rendered for printing
-            border.Measure(new Size(targetWidth, double.PositiveInfinity));
-            border.Arrange(new Rect(new Point(0, 0), border.DesiredSize));
+            border.Measure(new Size(targetWidth, targetHeight));
+            border.Arrange(new Rect(new Point(0, 0), new Size(targetWidth, targetHeight)));
             border.UpdateLayout();
 
             return border;

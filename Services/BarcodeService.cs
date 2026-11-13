@@ -142,11 +142,14 @@ namespace AsiErp.Services
                 string cleanDigits = new string((barcode ?? "").Where(char.IsDigit).ToArray());
                 if (cleanDigits.Length < 13) cleanDigits = cleanDigits.PadLeft(13, '0');
 
-                double marginX = 14;
+                bool isCompact = height < 50;
+                double marginX = width < 180 ? 8 : 14;
                 double barAreaWidth = width - (marginX * 2);
                 double moduleWidth = barAreaWidth / modules.Length;
-                double barHeight = height - 22;
-                double guardExtra = 4; // Guard bars extend lower
+                double textSpace = isCompact ? 10 : 22;
+                double barHeight = Math.Max(10, height - textSpace);
+                double guardExtra = isCompact ? 2 : 4;
+                double fontSize = isCompact ? 7.5 : 11;
 
                 var blackBrush = Brushes.Black;
 
@@ -158,29 +161,29 @@ namespace AsiErp.Services
                         bool isGuard = (i < 3) || (i >= 45 && i < 50) || (i >= 92);
                         double curHeight = isGuard ? barHeight + guardExtra : barHeight;
                         double x = marginX + (i * moduleWidth);
-                        dc.DrawRectangle(blackBrush, null, new Rect(x, 4, moduleWidth + 0.1, curHeight));
+                        dc.DrawRectangle(blackBrush, null, new Rect(x, isCompact ? 1 : 4, moduleWidth + 0.1, curHeight));
                     }
                 }
 
                 // Draw human-readable numbers under bars
                 var typeface = new Typeface(new FontFamily("Consolas, Segoe UI, Arial"), FontStyles.Normal, FontWeights.Bold, FontStretches.Normal);
-                double fontSize = 11;
 
                 // Format: D  DDDDDD  DDDDDD
                 string firstDigit = cleanDigits.Substring(0, 1);
                 string leftGroup = cleanDigits.Substring(1, 6);
                 string rightGroup = cleanDigits.Substring(7, 6);
 
+                double textY = isCompact ? (barHeight + 1) : (barHeight + 6);
                 var ftFirst = new FormattedText(firstDigit, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, typeface, fontSize, blackBrush, 1.25);
-                dc.DrawText(ftFirst, new Point(marginX - ftFirst.Width - 3, barHeight - 4));
+                dc.DrawText(ftFirst, new Point(marginX - ftFirst.Width - (isCompact ? 2 : 3), isCompact ? (barHeight - 3) : (barHeight - 4)));
 
                 var ftLeft = new FormattedText(leftGroup, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, typeface, fontSize, blackBrush, 1.25);
                 double leftCenter = marginX + (24 * moduleWidth);
-                dc.DrawText(ftLeft, new Point(leftCenter - (ftLeft.Width / 2), barHeight + 6));
+                dc.DrawText(ftLeft, new Point(leftCenter - (ftLeft.Width / 2), textY));
 
                 var ftRight = new FormattedText(rightGroup, CultureInfo.InvariantCulture, FlowDirection.LeftToRight, typeface, fontSize, blackBrush, 1.25);
                 double rightCenter = marginX + (71 * moduleWidth);
-                dc.DrawText(ftRight, new Point(rightCenter - (ftRight.Width / 2), barHeight + 6));
+                dc.DrawText(ftRight, new Point(rightCenter - (ftRight.Width / 2), textY));
             }
 
             return new DrawingImage(drawingGroup);
