@@ -362,6 +362,7 @@ namespace AsiErp.ViewModels
                     DomesticPrice = p.DomesticPrice;
                     ExportPrice = p.ExportPrice;
                     Stock = p.Stock;
+                    Quantity = p.RegisteredQty > 0 ? p.RegisteredQty : p.Stock;
                     ReorderLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = string.IsNullOrWhiteSpace(p.Hsn) ? "6403" : p.Hsn;
@@ -377,7 +378,7 @@ namespace AsiErp.ViewModels
                     SellingPrice = r.Rate;
                     GstPercent = r.Gst;
                     Stock = r.Stock;
-                    Quantity = r.Stock;
+                    Quantity = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock;
                     ReorderLevel = r.ReorderLevel;
                     LowAlertLevel = r.ReorderLevel;
                     MediumAlertLevel = r.ReorderLevel * 2;
@@ -395,7 +396,7 @@ namespace AsiErp.ViewModels
                     SellingPrice = g.Rate;
                     GstPercent = g.Gst;
                     Stock = g.Stock;
-                    Quantity = g.Stock;
+                    Quantity = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock;
                     ReorderLevel = g.ReorderLevel;
                     LowAlertLevel = g.ReorderLevel;
                     MediumAlertLevel = g.ReorderLevel * 2;
@@ -519,6 +520,7 @@ namespace AsiErp.ViewModels
                     rm.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     rm.Gst = GstPercent;
                     rm.Stock = Quantity;
+                    rm.RegisteredQty = Quantity;
                     rm.ReorderLevel = LowAlertLevel;
                     rm.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "6406" : HsnCode.Trim();
                     rm.Sku = string.IsNullOrWhiteSpace(Sku)
@@ -535,6 +537,7 @@ namespace AsiErp.ViewModels
                     gi.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     gi.Gst = GstPercent;
                     gi.Stock = Quantity;
+                    gi.RegisteredQty = Quantity;
                     gi.ReorderLevel = LowAlertLevel;
                     gi.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "4819" : HsnCode.Trim();
                     gi.Sku = string.IsNullOrWhiteSpace(Sku)
@@ -569,6 +572,7 @@ namespace AsiErp.ViewModels
                     prod.DomesticPrice = DomesticPrice;
                     prod.ExportPrice = ExportPrice;
                     prod.Stock = Quantity;
+                    prod.RegisteredQty = Quantity;
                     prod.ReorderLevel = LowAlertLevel;
                     prod.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "6403" : HsnCode.Trim();
                     prod.Gst = SellingPrice <= 2500 ? 5 : 18;

@@ -154,7 +154,13 @@ namespace AsiErp.Services
                         {
                             Products[i].Barcode = BarcodeService.GenerateBarcode(Products[i].Category, Products[i].SourceType, i + 1);
                         }
+                        if (Products[i].RegisteredQty <= 0 && Products[i].Stock > 0)
+                        {
+                            Products[i].RegisteredQty = Products[i].Stock;
+                        }
                     }
+                    foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
+                    foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
                     if (!IsSampleDataLoaded)
                     {
@@ -258,7 +264,13 @@ namespace AsiErp.Services
                     {
                         Products[i].Barcode = BarcodeService.GenerateBarcode(Products[i].Category, Products[i].SourceType, i + 1);
                     }
+                    if (Products[i].RegisteredQty <= 0 && Products[i].Stock > 0)
+                    {
+                        Products[i].RegisteredQty = Products[i].Stock;
+                    }
                 }
+                foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
+                foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
                 IsSampleDataLoaded = false;
                 SyncQueue.ClearQueue();
@@ -431,6 +443,10 @@ namespace AsiErp.Services
                 var p = Products.FirstOrDefault(x => x.Id == line.Pid);
                 if (p != null)
                 {
+                    if (p.RegisteredQty <= 0 && p.Stock > 0)
+                    {
+                        p.RegisteredQty = p.Stock;
+                    }
                     p.Stock = Math.Max(0, p.Stock - line.Qty);
                     if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", p.Id, p);
                 }
@@ -717,6 +733,7 @@ namespace AsiErp.Services
 
         public Task SaveProductAsync(ProductItem p)
         {
+            if (p.RegisteredQty <= 0 && p.Stock > 0) p.RegisteredQty = p.Stock;
             int idx = Products.FindIndex(x => x.Id == p.Id);
             if (idx >= 0) Products[idx] = p;
             else Products.Insert(0, p);
@@ -742,6 +759,7 @@ namespace AsiErp.Services
 
         public Task SaveRawMaterialAsync(RawMaterialItem r)
         {
+            if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
             int idx = RawMaterials.FindIndex(x => x.Id == r.Id);
             if (idx >= 0) RawMaterials[idx] = r;
             else RawMaterials.Insert(0, r);
@@ -767,6 +785,7 @@ namespace AsiErp.Services
 
         public Task SaveGeneralItemAsync(GeneralItem g)
         {
+            if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
             int idx = GeneralItems.FindIndex(x => x.Id == g.Id);
             if (idx >= 0) GeneralItems[idx] = g;
             else GeneralItems.Insert(0, g);

@@ -59,6 +59,9 @@ namespace AsiErp.Models
         [FirestoreProperty("stock")]
         public double Stock { get; set; }
 
+        [FirestoreProperty("registeredQty")]
+        public double RegisteredQty { get; set; }
+
         [FirestoreProperty("reorder")]
         public double ReorderLevel { get; set; } = 50;
 

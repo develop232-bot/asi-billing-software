@@ -225,17 +225,20 @@
 
             <!-- TAB 1: INCOME -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=income}">
-                <UniformGrid Columns="4" Margin="0,0,0,20">
+                <UniformGrid Columns="3" Margin="0,0,0,20">
+                    <!-- 1. Retail Sales -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Total Income" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding IncomeTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Taxable revenue (excl. GST)" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="Retail Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
+                            <TextBlock Text="Showrooms &amp; expos" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
+
+                    <!-- 2. Domestic Sales -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
@@ -246,7 +249,9 @@
                             <TextBlock Text="Indian B2B orders" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+
+                    <!-- 3. Export Sales -->
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
@@ -254,16 +259,6 @@
                             <TextBlock Text="Export Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
                             <TextBlock Text="Overseas shipments" FontSize="11" Foreground="#94A3B8"/>
-                        </StackPanel>
-                    </Border>
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="Retail Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
-                            <TextBlock Text="Showrooms &amp; expos" FontSize="11" Foreground="#94A3B8"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
@@ -282,20 +277,20 @@
                                         Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                         BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
+                                <Button Content="Retail" Command="{Binding SetIncomeChannelCommand}" CommandParameter="retail" Margin="0,0,4,0" Padding="12,5"
+                                        Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=retail}"
+                                        Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=retail}"
+                                        BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"
+                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
                                 <Button Content="Domestic" Command="{Binding SetIncomeChannelCommand}" CommandParameter="domestic" Margin="0,0,4,0" Padding="12,5"
                                         Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
                                         Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
                                         BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Export" Command="{Binding SetIncomeChannelCommand}" CommandParameter="export" Margin="0,0,4,0" Padding="12,5"
+                                <Button Content="Export" Command="{Binding SetIncomeChannelCommand}" CommandParameter="export" Padding="12,5"
                                         Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
                                         Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
                                         BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"
-                                        BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Retail" Command="{Binding SetIncomeChannelCommand}" CommandParameter="retail" Padding="12,5"
-                                        Background="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=retail}"
-                                        Foreground="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=retail}"
-                                        BorderBrush="{Binding SelectedIncomeChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"
                                         BorderThickness="1" FontSize="11" Cursor="Hand" FontWeight="SemiBold"/>
                             </StackPanel>
                         </DockPanel>

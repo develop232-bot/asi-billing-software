@@ -6,42 +6,52 @@ namespace AsiErp.Services
 {
     public static class SeedData
     {
-        public static List<RawMaterialItem> CreateRawMaterials() => new()
+        public static List<RawMaterialItem> CreateRawMaterials()
         {
-            new() { Id = "r1", Name = "Full-grain leather", Unit = "sq ft", Stock = 5200, ReorderLevel = 2500, Rate = 48, Gst = 5 },
-            new() { Id = "r2", Name = "PU synthetic leather", Unit = "m", Stock = 620, ReorderLevel = 300, Rate = 145, Gst = 5 },
-            new() { Id = "r3", Name = "Rubber sole", Unit = "pair", Stock = 1800, ReorderLevel = 800, Rate = 85, Gst = 18 },
-            new() { Id = "r4", Name = "Insole", Unit = "pair", Stock = 2400, ReorderLevel = 1000, Rate = 18, Gst = 5 },
-            new() { Id = "r5", Name = "Lining fabric", Unit = "m", Stock = 900, ReorderLevel = 400, Rate = 60, Gst = 5 },
-            new() { Id = "r6", Name = "Shoe laces", Unit = "pair", Stock = 3000, ReorderLevel = 1200, Rate = 6, Gst = 5 },
-            new() { Id = "r7", Name = "Sewing thread", Unit = "cone", Stock = 85, ReorderLevel = 40, Rate = 120, Gst = 5 },
-            new() { Id = "r8", Name = "Adhesive / glue", Unit = "kg", Stock = 12, ReorderLevel = 25, Rate = 260, Gst = 18 },
-            new() { Id = "r9", Name = "Steel toe cap", Unit = "pair", Stock = 40, ReorderLevel = 100, Rate = 70, Gst = 18 },
-            new() { Id = "r10", Name = "Shirting fabric", Unit = "m", Stock = 2600, ReorderLevel = 1200, Rate = 95, Gst = 5 },
-            new() { Id = "r11", Name = "Trouser / coverall fabric", Unit = "m", Stock = 3400, ReorderLevel = 1500, Rate = 140, Gst = 5 },
-            new() { Id = "r12", Name = "Buttons", Unit = "pcs", Stock = 9000, ReorderLevel = 4000, Rate = 1, Gst = 5 },
-            new() { Id = "r13", Name = "Zippers", Unit = "pcs", Stock = 900, ReorderLevel = 400, Rate = 8, Gst = 5 },
-            new() { Id = "r14", Name = "Velcro tape", Unit = "m", Stock = 300, ReorderLevel = 150, Rate = 22, Gst = 5 }
-        };
+            var list = new List<RawMaterialItem>
+            {
+                new() { Id = "r1", Name = "Full-grain leather", Unit = "sq ft", Stock = 5200, ReorderLevel = 2500, Rate = 48, Gst = 5 },
+                new() { Id = "r2", Name = "PU synthetic leather", Unit = "m", Stock = 620, ReorderLevel = 300, Rate = 145, Gst = 5 },
+                new() { Id = "r3", Name = "Rubber sole", Unit = "pair", Stock = 1800, ReorderLevel = 800, Rate = 85, Gst = 18 },
+                new() { Id = "r4", Name = "Insole", Unit = "pair", Stock = 2400, ReorderLevel = 1000, Rate = 18, Gst = 5 },
+                new() { Id = "r5", Name = "Lining fabric", Unit = "m", Stock = 900, ReorderLevel = 400, Rate = 60, Gst = 5 },
+                new() { Id = "r6", Name = "Shoe laces", Unit = "pair", Stock = 3000, ReorderLevel = 1200, Rate = 6, Gst = 5 },
+                new() { Id = "r7", Name = "Sewing thread", Unit = "cone", Stock = 85, ReorderLevel = 40, Rate = 120, Gst = 5 },
+                new() { Id = "r8", Name = "Adhesive / glue", Unit = "kg", Stock = 12, ReorderLevel = 25, Rate = 260, Gst = 18 },
+                new() { Id = "r9", Name = "Steel toe cap", Unit = "pair", Stock = 40, ReorderLevel = 100, Rate = 70, Gst = 18 },
+                new() { Id = "r10", Name = "Shirting fabric", Unit = "m", Stock = 2600, ReorderLevel = 1200, Rate = 95, Gst = 5 },
+                new() { Id = "r11", Name = "Trouser / coverall fabric", Unit = "m", Stock = 3400, ReorderLevel = 1500, Rate = 140, Gst = 5 },
+                new() { Id = "r12", Name = "Buttons", Unit = "pcs", Stock = 9000, ReorderLevel = 4000, Rate = 1, Gst = 5 },
+                new() { Id = "r13", Name = "Zippers", Unit = "pcs", Stock = 900, ReorderLevel = 400, Rate = 8, Gst = 5 },
+                new() { Id = "r14", Name = "Velcro tape", Unit = "m", Stock = 300, ReorderLevel = 150, Rate = 22, Gst = 5 }
+            };
+            foreach (var r in list) r.RegisteredQty = r.Stock;
+            return list;
+        }
 
-        public static List<GeneralItem> CreateGeneralItems() => new()
+        public static List<GeneralItem> CreateGeneralItems()
         {
-            new() { Id = "g1", Name = "Shoe box – ASI branded", Unit = "pcs", Stock = 1400, ReorderLevel = 800, Rate = 14, Gst = 5 },
-            new() { Id = "g2", Name = "Uniform poly cover", Unit = "pcs", Stock = 900, ReorderLevel = 600, Rate = 3, Gst = 18 },
-            new() { Id = "g3", Name = "Tissue paper for inside shoe", Unit = "pack", Stock = 30, ReorderLevel = 40, Rate = 85, Gst = 5 },
-            new() { Id = "g4", Name = "ASI logo customer bag", Unit = "pcs", Stock = 600, ReorderLevel = 300, Rate = 9, Gst = 18 },
-            new() { Id = "g5", Name = "Single shoe dust cover", Unit = "pcs", Stock = 2200, ReorderLevel = 1000, Rate = 2.5, Gst = 18 },
-            new() { Id = "g6", Name = "Master carton (12 pair)", Unit = "pcs", Stock = 260, ReorderLevel = 150, Rate = 38, Gst = 5 },
-            new() { Id = "g7", Name = "Hang tags", Unit = "pcs", Stock = 4000, ReorderLevel = 2000, Rate = 0.8, Gst = 5 },
-            new() { Id = "g8", Name = "Packing tape", Unit = "roll", Stock = 48, ReorderLevel = 24, Rate = 55, Gst = 18 }
-        };
+            var list = new List<GeneralItem>
+            {
+                new() { Id = "g1", Name = "Shoe box – ASI branded", Unit = "pcs", Stock = 1400, ReorderLevel = 800, Rate = 14, Gst = 5 },
+                new() { Id = "g2", Name = "Uniform poly cover", Unit = "pcs", Stock = 900, ReorderLevel = 600, Rate = 3, Gst = 18 },
+                new() { Id = "g3", Name = "Tissue paper for inside shoe", Unit = "pack", Stock = 30, ReorderLevel = 40, Rate = 85, Gst = 5 },
+                new() { Id = "g4", Name = "ASI logo customer bag", Unit = "pcs", Stock = 600, ReorderLevel = 300, Rate = 9, Gst = 18 },
+                new() { Id = "g5", Name = "Single shoe dust cover", Unit = "pcs", Stock = 2200, ReorderLevel = 1000, Rate = 2.5, Gst = 18 },
+                new() { Id = "g6", Name = "Master carton (12 pair)", Unit = "pcs", Stock = 260, ReorderLevel = 150, Rate = 38, Gst = 5 },
+                new() { Id = "g7", Name = "Hang tags", Unit = "pcs", Stock = 4000, ReorderLevel = 2000, Rate = 0.8, Gst = 5 },
+                new() { Id = "g8", Name = "Packing tape", Unit = "roll", Stock = 48, ReorderLevel = 24, Rate = 55, Gst = 18 }
+            };
+            foreach (var g in list) g.RegisteredQty = g.Stock;
+            return list;
+        }
 
         public static List<ProductItem> CreateProducts()
         {
             var shoeSizes = new List<string> { "6", "7", "8", "9", "10", "11" };
             var unifSizes = new List<string> { "S", "M", "L", "XL", "XXL" };
 
-            return new()
+            var list = new List<ProductItem>
             {
                 new()
                 {
@@ -188,6 +198,8 @@ namespace AsiErp.Services
                     Stock = 40, ReorderLevel = 60
                 }
             };
+            foreach (var p in list) p.RegisteredQty = p.Stock;
+            return list;
         }
 
         public static void PopulateTransactions(AppDataService ds)
