@@ -138,5 +138,11 @@ namespace AsiErp.Models
             get => !string.IsNullOrEmpty(Barcode) ? Barcode : (!string.IsNullOrEmpty(Sku) ? Sku : Id);
             set { }
         }
+
+        public string FullDisplayName
+        {
+            get => string.IsNullOrWhiteSpace(Sku) ? Name : $"{Name} ({Sku})";
+            set { }
+        }
     }
 }

@@ -140,7 +140,7 @@ namespace AsiErp.ViewModels
             var line = new SaleLine
             {
                 Pid = first?.Id ?? "prd_1",
-                Name = first?.Name ?? "School Shoe – Black Lace-up",
+                Name = first?.FullDisplayName ?? "School Shoe – Black Lace-up (ASI-SH-001)",
                 Hsn = first?.Hsn ?? "6403",
                 Size = first?.Sizes?.FirstOrDefault() ?? "8",
                 Qty = 10,
@@ -156,7 +156,7 @@ namespace AsiErp.ViewModels
                     var p = AvailableProducts.FirstOrDefault(x => x.Id == line.Pid);
                     if (p != null)
                     {
-                        line.Name = p.Name;
+                        line.Name = p.FullDisplayName;
                         line.Hsn = p.Hsn;
                         line.Unit = p.Unit;
                         if (p.DomesticPrice > 0) line.Rate = p.DomesticPrice;

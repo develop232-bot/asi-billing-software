@@ -210,7 +210,7 @@ namespace AsiErp.ViewModels
             var line = new SaleLine
             {
                 Pid = first?.Id ?? "prd_2",
-                Name = first?.Name ?? "Safety Shoe – Steel Toe",
+                Name = first?.FullDisplayName ?? "Safety Shoe – Steel Toe (ASI-SH-002)",
                 Hsn = first?.Hsn ?? "6403",
                 Size = first?.Sizes?.FirstOrDefault() ?? "9",
                 Qty = 250,
@@ -226,7 +226,7 @@ namespace AsiErp.ViewModels
                     var p = AvailableProducts.FirstOrDefault(x => x.Id == line.Pid);
                     if (p != null)
                     {
-                        line.Name = p.Name;
+                        line.Name = p.FullDisplayName;
                         line.Hsn = p.Hsn;
                         line.Unit = p.Unit;
                         double price = 0;

@@ -167,90 +167,113 @@
                     </DockPanel>
 
                     <DataGrid ItemsSource="{Binding Lines}" AutoGenerateColumns="False" CanUserAddRows="False"
-                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White"
+                              RowHeight="46" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False">
                         <DataGrid.Columns>
                             <!-- Product Name Selection -->
                             <DataGridTemplateColumn Header="Product (Select or Type)" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AvailableProducts}"
-                                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Pid, Mode=TwoWay}"
-                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  IsEditable="True" Height="30" Padding="8,4" VerticalContentAlignment="Center" Margin="2,0"/>
+                                                  DisplayMemberPath="FullDisplayName" SelectedValuePath="Id" SelectedValue="{Binding Pid, Mode=TwoWay}"
+                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                  IsEditable="True" Height="34" Padding="10,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"
+                                                  IsTextSearchEnabled="True" TextSearch.TextPath="FullDisplayName">
+                                            <ComboBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Padding="4,3">
+                                                        <DockPanel>
+                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                                                <Border Background="#EEF2FF" CornerRadius="4" Padding="6,1" Margin="6,0,0,0">
+                                                                    <TextBlock Text="{Binding Sku}" FontSize="10" FontWeight="Bold" Foreground="#4F46E5"/>
+                                                                </Border>
+                                                                <TextBlock Text="{Binding Stock, StringFormat='{}{0:N0} in stock'}" FontSize="10" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                                            </StackPanel>
+                                                        </DockPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ComboBox.ItemTemplate>
+                                        </ComboBox>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Size -->
-                            <DataGridTemplateColumn Header="Size" Width="70">
+                            <DataGridTemplateColumn Header="Size" Width="65">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                                 Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Qty -->
-                            <DataGridTemplateColumn Header="Qty" Width="85">
+                            <DataGridTemplateColumn Header="Qty" Width="70">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                                 Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Unit -->
-                            <DataGridTemplateColumn Header="Unit" Width="75">
+                            <DataGridTemplateColumn Header="Unit" Width="65">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                                 Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Rate (Foreign Currency) -->
-                            <DataGridTemplateColumn Header="Rate (Cur)" Width="105">
+                            <DataGridTemplateColumn Header="Rate (Cur)" Width="95">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}"
-                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                                 Height="34" Padding="8,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Disc % -->
-                            <DataGridTemplateColumn Header="Disc %" Width="75">
+                            <DataGridTemplateColumn Header="Disc %" Width="65">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding DiscPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                 Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                                 Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Total (₹ INR) -->
-                            <DataGridTemplateColumn Header="Total (₹ INR)" Width="130">
+                            <DataGridTemplateColumn Header="Total (₹ INR)" Width="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Border Background="#F1F5F9" Padding="8,4" CornerRadius="4" Margin="2,0">
+                                        <Border Background="#F1F5F9" CornerRadius="6" Height="34" Padding="8,0" Margin="2,0" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding GrossAmount, Converter={StaticResource InrConv}}"
-                                                       FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                                       FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- Delete -->
-                            <DataGridTemplateColumn Width="45">
+                            <DataGridTemplateColumn Width="42">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Button Content="✕" Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.DeleteLineCommand}" CommandParameter="{Binding}"
                                                 Foreground="#DC2626" Background="#FEF2F2" BorderBrush="#FECACA" BorderThickness="1"
-                                                Width="28" Height="28" Cursor="Hand" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                Width="30" Height="30" Cursor="Hand" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                         </Button>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
