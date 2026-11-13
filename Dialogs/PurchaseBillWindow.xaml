@@ -82,7 +82,8 @@
                 </DockPanel>
 
                 <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                          GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="46"
+                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False">
                     <DataGrid.Columns>
                         <!-- Item (Select from Dropdown or Type Directly) -->
                         <DataGridTemplateColumn Header="Item (Select or Type Name)" Width="*">
@@ -92,80 +93,80 @@
                                               DisplayMemberPath="Name"
                                               SelectedValuePath="Id"
                                               SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                               SelectionChanged="ItemSelectionChanged"
                                               LostFocus="ItemComboBox_LostFocus"
-                                              IsEditable="True" Height="30" Padding="8,4" VerticalContentAlignment="Center" Margin="2,0"/>
+                                              IsEditable="True" Height="34" Padding="10,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Unit (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="Unit" Width="85">
+                        <DataGridTemplateColumn Header="Unit" Width="75">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="30" Padding="6,4" VerticalContentAlignment="Center"
-                                             BorderBrush="#CBD5E1" BorderThickness="1" Margin="2,0" Background="#FFFFFF"/>
+                                             Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
+                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Qty (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="Qty" Width="90">
+                        <DataGridTemplateColumn Header="Qty" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right"
-                                             BorderBrush="#CBD5E1" BorderThickness="1" Margin="2,0" Background="#FFFFFF"/>
+                                             Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Rate (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="Rate (₹)" Width="110">
+                        <DataGridTemplateColumn Header="Rate (₹)" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right"
-                                             BorderBrush="#CBD5E1" BorderThickness="1" Margin="2,0" Background="#FFFFFF"/>
+                                             Height="34" Padding="8,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- GST % (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="GST %" Width="85">
+                        <DataGridTemplateColumn Header="GST %" Width="75">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding GstPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="30" Padding="6,4" VerticalContentAlignment="Center" TextAlignment="Right"
-                                             BorderBrush="#CBD5E1" BorderThickness="1" Margin="2,0" Background="#FFFFFF"/>
+                                             Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Total Gross Amount (Formatted Badge) -->
-                        <DataGridTemplateColumn Header="Total (₹)" Width="120">
+                        <DataGridTemplateColumn Header="Total (₹)" Width="110">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Border Background="#F1F5F9" Padding="8,4" CornerRadius="4" Margin="2,0">
+                                    <Border Background="#F1F5F9" CornerRadius="6" Height="34" Padding="8,0" Margin="2,0" VerticalAlignment="Center">
                                         <TextBlock Text="{Binding GrossAmount, StringFormat='{}{0:N2}'}"
-                                                   FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                                   FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                     </Border>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
                         <!-- Delete Row Button -->
-                        <DataGridTemplateColumn Width="45">
+                        <DataGridTemplateColumn Width="42">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="✕" Click="DeleteLine_Click" Foreground="#DC2626" Background="#FEF2F2"
-                                            BorderBrush="#FECACA" BorderThickness="1" Width="28" Height="28" Cursor="Hand"
-                                            FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            BorderBrush="#FECACA" BorderThickness="1" Width="30" Height="30" Cursor="Hand"
+                                            FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
                                         <Button.Resources>
                                             <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="4"/>
+                                                <Setter Property="CornerRadius" Value="6"/>
                                             </Style>
                                         </Button.Resources>
                                     </Button>
