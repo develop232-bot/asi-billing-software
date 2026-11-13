@@ -17,16 +17,9 @@
         <StackPanel>
             <!-- Header -->
             <DockPanel Margin="0,0,0,18">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="⬅ Back to Sales &amp; Billing" Command="{Binding BackToSalesCommand}"
-                            Padding="12,6" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1"
-                            Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,14,0">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                    </Button>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Retail Billing (POS)" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                        <TextBlock Text="Showroom and exhibition counter. Fast billing with automatic barcode scanning and bulk rates." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
-                    </StackPanel>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Retail Billing (POS)" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Showroom and exhibition counter. Fast billing with automatic barcode scanning and bulk rates." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
                 <Border HorizontalAlignment="Right" Background="#FEF3C7" CornerRadius="10" Padding="14,6" BorderBrush="#F59E0B" BorderThickness="1" VerticalAlignment="Center">
                     <TextBlock Text="{Binding NextBillNo, StringFormat='Next Bill: {0}'}" FontWeight="Bold" Foreground="#92400E" FontSize="12"/>
@@ -47,16 +40,28 @@
                         <Border DockPanel.Dock="Top" Background="#F8FAFC" Padding="16,14" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" CornerRadius="12,12,0,0">
                             <StackPanel>
                                 <!-- Barcode Quick Scanner Line -->
-                                <Border Background="#EEF2FF" CornerRadius="8" Padding="12,8" Margin="0,0,0,10" BorderBrush="#C7D2FE" BorderThickness="1">
+                                <Border Background="#EEF2FF" CornerRadius="8" Padding="10,6" Margin="0,0,0,10" BorderBrush="#C7D2FE" BorderThickness="1">
                                     <DockPanel>
-                                        <TextBlock Text="📷 Scan Barcode / SKU:" FontWeight="Bold" FontSize="11.5" Foreground="#3730A3" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                                        <Button DockPanel.Dock="Right" Content="➕ Add New Item" Command="{Binding AddNewProductCommand}" Background="#1E293B" Foreground="#93C5FD" BorderThickness="0" Padding="10,5" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="8,0,0,0" ToolTip="Quickly add a new product master with auto barcode"/>
-                                        <Button DockPanel.Dock="Right" Content="Scan &amp; Add" Command="{Binding ScanBarcodeCommand}" Background="#4F46E5" Foreground="White" BorderThickness="0" Padding="12,5" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="8,0,0,0"/>
-                                        <TextBox x:Name="TxtBarcodeScan" Text="{Binding ScannedBarcode, UpdateSourceTrigger=PropertyChanged}" Padding="8,4" FontSize="12" FontFamily="Consolas, Segoe UI" BorderBrush="#C7D2FE">
-                                            <TextBox.InputBindings>
-                                                <KeyBinding Key="Return" Command="{Binding ScanBarcodeCommand}"/>
-                                            </TextBox.InputBindings>
-                                        </TextBox>
+                                        <Button DockPanel.Dock="Right" Content="Scan &amp; Add" Command="{Binding ScanBarcodeCommand}" Background="#4F46E5" Foreground="White" BorderThickness="0" Padding="16,6" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="8,0,0,0">
+                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                        </Button>
+                                        <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="34">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="34"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="📷" FontSize="13" Foreground="#6366F1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                <TextBox Grid.Column="1" x:Name="TxtBarcodeScan" Text="{Binding ScannedBarcode, UpdateSourceTrigger=PropertyChanged}"
+                                                         BorderThickness="0" Background="Transparent" Foreground="#0F172A" CaretBrush="#0F172A"
+                                                         Padding="4,0" FontSize="12.5" FontFamily="Consolas, Segoe UI" VerticalContentAlignment="Center"
+                                                         ToolTip="Scan barcode or type SKU and press Enter">
+                                                    <TextBox.InputBindings>
+                                                        <KeyBinding Key="Return" Command="{Binding ScanBarcodeCommand}"/>
+                                                    </TextBox.InputBindings>
+                                                </TextBox>
+                                            </Grid>
+                                        </Border>
                                     </DockPanel>
                                 </Border>
 
@@ -75,8 +80,20 @@
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- Product Dropdown with Rich Modern Item Template -->
-                                    <ComboBox ItemsSource="{Binding AvailableProducts}" SelectedItem="{Binding QuickAddItem}" Padding="10,8" Margin="0,0,8,0">
+                                    <!-- Product Dropdown with Type-to-Search and Choose from Dropdown -->
+                                    <ComboBox x:Name="CbQuickAdd" Grid.Column="0"
+                                              ItemsSource="{Binding AvailableProducts}"
+                                              SelectedItem="{Binding QuickAddItem}"
+                                              Text="{Binding QuickAddText, UpdateSourceTrigger=PropertyChanged}"
+                                              IsEditable="True"
+                                              IsTextSearchEnabled="False"
+                                              TextSearch.TextPath="Name"
+                                              DropDownOpened="CbQuickAdd_DropDownOpened"
+                                              Padding="10,6" Margin="0,0,8,0"
+                                              Height="36" FontSize="12.5" VerticalContentAlignment="Center">
+                                        <ComboBox.InputBindings>
+                                            <KeyBinding Key="Return" Command="{Binding QuickAddCommand}"/>
+                                        </ComboBox.InputBindings>
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Padding="4,4">
@@ -101,8 +118,10 @@
                                         </ComboBox.ItemTemplate>
                                     </ComboBox>
 
-                                    <TextBox Grid.Column="1" Text="{Binding QuickAddQty}" Padding="10,8" Margin="0,0,8,0" HorizontalContentAlignment="Center" FontWeight="SemiBold" FontSize="12"/>
-                                    <Button Grid.Column="2" Content="+ Add to Bill" Command="{Binding QuickAddCommand}" Background="#172443" Foreground="White" BorderThickness="0" Padding="16,8" Cursor="Hand" FontWeight="Bold" FontSize="12"/>
+                                    <TextBox Grid.Column="1" Text="{Binding QuickAddQty}" Padding="4,0" Margin="0,0,8,0" Height="36" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontWeight="SemiBold" FontSize="12.5"/>
+                                    <Button Grid.Column="2" Content="+ Add to Bill" Command="{Binding QuickAddCommand}" Background="#172443" Foreground="White" BorderThickness="0" Padding="18,0" Height="36" Cursor="Hand" FontWeight="Bold" FontSize="12">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
                                 </Grid>
                             </StackPanel>
                         </Border>

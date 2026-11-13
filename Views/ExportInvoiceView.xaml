@@ -13,16 +13,9 @@
         <StackPanel>
             <!-- Top Header & Navigation -->
             <DockPanel Margin="0,0,0,16">
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="⬅ Back to Sales &amp; Billing" Command="{Binding BackToSalesCommand}"
-                            Padding="12,6" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1"
-                            Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,14,0">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                    </Button>
-                    <StackPanel VerticalAlignment="Center">
-                        <TextBlock Text="Overseas Export Invoice" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
-                        <TextBlock Text="Global &amp; Middle East Supply (Zero-Rated GST under LUT)" FontSize="11.5" Foreground="#64748B" Margin="0,2,0,0"/>
-                    </StackPanel>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Overseas Export Invoice" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Global &amp; Middle East Supply (Zero-Rated GST under LUT)" FontSize="11.5" Foreground="#64748B" Margin="0,2,0,0"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">

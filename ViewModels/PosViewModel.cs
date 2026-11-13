@@ -59,6 +59,9 @@ namespace AsiErp.ViewModels
         private string _scannedBarcode = string.Empty;
         private string _selectedCategory = "all";
         private ProductItem? _quickAddItem;
+        private string _quickAddText = string.Empty;
+        private bool _isFilteringQuickAdd = false;
+        private readonly List<ProductItem> _allAvailableProducts = new();
         private int _quickAddQty = 1;
 
         private double _discountPercent = 0;
@@ -96,10 +99,90 @@ namespace AsiErp.ViewModels
             }
         }
 
+        public string QuickAddText
+        {
+            get => _quickAddText;
+            set
+            {
+                if (SetField(ref _quickAddText, value))
+                {
+                    if (!_isFilteringQuickAdd)
+                    {
+                        FilterQuickAdd(value);
+                    }
+                }
+            }
+        }
+
         public ProductItem? QuickAddItem
         {
             get => _quickAddItem;
-            set => SetField(ref _quickAddItem, value);
+            set
+            {
+                if (SetField(ref _quickAddItem, value))
+                {
+                    if (value != null && !_isFilteringQuickAdd)
+                    {
+                        _isFilteringQuickAdd = true;
+                        try
+                        {
+                            QuickAddText = value.Name;
+                        }
+                        finally
+                        {
+                            _isFilteringQuickAdd = false;
+                        }
+                    }
+                }
+            }
+        }
+
+        public void FilterQuickAdd(string? query)
+        {
+            _isFilteringQuickAdd = true;
+            try
+            {
+                string q = (query ?? string.Empty).Trim().ToLowerInvariant();
+                if (string.IsNullOrEmpty(q))
+                {
+                    ResetQuickAddFilter();
+                    return;
+                }
+
+                var matches = _allAvailableProducts.Where(p =>
+                    p.Name.ToLowerInvariant().Contains(q) ||
+                    p.Category.ToLowerInvariant().Contains(q) ||
+                    p.DisplayBarcode.ToLowerInvariant().Contains(q) ||
+                    p.Sku.ToLowerInvariant().Contains(q)
+                ).ToList();
+
+                AvailableProducts.Clear();
+                foreach (var p in matches)
+                {
+                    AvailableProducts.Add(p);
+                }
+
+                var exact = matches.FirstOrDefault(p =>
+                    p.DisplayBarcode.Equals(q, StringComparison.OrdinalIgnoreCase) ||
+                    p.Sku.Equals(q, StringComparison.OrdinalIgnoreCase) ||
+                    p.Name.Equals(q, StringComparison.OrdinalIgnoreCase)
+                );
+                _quickAddItem = exact ?? matches.FirstOrDefault();
+                OnPropertyChanged(nameof(QuickAddItem));
+            }
+            finally
+            {
+                _isFilteringQuickAdd = false;
+            }
+        }
+
+        public void ResetQuickAddFilter()
+        {
+            AvailableProducts.Clear();
+            foreach (var p in _allAvailableProducts)
+            {
+                AvailableProducts.Add(p);
+            }
         }
 
         public int QuickAddQty
@@ -188,10 +271,41 @@ namespace AsiErp.ViewModels
 
             QuickAddCommand = new RelayCommand(_ =>
             {
-                if (QuickAddItem != null)
+                var item = QuickAddItem;
+                if (item == null && !string.IsNullOrWhiteSpace(QuickAddText))
                 {
-                    AddProductToCart(QuickAddItem, QuickAddQty);
+                    string q = QuickAddText.Trim().ToLowerInvariant();
+                    item = _allAvailableProducts.FirstOrDefault(p =>
+                        p.DisplayBarcode.Equals(q, StringComparison.OrdinalIgnoreCase) ||
+                        p.Sku.Equals(q, StringComparison.OrdinalIgnoreCase) ||
+                        p.Name.Equals(q, StringComparison.OrdinalIgnoreCase)
+                    ) ?? _allAvailableProducts.FirstOrDefault(p =>
+                        p.Name.ToLowerInvariant().Contains(q) ||
+                        p.Category.ToLowerInvariant().Contains(q) ||
+                        p.DisplayBarcode.Contains(q) ||
+                        p.Sku.ToLowerInvariant().Contains(q)
+                    );
+                }
+
+                if (item != null)
+                {
+                    AddProductToCart(item, QuickAddQty);
                     QuickAddQty = 1;
+                    _isFilteringQuickAdd = true;
+                    try
+                    {
+                        QuickAddItem = null;
+                        QuickAddText = string.Empty;
+                    }
+                    finally
+                    {
+                        _isFilteringQuickAdd = false;
+                    }
+                    ResetQuickAddFilter();
+                }
+                else
+                {
+                    MessageBox.Show("Please select an item from the list or enter a matching product name, SKU, or barcode.", "Product Not Found", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             });
 
@@ -256,9 +370,13 @@ namespace AsiErp.ViewModels
 
         public void LoadData()
         {
+            _allAvailableProducts.Clear();
             AvailableProducts.Clear();
             foreach (var p in _dataService.Products.Where(x => x.Stock > 0))
+            {
+                _allAvailableProducts.Add(p);
                 AvailableProducts.Add(p);
+            }
 
             ApplyProductFilter();
 
