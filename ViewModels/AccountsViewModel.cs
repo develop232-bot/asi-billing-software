@@ -266,6 +266,7 @@ namespace AsiErp.ViewModels
         public RelayCommand DeleteInvestmentCommand { get; }
 
         public RelayCommand AddLoanCommand { get; }
+        public RelayCommand EditLoanCommand { get; }
         public RelayCommand RepayLoanCommand { get; }
         public RelayCommand DeleteLoanCommand { get; }
 
@@ -304,6 +305,10 @@ namespace AsiErp.ViewModels
             });
 
             AddLoanCommand = new RelayCommand(_ => _openDialogAction("loan_add", null));
+            EditLoanCommand = new RelayCommand(p =>
+            {
+                if (p is LoanItem loan) _openDialogAction("loan_edit", loan);
+            });
             RepayLoanCommand = new RelayCommand(p =>
             {
                 if (p is LoanItem loan) _openDialogAction("loan_repay", loan);

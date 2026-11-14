@@ -8,12 +8,39 @@ namespace AsiErp.Dialogs
     public partial class AddLoanWindow : Window
     {
         private readonly AppDataService _dataService = AppDataService.Instance;
+        private readonly LoanItem? _loanToEdit;
 
-        public AddLoanWindow()
+        public AddLoanWindow(LoanItem? loanToEdit = null)
         {
             InitializeComponent();
             _dataService = AppDataService.Instance;
-            DpDate.SelectedDate = DateTime.Now;
+            _loanToEdit = loanToEdit;
+
+            if (_loanToEdit != null)
+            {
+                Title = "Edit Loan";
+                TxtHeaderTitle.Text = "Edit Loan";
+                TxtHeaderSub.Text = "Modify borrowed loan details, amount, or interest rate.";
+                BtnSave.Content = "Update Loan";
+
+                TxtLender.Text = _loanToEdit.Lender;
+                TxtAmount.Text = _loanToEdit.Amount.ToString();
+                TxtInterestRate.Text = _loanToEdit.InterestRate.ToString();
+                TxtNote.Text = _loanToEdit.Note;
+
+                if (DateTime.TryParse(_loanToEdit.Date, out var dt))
+                {
+                    DpDate.SelectedDate = dt;
+                }
+                else
+                {
+                    DpDate.SelectedDate = DateTime.Now;
+                }
+            }
+            else
+            {
+                DpDate.SelectedDate = DateTime.Now;
+            }
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
@@ -39,17 +66,31 @@ namespace AsiErp.Dialogs
 
             string note = TxtNote?.Text?.Trim() ?? "";
 
-            var loan = new LoanItem
+            if (_loanToEdit != null)
             {
-                Id = "l_" + Guid.NewGuid().ToString("N")[..8],
-                Lender = lender,
-                Date = DpDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
-                Amount = amt,
-                InterestRate = rate,
-                Note = note
-            };
+                _loanToEdit.Lender = lender;
+                _loanToEdit.Date = DpDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd");
+                _loanToEdit.Amount = amt;
+                _loanToEdit.InterestRate = rate;
+                _loanToEdit.Note = note;
 
-            await _dataService.AddLoanAsync(loan);
+                await _dataService.UpdateLoanAsync(_loanToEdit);
+            }
+            else
+            {
+                var loan = new LoanItem
+                {
+                    Id = "l_" + Guid.NewGuid().ToString("N")[..8],
+                    Lender = lender,
+                    Date = DpDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
+                    Amount = amt,
+                    InterestRate = rate,
+                    Note = note
+                };
+
+                await _dataService.AddLoanAsync(loan);
+            }
+
             DialogResult = true;
             Close();
         }

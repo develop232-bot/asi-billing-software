@@ -861,6 +861,20 @@ namespace AsiErp.Services
             return Task.CompletedTask;
         }
 
+        public Task UpdateLoanAsync(LoanItem loan)
+        {
+            int idx = Loans.FindIndex(x => x.Id == loan.Id);
+            if (idx >= 0) Loans[idx] = loan;
+            else Loans.Insert(0, loan);
+
+            NotifyDataChanged();
+            if (!IsSampleDataLoaded)
+            {
+                SyncQueue.EnqueueSet("loans", loan.Id, loan);
+            }
+            return Task.CompletedTask;
+        }
+
         public Task DeleteLoanAsync(string id)
         {
             Loans.RemoveAll(x => x.Id == id);

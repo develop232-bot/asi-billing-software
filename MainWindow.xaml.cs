@@ -339,6 +339,16 @@ namespace AsiErp
                         break;
                     }
 
+                case "loan_edit":
+                    {
+                        if (parameter is LoanItem loan)
+                        {
+                            var dlg = new AddLoanWindow(loan) { Owner = this };
+                            dlg.ShowDialog();
+                        }
+                        break;
+                    }
+
                 case "loan_repay":
                     {
                         if (parameter is LoanItem loan)

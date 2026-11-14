@@ -741,7 +741,7 @@
                     <Button Content="+ Add Loan" Command="{Binding AddLoanCommand}" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
                 </DockPanel>
 
-                <!-- 4 KPI Tiles -->
+                <!-- 4 KPI Tiles: Loan, Principal, Interest, Outstanding -->
                 <UniformGrid Columns="4" Margin="0,0,0,20">
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
@@ -758,8 +758,8 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Interest Paid" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalLoanInterestPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
+                            <TextBlock Text="Principal Paid" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalLoanPrincipalPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -768,8 +768,8 @@
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Principal Paid" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalLoanPrincipalPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
+                            <TextBlock Text="Interest Paid" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalLoanInterestPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -831,10 +831,12 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Actions" Width="160">
+                                <DataGridTemplateColumn Header="Actions" Width="220">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Content="Edit" Command="{Binding DataContext.EditLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Padding="10,4" Margin="0,0,6,0" Background="#F1F5F9" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
                                                 <Button Content="Repay" Command="{Binding DataContext.RepayLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                                         Visibility="{Binding IsOpen, Converter={StaticResource BoolToVis}}"
                                                         Padding="10,4" Margin="0,0,6,0" Background="#EFF6FF" Foreground="#2563EB" BorderBrush="#BFDBFE" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
