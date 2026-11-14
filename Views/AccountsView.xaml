@@ -962,68 +962,95 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- LEFT COLUMN: Liabilities & Capital -->
+                            <!-- LEFT COLUMN: Assets -->
                             <StackPanel Grid.Column="0" Margin="0,0,24,0">
+                                <Border Background="#F8FAFC" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
+                                    <TextBlock Text="Assets (what it owns)" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
+                                </Border>
+
+                                <!-- Machines, vehicles & other assets -->
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Machines, vehicles &amp; other assets" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsFixedAssets, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                </DockPanel>
+                                <Separator Margin="0,2" Background="#F1F5F9"/>
+
+                                <!-- Stock in hand -->
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Stock in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                </DockPanel>
+                                <Separator Margin="0,2" Background="#F1F5F9"/>
+
+                                <!-- Customers owe you -->
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Customers owe you" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsRecv, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                </DockPanel>
+                                <Separator Margin="0,2" Background="#F1F5F9"/>
+
+                                <!-- Cash & bank -->
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Cash &amp; bank" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsCash, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                </DockPanel>
+
+                                <!-- Total Assets -->
+                                <Border BorderBrush="#0F172A" BorderThickness="0,2,0,0" Margin="0,96,0,0" Padding="0,10,0,0">
+                                    <DockPanel>
+                                        <TextBlock Text="Total Assets" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                        <TextBlock Text="{Binding BsAssetsTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                    </DockPanel>
+                                </Border>
+                            </StackPanel>
+
+                            <!-- Vertical Divider -->
+                            <Rectangle Grid.Column="1" Fill="#E2E8F0" VerticalAlignment="Stretch" Width="1"/>
+
+                            <!-- RIGHT COLUMN: Liabilities & Capital -->
+                            <StackPanel Grid.Column="2" Margin="24,0,0,0">
                                 <Border Background="#F8FAFC" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
                                     <TextBlock Text="Liabilities &amp; Capital (what it owes + owners' share)" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
                                 </Border>
 
                                 <!-- Capital -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Capital — money the owners put in" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="From Investment" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Capital — money the owners put in" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding BsCap, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
                                 <Separator Margin="0,2" Background="#F1F5F9"/>
 
                                 <!-- Profit so far -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Profit so far" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="After loan interest and depreciation" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Profit so far" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding BsProfit, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
                                 <Separator Margin="0,2" Background="#F1F5F9"/>
 
                                 <!-- Stock still in hand -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Stock still in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="Purchases counted as costs, stock added back" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Stock still in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
                                 <Separator Margin="0,2" Background="#F1F5F9"/>
 
                                 <!-- Loans to repay -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Loans to repay" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="From Loans register" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Loans to repay" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding BsLoans, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
                                 <Separator Margin="0,2" Background="#F1F5F9"/>
 
                                 <!-- Vendors to pay -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Vendors to pay" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="Unpaid purchase bills" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="Vendors to pay" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding BsPay, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
                                 <Separator Margin="0,2" Background="#F1F5F9"/>
 
                                 <!-- GST to pay -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="GST to pay government" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="GST collected minus GST paid on purchases" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
+                                <DockPanel Margin="0,10">
+                                    <TextBlock Text="GST to pay government" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
                                     <TextBlock Text="{Binding BsGst, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
 
@@ -1032,63 +1059,6 @@
                                     <DockPanel>
                                         <TextBlock Text="Total Liabilities &amp; Capital" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
                                         <TextBlock Text="{Binding BsLiabilitiesTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                    </DockPanel>
-                                </Border>
-                            </StackPanel>
-
-                            <!-- Vertical Divider -->
-                            <Rectangle Grid.Column="1" Fill="#E2E8F0" VerticalAlignment="Stretch" Width="1"/>
-
-                            <!-- RIGHT COLUMN: Assets -->
-                            <StackPanel Grid.Column="2" Margin="24,0,0,0">
-                                <Border Background="#F8FAFC" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
-                                    <TextBlock Text="Assets (what it owns)" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
-                                </Border>
-
-                                <!-- Machines, vehicles & other assets -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Machines, vehicles &amp; other assets" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="Cost minus value lost, from Assets register" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding BsFixedAssets, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
-                                </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
-
-                                <!-- Stock in hand -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Stock in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="At cost: raw material, packing &amp; goods" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
-                                </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
-
-                                <!-- Customers owe you -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Customers owe you" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="Unpaid sales invoices" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding BsRecv, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
-                                </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
-
-                                <!-- Cash & bank -->
-                                <DockPanel Margin="0,8">
-                                    <StackPanel>
-                                        <TextBlock Text="Cash &amp; bank" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A"/>
-                                        <TextBlock Text="Worked out from all money in and out" FontSize="11" Foreground="#64748B"/>
-                                    </StackPanel>
-                                    <TextBlock Text="{Binding BsCash, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
-                                </DockPanel>
-
-                                <!-- Total Assets -->
-                                <Border BorderBrush="#0F172A" BorderThickness="0,2,0,0" Margin="0,56,0,0" Padding="0,10,0,0">
-                                    <DockPanel>
-                                        <TextBlock Text="Total Assets" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                        <TextBlock Text="{Binding BsAssetsTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
                                     </DockPanel>
                                 </Border>
                             </StackPanel>

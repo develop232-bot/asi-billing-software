@@ -148,6 +148,17 @@ namespace AsiErp.Services
                     if (root.TryGetProperty("IsSampleDataLoaded", out var smElem))
                         IsSampleDataLoaded = false;
 
+                    // Purge any legacy sample data
+                    Loans.RemoveAll(l => l.Id == "l0" || l.Id == "sampleLoan" || l.Id.StartsWith("l_sample"));
+                    Assets.RemoveAll(a => a.Id == "a0" || a.Id == "a1" || a.Id.StartsWith("a_sample"));
+                    Products.RemoveAll(p => p.Id.StartsWith("p") && int.TryParse(p.Id.Substring(1), out _));
+                    RawMaterials.RemoveAll(r => r.Id.StartsWith("r") && int.TryParse(r.Id.Substring(1), out _));
+                    GeneralItems.RemoveAll(g => g.Id.StartsWith("g") && int.TryParse(g.Id.Substring(1), out _));
+                    Sales.RemoveAll(s => s.Id.StartsWith("s") && int.TryParse(s.Id.Substring(1), out _));
+                    Purchases.RemoveAll(pu => pu.Id.StartsWith("b") && int.TryParse(pu.Id.Substring(1), out _));
+                    WorkOrders.RemoveAll(w => w.Id.StartsWith("wo") && int.TryParse(w.Id.Substring(2), out _));
+                    Expenses.RemoveAll(e => e.Id.StartsWith("e_sal_") || e.Id.StartsWith("e_eb_") || e.Id.StartsWith("e_wtr_") || e.Id.StartsWith("e_rent_") || e.Id.StartsWith("e_esipf_") || e.Id.StartsWith("e_tea_") || e.Id.StartsWith("e_tr_") || e.Id.StartsWith("e_rep_"));
+
                     for (int i = 0; i < Products.Count; i++)
                     {
                         if (string.IsNullOrEmpty(Products[i].Barcode))
@@ -191,26 +202,11 @@ namespace AsiErp.Services
 
         public void LoadDemoData()
         {
-            RawMaterials = SeedData.CreateRawMaterials();
-            GeneralItems = SeedData.CreateGeneralItems();
-            Products = SeedData.CreateProducts();
-            Sales = new();
-            Purchases = new();
-            Expenses = new();
-            Investments = new();
-            Loans = new();
-            Assets = new();
-            WorkOrders = new();
-            Sequences = new();
-
-            SeedData.PopulateTransactions(this);
-
-            IsSampleDataLoaded = true;
-            SyncQueue.ClearQueue();
-            NotifyDataChanged();
+            // Demo data permanently removed - all data is loaded strictly from database
+            StartFresh();
         }
 
-        public void ReloadSampleData() => LoadDemoData();
+        public void ReloadSampleData() => StartFresh();
 
         public async Task<(bool success, string message, int count)> LoadFromCloudDatabaseAsync()
         {
@@ -236,6 +232,8 @@ namespace AsiErp.Services
                 WorkOrders.Clear();
                 Expenses.Clear();
                 Investments.Clear();
+                Loans.Clear();
+                Assets.Clear();
                 Sequences.Clear();
 
                 Products = bundle.Products;
@@ -246,6 +244,8 @@ namespace AsiErp.Services
                 WorkOrders = bundle.WorkOrders;
                 Expenses = bundle.Expenses;
                 Investments = bundle.Investments;
+                Loans = bundle.Loans;
+                Assets = bundle.Assets;
                 Sequences = bundle.Sequences;
 
                 Auth.MergeCloudUsers(bundle.Users);
@@ -290,6 +290,8 @@ namespace AsiErp.Services
             foreach (var w in WorkOrders) SyncQueue.EnqueueSet("work_orders", w.Id, w);
             foreach (var e in Expenses) SyncQueue.EnqueueSet("expenses", e.Id, e);
             foreach (var i in Investments) SyncQueue.EnqueueSet("investments", i.Id, i);
+            foreach (var l in Loans) SyncQueue.EnqueueSet("loans", l.Id, l);
+            foreach (var a in Assets) SyncQueue.EnqueueSet("assets", a.Id, a);
             foreach (var u in Auth.Users) SyncQueue.EnqueueSet("users", u.Id, u);
             SyncQueue.EnqueueSet("meta", "sequences", Sequences);
             return Task.CompletedTask;
@@ -688,6 +690,10 @@ namespace AsiErp.Services
         {
             Loans.Insert(0, loan);
             NotifyDataChanged();
+            if (!IsSampleDataLoaded)
+            {
+                SyncQueue.EnqueueSet("loans", loan.Id, loan);
+            }
             return Task.CompletedTask;
         }
 
@@ -695,6 +701,10 @@ namespace AsiErp.Services
         {
             Loans.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            if (!IsSampleDataLoaded)
+            {
+                SyncQueue.EnqueueDelete("loans", id);
+            }
             return Task.CompletedTask;
         }
 
@@ -705,6 +715,10 @@ namespace AsiErp.Services
             {
                 loan.Repayments.Add(rep);
                 NotifyDataChanged();
+                if (!IsSampleDataLoaded)
+                {
+                    SyncQueue.EnqueueSet("loans", loan.Id, loan);
+                }
             }
             return Task.CompletedTask;
         }
@@ -713,6 +727,10 @@ namespace AsiErp.Services
         {
             Assets.Insert(0, asset);
             NotifyDataChanged();
+            if (!IsSampleDataLoaded)
+            {
+                SyncQueue.EnqueueSet("assets", asset.Id, asset);
+            }
             return Task.CompletedTask;
         }
 
@@ -720,6 +738,10 @@ namespace AsiErp.Services
         {
             Assets.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            if (!IsSampleDataLoaded)
+            {
+                SyncQueue.EnqueueDelete("assets", id);
+            }
             return Task.CompletedTask;
         }
 

@@ -20,12 +20,14 @@ namespace AsiErp.Services
         public List<WorkOrderDoc> WorkOrders { get; set; } = new();
         public List<ExpenseItem> Expenses { get; set; } = new();
         public List<InvestmentItem> Investments { get; set; } = new();
+        public List<LoanItem> Loans { get; set; } = new();
+        public List<AssetItem> Assets { get; set; } = new();
         public List<AppUser> Users { get; set; } = new();
         public Dictionary<string, int> Sequences { get; set; } = new();
 
         public int TotalRecords => Products.Count + RawMaterials.Count + GeneralItems.Count +
                                   Sales.Count + Purchases.Count + WorkOrders.Count +
-                                  Expenses.Count + Investments.Count + Users.Count;
+                                  Expenses.Count + Investments.Count + Loans.Count + Assets.Count + Users.Count;
     }
 
     public class FirebaseService
@@ -169,10 +171,12 @@ namespace AsiErp.Services
                 var tOrders = GetWorkOrdersAsync();
                 var tExpenses = GetExpensesAsync();
                 var tInvest = GetInvestmentsAsync();
+                var tLoans = GetLoansAsync();
+                var tAssets = GetAssetsAsync();
                 var tUsers = GetUsersAsync();
                 var tSeq = GetSequencesAsync();
 
-                await Task.WhenAll(tProducts, tRaw, tGen, tSales, tPurchases, tOrders, tExpenses, tInvest, tUsers, tSeq);
+                await Task.WhenAll(tProducts, tRaw, tGen, tSales, tPurchases, tOrders, tExpenses, tInvest, tLoans, tAssets, tUsers, tSeq);
 
                 bundle.Products = await tProducts;
                 bundle.RawMaterials = await tRaw;
@@ -182,6 +186,8 @@ namespace AsiErp.Services
                 bundle.WorkOrders = await tOrders;
                 bundle.Expenses = await tExpenses;
                 bundle.Investments = await tInvest;
+                bundle.Loans = await tLoans;
+                bundle.Assets = await tAssets;
                 bundle.Users = await tUsers;
                 bundle.Sequences = await tSeq;
             }
@@ -383,6 +389,54 @@ namespace AsiErp.Services
                 System.Diagnostics.Debug.WriteLine($"GetInvestmentsAsync error: {ex.Message}");
             }
             return list.OrderByDescending(i => i.Date).ToList();
+        }
+
+        public async Task<List<LoanItem>> GetLoansAsync()
+        {
+            var list = new List<LoanItem>();
+            if (_db == null || !_isConnected) return list;
+            try
+            {
+                var snap = await _db.Collection("loans").GetSnapshotAsync();
+                foreach (var doc in snap.Documents)
+                {
+                    if (doc.Exists)
+                    {
+                        var item = doc.ConvertTo<LoanItem>();
+                        if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                        list.Add(item);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"GetLoansAsync error: {ex.Message}");
+            }
+            return list.OrderByDescending(l => l.Date).ToList();
+        }
+
+        public async Task<List<AssetItem>> GetAssetsAsync()
+        {
+            var list = new List<AssetItem>();
+            if (_db == null || !_isConnected) return list;
+            try
+            {
+                var snap = await _db.Collection("assets").GetSnapshotAsync();
+                foreach (var doc in snap.Documents)
+                {
+                    if (doc.Exists)
+                    {
+                        var item = doc.ConvertTo<AssetItem>();
+                        if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                        list.Add(item);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"GetAssetsAsync error: {ex.Message}");
+            }
+            return list.OrderByDescending(a => a.Date).ToList();
         }
 
         public async Task<Dictionary<string, int>> GetSequencesAsync()

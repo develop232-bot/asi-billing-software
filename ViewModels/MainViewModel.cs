@@ -281,64 +281,17 @@ namespace AsiErp.ViewModels
             ToggleNotificationsCommand = new RelayCommand(_ => IsNotificationPopupOpen = !IsNotificationPopupOpen);
             ToggleNewMenuCommand = new RelayCommand(_ => IsNewMenuOpen = !IsNewMenuOpen);
 
-            LoadDemoDataCommand = new RelayCommand(_ =>
-            {
-                var res = MessageBox.Show(
-                    "Load demo sample data for footwear and uniform operations?\n\nThis will show only demo records in all software modules.",
-                    "Load Demo Data", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (res == MessageBoxResult.Yes)
-                {
-                    _dataService.LoadDemoData();
-                    RefreshDataModeProperties();
-                    NavigateTo("dashboard");
-                }
-            });
-            ReloadSampleCommand = LoadDemoDataCommand;
-
             LoadCloudDbCommand = new RelayCommand(async _ =>
             {
-                var res = MessageBox.Show(
-                    "Clear demo data and load live records from Firebase Cloud Firestore?\n\nReal database data will be loaded into all modules and all new changes will sync directly to your database.",
-                    "Clear Demo & Load Cloud DB", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                if (res == MessageBoxResult.Yes)
-                {
-                    var (ok, msg, count) = await _dataService.LoadFromCloudDatabaseAsync();
-                    RefreshDataModeProperties();
-                    NavigateTo("dashboard");
-
-                    MessageBox.Show(msg, "Cloud Database Sync", MessageBoxButton.OK, ok ? MessageBoxImage.Information : MessageBoxImage.Warning);
-                }
+                var (ok, msg, count) = await _dataService.LoadFromCloudDatabaseAsync();
+                RefreshDataModeProperties();
+                NavigateTo("dashboard");
+                MessageBox.Show(msg, "Cloud Database Sync", MessageBoxButton.OK, ok ? MessageBoxImage.Information : MessageBoxImage.Warning);
             });
             StartFreshCommand = LoadCloudDbCommand;
-
-            ToggleDataModeCommand = new RelayCommand(async _ =>
-            {
-                if (IsSampleDataLoaded)
-                {
-                    var res = MessageBox.Show(
-                        "Currently in Demo Mode.\n\nSwitch to Live Cloud Database? This clears demo data and loads your real records from Firebase Firestore.",
-                        "Switch to Live Cloud DB", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (res == MessageBoxResult.Yes)
-                    {
-                        var (ok, msg, count) = await _dataService.LoadFromCloudDatabaseAsync();
-                        RefreshDataModeProperties();
-                        NavigateTo("dashboard");
-                        MessageBox.Show(msg, "Cloud Database", MessageBoxButton.OK, ok ? MessageBoxImage.Information : MessageBoxImage.Warning);
-                    }
-                }
-                else
-                {
-                    var res = MessageBox.Show(
-                        "Currently in Live Cloud DB Mode.\n\nSwitch to Demo Mode? This loads demo sample data for testing across the software.",
-                        "Switch to Demo Mode", MessageBoxButton.YesNo, MessageBoxImage.Question);
-                    if (res == MessageBoxResult.Yes)
-                    {
-                        _dataService.LoadDemoData();
-                        RefreshDataModeProperties();
-                        NavigateTo("dashboard");
-                    }
-                }
-            });
+            LoadDemoDataCommand = LoadCloudDbCommand;
+            ReloadSampleCommand = LoadCloudDbCommand;
+            ToggleDataModeCommand = LoadCloudDbCommand;
 
             SyncToCloudCommand = new RelayCommand(async _ =>
             {
