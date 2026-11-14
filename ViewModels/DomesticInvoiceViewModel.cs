@@ -136,17 +136,16 @@ namespace AsiErp.ViewModels
 
         public void AddLine()
         {
-            var first = AvailableProducts.FirstOrDefault();
             var line = new SaleLine
             {
-                Pid = first?.Id ?? "prd_1",
-                Name = first?.FullDisplayName ?? "School Shoe – Black Lace-up (ASI-SH-001)",
-                Hsn = first?.Hsn ?? "6403",
-                Size = first?.Sizes?.FirstOrDefault() ?? "8",
-                Qty = 10,
-                Unit = first?.Unit ?? "pair",
-                Rate = first?.DomesticPrice > 0 ? first.DomesticPrice : 310,
-                GstPercent = first?.AutoGstRate > 0 ? first.AutoGstRate : 5,
+                Pid = string.Empty,
+                Name = string.Empty,
+                Hsn = string.Empty,
+                Size = string.Empty,
+                Qty = 1,
+                Unit = "pair",
+                Rate = 0,
+                GstPercent = 5,
                 DiscPercent = 0
             };
             line.PropertyChanged += (s, e) =>

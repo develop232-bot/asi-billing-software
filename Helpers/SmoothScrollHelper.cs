@@ -210,5 +210,131 @@ namespace AsiErp.Helpers
             scrollViewer.BeginAnimation(CurrentVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
             e.Handled = true;
         }
+
+        // ==========================================
+        // DRAG-TO-SCROLL (HORIZONTAL & TABLE TOUCH/MOUSE GLIDE)
+        // ==========================================
+        public static readonly DependencyProperty IsDragScrollEnabledProperty =
+            DependencyProperty.RegisterAttached(
+                "IsDragScrollEnabled",
+                typeof(bool),
+                typeof(SmoothScrollHelper),
+                new PropertyMetadata(false, OnIsDragScrollEnabledChanged));
+
+        public static bool GetIsDragScrollEnabled(DependencyObject obj) => (bool)obj.GetValue(IsDragScrollEnabledProperty);
+        public static void SetIsDragScrollEnabled(DependencyObject obj, bool value) => obj.SetValue(IsDragScrollEnabledProperty, value);
+
+        private static readonly DependencyProperty DragStartPointProperty =
+            DependencyProperty.RegisterAttached("DragStartPoint", typeof(Point), typeof(SmoothScrollHelper), new PropertyMetadata(new Point()));
+
+        private static readonly DependencyProperty DragStartHOffsetProperty =
+            DependencyProperty.RegisterAttached("DragStartHOffset", typeof(double), typeof(SmoothScrollHelper), new PropertyMetadata(0.0));
+
+        private static readonly DependencyProperty IsDraggingProperty =
+            DependencyProperty.RegisterAttached("IsDragging", typeof(bool), typeof(SmoothScrollHelper), new PropertyMetadata(false));
+
+        private static void OnIsDragScrollEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is ScrollViewer sv)
+            {
+                if ((bool)e.NewValue)
+                {
+                    sv.PreviewMouseDown += ScrollViewer_DragMouseDown;
+                    sv.PreviewMouseMove += ScrollViewer_DragMouseMove;
+                    sv.PreviewMouseUp += ScrollViewer_DragMouseUp;
+                    sv.PreviewMouseWheel += ScrollViewer_HorizontalMouseWheel;
+                }
+                else
+                {
+                    sv.PreviewMouseDown -= ScrollViewer_DragMouseDown;
+                    sv.PreviewMouseMove -= ScrollViewer_DragMouseMove;
+                    sv.PreviewMouseUp -= ScrollViewer_DragMouseUp;
+                    sv.PreviewMouseWheel -= ScrollViewer_HorizontalMouseWheel;
+                }
+            }
+        }
+
+        private static void ScrollViewer_DragMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ScrollViewer sv) return;
+
+            // Don't initiate drag if user clicked directly on interactive child control
+            if (e.OriginalSource is DependencyObject dep && IsInteractiveControl(dep))
+            {
+                return;
+            }
+
+            if (e.LeftButton == MouseButtonState.Pressed || e.MiddleButton == MouseButtonState.Pressed)
+            {
+                sv.SetValue(DragStartPointProperty, e.GetPosition(sv));
+                sv.SetValue(DragStartHOffsetProperty, sv.HorizontalOffset);
+                sv.SetValue(IsDraggingProperty, true);
+                sv.CaptureMouse();
+            }
+        }
+
+        private static void ScrollViewer_DragMouseMove(object sender, MouseEventArgs e)
+        {
+            if (sender is not ScrollViewer sv) return;
+
+            bool isDragging = (bool)sv.GetValue(IsDraggingProperty);
+            if (!isDragging) return;
+
+            if (e.LeftButton != MouseButtonState.Pressed && e.MiddleButton != MouseButtonState.Pressed)
+            {
+                sv.SetValue(IsDraggingProperty, false);
+                sv.ReleaseMouseCapture();
+                return;
+            }
+
+            Point currentPoint = e.GetPosition(sv);
+            Point startPoint = (Point)sv.GetValue(DragStartPointProperty);
+            double startHOffset = (double)sv.GetValue(DragStartHOffsetProperty);
+
+            double deltaX = currentPoint.X - startPoint.X;
+
+            if (Math.Abs(deltaX) > 1)
+            {
+                double newOffset = startHOffset - deltaX;
+                sv.ScrollToHorizontalOffset(Math.Clamp(newOffset, 0, sv.ScrollableWidth));
+            }
+        }
+
+        private static void ScrollViewer_DragMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is not ScrollViewer sv) return;
+
+            sv.SetValue(IsDraggingProperty, false);
+            if (sv.IsMouseCaptured)
+            {
+                sv.ReleaseMouseCapture();
+            }
+        }
+
+        private static void ScrollViewer_HorizontalMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is not ScrollViewer sv) return;
+            if (sv.ScrollableWidth <= 0) return;
+
+            // If Shift is pressed or this scrollviewer cannot scroll vertically, scroll horizontally
+            if (Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) || sv.ScrollableHeight <= 0)
+            {
+                double step = -(e.Delta / 120.0) * 120.0;
+                double newOffset = Math.Clamp(sv.HorizontalOffset + step, 0, sv.ScrollableWidth);
+                sv.ScrollToHorizontalOffset(newOffset);
+                e.Handled = true;
+            }
+        }
+
+        private static bool IsInteractiveControl(DependencyObject dep)
+        {
+            while (dep != null)
+            {
+                if (dep is TextBox || dep is ComboBox || dep is Button || dep is CheckBox || dep is RadioButton)
+                    return true;
+                dep = System.Windows.Media.VisualTreeHelper.GetParent(dep);
+            }
+            return false;
+        }
     }
 }

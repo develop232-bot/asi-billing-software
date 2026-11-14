@@ -165,18 +165,15 @@ namespace AsiErp.Dialogs
 
         private void AddLine()
         {
-            var first = AvailableItems.FirstOrDefault();
             string defaultUnit = _kind == "raw" ? "sq.ft" : (_kind == "gen" ? "pcs" : "pair");
-            string defaultName = _kind == "ready" ? "Readymade Footwear / Uniform" : (_kind == "raw" ? "Raw Material Item" : "Packaging Supply");
-
             var line = new PurchaseLine
             {
-                ItemId = first?.Id ?? "pur_item_" + Guid.NewGuid().ToString("N")[..6],
-                Name = first?.Name ?? defaultName,
-                Unit = !string.IsNullOrWhiteSpace(first?.Unit) ? first.Unit : defaultUnit,
-                Qty = 10,
-                Rate = first != null && first.Rate > 0 ? first.Rate : 100,
-                GstPercent = first != null && first.Gst > 0 ? first.Gst : 5
+                ItemId = string.Empty,
+                Name = string.Empty,
+                Unit = defaultUnit,
+                Qty = 1,
+                Rate = 0,
+                GstPercent = 5
             };
             line.RecalculateLine();
             line.PropertyChanged += Line_PropertyChanged;

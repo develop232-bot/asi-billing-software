@@ -1,7 +1,8 @@
 <UserControl x:Class="AsiErp.Views.SalesView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:AsiErp.Converters">
+             xmlns:converters="clr-namespace:AsiErp.Converters"
+             xmlns:helpers="clr-namespace:AsiErp.Helpers">
 
     <UserControl.Resources>
         <converters:InrCurrencyConverter x:Key="InrConv"/>
@@ -273,9 +274,11 @@
 
                     <!-- 4. Table Columns in EXACT requested order: -->
                     <!-- | DATE | Channel | Invoice | Customer/ buyer | Contact no | Amount | Rest all same like before | -->
-                    <DataGrid ItemsSource="{Binding FilteredSales}" AutoGenerateColumns="False" CanUserAddRows="False"
-                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
-                        <DataGrid.Columns>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                  CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
+                        <DataGrid ItemsSource="{Binding FilteredSales}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40" MinWidth="950">
+                            <DataGrid.Columns>
                             <!-- 1. DATE -->
                             <DataGridTextColumn Header="DATE" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="100"/>
 
@@ -341,6 +344,7 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                    </ScrollViewer>
                 </DockPanel>
             </Border>
         </StackPanel>

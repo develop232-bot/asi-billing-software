@@ -202,20 +202,16 @@ namespace AsiErp.ViewModels
 
         public void AddLine()
         {
-            var first = AvailableProducts.FirstOrDefault();
             double fx = FxRate > 0 ? FxRate : 24.10;
-            double inrPrice = first?.DomesticPrice > 0 ? first.DomesticPrice : 350;
-            double curPrice = Math.Round(inrPrice / fx, 2);
-
             var line = new SaleLine
             {
-                Pid = first?.Id ?? "prd_2",
-                Name = first?.FullDisplayName ?? "Safety Shoe – Steel Toe (ASI-SH-002)",
-                Hsn = first?.Hsn ?? "6403",
-                Size = first?.Sizes?.FirstOrDefault() ?? "9",
-                Qty = 250,
-                Unit = first?.Unit ?? "pair",
-                Rate = curPrice > 0 ? curPrice : 15.0,
+                Pid = string.Empty,
+                Name = string.Empty,
+                Hsn = string.Empty,
+                Size = string.Empty,
+                Qty = 1,
+                Unit = "pair",
+                Rate = 0,
                 GstPercent = 0, // Zero-rated under LUT export
                 DiscPercent = 0
             };

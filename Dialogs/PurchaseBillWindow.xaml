@@ -1,6 +1,7 @@
 <Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.PurchaseBillWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:helpers="clr-namespace:AsiErp.Helpers"
         Title="New Purchase Bill" Height="700" Width="940"
         WindowStartupLocation="CenterOwner" Background="#F1F3F7">
 
@@ -81,100 +82,102 @@
                     </Button>
                 </DockPanel>
 
-                <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="46"
-                          ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.CanContentScroll="False">
-                    <DataGrid.Columns>
-                        <!-- Item (Select from Dropdown or Type Directly) -->
-                        <DataGridTemplateColumn Header="Item (Select or Type Name)" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableItems}"
-                                              DisplayMemberPath="Name"
-                                              SelectedValuePath="Id"
-                                              SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                              Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                              SelectionChanged="ItemSelectionChanged"
-                                              LostFocus="ItemComboBox_LostFocus"
-                                              IsEditable="True" Height="34" Padding="10,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                              CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
+                    <DataGrid x:Name="DgLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="46" MinWidth="780">
+                        <DataGrid.Columns>
+                            <!-- Item (Select from Dropdown or Type Directly) -->
+                            <DataGridTemplateColumn Header="Item (Select or Type Name)" Width="*">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableItems}"
+                                                  DisplayMemberPath="Name"
+                                                  SelectedValuePath="Id"
+                                                  SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                  SelectionChanged="ItemSelectionChanged"
+                                                  LostFocus="ItemComboBox_LostFocus"
+                                                  IsEditable="True" Height="34" Padding="10,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!-- Unit (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="Unit" Width="75">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
-                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            <!-- Unit (Direct Editable TextBox) -->
+                            <DataGridTemplateColumn Header="Unit" Width="75">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!-- Qty (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="Qty" Width="80">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
-                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            <!-- Qty (Direct Editable TextBox) -->
+                            <DataGridTemplateColumn Header="Qty" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!-- Rate (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="Rate (₹)" Width="100">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="34" Padding="8,0" VerticalContentAlignment="Center" TextAlignment="Right"
-                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            <!-- Rate (Direct Editable TextBox) -->
+                            <DataGridTemplateColumn Header="Rate (₹)" Width="100">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="34" Padding="8,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!-- GST % (Direct Editable TextBox) -->
-                        <DataGridTemplateColumn Header="GST %" Width="75">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding GstPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                             Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
-                                             FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            <!-- GST % (Direct Editable TextBox) -->
+                            <DataGridTemplateColumn Header="GST %" Width="75">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding GstPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="34" Padding="6,0" VerticalContentAlignment="Center" TextAlignment="Right"
+                                                 FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!-- Total Gross Amount (Formatted Badge) -->
-                        <DataGridTemplateColumn Header="Total (₹)" Width="110">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Border Background="#F1F5F9" CornerRadius="6" Height="34" Padding="8,0" Margin="2,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding GrossAmount, StringFormat='{}{0:N2}'}"
-                                                   FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                    </Border>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                            <!-- Total Gross Amount (Formatted Badge) -->
+                            <DataGridTemplateColumn Header="Total (₹)" Width="110">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F1F5F9" CornerRadius="6" Height="34" Padding="8,0" Margin="2,0" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding GrossAmount, StringFormat='{}{0:N2}'}"
+                                                       FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
 
-                        <!-- Delete Row Button -->
-                        <DataGridTemplateColumn Width="42">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="✕" Click="DeleteLine_Click" Foreground="#DC2626" Background="#FEF2F2"
-                                            BorderBrush="#FECACA" BorderThickness="1" Width="30" Height="30" Cursor="Hand"
-                                            FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                        <Button.Resources>
-                                            <Style TargetType="Border">
-                                                <Setter Property="CornerRadius" Value="6"/>
-                                            </Style>
-                                        </Button.Resources>
-                                    </Button>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
+                            <!-- Delete Row Button -->
+                            <DataGridTemplateColumn Width="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Button Content="✕" Click="DeleteLine_Click" Foreground="#DC2626" Background="#FEF2F2"
+                                                BorderBrush="#FECACA" BorderThickness="1" Width="28" Height="28" Cursor="Hand"
+                                                FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Button.Resources>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="CornerRadius" Value="6"/>
+                                                </Style>
+                                            </Button.Resources>
+                                        </Button>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </ScrollViewer>
             </DockPanel>
         </Border>
 

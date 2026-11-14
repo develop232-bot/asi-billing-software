@@ -1,7 +1,8 @@
 <UserControl x:Class="AsiErp.Views.StockView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:AsiErp.Converters">
+             xmlns:converters="clr-namespace:AsiErp.Converters"
+             xmlns:helpers="clr-namespace:AsiErp.Helpers">
 
     <UserControl.Resources>
         <converters:InrCurrencyConverter x:Key="InrConv"/>
@@ -86,8 +87,10 @@
                     </DockPanel>
 
                     <!-- Stock Table -->
-                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
-                        <DataGrid.Columns>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                  CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
+                        <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42" MinWidth="920">
+                            <DataGrid.Columns>
                             <DataGridTemplateColumn Header="Item Description" Width="260" MinWidth="120">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -135,6 +138,7 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                    </ScrollViewer>
                 </DockPanel>
             </Border>
         </StackPanel>

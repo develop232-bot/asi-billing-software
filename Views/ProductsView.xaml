@@ -1,7 +1,8 @@
 <UserControl x:Class="AsiErp.Views.ProductsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:converters="clr-namespace:AsiErp.Converters">
+             xmlns:converters="clr-namespace:AsiErp.Converters"
+             xmlns:helpers="clr-namespace:AsiErp.Helpers">
 
     <UserControl.Resources>
         <converters:InrCurrencyConverter x:Key="InrConv"/>
@@ -166,10 +167,12 @@
                     </DockPanel>
 
                     <!-- Catalog Table: Date / item description / unit of measurement / Type / SKU / barcode / cost price / selling price / GST / quantity -->
-                    <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-                              AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column"
-                              GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
-                        <DataGrid.Columns>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
+                                  CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
+                        <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column"
+                                  GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42" MinWidth="1350">
+                            <DataGrid.Columns>
                             <!-- 1. Date -->
                             <DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="100" MinWidth="70"/>
 
@@ -233,6 +236,7 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
+                    </ScrollViewer>
                 </DockPanel>
             </Border>
         </StackPanel>

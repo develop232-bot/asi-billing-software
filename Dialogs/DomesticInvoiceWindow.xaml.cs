@@ -35,23 +35,19 @@ namespace AsiErp.Dialogs
 
         private void AddLine()
         {
-            var first = AvailableProducts.FirstOrDefault();
-            if (first != null)
+            Lines.Add(new SaleLine
             {
-                Lines.Add(new SaleLine
-                {
-                    Pid = first.Id,
-                    Name = first.Name,
-                    Hsn = first.Hsn,
-                    Size = first.Sizes?.FirstOrDefault() ?? "",
-                    Qty = 10,
-                    Unit = first.Unit,
-                    Rate = first.DomesticPrice,
-                    GstPercent = first.AutoGstRate,
-                    DiscPercent = 0
-                });
-                Recalculate();
-            }
+                Pid = string.Empty,
+                Name = string.Empty,
+                Hsn = string.Empty,
+                Size = string.Empty,
+                Qty = 1,
+                Unit = "pair",
+                Rate = 0,
+                GstPercent = 5,
+                DiscPercent = 0
+            });
+            Recalculate();
         }
 
         private void AddLine_Click(object sender, RoutedEventArgs e) => AddLine();
