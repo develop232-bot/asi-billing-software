@@ -19,8 +19,7 @@
             <!-- Header -->
             <DockPanel Margin="0,0,0,18">
                 <StackPanel>
-                    <TextBlock Text="Accounts &amp; Financials" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Commercial financial statements: Income, Expenses, Investments, and Profit &amp; Loss." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                    <TextBlock Text="{Binding ActiveTabTitle}" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
                 </StackPanel>
 
                 <!-- Period Dropdown -->
@@ -36,183 +35,250 @@
                 </StackPanel>
             </DockPanel>
 
-            <!-- Active Section Pill at Top (Displays active page; other 3 are removed, navigation via sidebar) -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-                <Border Background="#172443" CornerRadius="8" Padding="16,8">
-                    <TextBlock Text="{Binding ActiveTabTitle}" Foreground="White" FontWeight="Bold" FontSize="12"/>
-                </Border>
-            </StackPanel>
-
             <!-- TAB 0: FINANCE & ACCOUNTS DASHBOARD -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}">
-                <!-- Subtitle / Welcome banner -->
-                <Border Background="#1E293B" CornerRadius="12" Padding="20" Margin="0,0,0,20">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Executive Financial Overview" FontSize="18" FontWeight="Bold" Foreground="White"/>
-                            <TextBlock Text="Real-time cashflow, income, expenditures, balance sheet health, and capital assets." FontSize="12" Foreground="#94A3B8" Margin="0,4,0,0"/>
-                        </StackPanel>
-                        <!-- Quick status badge -->
-                        <Border Grid.Column="1" Background="#0F172A" CornerRadius="8" Padding="14,8" VerticalAlignment="Center">
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="Balance Sheet: " Foreground="#94A3B8" FontSize="12" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                <TextBlock Text="✓ Balanced" Foreground="#10B981" FontWeight="Bold" FontSize="12" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <!-- Row 1: Key Commercial Financial Metrics (4 tiles) -->
-                <UniformGrid Columns="4" Margin="0,0,0,16">
-                    <!-- Total Income -->
+                <!-- 7 KPI Tiles -->
+                <!-- Row 1: Income, Expenses, Profit and Loss, Net P&L -->
+                <UniformGrid Columns="4" Margin="0,0,0,14">
+                    <!-- (1) INCOME -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Total Revenue / Income" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding IncomeTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
+                            <TextBlock Text="INCOME" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PlTotalIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Total Expenses -->
+                    <!-- (2) EXPENSES -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Total Expenses" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="EXPENSES" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Net Profit -->
+                    <!-- (3) PROFIT AND LOSS (RED IN LOSS GREEN IN PROFIT) -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Net Profit" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlNetProfit, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
+                            <TextBlock Text="PROFIT AND LOSS" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PlStatusWord}" FontSize="22" FontWeight="Bold" Foreground="{Binding PlProfitLossColor}" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Cash & Bank -->
+                    <!-- (4) NET P&L -->
                     <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Cash &amp; Bank Balance" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashCashBank, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
+                            <TextBlock Text="NET P&amp;L" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PlNetProfitDisplay}" FontSize="22" FontWeight="Bold" Foreground="{Binding PlProfitLossColor}" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
 
-                <!-- Row 2: Capital, Liabilities & Assets Metrics (4 tiles) -->
-                <UniformGrid Columns="4" Margin="0,0,0,20">
-                    <!-- Capital Invested -->
+                <!-- Row 2: Loan Outstanding, Investment, Asset Value -->
+                <UniformGrid Columns="3" Margin="0,0,0,20">
+                    <!-- (5) LOAN OUTSTANDING -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Total Capital Invested" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#6366F1" Margin="0,5,0,0"/>
+                            <TextBlock Text="LOAN OUTSTANDING" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding DashTotalLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Outstanding Loans -->
+                    <!-- (6) INVESTMENT -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Outstanding Loans" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashTotalLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,0"/>
+                            <TextBlock Text="INVESTMENT" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#4F46E5" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
-                    <!-- Fixed Assets -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <!-- (7) ASSET VALUE -->
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="Long-Term Assets" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="ASSET VALUE" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding DashFixedAssets, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
+                </UniformGrid>
 
-                    <!-- Receivables -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- CHARTS: LINE CHART & PIE CHART -->
+                <Grid Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- LINE CHART (Income vs Expenses Trend) -->
+                    <Border Grid.Column="0" Background="White" Padding="20" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="Customers Owe You" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashReceivables, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
+                        <DockPanel>
+                            <!-- Line Chart Header -->
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Income &amp; Expenses Trend" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
+                                    <TextBlock Text="6-month financial performance curve" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                    <!-- Legend: Income -->
+                                    <Border Width="10" Height="10" CornerRadius="5" Background="#2563EB" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Income" FontSize="11" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                                    <!-- Legend: Expenses -->
+                                    <Border Width="10" Height="10" CornerRadius="5" Background="#DC2626" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Expenses" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DockPanel>
 
-                <!-- Financial Modules Quick Navigation -->
-                <Border Background="White" Padding="20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0,0,0,20">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Finance &amp; Accounts Modules" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
-                        <UniformGrid Columns="4" Rows="2">
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="income" Margin="0,0,10,10" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="📈 Income Register" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Customer collections &amp; invoices" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
+                            <!-- Line Chart Viewbox -->
+                            <Viewbox Stretch="Uniform" Height="210">
+                                <Canvas Width="500" Height="200" ClipToBounds="True">
+                                    <!-- Grid lines and Y-axis labels -->
+                                    <Line X1="50" Y1="20" X2="480" Y2="20" Stroke="#F1F5F9" StrokeThickness="1"/>
+                                    <TextBlock Text="{Binding ChartYMaxLabel}" Canvas.Left="4" Canvas.Top="12" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
+
+                                    <Line X1="50" Y1="90" X2="480" Y2="90" Stroke="#F1F5F9" StrokeThickness="1"/>
+                                    <TextBlock Text="{Binding ChartYMidLabel}" Canvas.Left="4" Canvas.Top="82" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
+
+                                    <Line X1="50" Y1="160" X2="480" Y2="160" Stroke="#E2E8F0" StrokeThickness="1.5"/>
+                                    <TextBlock Text="{Binding ChartYZeroLabel}" Canvas.Left="4" Canvas.Top="152" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
+
+                                    <!-- Shaded Area Fills -->
+                                    <Polygon Points="{Binding IncomeAreaPoints}" Fill="#2563EB" Opacity="0.08"/>
+                                    <Polygon Points="{Binding ExpenseAreaPoints}" Fill="#DC2626" Opacity="0.06"/>
+
+                                    <!-- Main Polylines -->
+                                    <Polyline Points="{Binding IncomeLinePoints}" Stroke="#2563EB" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                    <Polyline Points="{Binding ExpenseLinePoints}" Stroke="#DC2626" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                                    <!-- Data Points & Tooltips -->
+                                    <ItemsControl ItemsSource="{Binding LineChartPoints}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <Canvas Width="500" Height="200"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Canvas Width="500" Height="200">
+                                                    <!-- Vertical Guide Line -->
+                                                    <Line X1="{Binding X}" Y1="20" X2="{Binding X}" Y2="160" Stroke="#F8FAFC" StrokeThickness="1" StrokeDashArray="2 2"/>
+
+                                                    <!-- Month Label on X Axis -->
+                                                    <TextBlock Text="{Binding MonthLabel}" Canvas.Left="{Binding X}" Canvas.Top="168"
+                                                               FontSize="10" FontWeight="SemiBold" Foreground="#64748B"
+                                                               HorizontalAlignment="Center" Margin="-16,0,0,0" Width="32" TextAlignment="Center"/>
+
+                                                    <!-- Income Point (Blue Dot) -->
+                                                    <Ellipse Canvas.Left="{Binding X}" Canvas.Top="{Binding IncomeY}"
+                                                             Width="8" Height="8" Margin="-4,-4,0,0"
+                                                             Fill="#2563EB" Stroke="White" StrokeThickness="2"
+                                                             ToolTip="{Binding TooltipText}" Cursor="Hand"/>
+
+                                                    <!-- Expense Point (Red Dot) -->
+                                                    <Ellipse Canvas.Left="{Binding X}" Canvas.Top="{Binding ExpenseY}"
+                                                             Width="8" Height="8" Margin="-4,-4,0,0"
+                                                             Fill="#DC2626" Stroke="White" StrokeThickness="2"
+                                                             ToolTip="{Binding TooltipText}" Cursor="Hand"/>
+                                                </Canvas>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Canvas>
+                            </Viewbox>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- PIE / DONUT CHART (Expense Breakdown) -->
+                    <Border Grid.Column="1" Background="White" Padding="20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <!-- Pie Chart Header -->
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Expense Breakdown" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
+                                    <TextBlock Text="Category distribution" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                                 </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="exp" Margin="0,0,10,10" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="📉 Expense Register" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Salaries, utilities &amp; overheads" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="inv" Margin="0,0,10,10" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="💼 Capital Investment" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Equity &amp; partner seed capital" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="loans" Margin="0,0,0,10" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="🏦 Borrowed Loans" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Bank credit &amp; repayments" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="assets" Margin="0,0,10,0" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="🏭 Fixed Assets" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Machinery &amp; depreciation" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="pl" Margin="0,0,10,0" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="⚖️ Profit &amp; Loss" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Commercial financial statement" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Button>
-                            <Button Command="{Binding SetTabCommand}" CommandParameter="bs" Margin="0,0,10,0" Padding="14,12" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" HorizontalContentAlignment="Left">
-                                <StackPanel>
-                                    <TextBlock Text="📑 Balance Sheet" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
-                                    <TextBlock Text="Assets vs liabilities &amp; capital" FontSize="11" Foreground="#64748B" Margin="0,3,0,0"/>
-                                </StackPanel>
-                            </Button>
-                        </UniformGrid>
-                    </StackPanel>
-                </Border>
+                                <TextBlock Text="{Binding TotalExpensesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#DC2626" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <!-- Donut and Legend -->
+                            <Grid Margin="0,4,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="150"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Donut Viewbox -->
+                                <Viewbox Grid.Column="0" Stretch="Uniform" Width="145" Height="145" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                    <Grid Width="200" Height="200">
+                                        <!-- Donut Slices -->
+                                        <ItemsControl ItemsSource="{Binding PieChartSlices}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Grid/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}" Cursor="Hand"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+
+                                        <!-- Center text for Donut hole -->
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                                            <TextBlock Text="TOTAL" FontSize="9" FontWeight="Bold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="12" FontWeight="Bold" Foreground="#0F172A" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Viewbox>
+
+                                <!-- Legend List -->
+                                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="10,0,0,0" MaxHeight="190">
+                                    <ItemsControl ItemsSource="{Binding PieChartSlices}">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="0,3">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <Border Grid.Column="0" Width="8" Height="8" CornerRadius="4" Background="{Binding FillBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="1" Text="{Binding Category}" FontSize="11" Foreground="#334155" TextTrimming="CharacterEllipsis" ToolTip="{Binding Category}" VerticalAlignment="Center"/>
+                                                    <TextBlock Grid.Column="2" Text="{Binding PercentageDisplay}" FontSize="10.5" FontWeight="Bold" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+                </Grid>
             </StackPanel>
 
             <!-- TAB 1: INCOME -->

@@ -3,12 +3,36 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
 
 namespace AsiErp.ViewModels
 {
+    public class LineChartPoint
+    {
+        public string MonthLabel { get; set; } = string.Empty;
+        public double X { get; set; }
+        public double IncomeY { get; set; }
+        public double ExpenseY { get; set; }
+        public double Income { get; set; }
+        public double Expense { get; set; }
+        public string TooltipText => $"{MonthLabel}\nIncome: ₹{Income:N0}\nExpenses: ₹{Expense:N0}\nNet P&L: {(Income - Expense >= 0 ? "+" : "")}₹{(Income - Expense):N0}";
+    }
+
+    public class PieChartSlice
+    {
+        public string Category { get; set; } = string.Empty;
+        public double Amount { get; set; }
+        public double Percentage { get; set; }
+        public string PercentageDisplay => $"{Percentage:F1}%";
+        public string AmountDisplay => $"₹{Amount:N0}";
+        public Brush FillBrush { get; set; } = Brushes.Gray;
+        public Geometry SliceGeometry { get; set; } = Geometry.Empty;
+        public string TooltipText => $"{Category}: ₹{Amount:N0} ({Percentage:F1}%)";
+    }
+
     public class PlExpenseCategoryRow
     {
         public string Category { get; set; } = string.Empty;
@@ -163,6 +187,23 @@ namespace AsiErp.ViewModels
         public double PlTotalSide => Math.Max(PlTotalIncome, PlTotalExpense);
         public bool PlIsProfit => PlNetProfit >= 0;
         public string PlPeriodLabel { get; private set; } = "This month";
+
+        public string PlStatusWord => PlNetProfit >= 0 ? "PROFIT" : "LOSS";
+        public string PlProfitLossColor => PlNetProfit >= 0 ? "#10B981" : "#DC2626";
+        public string PlNetProfitDisplay => PlNetProfit >= 0 ? $"+₹{PlNetProfit:N0}" : $"-₹{Math.Abs(PlNetProfit):N0}";
+
+        public PointCollection IncomeLinePoints { get; } = new();
+        public PointCollection ExpenseLinePoints { get; } = new();
+        public PointCollection IncomeAreaPoints { get; } = new();
+        public PointCollection ExpenseAreaPoints { get; } = new();
+        public ObservableCollection<LineChartPoint> LineChartPoints { get; } = new();
+        public string ChartYMaxLabel { get; private set; } = "₹0";
+        public string ChartYMidLabel { get; private set; } = "₹0";
+        public string ChartYZeroLabel => "₹0";
+
+        public ObservableCollection<PieChartSlice> PieChartSlices { get; } = new();
+        public bool HasExpenseSlices => PieChartSlices.Count > 0;
+        public string TotalExpensesDisplay => $"₹{PlTotalExpense:N0}";
 
         // --- BALANCE SHEET STATS ---
         public double BsCap { get; private set; }
@@ -513,6 +554,191 @@ namespace AsiErp.ViewModels
                     Expenses = mExp
                 });
             }
+
+            OnPropertyChanged(nameof(PlStatusWord));
+            OnPropertyChanged(nameof(PlProfitLossColor));
+            OnPropertyChanged(nameof(PlNetProfitDisplay));
+            UpdateLineChart();
+            UpdatePieChart();
+        }
+
+        private void UpdateLineChart()
+        {
+            IncomeLinePoints.Clear();
+            ExpenseLinePoints.Clear();
+            IncomeAreaPoints.Clear();
+            ExpenseAreaPoints.Clear();
+            LineChartPoints.Clear();
+
+            if (PlMonthBreakdowns.Count == 0) return;
+
+            double maxVal = Math.Max(1000, PlMonthBreakdowns.Max(m => Math.Max(m.Income, m.Expenses)));
+            double magnitude = Math.Pow(10, Math.Max(0, Math.Floor(Math.Log10(maxVal))));
+            double normalized = maxVal / magnitude;
+            double ceiling = Math.Ceiling(normalized) * magnitude;
+            if (ceiling <= 0) ceiling = 1000;
+
+            ChartYMaxLabel = FormatShortCurrency(ceiling);
+            ChartYMidLabel = FormatShortCurrency(ceiling / 2);
+            OnPropertyChanged(nameof(ChartYMaxLabel));
+            OnPropertyChanged(nameof(ChartYMidLabel));
+
+            double chartLeft = 50;
+            double chartTop = 20;
+            double chartWidth = 430;
+            double chartHeight = 140;
+            double baselineY = chartTop + chartHeight;
+
+            int n = PlMonthBreakdowns.Count;
+            double stepX = n > 1 ? chartWidth / (n - 1) : 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                var m = PlMonthBreakdowns[i];
+                double x = chartLeft + i * stepX;
+                double incRatio = Math.Clamp(m.Income / ceiling, 0.0, 1.0);
+                double expRatio = Math.Clamp(m.Expenses / ceiling, 0.0, 1.0);
+
+                double yInc = baselineY - (incRatio * chartHeight);
+                double yExp = baselineY - (expRatio * chartHeight);
+
+                IncomeLinePoints.Add(new Point(x, yInc));
+                ExpenseLinePoints.Add(new Point(x, yExp));
+
+                LineChartPoints.Add(new LineChartPoint
+                {
+                    MonthLabel = m.MonthLabel.Split(' ')[0],
+                    X = x,
+                    IncomeY = yInc,
+                    ExpenseY = yExp,
+                    Income = m.Income,
+                    Expense = m.Expenses
+                });
+            }
+
+            if (LineChartPoints.Count > 0)
+            {
+                IncomeAreaPoints.Add(new Point(LineChartPoints[0].X, baselineY));
+                foreach (var p in IncomeLinePoints) IncomeAreaPoints.Add(p);
+                IncomeAreaPoints.Add(new Point(LineChartPoints[^1].X, baselineY));
+
+                ExpenseAreaPoints.Add(new Point(LineChartPoints[0].X, baselineY));
+                foreach (var p in ExpenseLinePoints) ExpenseAreaPoints.Add(p);
+                ExpenseAreaPoints.Add(new Point(LineChartPoints[^1].X, baselineY));
+            }
+
+            OnPropertyChanged(nameof(IncomeLinePoints));
+            OnPropertyChanged(nameof(ExpenseLinePoints));
+            OnPropertyChanged(nameof(IncomeAreaPoints));
+            OnPropertyChanged(nameof(ExpenseAreaPoints));
+        }
+
+        private static string FormatShortCurrency(double val)
+        {
+            if (val >= 10000000) return $"₹{(val / 10000000):F1} Cr";
+            if (val >= 100000) return $"₹{(val / 100000):F1} L";
+            if (val >= 1000) return $"₹{(val / 1000):F1} k";
+            return $"₹{val:F0}";
+        }
+
+        private void UpdatePieChart()
+        {
+            PieChartSlices.Clear();
+            double total = PlExpenseCategories.Sum(x => x.Amount);
+
+            string[] palette = new[]
+            {
+                "#3B82F6", "#10B981", "#F59E0B", "#EC4899",
+                "#8B5CF6", "#06B6D4", "#6366F1", "#64748B"
+            };
+
+            if (total <= 0)
+            {
+                var grayBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+                grayBrush.Freeze();
+                var outer = new EllipseGeometry(new Point(100, 100), 85, 85);
+                var inner = new EllipseGeometry(new Point(100, 100), 52, 52);
+                var emptyDonut = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                emptyDonut.Freeze();
+
+                PieChartSlices.Add(new PieChartSlice
+                {
+                    Category = "No Expenses",
+                    Amount = 0,
+                    Percentage = 100,
+                    FillBrush = grayBrush,
+                    SliceGeometry = emptyDonut
+                });
+
+                OnPropertyChanged(nameof(HasExpenseSlices));
+                OnPropertyChanged(nameof(TotalExpensesDisplay));
+                return;
+            }
+
+            Point center = new Point(100, 100);
+            double outerR = 85;
+            double innerR = 52;
+            double currentAngle = -90.0;
+
+            var validCategories = PlExpenseCategories.Where(x => x.Amount > 0).ToList();
+
+            for (int i = 0; i < validCategories.Count; i++)
+            {
+                var cat = validCategories[i];
+                double fraction = cat.Amount / total;
+                double sweepAngle = fraction * 360.0;
+                double pct = fraction * 100.0;
+
+                var color = (Color)ColorConverter.ConvertFromString(palette[i % palette.Length]);
+                var brush = new SolidColorBrush(color);
+                brush.Freeze();
+
+                Geometry geom;
+
+                if (validCategories.Count == 1 || sweepAngle >= 359.99)
+                {
+                    var outer = new EllipseGeometry(center, outerR, outerR);
+                    var inner = new EllipseGeometry(center, innerR, innerR);
+                    geom = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                }
+                else
+                {
+                    double startRad = currentAngle * Math.PI / 180.0;
+                    double endRad = (currentAngle + sweepAngle) * Math.PI / 180.0;
+
+                    Point p1 = new Point(center.X + outerR * Math.Cos(startRad), center.Y + outerR * Math.Sin(startRad));
+                    Point p2 = new Point(center.X + outerR * Math.Cos(endRad), center.Y + outerR * Math.Sin(endRad));
+                    Point p3 = new Point(center.X + innerR * Math.Cos(endRad), center.Y + innerR * Math.Sin(endRad));
+                    Point p4 = new Point(center.X + innerR * Math.Cos(startRad), center.Y + innerR * Math.Sin(startRad));
+
+                    bool isLarge = sweepAngle > 180.0;
+
+                    var figure = new PathFigure { StartPoint = p1, IsClosed = true, IsFilled = true };
+                    figure.Segments.Add(new ArcSegment(p2, new Size(outerR, outerR), 0, isLarge, SweepDirection.Clockwise, true));
+                    figure.Segments.Add(new LineSegment(p3, true));
+                    figure.Segments.Add(new ArcSegment(p4, new Size(innerR, innerR), 0, isLarge, SweepDirection.Counterclockwise, true));
+
+                    var pg = new PathGeometry();
+                    pg.Figures.Add(figure);
+                    geom = pg;
+                }
+
+                geom.Freeze();
+
+                PieChartSlices.Add(new PieChartSlice
+                {
+                    Category = cat.Category,
+                    Amount = cat.Amount,
+                    Percentage = pct,
+                    FillBrush = brush,
+                    SliceGeometry = geom
+                });
+
+                currentAngle += sweepAngle;
+            }
+
+            OnPropertyChanged(nameof(HasExpenseSlices));
+            OnPropertyChanged(nameof(TotalExpensesDisplay));
         }
 
         private (double interest, double depr) GetFinancialExtra(string fromDate, string toDate)
