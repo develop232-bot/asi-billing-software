@@ -25,57 +25,72 @@
             <!-- Row 1: Retail, Domestic, Export, Total Sales MTD, Expenses -->
             <UniformGrid Columns="5" Margin="0,0,0,12">
                 <!-- 1. Retail Sales · this month -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#3B82F6" Offset="0"/>
+                            <GradientStop Color="#1D4ED8" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Retail Sales · this month" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdRetailSales, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
+                        <TextBlock Text="Retail Sales · this month" FontSize="11" Foreground="#DBEAFE" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding MtdRetailSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 2. Domestic Sales · this month -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#10B981" Offset="0"/>
+                            <GradientStop Color="#047857" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Domestic Sales · this month" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdDomesticSales, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
+                        <TextBlock Text="Domestic Sales · this month" FontSize="11" Foreground="#D1FAE5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding MtdDomesticSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 3. Export Sales · this month -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#0D9488" Offset="0"/>
+                            <GradientStop Color="#0F766E" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Export Sales · this month" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
+                        <TextBlock Text="Export Sales · this month" FontSize="11" Foreground="#CCFBF1" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 4. Total Sales (MTD) -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#8B5CF6" Offset="0"/>
+                            <GradientStop Color="#6D28D9" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Total Sales (MTD)" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,5,0,0"/>
+                        <TextBlock Text="Total Sales (MTD)" FontSize="11" Foreground="#EDE9FE" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 5. Expenses · this month -->
-                <Border Background="White" Padding="16,14" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#EF4444" Offset="0"/>
+                            <GradientStop Color="#B91C1C" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Expenses · this month" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdExpenses, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
+                        <TextBlock Text="Expenses · this month" FontSize="11" Foreground="#FEE2E2" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding MtdExpenses, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
@@ -83,57 +98,66 @@
             <!-- Row 2: Profit, Outstanding, Vendor Payments, Pending Loans, Low Stock -->
             <UniformGrid Columns="5" Margin="0,0,0,18">
                 <!-- 6. Profit · this month -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Background="{Binding MtdProfitBrush}" Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
                     <StackPanel>
-                        <TextBlock Text="Profit · this month" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdProfit, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="{Binding MtdProfitColor}" Margin="0,5,0,0"/>
+                        <TextBlock Text="Profit · this month" FontSize="11" Foreground="#D1FAE5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding MtdProfit, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 7. Outstanding · To Receive -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#F59E0B" Offset="0"/>
+                            <GradientStop Color="#D97706" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Outstanding · To Receive" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,0"/>
+                        <TextBlock Text="Outstanding · To Receive" FontSize="11" Foreground="#FEF3C7" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 8. Vendor Payments · To Pay -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#EA580C" Offset="0"/>
+                            <GradientStop Color="#C2410C" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Vendor Payments · To Pay" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#EA580C" Margin="0,5,0,0"/>
+                        <TextBlock Text="Vendor Payments · To Pay" FontSize="11" Foreground="#FFEDD5" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 9. Pending Loans -->
-                <Border Background="White" Padding="16,14" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0"/>
+                            <GradientStop Color="#4338CA" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Pending Loans" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding PendingLoans, Converter={StaticResource InrShortConv}}" FontSize="20" FontWeight="Bold" Foreground="#6366F1" Margin="0,5,0,0"/>
+                        <TextBlock Text="Pending Loans" FontSize="11" Foreground="#E0E7FF" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding PendingLoans, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 10. Low Stock Alerts -->
-                <Border Background="White" Padding="16,14" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
+                <Border Padding="16,14" CornerRadius="12">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#DC2626" Offset="0"/>
+                            <GradientStop Color="#991B1B" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
                     <StackPanel>
-                        <TextBlock Text="Low Stock Alerts" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="20" FontWeight="Bold" Foreground="#E11D48" Margin="0,5,0,0"/>
+                        <TextBlock Text="Low Stock Alerts" FontSize="11" Foreground="#FEE2E2" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
@@ -244,11 +268,11 @@
                     <DockPanel>
                         <!-- Top Header -->
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding TotalSalesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#2563EB" VerticalAlignment="Center"/>
                             <StackPanel VerticalAlignment="Center">
                                 <TextBlock Text="Revenue by Channel" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A"/>
                                 <TextBlock Text="Retail vs Domestic vs Export" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                             </StackPanel>
-                            <TextBlock Text="{Binding TotalSalesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#2563EB" VerticalAlignment="Center"/>
                         </DockPanel>
 
                         <!-- Donut and Legend -->

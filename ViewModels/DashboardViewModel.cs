@@ -83,6 +83,24 @@ namespace AsiErp.ViewModels
         public double MtdExpenses { get; private set; }
         public double MtdProfit => MtdTotalSales - MtdExpenses;
         public string MtdProfitColor => MtdProfit >= 0 ? "#10B981" : "#DC2626";
+        public Brush MtdProfitBrush
+        {
+            get
+            {
+                var grad = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 1) };
+                if (MtdProfit >= 0)
+                {
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#10B981"), 0));
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#047857"), 1));
+                }
+                else
+                {
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#EF4444"), 0));
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#B91C1C"), 1));
+                }
+                return grad;
+            }
+        }
 
         public double OutstandingToReceive { get; private set; }
         public int OutstandingCount { get; private set; }
@@ -200,6 +218,7 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(MtdExpenses));
             OnPropertyChanged(nameof(MtdProfit));
             OnPropertyChanged(nameof(MtdProfitColor));
+            OnPropertyChanged(nameof(MtdProfitBrush));
             OnPropertyChanged(nameof(OutstandingToReceive));
             OnPropertyChanged(nameof(OutstandingCount));
             OnPropertyChanged(nameof(VendorToPay));
