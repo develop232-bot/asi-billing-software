@@ -81,7 +81,7 @@
                                 <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                         Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}"/>
                                 <TextBlock DockPanel.Dock="Left" Text="📊" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Dashboard" VerticalAlignment="Center"/>
+                                <TextBlock Text="Dashboard" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
                             </DockPanel>
                         </Button>
 
@@ -98,7 +98,7 @@
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="🧾" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Sales &amp; Billing" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Sales &amp; Billing" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 
@@ -165,7 +165,7 @@
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=purchase}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="🛍️" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Purchase &amp; Sourcing" FontWeight="Bold" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Purchase &amp; Sourcing" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 
