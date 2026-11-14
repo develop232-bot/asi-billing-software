@@ -14,5 +14,16 @@ namespace AsiErp
             var splash = new Views.StartupSplashWindow();
             splash.Show();
         }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            try
+            {
+                Services.AppDataService.Instance.SaveLocalState();
+                Services.AppDataService.Instance.SyncQueue.SaveQueue();
+            }
+            catch { }
+            base.OnExit(e);
+        }
     }
 }

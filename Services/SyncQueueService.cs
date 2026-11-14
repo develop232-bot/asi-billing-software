@@ -219,7 +219,7 @@ namespace AsiErp.Services
             QueueChanged?.Invoke(0, "Queue cleared");
         }
 
-        private void SaveQueue()
+        public void SaveQueue()
         {
             try
             {

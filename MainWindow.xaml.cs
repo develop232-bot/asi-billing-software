@@ -24,6 +24,15 @@ namespace AsiErp
         public MainWindow()
         {
             InitializeComponent();
+            Closing += (s, e) =>
+            {
+                try
+                {
+                    AppDataService.Instance.SaveLocalState();
+                    AppDataService.Instance.SyncQueue.SaveQueue();
+                }
+                catch { }
+            };
             Closed += (s, e) => Application.Current.Shutdown();
 
             // Pre-fill default admin password so user can sign in immediately

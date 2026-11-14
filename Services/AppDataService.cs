@@ -108,7 +108,9 @@ namespace AsiErp.Services
                     IsSampleDataLoaded
                 };
                 string json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
-                File.WriteAllText(_localStateFile, json);
+                string tempFile = _localStateFile + ".tmp";
+                File.WriteAllText(tempFile, json);
+                File.Move(tempFile, _localStateFile, overwrite: true);
             }
             catch { }
         }
@@ -222,31 +224,109 @@ namespace AsiErp.Services
 
             try
             {
+                // 1. Process any pending local sync items first so cloud has the latest local writes
+                if (SyncQueue.PendingCount > 0)
+                {
+                    await SyncQueue.ProcessQueueAsync();
+                }
+
                 var bundle = await Firebase.LoadAllFromCloudAsync();
 
-                Products.Clear();
-                RawMaterials.Clear();
-                GeneralItems.Clear();
-                Sales.Clear();
-                Purchases.Clear();
-                WorkOrders.Clear();
-                Expenses.Clear();
-                Investments.Clear();
-                Loans.Clear();
-                Assets.Clear();
-                Sequences.Clear();
+                // 2. SMART BIDIRECTIONAL MERGE:
+                // NEVER blindly wipe local collections when cloud has fewer items or is empty!
+                // Merge by document Id to preserve all locally-saved entries.
 
-                Products = bundle.Products;
-                RawMaterials = bundle.RawMaterials;
-                GeneralItems = bundle.GeneralItems;
-                Sales = bundle.Sales;
-                Purchases = bundle.Purchases;
-                WorkOrders = bundle.WorkOrders;
-                Expenses = bundle.Expenses;
-                Investments = bundle.Investments;
-                Loans = bundle.Loans;
-                Assets = bundle.Assets;
-                Sequences = bundle.Sequences;
+                // Products
+                var prodDict = Products.Where(p => !string.IsNullOrEmpty(p.Id)).ToDictionary(p => p.Id, p => p);
+                foreach (var cp in bundle.Products)
+                {
+                    if (!string.IsNullOrEmpty(cp.Id))
+                    {
+                        prodDict[cp.Id] = cp;
+                    }
+                }
+                Products = prodDict.Values.OrderBy(p => p.Name).ToList();
+
+                // RawMaterials
+                var rmDict = RawMaterials.Where(r => !string.IsNullOrEmpty(r.Id)).ToDictionary(r => r.Id, r => r);
+                foreach (var crm in bundle.RawMaterials)
+                {
+                    if (!string.IsNullOrEmpty(crm.Id)) rmDict[crm.Id] = crm;
+                }
+                RawMaterials = rmDict.Values.OrderBy(r => r.Name).ToList();
+
+                // GeneralItems
+                var genDict = GeneralItems.Where(g => !string.IsNullOrEmpty(g.Id)).ToDictionary(g => g.Id, g => g);
+                foreach (var cg in bundle.GeneralItems)
+                {
+                    if (!string.IsNullOrEmpty(cg.Id)) genDict[cg.Id] = cg;
+                }
+                GeneralItems = genDict.Values.OrderBy(g => g.Name).ToList();
+
+                // Sales
+                var salesDict = Sales.Where(s => !string.IsNullOrEmpty(s.Id)).ToDictionary(s => s.Id, s => s);
+                foreach (var cs in bundle.Sales)
+                {
+                    if (!string.IsNullOrEmpty(cs.Id)) salesDict[cs.Id] = cs;
+                }
+                Sales = salesDict.Values.OrderByDescending(s => s.Date).ToList();
+
+                // Purchases
+                var purchDict = Purchases.Where(pu => !string.IsNullOrEmpty(pu.Id)).ToDictionary(pu => pu.Id, pu => pu);
+                foreach (var cpu in bundle.Purchases)
+                {
+                    if (!string.IsNullOrEmpty(cpu.Id)) purchDict[cpu.Id] = cpu;
+                }
+                Purchases = purchDict.Values.OrderByDescending(pu => pu.Date).ToList();
+
+                // WorkOrders
+                var woDict = WorkOrders.Where(w => !string.IsNullOrEmpty(w.Id)).ToDictionary(w => w.Id, w => w);
+                foreach (var cwo in bundle.WorkOrders)
+                {
+                    if (!string.IsNullOrEmpty(cwo.Id)) woDict[cwo.Id] = cwo;
+                }
+                WorkOrders = woDict.Values.OrderByDescending(w => w.OrderDate).ToList();
+
+                // Expenses
+                var expDict = Expenses.Where(e => !string.IsNullOrEmpty(e.Id)).ToDictionary(e => e.Id, e => e);
+                foreach (var ce in bundle.Expenses)
+                {
+                    if (!string.IsNullOrEmpty(ce.Id)) expDict[ce.Id] = ce;
+                }
+                Expenses = expDict.Values.OrderByDescending(e => e.Date).ToList();
+
+                // Investments
+                var invDict = Investments.Where(i => !string.IsNullOrEmpty(i.Id)).ToDictionary(i => i.Id, i => i);
+                foreach (var ci in bundle.Investments)
+                {
+                    if (!string.IsNullOrEmpty(ci.Id)) invDict[ci.Id] = ci;
+                }
+                Investments = invDict.Values.OrderByDescending(i => i.Date).ToList();
+
+                // Loans
+                var loanDict = Loans.Where(l => !string.IsNullOrEmpty(l.Id)).ToDictionary(l => l.Id, l => l);
+                foreach (var cl in bundle.Loans)
+                {
+                    if (!string.IsNullOrEmpty(cl.Id)) loanDict[cl.Id] = cl;
+                }
+                Loans = loanDict.Values.OrderByDescending(l => l.Date).ToList();
+
+                // Assets
+                var assetDict = Assets.Where(a => !string.IsNullOrEmpty(a.Id)).ToDictionary(a => a.Id, a => a);
+                foreach (var ca in bundle.Assets)
+                {
+                    if (!string.IsNullOrEmpty(ca.Id)) assetDict[ca.Id] = ca;
+                }
+                Assets = assetDict.Values.OrderByDescending(a => a.Date).ToList();
+
+                // Sequences - keep highest sequence number
+                foreach (var kvp in bundle.Sequences)
+                {
+                    if (!Sequences.TryGetValue(kvp.Key, out int localVal) || kvp.Value > localVal)
+                    {
+                        Sequences[kvp.Key] = kvp.Value;
+                    }
+                }
 
                 Auth.MergeCloudUsers(bundle.Users);
 
@@ -265,14 +345,102 @@ namespace AsiErp.Services
                 foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
                 IsSampleDataLoaded = false;
-                SyncQueue.ClearQueue();
+
+                // 3. Ensure any local items NOT yet present in cloud are queued to push!
+                int pushedLocalCount = 0;
+                foreach (var p in Products)
+                {
+                    if (!bundle.Products.Any(cp => cp.Id == p.Id))
+                    {
+                        SyncQueue.EnqueueSet("products", p.Id, p);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var r in RawMaterials)
+                {
+                    if (!bundle.RawMaterials.Any(cr => cr.Id == r.Id))
+                    {
+                        SyncQueue.EnqueueSet("raw_materials", r.Id, r);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var g in GeneralItems)
+                {
+                    if (!bundle.GeneralItems.Any(cg => cg.Id == g.Id))
+                    {
+                        SyncQueue.EnqueueSet("general_items", g.Id, g);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var s in Sales)
+                {
+                    if (!bundle.Sales.Any(cs => cs.Id == s.Id))
+                    {
+                        SyncQueue.EnqueueSet("sales", s.Id, s);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var pu in Purchases)
+                {
+                    if (!bundle.Purchases.Any(cpu => cpu.Id == pu.Id))
+                    {
+                        SyncQueue.EnqueueSet("purchases", pu.Id, pu);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var w in WorkOrders)
+                {
+                    if (!bundle.WorkOrders.Any(cw => cw.Id == w.Id))
+                    {
+                        SyncQueue.EnqueueSet("work_orders", w.Id, w);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var e in Expenses)
+                {
+                    if (!bundle.Expenses.Any(ce => ce.Id == e.Id))
+                    {
+                        SyncQueue.EnqueueSet("expenses", e.Id, e);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var i in Investments)
+                {
+                    if (!bundle.Investments.Any(ci => ci.Id == i.Id))
+                    {
+                        SyncQueue.EnqueueSet("investments", i.Id, i);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var l in Loans)
+                {
+                    if (!bundle.Loans.Any(cl => cl.Id == l.Id))
+                    {
+                        SyncQueue.EnqueueSet("loans", l.Id, l);
+                        pushedLocalCount++;
+                    }
+                }
+                foreach (var a in Assets)
+                {
+                    if (!bundle.Assets.Any(ca => ca.Id == a.Id))
+                    {
+                        SyncQueue.EnqueueSet("assets", a.Id, a);
+                        pushedLocalCount++;
+                    }
+                }
+
+                // Save merged state to local disk and notify UI
                 NotifyDataChanged();
 
-                string summary = bundle.TotalRecords > 0
-                    ? $"Cloud DB loaded successfully: {Products.Count} products, {Sales.Count} sales, {Purchases.Count} purchases, {RawMaterials.Count} raw materials."
-                    : $"Connected to Cloud Firestore ({Firebase.ProjectId}). Project currently has 0 records — ready for real data entry!";
+                if (pushedLocalCount > 0)
+                {
+                    _ = SyncQueue.ProcessQueueAsync();
+                }
 
-                return (true, summary, bundle.TotalRecords);
+                int totalCount = Products.Count + RawMaterials.Count + GeneralItems.Count + Sales.Count + Purchases.Count + WorkOrders.Count + Expenses.Count + Investments.Count + Loans.Count + Assets.Count;
+                string summary = $"Synced with Cloud Firestore: {totalCount} total active records ({Products.Count} products, {Sales.Count} sales, {Purchases.Count} purchases).";
+
+                return (true, summary, totalCount);
             }
             catch (Exception ex)
             {

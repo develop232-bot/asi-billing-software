@@ -570,6 +570,16 @@ namespace AsiErp.Services
                         if (inv != null) await _db.Collection("investments").Document(documentId).SetAsync(inv);
                         break;
 
+                    case "loans":
+                        var loan = JsonSerializer.Deserialize<LoanItem>(jsonPayload);
+                        if (loan != null) await _db.Collection("loans").Document(documentId).SetAsync(loan);
+                        break;
+
+                    case "assets":
+                        var asset = JsonSerializer.Deserialize<AssetItem>(jsonPayload);
+                        if (asset != null) await _db.Collection("assets").Document(documentId).SetAsync(asset);
+                        break;
+
                     case "users":
                         var usr = JsonSerializer.Deserialize<AppUser>(jsonPayload);
                         if (usr != null) await _db.Collection("users").Document(documentId).SetAsync(usr);
