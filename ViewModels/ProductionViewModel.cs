@@ -35,17 +35,19 @@ namespace AsiErp.ViewModels
             }
         }
 
-        public int PendingCount => _dataService.WorkOrders.Count(o => o.Status == "Pending");
-        public int InProgressCount => _dataService.WorkOrders.Count(o => o.Status != "Pending" && o.Status != "Completed");
-
-        public int CompletedThisMonthCount
+        private static string NormalizeStatus(string status) => status switch
         {
-            get
-            {
-                string f = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
-                return _dataService.WorkOrders.Count(o => o.IsDone && string.Compare(o.EndDate, f) >= 0);
-            }
-        }
+            "Cutting" => "Started",
+            "Stitching" or "Lasting & pressing" or "Finishing" or "Packing" => "In Progress",
+            _ => status
+        };
+
+        public int PendingCount => _dataService.WorkOrders.Count(o => string.Equals(NormalizeStatus(o.Status), "Pending", StringComparison.OrdinalIgnoreCase));
+        public int StartedCount => _dataService.WorkOrders.Count(o => string.Equals(NormalizeStatus(o.Status), "Started", StringComparison.OrdinalIgnoreCase));
+        public int InProgressCount => _dataService.WorkOrders.Count(o => string.Equals(NormalizeStatus(o.Status), "In Progress", StringComparison.OrdinalIgnoreCase));
+        public int CompletedCount => _dataService.WorkOrders.Count(o => o.IsDone || string.Equals(NormalizeStatus(o.Status), "Completed", StringComparison.OrdinalIgnoreCase));
+
+        public int CompletedThisMonthCount => CompletedCount;
 
         public int OverdueCount => _dataService.WorkOrders.Count(o => o.IsOverdue);
 
@@ -73,7 +75,9 @@ namespace AsiErp.ViewModels
         {
             ApplyFilter();
             OnPropertyChanged(nameof(PendingCount));
+            OnPropertyChanged(nameof(StartedCount));
             OnPropertyChanged(nameof(InProgressCount));
+            OnPropertyChanged(nameof(CompletedCount));
             OnPropertyChanged(nameof(CompletedThisMonthCount));
             OnPropertyChanged(nameof(OverdueCount));
         }
