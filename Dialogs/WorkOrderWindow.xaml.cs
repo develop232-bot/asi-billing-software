@@ -36,6 +36,7 @@ namespace AsiErp.Dialogs
 
             if (_isEdit && _existingOrder != null)
             {
+                BtnDeleteOrder.Visibility = Visibility.Visible;
                 TxtTitle.Text = $"Edit Work Order {_existingOrder.OrderNo}";
                 TxtOrderNo.Text = _existingOrder.OrderNo;
                 TxtCustomer.Text = _existingOrder.Customer;
@@ -328,6 +329,22 @@ namespace AsiErp.Dialogs
             await _dataService.SaveWorkOrderAsync(wo, !_isEdit);
             DialogResult = true;
             Close();
+        }
+
+        private async void Delete_Click(object sender, RoutedEventArgs e)
+        {
+            if (_existingOrder == null) return;
+            var res = MessageBox.Show(
+                $"Are you sure you want to permanently delete Work Order '{_existingOrder.OrderNo}'?",
+                "Delete Work Order",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+            if (res == MessageBoxResult.Yes)
+            {
+                await _dataService.DeleteWorkOrderAsync(_existingOrder.Id);
+                DialogResult = true;
+                Close();
+            }
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)

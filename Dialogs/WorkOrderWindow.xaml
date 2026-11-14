@@ -157,9 +157,13 @@
         </Grid>
 
         <!-- Footer -->
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
-            <Button Content="Save Work Order" Click="Save_Click" Padding="18,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
-        </StackPanel>
+        <DockPanel Grid.Row="3" Margin="0,16,0,0">
+            <Button x:Name="BtnDeleteOrder" Content="🗑 Delete Order" Click="Delete_Click" Padding="14,8"
+                    Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" FontWeight="SemiBold" Cursor="Hand" Visibility="Collapsed"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
+                <Button Content="Save Work Order" Click="Save_Click" Padding="18,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+            </StackPanel>
+        </DockPanel>
     </Grid>
 </Window>

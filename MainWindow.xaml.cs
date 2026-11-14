@@ -65,6 +65,13 @@ namespace AsiErp
                 });
             }
 
+            // Auto-sync directly with Cloud Firestore in background to ensure local matches cloud 1:1
+            _ = System.Threading.Tasks.Task.Run(async () =>
+            {
+                await System.Threading.Tasks.Task.Delay(1500);
+                await AppDataService.Instance.LoadFromCloudDatabaseAsync();
+            });
+
             if (DataContext is MainViewModel vm)
             {
                 vm.RequestOpenDialog += OnRequestOpenDialog;

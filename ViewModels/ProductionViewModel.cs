@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
@@ -54,6 +55,7 @@ namespace AsiErp.ViewModels
         public RelayCommand SetTypeFilterCommand { get; }
         public RelayCommand NewWorkOrderCommand { get; }
         public RelayCommand EditWorkOrderCommand { get; }
+        public RelayCommand DeleteWorkOrderCommand { get; }
 
         public ProductionViewModel(AppDataService dataService, Action<string, object?> openDialogAction)
         {
@@ -65,6 +67,22 @@ namespace AsiErp.ViewModels
             EditWorkOrderCommand = new RelayCommand(p =>
             {
                 if (p is WorkOrderDoc doc) _openDialogAction("work_order", doc);
+            });
+            DeleteWorkOrderCommand = new RelayCommand(async p =>
+            {
+                if (p is WorkOrderDoc doc)
+                {
+                    var res = MessageBox.Show(
+                        $"Are you sure you want to permanently delete Work Order '{doc.OrderNo}'?",
+                        "Delete Work Order",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        await _dataService.DeleteWorkOrderAsync(doc.Id);
+                        RefreshData();
+                    }
+                }
             });
 
             _dataService.DataChanged += RefreshData;

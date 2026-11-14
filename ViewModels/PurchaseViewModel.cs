@@ -241,6 +241,7 @@ namespace AsiErp.ViewModels
         public RelayCommand NewPurchaseBillCommand { get; }
         public RelayCommand NewPurchaseWithKindCommand { get; }
         public RelayCommand ViewPurchaseCommand { get; }
+        public RelayCommand DeletePurchaseCommand { get; }
         public RelayCommand PayBillCommand { get; }
         public RelayCommand PreviousMonthCommand { get; }
         public RelayCommand NextMonthCommand { get; }
@@ -277,6 +278,23 @@ namespace AsiErp.ViewModels
             ViewPurchaseCommand = new RelayCommand(p =>
             {
                 if (p is PurchaseDoc doc) _openDialogAction("view_purchase_doc", doc);
+            });
+
+            DeletePurchaseCommand = new RelayCommand(async p =>
+            {
+                if (p is PurchaseDoc doc)
+                {
+                    var res = MessageBox.Show(
+                        $"Are you sure you want to permanently delete Bill '{doc.BillNo}'?",
+                        "Delete Purchase Bill",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        await _dataService.DeletePurchaseAsync(doc.Id);
+                        RefreshData();
+                    }
+                }
             });
 
             PayBillCommand = new RelayCommand(p =>

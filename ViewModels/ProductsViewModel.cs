@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
@@ -144,6 +145,7 @@ namespace AsiErp.ViewModels
         public RelayCommand SetFilterCommand { get; }
         public RelayCommand AddItemCommand { get; }
         public RelayCommand EditItemCommand { get; }
+        public RelayCommand DeleteItemCommand { get; }
         public RelayCommand PrintBarcodeCommand { get; }
         public RelayCommand PrintBarcodeOptionsCommand { get; }
         public RelayCommand BulkImportCommand { get; }
@@ -192,6 +194,25 @@ namespace AsiErp.ViewModels
                         _ => _dataService.Products.FirstOrDefault(x => x.Id == row.Id)
                     };
                     _openDialogAction(dlg, target);
+                }
+            });
+
+            DeleteItemCommand = new RelayCommand(async p =>
+            {
+                if (p is UnifiedProductRow row)
+                {
+                    var res = MessageBox.Show(
+                        $"Are you sure you want to permanently delete '{row.Name}' ({row.Sku})?",
+                        "Delete Item",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        if (row.TypeKey == "raw") await _dataService.DeleteRawMaterialAsync(row.Id);
+                        else if (row.TypeKey == "gen") await _dataService.DeleteGeneralItemAsync(row.Id);
+                        else await _dataService.DeleteProductAsync(row.Id);
+                        RefreshData();
+                    }
                 }
             });
 

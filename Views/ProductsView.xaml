@@ -220,15 +220,23 @@
                             <DataGridTextColumn Header="Stock" Binding="{Binding QuantityDisplay}" Width="95" MinWidth="60" FontWeight="Bold"/>
 
                             <!-- 11. Actions -->
-                            <DataGridTemplateColumn Header="Actions" Width="150" MinWidth="90">
+                            <DataGridTemplateColumn Header="Actions" Width="185" MinWidth="110">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Content="🖨️ Barcode" Command="{Binding DataContext.PrintBarcodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                                     Visibility="{Binding CanPrintBarcode, Converter={StaticResource BoolToVis}}"
-                                                    Padding="8,4" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0"/>
+                                                    Padding="8,4" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                             <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11"/>
+                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
+                                            <Button Content="Delete" Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Padding="10,4" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                         </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>

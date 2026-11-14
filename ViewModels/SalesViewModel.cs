@@ -197,6 +197,7 @@ namespace AsiErp.ViewModels
         public RelayCommand NavigateCommand { get; }
         public RelayCommand OpenDialogCommand { get; }
         public RelayCommand ViewSaleCommand { get; }
+        public RelayCommand DeleteSaleCommand { get; }
         public RelayCommand ReceivePaymentCommand { get; }
         public RelayCommand PreviousMonthCommand { get; }
         public RelayCommand NextMonthCommand { get; }
@@ -228,6 +229,23 @@ namespace AsiErp.ViewModels
             ViewSaleCommand = new RelayCommand(p =>
             {
                 if (p is SaleDoc sale) _openDialogAction("view_doc", sale);
+            });
+
+            DeleteSaleCommand = new RelayCommand(async p =>
+            {
+                if (p is SaleDoc sale)
+                {
+                    var res = MessageBox.Show(
+                        $"Are you sure you want to permanently delete Invoice '{sale.InvoiceNo}'?",
+                        "Delete Invoice",
+                        MessageBoxButton.YesNo,
+                        MessageBoxImage.Warning);
+                    if (res == MessageBoxResult.Yes)
+                    {
+                        await _dataService.DeleteSaleAsync(sale.Id);
+                        RefreshData();
+                    }
+                }
             });
 
             ReceivePaymentCommand = new RelayCommand(p =>
