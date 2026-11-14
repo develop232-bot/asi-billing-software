@@ -549,6 +549,7 @@ namespace AsiErp.ViewModels
             {
                 ActiveRoute = route;
                 CurrentBreadcrumb = "Products";
+                ProductsVM.RefreshData();
                 CurrentView = ProductsVM;
             }
             else if (route == "product:editor" || route == "product:new")

@@ -25,13 +25,21 @@ namespace AsiErp.ViewModels
         public double Quantity { get; set; }
 
         public string DateDisplay => string.IsNullOrWhiteSpace(Date) ? DateTime.Now.ToString("yyyy-MM-dd") : Date;
-        public string HsnDisplay => !string.IsNullOrWhiteSpace(Hsn) ? Hsn : "—";
+        public string HsnDisplay => (!string.IsNullOrWhiteSpace(Hsn) && Hsn != "—" && Hsn != "-") ? Hsn : "—";
+        public string BarcodeDisplay => (!string.IsNullOrWhiteSpace(Barcode) && Barcode != "—" && Barcode != "-") ? Barcode : "—";
         public string CostPriceDisplay => CostPrice > 0 ? $"₹{CostPrice:N0}" : "₹0";
-        public string SellingPriceDisplay => SellingPrice > 0 ? $"₹{SellingPrice:N0}" : "₹0";
+        public string SellingPriceDisplay
+        {
+            get
+            {
+                if (TypeKey == "raw" || TypeKey == "gen") return "—";
+                return SellingPrice > 0 ? $"₹{SellingPrice:N0}" : "₹0";
+            }
+        }
         public string GstDisplay => $"{Gst}%";
         public string QuantityDisplay => $"{Quantity:N0}";
 
-        public bool CanPrintBarcode => true;
+        public bool CanPrintBarcode => !string.IsNullOrWhiteSpace(Barcode) && Barcode != "—" && Barcode != "-";
 
         public string TypeLabel => TypeKey switch
         {
@@ -288,8 +296,8 @@ namespace AsiErp.ViewModels
                     Name = p.Name,
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit,
                     Sku = p.Sku,
-                    Hsn = string.IsNullOrWhiteSpace(p.Hsn) ? "6403" : p.Hsn,
-                    Barcode = p.DisplayBarcode,
+                    Hsn = p.Hsn ?? "",
+                    Barcode = p.Barcode ?? "",
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice * 0.7),
                     SellingPrice = p.RetailPrice,
                     Gst = p.AutoGstRate,
@@ -308,10 +316,10 @@ namespace AsiErp.ViewModels
                     Name = r.Name,
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "meter" : r.Unit,
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku,
-                    Hsn = r.Hsn,
-                    Barcode = string.IsNullOrWhiteSpace(r.Barcode) ? r.DisplayBarcode : r.Barcode,
+                    Hsn = r.Hsn ?? "",
+                    Barcode = r.Barcode ?? "",
                     CostPrice = r.Rate,
-                    SellingPrice = r.Rate,
+                    SellingPrice = 0,
                     Gst = r.Gst,
                     Quantity = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock
                 });
@@ -328,10 +336,10 @@ namespace AsiErp.ViewModels
                     Name = g.Name,
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit,
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku,
-                    Hsn = g.Hsn,
-                    Barcode = string.IsNullOrWhiteSpace(g.Barcode) ? g.DisplayBarcode : g.Barcode,
+                    Hsn = g.Hsn ?? "",
+                    Barcode = g.Barcode ?? "",
                     CostPrice = g.Rate,
-                    SellingPrice = g.Rate,
+                    SellingPrice = 0,
                     Gst = g.Gst,
                     Quantity = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock
                 });

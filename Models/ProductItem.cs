@@ -135,7 +135,7 @@ namespace AsiErp.Models
 
         public string DisplayBarcode
         {
-            get => !string.IsNullOrEmpty(Barcode) ? Barcode : (!string.IsNullOrEmpty(Sku) ? Sku : Id);
+            get => !string.IsNullOrEmpty(Barcode) ? Barcode : "—";
             set { }
         }
 

@@ -171,6 +171,7 @@ namespace AsiErp.Services
                     foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
                     foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
+                    CleanLegacyBarcodesAndHsn();
                     EnsureUniqueBarcodesAcrossCatalog();
 
                     return;
@@ -338,6 +339,7 @@ namespace AsiErp.Services
                 foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
                 foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
+                CleanLegacyBarcodesAndHsn();
                 EnsureUniqueBarcodesAcrossCatalog();
 
                 IsSampleDataLoaded = false;
@@ -1021,6 +1023,28 @@ namespace AsiErp.Services
             return BarcodeService.GenerateUniqueBarcode(used, itemType, category);
         }
 
+        private void CleanLegacyBarcodesAndHsn()
+        {
+            foreach (var rm in RawMaterials)
+            {
+                if (rm.Hsn == "6403" || rm.Hsn == "6406") rm.Hsn = string.Empty;
+                if (rm.Barcode != null && (rm.Barcode.StartsWith("890650") || rm.Barcode == "—" || rm.Barcode == "-")) rm.Barcode = string.Empty;
+            }
+            foreach (var gi in GeneralItems)
+            {
+                if (gi.Hsn == "4819" || gi.Hsn == "6403") gi.Hsn = string.Empty;
+                if (gi.Barcode != null && (gi.Barcode.StartsWith("890660") || gi.Barcode == "—" || gi.Barcode == "-")) gi.Barcode = string.Empty;
+            }
+            foreach (var prod in Products)
+            {
+                if (prod.SourceType != "R")
+                {
+                    if (prod.Hsn == "6403" || prod.Hsn == "6406") prod.Hsn = string.Empty;
+                    if (prod.Barcode != null && (prod.Barcode.StartsWith("890640") || prod.Barcode == "—" || prod.Barcode == "-")) prod.Barcode = string.Empty;
+                }
+            }
+        }
+
         public int EnsureUniqueBarcodesAcrossCatalog()
         {
             var usedBarcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -1029,76 +1053,67 @@ namespace AsiErp.Services
             // 1. Process Finished & Readymade Products
             foreach (var p in Products)
             {
-                string current = p.Barcode?.Trim() ?? "";
-                bool needsNew = string.IsNullOrEmpty(current)
-                                || current == "—"
-                                || usedBarcodes.Contains(current);
-
-                if (needsNew)
+                if (p.SourceType == "R")
                 {
-                    string itemType = p.SourceType == "R" ? "ready" : "mfg";
-                    string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, itemType, p.Category);
-                    p.Barcode = newBc;
-                    usedBarcodes.Add(newBc);
-                    changesCount++;
-                    if (!IsSampleDataLoaded)
+                    string current = p.Barcode?.Trim() ?? "";
+                    bool needsNew = string.IsNullOrEmpty(current)
+                                    || current == "—"
+                                    || current == "-"
+                                    || usedBarcodes.Contains(current);
+
+                    if (needsNew)
                     {
-                        SyncQueue.EnqueueSet("products", p.Id, p);
+                        string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, "ready", p.Category);
+                        p.Barcode = newBc;
+                        usedBarcodes.Add(newBc);
+                        changesCount++;
+                        if (!IsSampleDataLoaded)
+                        {
+                            SyncQueue.EnqueueSet("products", p.Id, p);
+                        }
+                    }
+                    else
+                    {
+                        usedBarcodes.Add(current);
                     }
                 }
                 else
                 {
-                    usedBarcodes.Add(current);
+                    // Finished Product (Mfg): manual barcode only; do not auto-generate
+                    if (!string.IsNullOrWhiteSpace(p.Barcode) && p.Barcode != "—" && p.Barcode != "-")
+                    {
+                        usedBarcodes.Add(p.Barcode.Trim());
+                    }
+                    else
+                    {
+                        p.Barcode = string.Empty;
+                    }
                 }
             }
 
-            // 2. Process Raw Materials
+            // 2. Process Raw Materials: manual barcode only; do not auto-generate
             foreach (var r in RawMaterials)
             {
-                string current = r.Barcode?.Trim() ?? "";
-                bool needsNew = string.IsNullOrEmpty(current)
-                                || current == "—"
-                                || usedBarcodes.Contains(current);
-
-                if (needsNew)
+                if (!string.IsNullOrWhiteSpace(r.Barcode) && r.Barcode != "—" && r.Barcode != "-")
                 {
-                    string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, "raw", "Raw Material");
-                    r.Barcode = newBc;
-                    usedBarcodes.Add(newBc);
-                    changesCount++;
-                    if (!IsSampleDataLoaded)
-                    {
-                        SyncQueue.EnqueueSet("raw_materials", r.Id, r);
-                    }
+                    usedBarcodes.Add(r.Barcode.Trim());
                 }
                 else
                 {
-                    usedBarcodes.Add(current);
+                    r.Barcode = string.Empty;
                 }
             }
 
-            // 3. Process General Packaging
+            // 3. Process General Packaging: manual barcode only; do not auto-generate
             foreach (var g in GeneralItems)
             {
-                string current = g.Barcode?.Trim() ?? "";
-                bool needsNew = string.IsNullOrEmpty(current)
-                                || current == "—"
-                                || usedBarcodes.Contains(current);
-
-                if (needsNew)
+                if (!string.IsNullOrWhiteSpace(g.Barcode) && g.Barcode != "—" && g.Barcode != "-")
                 {
-                    string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, "gen", "Packaging");
-                    g.Barcode = newBc;
-                    usedBarcodes.Add(newBc);
-                    changesCount++;
-                    if (!IsSampleDataLoaded)
-                    {
-                        SyncQueue.EnqueueSet("general_items", g.Id, g);
-                    }
+                    usedBarcodes.Add(g.Barcode.Trim());
                 }
                 else
                 {
-                    usedBarcodes.Add(current);
+                    g.Barcode = string.Empty;
                 }
             }
 
@@ -1110,94 +1125,121 @@ namespace AsiErp.Services
             return changesCount;
         }
 
-        public Task SaveProductAsync(ProductItem p)
+        public async Task SaveProductAsync(ProductItem p)
         {
             if (p.RegisteredQty <= 0 && p.Stock > 0) p.RegisteredQty = p.Stock;
-            if (string.IsNullOrWhiteSpace(p.Barcode) || p.Barcode == "—")
-            {
-                p.Barcode = GetNextUniqueBarcode(p.SourceType == "R" ? "ready" : "mfg", p.Category, p.Id);
-            }
+            if (p.Barcode == "—" || p.Barcode == "-") p.Barcode = string.Empty;
+            if (p.Hsn == "—" || p.Hsn == "-") p.Hsn = string.Empty;
+
             int idx = Products.FindIndex(x => x.Id == p.Id);
             if (idx >= 0) Products[idx] = p;
             else Products.Insert(0, p);
 
             NotifyDataChanged();
+            SaveLocalState();
+
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("products", p.Id, p);
+                if (Firebase != null)
+                {
+                    try { await Firebase.SaveProductAsync(p); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteProductAsync(string id)
+        public async Task DeleteProductAsync(string id)
         {
             Products.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            SaveLocalState();
+
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("products", id);
+                if (Firebase != null)
+                {
+                    try { await Firebase.DeleteProductAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task SaveRawMaterialAsync(RawMaterialItem r)
+        public async Task SaveRawMaterialAsync(RawMaterialItem r)
         {
             if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
-            if (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—")
-            {
-                r.Barcode = GetNextUniqueBarcode("raw", "Raw Material", r.Id);
-            }
+            if (r.Barcode == "—" || r.Barcode == "-") r.Barcode = string.Empty;
+            if (r.Hsn == "—" || r.Hsn == "-") r.Hsn = string.Empty;
+
             int idx = RawMaterials.FindIndex(x => x.Id == r.Id);
             if (idx >= 0) RawMaterials[idx] = r;
             else RawMaterials.Insert(0, r);
 
             NotifyDataChanged();
+            SaveLocalState();
+
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("raw_materials", r.Id, r);
+                if (Firebase != null)
+                {
+                    try { await Firebase.SaveRawMaterialAsync(r); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteRawMaterialAsync(string id)
+        public async Task DeleteRawMaterialAsync(string id)
         {
             RawMaterials.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            SaveLocalState();
+
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("raw_materials", id);
+                if (Firebase != null)
+                {
+                    try { await Firebase.DeleteRawMaterialAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task SaveGeneralItemAsync(GeneralItem g)
+        public async Task SaveGeneralItemAsync(GeneralItem g)
         {
             if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
-            if (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—")
-            {
-                g.Barcode = GetNextUniqueBarcode("gen", "Packaging", g.Id);
-            }
+            if (g.Barcode == "—" || g.Barcode == "-") g.Barcode = string.Empty;
+            if (g.Hsn == "—" || g.Hsn == "-") g.Hsn = string.Empty;
+
             int idx = GeneralItems.FindIndex(x => x.Id == g.Id);
             if (idx >= 0) GeneralItems[idx] = g;
             else GeneralItems.Insert(0, g);
 
             NotifyDataChanged();
+            SaveLocalState();
+
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("general_items", g.Id, g);
+                if (Firebase != null)
+                {
+                    try { await Firebase.SaveGeneralItemAsync(g); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteGeneralItemAsync(string id)
+        public async Task DeleteGeneralItemAsync(string id)
         {
             GeneralItems.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            SaveLocalState();
+
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("general_items", id);
+                if (Firebase != null)
+                {
+                    try { await Firebase.DeleteGeneralItemAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
     }
 }

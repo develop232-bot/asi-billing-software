@@ -205,7 +205,7 @@
                             <DataGridTextColumn Header="HSN" Binding="{Binding HsnDisplay}" Width="85" MinWidth="60"/>
 
                             <!-- 7. Barcode -->
-                            <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="130" MinWidth="80" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                            <DataGridTextColumn Header="Barcode" Binding="{Binding BarcodeDisplay}" Width="130" MinWidth="80" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
 
                             <!-- 7. Cost Price -->
                             <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPriceDisplay}" Width="105" MinWidth="70"/>

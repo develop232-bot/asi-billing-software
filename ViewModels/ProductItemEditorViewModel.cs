@@ -96,7 +96,15 @@ namespace AsiErp.ViewModels
                     if (!_isEditMode)
                     {
                         AutoSku();
-                        AutoBarcode();
+                        if (_itemType == "ready")
+                        {
+                            AutoBarcode();
+                        }
+                        else
+                        {
+                            Barcode = "";
+                            HsnCode = "";
+                        }
                     }
                 }
             }
@@ -356,7 +364,7 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit;
                     Sizes = string.Join(",", p.Sizes ?? new List<string>());
                     Sku = p.Sku ?? "";
-                    Barcode = string.IsNullOrWhiteSpace(p.Barcode) ? _dataService.GetNextUniqueBarcode(p.SourceType == "R" ? "ready" : "mfg", p.Category, p.Id) : p.Barcode;
+                    Barcode = (string.IsNullOrWhiteSpace(p.Barcode) || p.Barcode == "—" || p.Barcode == "-") ? "" : p.Barcode;
                     RetailPrice = p.RetailPrice;
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
                     BulkPrice = p.BulkPrice;
@@ -366,17 +374,17 @@ namespace AsiErp.ViewModels
                     Quantity = p.RegisteredQty > 0 ? p.RegisteredQty : p.Stock;
                     ReorderLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
-                    HsnCode = string.IsNullOrWhiteSpace(p.Hsn) ? "6403" : p.Hsn;
+                    HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                 }
                 else if (_existingItem is RawMaterialItem r)
                 {
                     _itemType = "raw";
                     Title = $"Edit Raw Material: {r.Name}";
                     Name = r.Name;
-                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "meter" : r.Unit;
+                    Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
                     PurchaseRate = r.Rate;
                     CostPrice = r.Rate;
-                    SellingPrice = r.Rate;
+                    SellingPrice = 0;
                     GstPercent = r.Gst;
                     Stock = r.Stock;
                     Quantity = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock;
@@ -384,8 +392,8 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = r.ReorderLevel;
                     MediumAlertLevel = r.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
-                    HsnCode = r.Hsn;
-                    Barcode = string.IsNullOrWhiteSpace(r.Barcode) ? _dataService.GetNextUniqueBarcode("raw", "Raw Material", r.Id) : r.Barcode;
+                    HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
+                    Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
                 }
                 else if (_existingItem is GeneralItem g)
                 {
@@ -395,7 +403,7 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
                     PurchaseRate = g.Rate;
                     CostPrice = g.Rate;
-                    SellingPrice = g.Rate;
+                    SellingPrice = 0;
                     GstPercent = g.Gst;
                     Stock = g.Stock;
                     Quantity = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock;
@@ -403,8 +411,8 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = g.ReorderLevel;
                     MediumAlertLevel = g.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
-                    HsnCode = g.Hsn;
-                    Barcode = string.IsNullOrWhiteSpace(g.Barcode) ? _dataService.GetNextUniqueBarcode("gen", "Packaging", g.Id) : g.Barcode;
+                    HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
+                    Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
                 }
 
                 OnPropertyChanged(nameof(ItemType));
@@ -425,20 +433,25 @@ namespace AsiErp.ViewModels
 
                 Name = "";
                 Category = "Shoe";
-                Unit = (type == "raw" || type == "gen") ? "pcs" : "pair";
+                Unit = type == "raw" ? "sq ft" : (type == "gen" ? "pcs" : "pair");
                 Sizes = "6,7,8,9,10,11";
                 RetailPrice = 0;
                 BulkPrice = 0;
                 DomesticPrice = 0;
                 ExportPrice = 0;
                 PurchaseRate = 0;
+                CostPrice = 0;
+                SellingPrice = 0;
                 GstPercent = 5;
                 Stock = 0;
+                Quantity = 0;
                 ReorderLevel = 50;
-                HsnCode = "6403";
+                LowAlertLevel = 50;
+                MediumAlertLevel = 100;
+                HsnCode = "";
+                Barcode = "";
 
                 AutoSku();
-                AutoBarcode();
             }
         }
 
@@ -517,64 +530,100 @@ namespace AsiErp.ViewModels
             {
                 string currentId = (_existingItem as ProductItem)?.Id
                     ?? (_existingItem as RawMaterialItem)?.Id
-                    ?? (_existingItem as GeneralItem)?.Id ?? "";
+                    ?? (_existingItem as GeneralItem)?.Id
+                    ?? (_existingItem as UnifiedProductRow)?.Id ?? "";
 
-                var usedBarcodes = _dataService.GetAllUsedBarcodes(currentId);
-                string candidateBarcode = (Barcode ?? "").Trim();
-                if (string.IsNullOrWhiteSpace(candidateBarcode) || candidateBarcode == "—" || usedBarcodes.Contains(candidateBarcode))
+                string cleanHsn = (HsnCode ?? "").Trim();
+                if (cleanHsn == "—" || cleanHsn == "-") cleanHsn = "";
+
+                string cleanBarcode = (Barcode ?? "").Trim();
+                if (cleanBarcode == "—" || cleanBarcode == "-") cleanBarcode = "";
+
+                if (!string.IsNullOrWhiteSpace(cleanBarcode))
                 {
-                    candidateBarcode = _dataService.GetNextUniqueBarcode(ItemType, Category, currentId);
+                    var usedBarcodes = _dataService.GetAllUsedBarcodes(currentId);
+                    if (usedBarcodes.Contains(cleanBarcode))
+                    {
+                        MessageBox.Show($"The barcode '{cleanBarcode}' is already assigned to another item. Please enter a unique barcode or leave it blank.", "Duplicate Barcode", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
                 }
 
                 if (ItemType == "raw")
                 {
-                    var rm = _existingItem as RawMaterialItem ?? new RawMaterialItem { Id = "r_" + Guid.NewGuid().ToString("N")[..8] };
+                    var rm = (!string.IsNullOrEmpty(currentId) ? _dataService.RawMaterials.FirstOrDefault(x => x.Id == currentId) : null)
+                        ?? (_existingItem as RawMaterialItem)
+                        ?? new RawMaterialItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "r_" + Guid.NewGuid().ToString("N")[..8] };
+
                     rm.Name = trimmedName;
-                    rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "meter" : Unit.Trim();
+                    rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
                     rm.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     rm.Gst = GstPercent;
                     rm.Stock = Quantity;
                     rm.RegisteredQty = Quantity;
-                    rm.ReorderLevel = LowAlertLevel;
-                    rm.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "6406" : HsnCode.Trim();
-                    rm.Sku = string.IsNullOrWhiteSpace(Sku)
-                        ? "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3")
-                        : Sku.Trim();
-                    rm.Barcode = candidateBarcode;
+                    rm.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
+                    rm.Hsn = cleanHsn;
+                    rm.Barcode = cleanBarcode;
+                    if (string.IsNullOrWhiteSpace(rm.Sku))
+                    {
+                        rm.Sku = string.IsNullOrWhiteSpace(Sku)
+                            ? "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3")
+                            : Sku.Trim();
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Sku))
+                    {
+                        rm.Sku = Sku.Trim();
+                    }
 
                     await _dataService.SaveRawMaterialAsync(rm);
                 }
                 else if (ItemType == "gen")
                 {
-                    var gi = _existingItem as GeneralItem ?? new GeneralItem { Id = "g_" + Guid.NewGuid().ToString("N")[..8] };
+                    var gi = (!string.IsNullOrEmpty(currentId) ? _dataService.GeneralItems.FirstOrDefault(x => x.Id == currentId) : null)
+                        ?? (_existingItem as GeneralItem)
+                        ?? new GeneralItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "g_" + Guid.NewGuid().ToString("N")[..8] };
+
                     gi.Name = trimmedName;
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
                     gi.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     gi.Gst = GstPercent;
                     gi.Stock = Quantity;
                     gi.RegisteredQty = Quantity;
-                    gi.ReorderLevel = LowAlertLevel;
-                    gi.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "4819" : HsnCode.Trim();
-                    gi.Sku = string.IsNullOrWhiteSpace(Sku)
-                        ? "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3")
-                        : Sku.Trim();
-                    gi.Barcode = candidateBarcode;
+                    gi.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
+                    gi.Hsn = cleanHsn;
+                    gi.Barcode = cleanBarcode;
+                    if (string.IsNullOrWhiteSpace(gi.Sku))
+                    {
+                        gi.Sku = string.IsNullOrWhiteSpace(Sku)
+                            ? "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3")
+                            : Sku.Trim();
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Sku))
+                    {
+                        gi.Sku = Sku.Trim();
+                    }
 
                     await _dataService.SaveGeneralItemAsync(gi);
                 }
                 else
                 {
-                    var prod = _existingItem as ProductItem ?? new ProductItem
+                    var prod = (!string.IsNullOrEmpty(currentId) ? _dataService.Products.FirstOrDefault(x => x.Id == currentId) : null)
+                        ?? (_existingItem as ProductItem)
+                        ?? new ProductItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "p_" + Guid.NewGuid().ToString("N")[..8] };
+
+                    if (string.IsNullOrWhiteSpace(prod.Sku))
                     {
-                        Id = "p_" + Guid.NewGuid().ToString("N")[..8],
-                    };
+                        prod.Sku = string.IsNullOrWhiteSpace(Sku)
+                            ? "ASI-" + (ItemType == "mfg" ? "MFG" : "RDY") + "-" + (_dataService.Products.Count + 1).ToString("D3")
+                            : Sku.Trim();
+                    }
+                    else if (!string.IsNullOrWhiteSpace(Sku))
+                    {
+                        prod.Sku = Sku.Trim();
+                    }
 
-                    prod.Sku = string.IsNullOrWhiteSpace(Sku)
-                        ? "ASI-" + (ItemType == "mfg" ? "MFG" : "RDY") + "-" + (_dataService.Products.Count + 1).ToString("D3")
-                        : Sku.Trim();
-
-                    prod.Barcode = candidateBarcode;
-
+                    prod.Barcode = cleanBarcode;
+                    prod.Hsn = cleanHsn;
                     prod.Name = trimmedName;
                     prod.Category = string.IsNullOrWhiteSpace(Category) ? "Shoe" : Category;
                     prod.SourceType = ItemType == "mfg" ? "M" : "R";
@@ -587,8 +636,7 @@ namespace AsiErp.ViewModels
                     prod.ExportPrice = ExportPrice;
                     prod.Stock = Quantity;
                     prod.RegisteredQty = Quantity;
-                    prod.ReorderLevel = LowAlertLevel;
-                    prod.Hsn = string.IsNullOrWhiteSpace(HsnCode) ? "6403" : HsnCode.Trim();
+                    prod.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
                     prod.Gst = SellingPrice <= 2500 ? 5 : 18;
                     prod.Bom ??= new();
 
