@@ -322,7 +322,7 @@
                             </DataGridTemplateColumn>
 
                             <!-- 9. Actions -->
-                            <DataGridTemplateColumn Width="185">
+                            <DataGridTemplateColumn Width="215">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

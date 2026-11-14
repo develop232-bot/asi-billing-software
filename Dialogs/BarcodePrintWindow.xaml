@@ -29,8 +29,7 @@
                 </Border.Effect>
                 <StackPanel HorizontalAlignment="Center">
                     <!-- Brand Name -->
-                    <TextBlock Text="AFRAH SAMIYA INDUSTRIES" FontWeight="Bold" FontSize="11" Foreground="#0F172A" HorizontalAlignment="Center"/>
-                    <TextBlock Text="SHOES &amp; UNIFORMS · FOOTWEAR DIVISION" FontSize="8.5" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,1,0,6"/>
+                    <TextBlock Text="ASI" FontWeight="Bold" FontSize="14" Foreground="#0F172A" HorizontalAlignment="Center" Margin="0,0,0,4"/>
 
                     <Border Height="1" Background="#E2E8F0" Margin="0,0,0,6"/>
 
@@ -82,13 +81,21 @@
                 <!-- Copies -->
                 <StackPanel Grid.Column="1" Margin="10,0,0,0">
                     <TextBlock Text="Number of Labels / Copies" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
-                    <StackPanel Orientation="Horizontal">
-                        <Button Content="−" Click="DecCopies_Click" Width="32" Height="32" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="14"/>
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Click="DecCopies_Click" Width="32" Height="32" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" ToolTip="Decrease">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            <Path Data="M 0,0 L 12,0" Stroke="#0F172A" StrokeThickness="2.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
                         <TextBox x:Name="TxtCopies" Text="1" Width="60" Height="32" Margin="6,0" Padding="0"
                                  Background="White" Foreground="#0F172A" CaretBrush="#0F172A"
                                  HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
-                                 FontWeight="Bold" FontSize="15" BorderBrush="#0284C7" BorderThickness="1.5"/>
-                        <Button Content="+" Click="IncCopies_Click" Width="32" Height="32" Background="#F1F5F9" BorderBrush="#CBD5E1" Cursor="Hand" FontWeight="Bold" FontSize="14"/>
+                                 FontWeight="Bold" FontSize="15" BorderBrush="#0284C7" BorderThickness="1.5">
+                            <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></TextBox.Resources>
+                        </TextBox>
+                        <Button Click="IncCopies_Click" Width="32" Height="32" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" ToolTip="Increase">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            <Path Data="M 6,0 L 6,12 M 0,6 L 12,6" Stroke="#0F172A" StrokeThickness="2.2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Button>
                     </StackPanel>
                 </StackPanel>
             </Grid>

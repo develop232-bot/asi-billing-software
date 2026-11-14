@@ -220,7 +220,7 @@
                             <DataGridTextColumn Header="Stock" Binding="{Binding QuantityDisplay}" Width="95" MinWidth="60" FontWeight="Bold"/>
 
                             <!-- 11. Actions -->
-                            <DataGridTemplateColumn Header="Actions" Width="185" MinWidth="110">
+                            <DataGridTemplateColumn Header="Actions" Width="235" MinWidth="220">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

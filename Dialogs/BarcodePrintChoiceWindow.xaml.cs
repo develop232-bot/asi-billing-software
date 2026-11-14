@@ -433,12 +433,12 @@ namespace AsiErp.Dialogs
                         copies = 1;
                     }
 
-                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 400)
+                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 300)
                         ? pd.PrintableAreaWidth
                         : 185;
-                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 250)
-                        ? Math.Min(pd.PrintableAreaHeight, 92)
-                        : 90;
+                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 200)
+                        ? Math.Min(pd.PrintableAreaHeight, 88)
+                        : 88;
 
                     string size = !string.IsNullOrWhiteSpace(CbSize?.Text) ? CbSize.Text.Trim() : (CbSize?.SelectedItem?.ToString() ?? (_currentProduct.Sizes?.FirstOrDefault() ?? "Free size"));
 
@@ -473,12 +473,12 @@ namespace AsiErp.Dialogs
                         return;
                     }
 
-                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 400)
+                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 300)
                         ? pd.PrintableAreaWidth
                         : 185;
-                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 250)
-                        ? Math.Min(pd.PrintableAreaHeight, 92)
-                        : 90;
+                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 200)
+                        ? Math.Min(pd.PrintableAreaHeight, 88)
+                        : 88;
 
                     int totalPrinted = 0;
                     var fixedDoc = new System.Windows.Documents.FixedDocument();
@@ -524,12 +524,12 @@ namespace AsiErp.Dialogs
                         batchCopies = 1;
                     }
 
-                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 400)
+                    double labelWidth = (pd.PrintableAreaWidth > 50 && pd.PrintableAreaWidth < 300)
                         ? pd.PrintableAreaWidth
                         : 185;
-                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 250)
-                        ? Math.Min(pd.PrintableAreaHeight, 92)
-                        : 90;
+                    double labelHeight = (pd.PrintableAreaHeight > 50 && pd.PrintableAreaHeight < 200)
+                        ? Math.Min(pd.PrintableAreaHeight, 88)
+                        : 88;
 
                     int totalPrinted = 0;
                     var fixedDoc = new System.Windows.Documents.FixedDocument();
@@ -570,21 +570,15 @@ namespace AsiErp.Dialogs
 
         private FrameworkElement CreateLabelVisual(ProductItem prod, string size, double targetWidth, double targetHeight)
         {
-            if (targetWidth <= 50 || double.IsNaN(targetWidth) || double.IsInfinity(targetWidth))
-            {
-                targetWidth = 185;
-            }
-            if (targetHeight <= 40 || double.IsNaN(targetHeight) || double.IsInfinity(targetHeight))
-            {
-                targetHeight = 90;
-            }
+            // For 2-inch thermal sticker label (50mm x 25mm / 50mm x 30mm)
+            // Safe printable bounds to guarantee zero clipping and zero spill over label gap
+            double contentWidth = 146;
 
             var border = new Border
             {
                 Background = Brushes.White,
-                Width = targetWidth,
-                Height = targetHeight,
-                Padding = new Thickness(4, 2, 4, 2),
+                Width = targetWidth > 0 ? targetWidth : 185,
+                Height = targetHeight > 0 ? targetHeight : 88,
                 ClipToBounds = true
             };
 
@@ -592,18 +586,19 @@ namespace AsiErp.Dialogs
             {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                Width = targetWidth - 6
+                Width = contentWidth
             };
 
-            // 1. Company Brand Name
+            // 1. Company Brand Name - ASI only
             stack.Children.Add(new TextBlock
             {
-                Text = "AFRAH SAMIYA INDUSTRIES",
+                Text = "ASI",
                 FontWeight = FontWeights.Bold,
-                FontSize = 8,
+                FontSize = 9,
                 Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                TextAlignment = TextAlignment.Center
+                TextAlignment = TextAlignment.Center,
+                Margin = new Thickness(0, 0, 0, 1)
             });
 
             // 2. Product Name
@@ -611,12 +606,12 @@ namespace AsiErp.Dialogs
             {
                 Text = prod.Name,
                 FontWeight = FontWeights.Bold,
-                FontSize = 8.5,
+                FontSize = 7.5,
                 Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 TextAlignment = TextAlignment.Center,
                 TextTrimming = TextTrimming.CharacterEllipsis,
-                MaxHeight = 13
+                MaxHeight = 11
             });
 
             // 3. SKU & Size Line
@@ -624,15 +619,15 @@ namespace AsiErp.Dialogs
             dockTag.Children.Add(new TextBlock
             {
                 Text = $"SKU: {prod.Sku}",
-                FontSize = 7.5,
+                FontSize = 6.5,
                 Foreground = Brushes.Black,
-                Margin = new Thickness(0, 0, 6, 0)
+                Margin = new Thickness(0, 0, 4, 0)
             });
             dockTag.Children.Add(new TextBlock
             {
                 Text = $"· Size: {size}",
                 FontWeight = FontWeights.Bold,
-                FontSize = 7.5,
+                FontSize = 6.5,
                 Foreground = Brushes.Black
             });
             stack.Children.Add(dockTag);
@@ -643,24 +638,25 @@ namespace AsiErp.Dialogs
             {
                 barcode = BarcodeService.GenerateBarcode(prod.Category, prod.SourceType);
             }
-            int bcWidth = (int)Math.Min(145, targetWidth - 16);
+            int bcWidth = 130;
+            int bcHeight = 24;
             var barcodeImage = new Image
             {
                 Width = bcWidth,
-                Height = 32,
+                Height = bcHeight,
                 Stretch = Stretch.Uniform,
-                Source = BarcodeService.GenerateBarcodeImage(barcode, width: bcWidth, height: 32),
+                Source = BarcodeService.GenerateBarcodeImage(barcode, width: bcWidth, height: bcHeight),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Margin = new Thickness(0, 1, 0, 1)
             };
             stack.Children.Add(barcodeImage);
 
-            // 5. MRP & Taxes
-            var dockPrice = new DockPanel { HorizontalAlignment = HorizontalAlignment.Stretch, Width = targetWidth - 10 };
+            // 5. MRP & Taxes Line (compact so price is never clipped)
+            var dockPrice = new DockPanel { HorizontalAlignment = HorizontalAlignment.Center, Width = 136 };
             var priceStack = new TextBlock
             {
                 Text = "MRP (Incl. taxes):",
-                FontSize = 7,
+                FontSize = 6.5,
                 FontWeight = FontWeights.SemiBold,
                 Foreground = Brushes.Black,
                 VerticalAlignment = VerticalAlignment.Center
@@ -668,13 +664,15 @@ namespace AsiErp.Dialogs
             DockPanel.SetDock(priceStack, Dock.Left);
             dockPrice.Children.Add(priceStack);
 
+            string priceStr = prod.RetailPrice % 1 != 0 ? $"₹ {prod.RetailPrice:N2}" : $"₹ {prod.RetailPrice:N0}";
             var mrpBlock = new TextBlock
             {
-                Text = $"₹ {prod.RetailPrice:N2}",
+                Text = priceStr,
                 FontWeight = FontWeights.Bold,
-                FontSize = 9.5,
+                FontSize = 8.5,
                 Foreground = Brushes.Black,
                 HorizontalAlignment = HorizontalAlignment.Right,
+                TextAlignment = TextAlignment.Right,
                 VerticalAlignment = VerticalAlignment.Center
             };
             dockPrice.Children.Add(mrpBlock);
@@ -682,8 +680,8 @@ namespace AsiErp.Dialogs
 
             border.Child = stack;
 
-            border.Measure(new Size(targetWidth, targetHeight));
-            border.Arrange(new Rect(new Point(0, 0), new Size(targetWidth, targetHeight)));
+            border.Measure(new Size(border.Width, border.Height));
+            border.Arrange(new Rect(new Point(0, 0), new Size(border.Width, border.Height)));
             border.UpdateLayout();
 
             return border;
