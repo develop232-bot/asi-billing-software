@@ -15,6 +15,7 @@ namespace AsiErp.ViewModels
     {
         private readonly AppDataService _dataService;
         private readonly Action<string, object?> _openDialogAction;
+        private readonly Action<string>? _navigateAction;
 
         private string _activeKind = "all"; // all, raw, ready, gen
         private string _selectedStatus = "all"; // all, Paid, Partial, Unpaid
@@ -236,6 +237,7 @@ namespace AsiErp.ViewModels
             .Count();
 
         // Commands
+        public RelayCommand NavigateCommand { get; }
         public RelayCommand SetKindCommand { get; }
         public RelayCommand SetStatusCommand { get; }
         public RelayCommand NewPurchaseBillCommand { get; }
@@ -251,11 +253,17 @@ namespace AsiErp.ViewModels
         public RelayCommand ExportExcelCommand { get; }
         public RelayCommand ExportPdfCommand { get; }
 
-        public PurchaseViewModel(AppDataService dataService, Action<string, object?> openDialogAction, string initialKind = "all")
+        public PurchaseViewModel(AppDataService dataService, Action<string, object?> openDialogAction, Action<string>? navigateAction = null, string initialKind = "all")
         {
             _dataService = dataService;
             _openDialogAction = openDialogAction;
+            _navigateAction = navigateAction;
             _activeKind = initialKind;
+
+            NavigateCommand = new RelayCommand(p =>
+            {
+                if (p is string r) _navigateAction?.Invoke(r);
+            });
 
             _reportFromDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
             _reportToDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));

@@ -30,6 +30,9 @@ namespace AsiErp.ViewModels
         public ExportInvoiceViewModel ExportInvoiceVM { get; }
         public ProductItemEditorViewModel ProductItemEditorVM { get; }
         public PurchaseViewModel PurchaseVM { get; }
+        public RawMaterialPurchaseViewModel RawMaterialPurchaseVM { get; }
+        public ReadyMadePurchaseViewModel ReadyMadePurchaseVM { get; }
+        public PackagingPurchaseViewModel PackagingPurchaseVM { get; }
         public ProductionViewModel ProductionVM { get; }
         public StockViewModel StockVM { get; }
         public ProductsViewModel ProductsVM { get; }
@@ -209,7 +212,10 @@ namespace AsiErp.ViewModels
             DomesticInvoiceVM = new DomesticInvoiceViewModel(_dataService, NavigateTo, OpenDialog);
             ExportInvoiceVM = new ExportInvoiceViewModel(_dataService, NavigateTo, OpenDialog);
             ProductItemEditorVM = new ProductItemEditorViewModel(_dataService, NavigateTo, OpenDialog);
-            PurchaseVM = new PurchaseViewModel(_dataService, OpenDialog, "raw");
+            PurchaseVM = new PurchaseViewModel(_dataService, OpenDialog, NavigateTo, "all");
+            RawMaterialPurchaseVM = new RawMaterialPurchaseViewModel(_dataService, NavigateTo, OpenDialog);
+            ReadyMadePurchaseVM = new ReadyMadePurchaseViewModel(_dataService, NavigateTo, OpenDialog);
+            PackagingPurchaseVM = new PackagingPurchaseViewModel(_dataService, NavigateTo, OpenDialog);
             ProductionVM = new ProductionViewModel(_dataService, OpenDialog);
             StockVM = new StockViewModel(_dataService, OpenDialog, "raw");
             ProductsVM = new ProductsViewModel(_dataService, OpenDialog);
@@ -220,13 +226,10 @@ namespace AsiErp.ViewModels
             {
                 if (e.PropertyName == nameof(PurchaseViewModel.ActiveKind))
                 {
-                    string r = "pur:" + PurchaseVM.ActiveKind;
-                    if (_activeRoute != r)
+                    if (ReferenceEquals(CurrentView, PurchaseVM))
                     {
-                        _activeRoute = r;
-                        OnPropertyChanged(nameof(ActiveRoute));
+                        CurrentBreadcrumb = PurchaseVM.Title;
                     }
-                    CurrentBreadcrumb = PurchaseVM.Title;
                 }
             };
 
@@ -499,20 +502,34 @@ namespace AsiErp.ViewModels
                 ExportInvoiceVM.ResetForm();
                 CurrentView = ExportInvoiceVM;
             }
-            else if (route == "purchase")
+            else if (route == "purchase" || route == "pur")
             {
-                ActiveRoute = route;
+                ActiveRoute = "pur";
                 CurrentBreadcrumb = "Purchase & Sourcing";
                 PurchaseVM.ActiveKind = "all";
+                PurchaseVM.RefreshData();
                 CurrentView = PurchaseVM;
             }
-            else if (route.StartsWith("pur:"))
+            else if (route == "pur:raw")
             {
-                string kind = route.Split(':')[1];
-                PurchaseVM.ActiveKind = kind;
                 ActiveRoute = route;
-                CurrentBreadcrumb = PurchaseVM.Title;
-                CurrentView = PurchaseVM;
+                CurrentBreadcrumb = "Purchase & Sourcing · Raw Material";
+                RawMaterialPurchaseVM.ResetForm();
+                CurrentView = RawMaterialPurchaseVM;
+            }
+            else if (route == "pur:ready")
+            {
+                ActiveRoute = route;
+                CurrentBreadcrumb = "Purchase & Sourcing · Ready Made Products";
+                ReadyMadePurchaseVM.ResetForm();
+                CurrentView = ReadyMadePurchaseVM;
+            }
+            else if (route == "pur:gen")
+            {
+                ActiveRoute = route;
+                CurrentBreadcrumb = "Purchase & Sourcing · General Packaging";
+                PackagingPurchaseVM.ResetForm();
+                CurrentView = PackagingPurchaseVM;
             }
             else if (route == "production")
             {

@@ -638,39 +638,103 @@ namespace AsiErp.Services
 
             foreach (var line in purchase.Lines)
             {
+                if (string.IsNullOrWhiteSpace(line.Name)) continue;
+
                 if (purchase.Kind == "raw")
                 {
-                    var r = RawMaterials.FirstOrDefault(x => x.Id == line.ItemId);
+                    var r = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                             x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
                     if (r != null)
                     {
                         r.Stock += line.Qty;
                         r.Rate = line.Rate;
+                        if (!string.IsNullOrWhiteSpace(line.Unit)) r.Unit = line.Unit;
                         if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", r.Id, r);
+                    }
+                    else
+                    {
+                        var newRaw = new RawMaterialItem
+                        {
+                            Id = !string.IsNullOrWhiteSpace(line.ItemId) ? line.ItemId : "raw_" + Guid.NewGuid().ToString("N")[..8],
+                            Name = line.Name,
+                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "sq ft" : line.Unit,
+                            Rate = line.Rate,
+                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
+                            Stock = line.Qty,
+                            Sku = !string.IsNullOrWhiteSpace(line.Sku) ? line.Sku : ""
+                        };
+                        line.ItemId = newRaw.Id;
+                        RawMaterials.Add(newRaw);
+                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", newRaw.Id, newRaw);
                     }
                 }
                 else if (purchase.Kind == "ready")
                 {
-                    var p = Products.FirstOrDefault(x => x.Id == line.ItemId);
+                    var p = Products.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                         x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
                     if (p != null)
                     {
                         p.Stock += line.Qty;
                         p.Cost = line.Rate;
+                        if (line.SellingPrice > 0) p.RetailPrice = line.SellingPrice;
+                        if (!string.IsNullOrWhiteSpace(line.Unit)) p.Unit = line.Unit;
                         if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", p.Id, p);
+                    }
+                    else
+                    {
+                        var newProd = new ProductItem
+                        {
+                            Id = !string.IsNullOrWhiteSpace(line.ItemId) ? line.ItemId : "prod_" + Guid.NewGuid().ToString("N")[..8],
+                            Name = line.Name,
+                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pair" : line.Unit,
+                            Cost = line.Rate,
+                            RetailPrice = line.SellingPrice > 0 ? line.SellingPrice : Math.Round(line.Rate * 1.5, 0),
+                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
+                            Stock = line.Qty,
+                            Sku = !string.IsNullOrWhiteSpace(line.Sku) ? line.Sku : $"ASI-RDY-{Products.Count + 1:D3}",
+                            Category = "Ready Made Products"
+                        };
+                        if (!string.IsNullOrWhiteSpace(line.Size))
+                        {
+                            newProd.Sizes = line.Size.Split(new[] { ',', ' ', '/' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+                        }
+                        line.ItemId = newProd.Id;
+                        Products.Add(newProd);
+                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", newProd.Id, newProd);
                     }
                 }
                 else if (purchase.Kind == "gen")
                 {
-                    var g = GeneralItems.FirstOrDefault(x => x.Id == line.ItemId);
+                    var g = GeneralItems.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                             x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
                     if (g != null)
                     {
                         g.Stock += line.Qty;
                         g.Rate = line.Rate;
+                        if (!string.IsNullOrWhiteSpace(line.Unit)) g.Unit = line.Unit;
                         if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", g.Id, g);
+                    }
+                    else
+                    {
+                        var newGen = new GeneralItem
+                        {
+                            Id = !string.IsNullOrWhiteSpace(line.ItemId) ? line.ItemId : "gen_" + Guid.NewGuid().ToString("N")[..8],
+                            Name = line.Name,
+                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pcs" : line.Unit,
+                            Rate = line.Rate,
+                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
+                            Stock = line.Qty,
+                            Sku = !string.IsNullOrWhiteSpace(line.Sku) ? line.Sku : ""
+                        };
+                        line.ItemId = newGen.Id;
+                        GeneralItems.Add(newGen);
+                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
                     }
                 }
             }
 
             NotifyDataChanged();
+            SaveLocalState();
 
             if (!IsSampleDataLoaded)
             {
@@ -685,6 +749,7 @@ namespace AsiErp.Services
         {
             Purchases.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            SaveLocalState();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("purchases", id);

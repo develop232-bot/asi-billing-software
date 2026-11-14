@@ -26,22 +26,22 @@
 
                 <!-- Top 3 Action Buttons requested by user -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="🧵 Raw Material" Command="{Binding SetKindCommand}" CommandParameter="raw"
+                    <Button Content="🧵 Raw Material" Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
                             Padding="14,8" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="👞 Ready Made Products" Command="{Binding SetKindCommand}" CommandParameter="ready"
+                    <Button Content="👞 Ready Made Products" Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
                             Padding="14,8" Background="#4F46E5" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="📦 General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen"
+                    <Button Content="📦 General Packaging" Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
                             Padding="14,8" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="+ New Purchase Bill" Command="{Binding NewPurchaseBillCommand}"
+                    <Button Content="+ New Purchase Bill" Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
                             Padding="16,8" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
                     </Button>

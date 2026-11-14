@@ -12,6 +12,9 @@ namespace AsiErp.Models
         private string _name = string.Empty;
         private double _qty = 1;
         private string _unit = "pcs";
+        private string _sku = string.Empty;
+        private string _size = string.Empty;
+        private double _sellingPrice;
         private double _rate;
         private double _gstPercent = 5;
         private double _netAmount;
@@ -52,6 +55,27 @@ namespace AsiErp.Models
         {
             get => _unit;
             set { if (_unit != value) { _unit = value; OnPropertyChanged(); } }
+        }
+
+        [FirestoreProperty("sku")]
+        public string Sku
+        {
+            get => _sku;
+            set { if (_sku != value) { _sku = value; OnPropertyChanged(); } }
+        }
+
+        [FirestoreProperty("size")]
+        public string Size
+        {
+            get => _size;
+            set { if (_size != value) { _size = value; OnPropertyChanged(); } }
+        }
+
+        [FirestoreProperty("sellPrice")]
+        public double SellingPrice
+        {
+            get => _sellingPrice;
+            set { if (Math.Abs(_sellingPrice - value) > 0.0001) { _sellingPrice = value; OnPropertyChanged(); } }
         }
 
         [FirestoreProperty("rate")]

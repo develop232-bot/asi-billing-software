@@ -658,9 +658,9 @@
                     <Button Content="🧾  Domestic Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Button Content="🌐  Export Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
-                    <Button Content="🛍️  Purchase · Raw Material" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🛍️  Purchase · Readymade" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🛍️  Purchase · General" Command="{Binding OpenDialogCommand}" CommandParameter="purchase_gen" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="🧵  Raw Material Sourcing" Command="{Binding NavigateCommand}" CommandParameter="pur:raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="👞  Ready Made Purchase" Command="{Binding NavigateCommand}" CommandParameter="pur:ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="📦  General Packaging Sourcing" Command="{Binding NavigateCommand}" CommandParameter="pur:gen" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
                     <Button Content="🏭  New Work Order" Command="{Binding OpenDialogCommand}" CommandParameter="work_order" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Button Content="💸  Add Expense" Command="{Binding OpenDialogCommand}" CommandParameter="expense_add" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
