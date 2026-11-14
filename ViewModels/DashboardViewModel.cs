@@ -545,16 +545,16 @@ namespace AsiErp.ViewModels
             }
             else if (_selectedTrendPeriod == "This Year")
             {
-                int fyStartYear = now.Month >= 4 ? now.Year : now.Year - 1;
-                var q1 = _dataService.GetFinancialTotals($"{fyStartYear}-04-01", $"{fyStartYear}-06-30");
-                var q2 = _dataService.GetFinancialTotals($"{fyStartYear}-07-01", $"{fyStartYear}-09-30");
-                var q3 = _dataService.GetFinancialTotals($"{fyStartYear}-10-01", $"{fyStartYear}-12-31");
-                var q4 = _dataService.GetFinancialTotals($"{fyStartYear + 1}-01-01", $"{fyStartYear + 1}-03-31");
+                int year = now.Year;
+                var q1 = _dataService.GetFinancialTotals($"{year}-01-01", $"{year}-03-31");
+                var q2 = _dataService.GetFinancialTotals($"{year}-04-01", $"{year}-06-30");
+                var q3 = _dataService.GetFinancialTotals($"{year}-07-01", $"{year}-09-30");
+                var q4 = _dataService.GetFinancialTotals($"{year}-10-01", $"{year}-12-31");
 
-                rawList.Add(("Q1", q1.totalIncome, $"Q1 (Apr-Jun)\nSales: ₹{q1.totalIncome:N0}"));
-                rawList.Add(("Q2", q2.totalIncome, $"Q2 (Jul-Sep)\nSales: ₹{q2.totalIncome:N0}"));
-                rawList.Add(("Q3", q3.totalIncome, $"Q3 (Oct-Dec)\nSales: ₹{q3.totalIncome:N0}"));
-                rawList.Add(("Q4", q4.totalIncome, $"Q4 (Jan-Mar)\nSales: ₹{q4.totalIncome:N0}"));
+                rawList.Add(("Q1", q1.totalIncome, $"Q1 (Jan-Mar)\nSales: ₹{q1.totalIncome:N0}"));
+                rawList.Add(("Q2", q2.totalIncome, $"Q2 (Apr-Jun)\nSales: ₹{q2.totalIncome:N0}"));
+                rawList.Add(("Q3", q3.totalIncome, $"Q3 (Jul-Sep)\nSales: ₹{q3.totalIncome:N0}"));
+                rawList.Add(("Q4", q4.totalIncome, $"Q4 (Oct-Dec)\nSales: ₹{q4.totalIncome:N0}"));
             }
             else // Default: "This Month" (Week 1, Week 2, Week 3, Week 4)
             {

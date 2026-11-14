@@ -152,6 +152,7 @@ namespace AsiErp.ViewModels
         public double UtilityExpenseTotal { get; private set; }
         public double MiscExpenseTotal { get; private set; }
         public double PurchaseExpenseTotal { get; private set; }
+        public double TotalExpenseOverall { get; private set; }
 
         public double SalaryExpenseTotal => EmployeeExpenseTotal;
         public double UtilitiesExpenseTotal => UtilityExpenseTotal;
@@ -370,10 +371,9 @@ namespace AsiErp.ViewModels
                 var f = now.AddMonths(-3);
                 return (f.ToString("yyyy-MM-dd"), now.ToString("yyyy-MM-dd"), "last 3 months");
             }
-            if (periodKey == "fy")
+            if (periodKey == "fy" || periodKey == "cy" || periodKey == "year")
             {
-                int fyYr = now.Month >= 4 ? now.Year : now.Year - 1;
-                return ($"{fyYr}-04-01", now.ToString("yyyy-MM-dd"), $"FY {fyYr}-{(fyYr + 1) % 100:D2}");
+                return ($"{now.Year}-01-01", $"{now.Year}-12-31", $"Calendar Year {now.Year} (Jan - Dec)");
             }
             return ("0000-00-00", "9999-12-31", "all time");
         }
@@ -406,11 +406,13 @@ namespace AsiErp.ViewModels
             UtilityExpenseTotal = allExpenses.Where(e => e.Group.Equals("Utility", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
             MiscExpenseTotal = allExpenses.Where(e => e.Group.Equals("Misc Exp", StringComparison.OrdinalIgnoreCase) || e.Group.Equals("Misc", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
             PurchaseExpenseTotal = allExpenses.Where(e => e.Group.Equals("Purchase", StringComparison.OrdinalIgnoreCase)).Sum(e => e.Amount);
+            TotalExpenseOverall = allExpenses.Sum(e => e.Amount);
 
             OnPropertyChanged(nameof(EmployeeExpenseTotal));
             OnPropertyChanged(nameof(UtilityExpenseTotal));
             OnPropertyChanged(nameof(MiscExpenseTotal));
             OnPropertyChanged(nameof(PurchaseExpenseTotal));
+            OnPropertyChanged(nameof(TotalExpenseOverall));
             OnPropertyChanged(nameof(SalaryExpenseTotal));
             OnPropertyChanged(nameof(UtilitiesExpenseTotal));
             OnPropertyChanged(nameof(YearlyExpenseTotal));

@@ -25,11 +25,11 @@
                 <!-- Period Dropdown -->
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Period: " FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#64748B"/>
-                    <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="150" Padding="8,6">
+                    <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="185" Padding="8,6">
                         <ComboBoxItem Content="This month" Tag="m0"/>
                         <ComboBoxItem Content="Last month" Tag="m1"/>
                         <ComboBoxItem Content="Last 3 months" Tag="q"/>
-                        <ComboBoxItem Content="This FY" Tag="fy"/>
+                        <ComboBoxItem Content="Calendar Year (Jan - Dec)" Tag="fy"/>
                         <ComboBoxItem Content="All time" Tag="all"/>
                     </ComboBox>
                 </StackPanel>
@@ -417,8 +417,8 @@
                 <!-- Subtitle -->
                 <TextBlock Text="Employee, utility and miscellaneous costs. Purchase bills are added automatically." FontSize="12.5" Foreground="#64748B" Margin="0,0,0,16"/>
 
-                <!-- 4 KPI Cards: Employee, Utility, Misc Exp, Purchase bills -->
-                <UniformGrid Columns="4" Margin="0,0,0,20">
+                <!-- 5 KPI Cards: Employee, Utility, Misc Exp, Purchase bills, Total Expenses -->
+                <UniformGrid Columns="5" Margin="0,0,0,20">
                     <!-- Employee -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
@@ -453,13 +453,24 @@
                     </Border>
 
                     <!-- Purchase bills -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Purchase bills" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Total Expenses -->
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Total Expenses" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding TotalExpenseOverall, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
