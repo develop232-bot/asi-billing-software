@@ -217,7 +217,7 @@
 
             <!-- TAB 1: INCOME -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=income}">
-                <UniformGrid Columns="3" Margin="0,0,0,20">
+                <UniformGrid Columns="4" Margin="0,0,0,20">
                     <!-- 1. Retail Sales -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
@@ -241,13 +241,24 @@
                     </Border>
 
                     <!-- 3. Export Sales -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Export Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                             <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- 4. Total Income -->
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Total Income" FontSize="11.5" Foreground="#166534" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding IncomeTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
