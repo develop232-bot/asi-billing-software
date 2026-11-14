@@ -170,93 +170,160 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- RE-DESIGNED SALES & EXPENSES CHART CARD -->
-                <Border Grid.Column="0" Background="White" Padding="20,18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- SALES TREND LINE GRAPH CARD -->
+                <Border Grid.Column="0" Background="White" Padding="20,16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
                     <DockPanel>
-                        <!-- Top Header with Summary Metrics -->
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Sales &amp; Expenses Overview" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                                <TextBlock Text="Monthly revenue vs operating expenditure" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                <Border Background="#EFF6FF" BorderBrush="#DBEAFE" BorderThickness="1" CornerRadius="8" Padding="10,4" Margin="0,0,8,0">
-                                    <TextBlock Text="{Binding SixMonthSalesTotal, Converter={StaticResource InrShortConv}, StringFormat='Revenue: {0}'}" FontWeight="Bold" FontSize="11" Foreground="#1D4ED8"/>
-                                </Border>
-                                <Border Background="#ECFDF5" BorderBrush="#D1FAE5" BorderThickness="1" CornerRadius="8" Padding="10,4">
-                                    <TextBlock Text="{Binding SixMonthMarginText}" FontWeight="Bold" FontSize="11" Foreground="#047857"/>
-                                </Border>
-                            </StackPanel>
-                        </DockPanel>
+                        <!-- Top Header: Icon + Title on left, Period selector on right -->
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                            <!-- Period Dropdown on Right -->
+                            <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding TrendPeriods}"
+                                      SelectedItem="{Binding SelectedTrendPeriod}"
+                                      FontSize="12" FontWeight="SemiBold"
+                                      Foreground="#1E293B" MinWidth="115"
+                                      Padding="10,5" Cursor="Hand"
+                                      VerticalAlignment="Center"/>
 
-                        <!-- Legend & Help Text -->
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                            <!-- Icon + Title on Left -->
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="10" Height="10" CornerRadius="5" Background="#3B82F6" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Sales (Total)" FontSize="11" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,14,0" VerticalAlignment="Center"/>
-
-                                <Border Width="10" Height="10" CornerRadius="5" Background="#64748B" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="Expenses" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#EFF6FF" Margin="0,0,10,0" VerticalAlignment="Center">
+                                    <Path Stretch="Uniform" Width="14" Height="14" Fill="#2563EB" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                          Data="M 3,17 L 9,11 L 13,15 L 21,7 M 21,7 H 16 M 21,7 V 12"/>
+                                </Border>
+                                <TextBlock Text="Sales Trend" FontWeight="Bold" FontSize="16" Foreground="#0F172A" VerticalAlignment="Center"/>
                             </StackPanel>
-                            <TextBlock Text="Hover column for details" HorizontalAlignment="Right" FontSize="10.5" Foreground="#94A3B8" FontStyle="Italic" VerticalAlignment="Center"/>
                         </DockPanel>
 
-                        <!-- Chart Canvas with Baseline and Capsule Columns -->
-                        <Grid Height="175" Margin="0,4,0,0">
-                            <!-- Background Grid Lines -->
-                            <Grid VerticalAlignment="Top" Height="138">
-                                <Border Height="1" Background="#F1F5F9" VerticalAlignment="Top"/>
-                                <Border Height="1" Background="#F1F5F9" VerticalAlignment="Center"/>
-                                <Border Height="1.5" Background="#E2E8F0" VerticalAlignment="Bottom"/>
-                            </Grid>
+                        <!-- Graph Canvas inside Viewbox for Perfect Scaling -->
+                        <Viewbox Stretch="Uniform" Height="190" Margin="0,4,0,0" VerticalAlignment="Center">
+                            <Canvas Width="500" Height="210" ClipToBounds="False">
+                                <!-- Horizontal Grid Lines & Y-Axis Labels -->
+                                <ItemsControl ItemsSource="{Binding YAxisTicks}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas Width="500" Height="210"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas Width="500" Height="210">
+                                                <!-- Tick Label -->
+                                                <TextBlock Canvas.Left="4" Canvas.Top="{Binding LabelTop}" Width="42"
+                                                           TextAlignment="Right" Text="{Binding Label}"
+                                                           FontSize="10.5" FontWeight="SemiBold" Foreground="#64748B"/>
+                                                <!-- Horizontal Line -->
+                                                <Line X1="52" Y1="{Binding Y}" X2="470" Y2="{Binding Y}"
+                                                      Stroke="#F1F5F9" StrokeThickness="1"/>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
 
-                            <!-- Columns for 6 Months -->
-                            <ItemsControl ItemsSource="{Binding MonthlyChartData}">
-                                <ItemsControl.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <UniformGrid Rows="1"/>
-                                    </ItemsPanelTemplate>
-                                </ItemsControl.ItemsPanel>
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                            <!-- Column Capsule -->
-                                            <Grid Height="138" VerticalAlignment="Bottom">
-                                                <!-- Light background capsule track -->
-                                                <Border Width="44" Height="138" Background="#F8FAFC" CornerRadius="8" VerticalAlignment="Bottom"/>
+                                <!-- Y-Axis Vertical Line -->
+                                <Line X1="52" Y1="38" X2="52" Y2="175" Stroke="#CBD5E1" StrokeThickness="1.5"/>
 
-                                                <!-- Dual Bars Anchored Firmly to the Baseline -->
-                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                    <!-- Sales Pillar -->
-                                                    <Border Width="14" Height="{Binding SalesHeight}" VerticalAlignment="Bottom" CornerRadius="6,6,1,1" ToolTip="{Binding TooltipText}">
-                                                        <Border.Background>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                                <GradientStop Color="#3B82F6" Offset="0"/>
-                                                                <GradientStop Color="#1D4ED8" Offset="1"/>
-                                                            </LinearGradientBrush>
-                                                        </Border.Background>
+                                <!-- Baseline Horizontal Line -->
+                                <Line X1="52" Y1="175" X2="470" Y2="175" Stroke="#CBD5E1" StrokeThickness="1.5"/>
+
+                                <!-- Vertical Grid Lines & X-Axis Labels -->
+                                <ItemsControl ItemsSource="{Binding TrendPoints}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas Width="500" Height="210"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas Width="500" Height="210">
+                                                <!-- Vertical Line -->
+                                                <Line X1="{Binding X}" Y1="38" X2="{Binding X}" Y2="175"
+                                                      Stroke="#F8FAFC" StrokeThickness="1"/>
+                                                <!-- X-Axis Label -->
+                                                <TextBlock Canvas.Left="{Binding XLabelLeft}" Canvas.Top="183" Width="60"
+                                                           TextAlignment="Center" Text="{Binding Label}"
+                                                           FontSize="10.5" FontWeight="SemiBold" Foreground="#64748B"/>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <!-- Shaded Area Fill -->
+                                <Polygon Points="{Binding TrendAreaPoints}" Opacity="0.45">
+                                    <Polygon.Fill>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                            <GradientStop Color="#93C5FD" Offset="0"/>
+                                            <GradientStop Color="#DBEAFE" Offset="0.55"/>
+                                            <GradientStop Color="#00EFF6FF" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Polygon.Fill>
+                                </Polygon>
+
+                                <!-- Main Blue Polyline -->
+                                <Polyline Points="{Binding TrendLinePoints}" Stroke="#2563EB" StrokeThickness="2.8"
+                                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                                <!-- Data Points & Labels -->
+                                <ItemsControl ItemsSource="{Binding TrendPoints}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <Canvas Width="500" Height="210"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Canvas Width="500" Height="210">
+                                                <!-- Regular Dots (Non-Last Points) -->
+                                                <Ellipse Canvas.Left="{Binding DotLeft}" Canvas.Top="{Binding DotTop}"
+                                                         Width="9" Height="9"
+                                                         Fill="#2563EB" Stroke="White" StrokeThickness="2"
+                                                         ToolTip="{Binding TooltipText}" Cursor="Hand"
+                                                         Visibility="{Binding NormalPointVisibility}"/>
+
+                                                <!-- Amount Label above regular point -->
+                                                <TextBlock Canvas.Left="{Binding LabelLeft}" Canvas.Top="{Binding LabelTop}" Width="60"
+                                                           TextAlignment="Center" Text="{Binding FormattedValue}"
+                                                           FontSize="10.5" FontWeight="Bold" Foreground="#0F172A"
+                                                           Visibility="{Binding NormalPointVisibility}"/>
+
+                                                <!-- Active / Last Point: Outer Ring -->
+                                                <Ellipse Canvas.Left="{Binding RingLeft}" Canvas.Top="{Binding RingTop}"
+                                                         Width="16" Height="16"
+                                                         Fill="White" Stroke="#2563EB" StrokeThickness="2.2"
+                                                         ToolTip="{Binding LastTrendPoint.TooltipText}" Cursor="Hand"
+                                                         Visibility="{Binding LastPointVisibility}"/>
+
+                                                <!-- Active / Last Point: Inner Dot -->
+                                                <Ellipse Canvas.Left="{Binding DotLeft}" Canvas.Top="{Binding DotTop}"
+                                                         Width="9" Height="9"
+                                                         Fill="#2563EB"
+                                                         Visibility="{Binding LastPointVisibility}"/>
+
+                                                <!-- Active / Last Point: Floating Tooltip Badge -->
+                                                <Grid Canvas.Left="{Binding BadgeLeft}" Canvas.Top="{Binding BadgeTop}"
+                                                      Visibility="{Binding LastPointVisibility}">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <!-- Pill Box -->
+                                                    <Border Grid.Row="0" Background="#2563EB" CornerRadius="6" Padding="7,3" HorizontalAlignment="Center">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect BlurRadius="6" Direction="270" ShadowDepth="2" Color="#1E40AF" Opacity="0.25"/>
+                                                        </Border.Effect>
+                                                        <TextBlock Text="{Binding FormattedValue}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
                                                     </Border>
-                                                    <!-- Expense Pillar -->
-                                                    <Border Width="14" Height="{Binding ExpenseHeight}" VerticalAlignment="Bottom" CornerRadius="6,6,1,1" Margin="3,0,0,0" ToolTip="{Binding TooltipText}">
-                                                        <Border.Background>
-                                                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                                <GradientStop Color="#94A3B8" Offset="0"/>
-                                                                <GradientStop Color="#64748B" Offset="1"/>
-                                                            </LinearGradientBrush>
-                                                        </Border.Background>
-                                                    </Border>
-                                                </StackPanel>
-                                            </Grid>
-
-                                            <!-- Month Label Below Baseline -->
-                                            <Border Margin="0,8,0,0" Padding="6,2" HorizontalAlignment="Center" CornerRadius="4">
-                                                <TextBlock Text="{Binding MonthLabel}" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" HorizontalAlignment="Center"/>
-                                            </Border>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </Grid>
+                                                    <!-- Downward Arrow Pointer -->
+                                                    <Path Grid.Row="1" Fill="#2563EB" HorizontalAlignment="Center" Margin="0,-1,0,0"
+                                                          Data="M 0,0 L 4,4 L 8,0 Z"/>
+                                                </Grid>
+                                            </Canvas>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Canvas>
+                        </Viewbox>
                     </DockPanel>
                 </Border>
 

@@ -47,6 +47,41 @@ namespace AsiErp.ViewModels
         public string Color { get; set; } = "#3D62B8";
     }
 
+    public class SalesTrendPoint
+    {
+        public string Label { get; set; } = string.Empty;
+        public double Value { get; set; }
+        public string FormattedValue { get; set; } = string.Empty;
+        public double X { get; set; }
+        public double Y { get; set; }
+        public bool IsLast { get; set; }
+        public string TooltipText { get; set; } = string.Empty;
+
+        public double DotLeft => X - 4.5;
+        public double DotTop => Y - 4.5;
+
+        public double RingLeft => X - 8.0;
+        public double RingTop => Y - 8.0;
+
+        public double LabelLeft => X - 30.0;
+        public double LabelTop => Y - 19.0;
+
+        public double XLabelLeft => X - 30.0;
+
+        public double BadgeLeft => Math.Min(438.0, Math.Max(10.0, X - 26.0));
+        public double BadgeTop => Math.Max(2.0, Y - 35.0);
+
+        public Visibility NormalPointVisibility => IsLast ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility LastPointVisibility => IsLast ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    public class SalesTrendAxisTick
+    {
+        public string Label { get; set; } = string.Empty;
+        public double Y { get; set; }
+        public double LabelTop => Y - 7.0;
+    }
+
     public class MonthlyChartPoint
     {
         public string MonthLabel { get; set; } = string.Empty;
@@ -122,6 +157,28 @@ namespace AsiErp.ViewModels
         public string SixMonthMarginText => $"Margin: {(SixMonthMarginPercent >= 0 ? "+" : "")}{SixMonthMarginPercent:F1}%";
 
         public ObservableCollection<MonthlyChartPoint> MonthlyChartData { get; } = new();
+
+        public ObservableCollection<string> TrendPeriods { get; } = new() { "This Month", "Last 6 Months", "This Year" };
+        private string _selectedTrendPeriod = "This Month";
+        public string SelectedTrendPeriod
+        {
+            get => _selectedTrendPeriod;
+            set
+            {
+                if (_selectedTrendPeriod != value)
+                {
+                    _selectedTrendPeriod = value;
+                    OnPropertyChanged(nameof(SelectedTrendPeriod));
+                    UpdateSalesTrend();
+                }
+            }
+        }
+
+        public PointCollection TrendLinePoints { get; } = new();
+        public PointCollection TrendAreaPoints { get; } = new();
+        public ObservableCollection<SalesTrendPoint> TrendPoints { get; } = new();
+        public ObservableCollection<SalesTrendAxisTick> YAxisTicks { get; } = new();
+        public SalesTrendPoint? LastTrendPoint { get; private set; }
         public ObservableCollection<TopProductShare> TopProducts { get; } = new();
         public ObservableCollection<SaleDoc> RecentInvoices { get; } = new();
         public ObservableCollection<ProductItem> StockSummaryList { get; } = new();
@@ -230,6 +287,7 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(TotalSalesDisplay));
 
             UpdateChannelPieChart();
+            UpdateSalesTrend();
 
             // Monthly Chart Data (past 6 months)
             MonthlyChartData.Clear();
@@ -462,6 +520,164 @@ namespace AsiErp.ViewModels
 
                 currentAngle += sweepAngle;
             }
+        }
+
+        private void UpdateSalesTrend()
+        {
+            TrendLinePoints.Clear();
+            TrendAreaPoints.Clear();
+            TrendPoints.Clear();
+            YAxisTicks.Clear();
+
+            var rawList = new List<(string label, double val, string tooltip)>();
+            var now = DateTime.Now;
+
+            if (_selectedTrendPeriod == "Last 6 Months")
+            {
+                for (int i = 5; i >= 0; i--)
+                {
+                    var dt = now.AddMonths(-i);
+                    string mStart = new DateTime(dt.Year, dt.Month, 1).ToString("yyyy-MM-dd");
+                    string mEnd = new DateTime(dt.Year, dt.Month, DateTime.DaysInMonth(dt.Year, dt.Month)).ToString("yyyy-MM-dd");
+                    var t = _dataService.GetFinancialTotals(mStart, mEnd);
+                    rawList.Add((dt.ToString("MMM"), t.totalIncome, $"{dt:MMMM yyyy}\nSales: ₹{t.totalIncome:N0}"));
+                }
+            }
+            else if (_selectedTrendPeriod == "This Year")
+            {
+                int fyStartYear = now.Month >= 4 ? now.Year : now.Year - 1;
+                var q1 = _dataService.GetFinancialTotals($"{fyStartYear}-04-01", $"{fyStartYear}-06-30");
+                var q2 = _dataService.GetFinancialTotals($"{fyStartYear}-07-01", $"{fyStartYear}-09-30");
+                var q3 = _dataService.GetFinancialTotals($"{fyStartYear}-10-01", $"{fyStartYear}-12-31");
+                var q4 = _dataService.GetFinancialTotals($"{fyStartYear + 1}-01-01", $"{fyStartYear + 1}-03-31");
+
+                rawList.Add(("Q1", q1.totalIncome, $"Q1 (Apr-Jun)\nSales: ₹{q1.totalIncome:N0}"));
+                rawList.Add(("Q2", q2.totalIncome, $"Q2 (Jul-Sep)\nSales: ₹{q2.totalIncome:N0}"));
+                rawList.Add(("Q3", q3.totalIncome, $"Q3 (Oct-Dec)\nSales: ₹{q3.totalIncome:N0}"));
+                rawList.Add(("Q4", q4.totalIncome, $"Q4 (Jan-Mar)\nSales: ₹{q4.totalIncome:N0}"));
+            }
+            else // Default: "This Month" (Week 1, Week 2, Week 3, Week 4)
+            {
+                int days = DateTime.DaysInMonth(now.Year, now.Month);
+                string yyyyMm = now.ToString("yyyy-MM");
+
+                var w1 = _dataService.GetFinancialTotals($"{yyyyMm}-01", $"{yyyyMm}-07");
+                var w2 = _dataService.GetFinancialTotals($"{yyyyMm}-08", $"{yyyyMm}-14");
+                var w3 = _dataService.GetFinancialTotals($"{yyyyMm}-15", $"{yyyyMm}-21");
+                var w4 = _dataService.GetFinancialTotals($"{yyyyMm}-22", $"{yyyyMm}-{days:D2}");
+
+                double cum1 = w1.totalIncome;
+                double cum2 = cum1 + w2.totalIncome;
+                double cum3 = cum2 + w3.totalIncome;
+                double cum4 = cum3 + w4.totalIncome;
+
+                rawList.Add(("Week 1", cum1, $"Week 1 (1-7 {now:MMM})\nSales: ₹{w1.totalIncome:N0}\nCumulative: ₹{cum1:N0}"));
+                rawList.Add(("Week 2", cum2, $"Week 2 (8-14 {now:MMM})\nSales: ₹{w2.totalIncome:N0}\nCumulative: ₹{cum2:N0}"));
+                rawList.Add(("Week 3", cum3, $"Week 3 (15-21 {now:MMM})\nSales: ₹{w3.totalIncome:N0}\nCumulative: ₹{cum3:N0}"));
+                rawList.Add(("Week 4", cum4, $"Week 4 (22-{days} {now:MMM})\nSales: ₹{w4.totalIncome:N0}\nCumulative: ₹{cum4:N0}"));
+            }
+
+            if (rawList.Count < 2) return;
+
+            double maxDataVal = rawList.Max(r => r.val);
+            double axisMax;
+            if (maxDataVal <= 0)
+            {
+                axisMax = 1000000; // 10 Lakhs default matching reference image
+            }
+            else if (maxDataVal <= 1000000)
+            {
+                axisMax = 1000000;
+            }
+            else
+            {
+                double factor = 100000;
+                axisMax = Math.Ceiling((maxDataVal * 1.15) / factor) * factor;
+            }
+
+            const double chartLeft = 52.0;
+            const double chartRight = 470.0;
+            const double chartTop = 38.0;
+            const double chartBottom = 175.0;
+            const double chartWidth = chartRight - chartLeft;   // 418.0
+            const double chartHeight = chartBottom - chartTop;  // 137.0
+
+            // Generate 5 intervals (6 ticks: 0L, 2L, 4L, 6L, 8L, 10L)
+            for (int t = 5; t >= 0; t--)
+            {
+                double tickVal = (axisMax / 5.0) * t;
+                double tickY = chartBottom - (tickVal / axisMax) * chartHeight;
+                string tickLabel = FormatAxisLabel(tickVal, axisMax);
+                YAxisTicks.Add(new SalesTrendAxisTick { Label = tickLabel, Y = tickY });
+            }
+
+            int count = rawList.Count;
+            var pts = new List<SalesTrendPoint>();
+            for (int i = 0; i < count; i++)
+            {
+                var item = rawList[i];
+                double x = chartLeft + (chartWidth / (count - 1)) * i;
+                double y = chartBottom - (axisMax > 0 ? (item.val / axisMax) * chartHeight : 0);
+                y = Math.Clamp(y, chartTop, chartBottom);
+
+                var pt = new SalesTrendPoint
+                {
+                    Label = item.label,
+                    Value = item.val,
+                    FormattedValue = FormatCurrencyValue(item.val),
+                    X = x,
+                    Y = y,
+                    IsLast = (i == count - 1),
+                    TooltipText = item.tooltip
+                };
+                pts.Add(pt);
+                TrendPoints.Add(pt);
+                TrendLinePoints.Add(new Point(x, y));
+            }
+
+            if (pts.Count > 0)
+            {
+                TrendAreaPoints.Add(new Point(pts[0].X, chartBottom));
+                foreach (var p in TrendLinePoints) TrendAreaPoints.Add(p);
+                TrendAreaPoints.Add(new Point(pts[^1].X, chartBottom));
+            }
+
+            LastTrendPoint = pts.LastOrDefault();
+            OnPropertyChanged(nameof(LastTrendPoint));
+            OnPropertyChanged(nameof(TrendLinePoints));
+            OnPropertyChanged(nameof(TrendAreaPoints));
+        }
+
+        private static string FormatAxisLabel(double val, double max)
+        {
+            if (val <= 0) return max >= 100000 ? "0L" : (max >= 1000 ? "0K" : "0");
+            if (max >= 100000)
+            {
+                double l = val / 100000.0;
+                return l % 1 == 0 ? $"{l:F0}L" : $"{l:F1}L";
+            }
+            if (max >= 1000)
+            {
+                double k = val / 1000.0;
+                return k % 1 == 0 ? $"{k:F0}K" : $"{k:F1}K";
+            }
+            return val.ToString("N0");
+        }
+
+        private static string FormatCurrencyValue(double val)
+        {
+            if (val <= 0) return "₹0";
+            if (val >= 100000)
+            {
+                double l = val / 100000.0;
+                return $"₹{l:F1}L";
+            }
+            if (val >= 1000)
+            {
+                double k = val / 1000.0;
+                return k % 1 == 0 ? $"₹{k:F0}K" : $"₹{k:F1}K";
+            }
+            return $"₹{val:N0}";
         }
     }
 }
