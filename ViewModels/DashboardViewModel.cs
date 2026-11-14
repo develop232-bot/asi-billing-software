@@ -2,12 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Windows;
+using System.Windows.Media;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
 
 namespace AsiErp.ViewModels
 {
+    public class DashboardPieSlice
+    {
+        public string Channel { get; set; } = string.Empty;
+        public double Amount { get; set; }
+        public double Percentage { get; set; }
+        public string PercentageDisplay => $"{Percentage:F1}%";
+        public string AmountDisplay => $"₹{Amount:N0}";
+        public Brush FillBrush { get; set; } = Brushes.Gray;
+        public Geometry SliceGeometry { get; set; } = Geometry.Empty;
+        public string TooltipText => $"{Channel}: ₹{Amount:N0} ({Percentage:F1}%)";
+    }
+
     public class DashboardActivity
     {
         public string Title { get; set; } = string.Empty;
@@ -62,14 +76,26 @@ namespace AsiErp.ViewModels
         private readonly Action<string> _navigateAction;
         private readonly Action<string, object?> _openDialogAction;
 
-        public double TodayRetailSales { get; private set; }
-        public double TodayDomesticExportSales { get; private set; }
+        public double MtdRetailSales { get; private set; }
+        public double MtdDomesticSales { get; private set; }
+        public double MtdExportSales { get; private set; }
         public double MtdTotalSales { get; private set; }
+        public double MtdExpenses { get; private set; }
+        public double MtdProfit => MtdTotalSales - MtdExpenses;
+        public string MtdProfitColor => MtdProfit >= 0 ? "#10B981" : "#DC2626";
+
         public double OutstandingToReceive { get; private set; }
         public int OutstandingCount { get; private set; }
         public double VendorToPay { get; private set; }
         public int VendorPayCount { get; private set; }
+        public double PendingLoans { get; private set; }
         public int LowStockAlertsCount { get; private set; }
+
+        public double TodayRetailSales => MtdRetailSales;
+        public double TodayDomesticExportSales => MtdDomesticSales + MtdExportSales;
+
+        public ObservableCollection<DashboardPieSlice> ChannelPieSlices { get; } = new();
+        public string TotalSalesDisplay => $"₹{MtdTotalSales:N0}";
 
         public double SixMonthSalesTotal { get; private set; }
         public double SixMonthExpenseTotal { get; private set; }
@@ -115,47 +141,76 @@ namespace AsiErp.ViewModels
 
         public void RefreshData()
         {
-            string today = DateTime.Now.ToString("yyyy-MM-dd");
             string firstOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
 
-            // Today's Sales
-            TodayRetailSales = _dataService.Sales
-                .Where(s => s.Date == today && s.Type == "retail")
+            // 1. Retail Sales MTD
+            MtdRetailSales = _dataService.Sales
+                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0 && s.Type == "retail")
                 .Sum(s => s.GrossAmount);
 
-            TodayDomesticExportSales = _dataService.Sales
-                .Where(s => s.Date == today && (s.Type == "domestic" || s.Type == "export"))
+            // 2. Domestic Sales MTD
+            MtdDomesticSales = _dataService.Sales
+                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0 && s.Type == "domestic")
                 .Sum(s => s.GrossAmount);
 
-            // MTD Sales
-            MtdTotalSales = _dataService.Sales
-                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0)
-                .Sum(s => s.NetAmount);
+            // 3. Export Sales MTD
+            MtdExportSales = _dataService.Sales
+                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0 && s.Type == "export")
+                .Sum(s => s.GrossAmount);
 
-            // Outstanding
+            // 4. Total Sales (MTD)
+            MtdTotalSales = MtdRetailSales + MtdDomesticSales + MtdExportSales;
+
+            // 5. Expenses · this month (Operating expenses + Purchases + Loan interest)
+            double opExp = _dataService.Expenses
+                .Where(e => string.Compare(e.Date, firstOfMonth) >= 0)
+                .Sum(e => e.Amount);
+            double purExp = _dataService.Purchases
+                .Where(p => string.Compare(p.Date, firstOfMonth) >= 0)
+                .Sum(p => p.GrossAmount);
+            double loanInt = _dataService.Loans
+                .SelectMany(l => l.Repayments ?? new())
+                .Where(r => string.Compare(r.Date, firstOfMonth) >= 0)
+                .Sum(r => r.Interest);
+            MtdExpenses = opExp + purExp + loanInt;
+
+            // 7. Outstanding · To Receive
             var unpaidSales = _dataService.Sales.Where(s => s.Status != "Paid").ToList();
             OutstandingToReceive = unpaidSales.Sum(s => s.BalanceAmount);
             OutstandingCount = unpaidSales.Count;
 
-            // Vendor to Pay
+            // 8. Vendor Payments · To Pay
             var unpaidPurchases = _dataService.Purchases.Where(p => p.Status != "Paid").ToList();
             VendorToPay = unpaidPurchases.Sum(p => p.BalanceAmount);
             VendorPayCount = unpaidPurchases.Count;
 
-            // Low Stock
+            // 9. Pending Loans
+            PendingLoans = _dataService.Loans.Where(l => l.IsOpen).Sum(l => l.BalanceRemaining);
+
+            // 10. Low Stock Alerts
             LowStockAlertsCount = _dataService.RawMaterials.Count(r => r.Stock <= r.ReorderLevel)
                 + _dataService.Products.Count(p => p.Stock <= p.ReorderLevel)
                 + _dataService.GeneralItems.Count(g => g.Stock <= g.ReorderLevel);
 
             // Notify KPI properties
-            OnPropertyChanged(nameof(TodayRetailSales));
-            OnPropertyChanged(nameof(TodayDomesticExportSales));
+            OnPropertyChanged(nameof(MtdRetailSales));
+            OnPropertyChanged(nameof(MtdDomesticSales));
+            OnPropertyChanged(nameof(MtdExportSales));
             OnPropertyChanged(nameof(MtdTotalSales));
+            OnPropertyChanged(nameof(MtdExpenses));
+            OnPropertyChanged(nameof(MtdProfit));
+            OnPropertyChanged(nameof(MtdProfitColor));
             OnPropertyChanged(nameof(OutstandingToReceive));
             OnPropertyChanged(nameof(OutstandingCount));
             OnPropertyChanged(nameof(VendorToPay));
             OnPropertyChanged(nameof(VendorPayCount));
+            OnPropertyChanged(nameof(PendingLoans));
             OnPropertyChanged(nameof(LowStockAlertsCount));
+            OnPropertyChanged(nameof(TodayRetailSales));
+            OnPropertyChanged(nameof(TodayDomesticExportSales));
+            OnPropertyChanged(nameof(TotalSalesDisplay));
+
+            UpdateChannelPieChart();
 
             // Monthly Chart Data (past 6 months)
             MonthlyChartData.Clear();
@@ -291,6 +346,102 @@ namespace AsiErp.ViewModels
                     OrderCount = orders.Count,
                     TotalUnits = orders.Sum(o => o.Items.Sum(i => i.Qty))
                 });
+            }
+        }
+
+        private void UpdateChannelPieChart()
+        {
+            ChannelPieSlices.Clear();
+            double total = MtdTotalSales;
+
+            Point center = new Point(100, 100);
+            double outerR = 85;
+            double innerR = 52;
+
+            if (total <= 0)
+            {
+                var grayBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#E2E8F0"));
+                grayBrush.Freeze();
+                var outer = new EllipseGeometry(center, outerR, outerR);
+                var inner = new EllipseGeometry(center, innerR, innerR);
+                var emptyDonut = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                emptyDonut.Freeze();
+
+                ChannelPieSlices.Add(new DashboardPieSlice
+                {
+                    Channel = "No Sales Yet",
+                    Amount = 0,
+                    Percentage = 100,
+                    FillBrush = grayBrush,
+                    SliceGeometry = emptyDonut
+                });
+                return;
+            }
+
+            var channels = new List<(string Name, double Amount, string ColorHex)>
+            {
+                ("Domestic Sales", MtdDomesticSales, "#3B82F6"),
+                ("Export Sales", MtdExportSales, "#10B981"),
+                ("Retail Sales", MtdRetailSales, "#8B5CF6")
+            }.Where(x => x.Amount > 0).ToList();
+
+            if (channels.Count == 0) return;
+
+            double currentAngle = -90.0;
+
+            for (int i = 0; i < channels.Count; i++)
+            {
+                var ch = channels[i];
+                double fraction = ch.Amount / total;
+                double sweepAngle = fraction * 360.0;
+                double pct = fraction * 100.0;
+
+                var color = (Color)ColorConverter.ConvertFromString(ch.ColorHex);
+                var brush = new SolidColorBrush(color);
+                brush.Freeze();
+
+                Geometry geom;
+
+                if (channels.Count == 1 || sweepAngle >= 359.99)
+                {
+                    var outer = new EllipseGeometry(center, outerR, outerR);
+                    var inner = new EllipseGeometry(center, innerR, innerR);
+                    geom = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                }
+                else
+                {
+                    double startRad = currentAngle * Math.PI / 180.0;
+                    double endRad = (currentAngle + sweepAngle) * Math.PI / 180.0;
+
+                    Point p1 = new Point(center.X + outerR * Math.Cos(startRad), center.Y + outerR * Math.Sin(startRad));
+                    Point p2 = new Point(center.X + outerR * Math.Cos(endRad), center.Y + outerR * Math.Sin(endRad));
+                    Point p3 = new Point(center.X + innerR * Math.Cos(endRad), center.Y + innerR * Math.Sin(endRad));
+                    Point p4 = new Point(center.X + innerR * Math.Cos(startRad), center.Y + innerR * Math.Sin(startRad));
+
+                    bool isLarge = sweepAngle > 180.0;
+
+                    var figure = new PathFigure { StartPoint = p1, IsClosed = true, IsFilled = true };
+                    figure.Segments.Add(new ArcSegment(p2, new Size(outerR, outerR), 0, isLarge, SweepDirection.Clockwise, true));
+                    figure.Segments.Add(new LineSegment(p3, true));
+                    figure.Segments.Add(new ArcSegment(p4, new Size(innerR, innerR), 0, isLarge, SweepDirection.Counterclockwise, true));
+
+                    var pg = new PathGeometry();
+                    pg.Figures.Add(figure);
+                    geom = pg;
+                }
+
+                geom.Freeze();
+
+                ChannelPieSlices.Add(new DashboardPieSlice
+                {
+                    Channel = ch.Name,
+                    Amount = ch.Amount,
+                    Percentage = pct,
+                    FillBrush = brush,
+                    SliceGeometry = geom
+                });
+
+                currentAngle += sweepAngle;
             }
         }
     }
