@@ -232,6 +232,7 @@ namespace AsiErp.Dialogs
             int updatedCount = 0;
             bool autoBarcode = ChkAutoBarcode.IsChecked == true;
             bool updateExisting = ChkUpdateExisting.IsChecked == true;
+            var batchUsedBarcodes = _dataService.GetAllUsedBarcodes();
 
             try
             {
@@ -257,6 +258,16 @@ namespace AsiErp.Dialogs
                         double.TryParse(GetVal(r, "Cost", "0"), out double rate);
                         double.TryParse(GetVal(r, "Gst", "5"), out double gst);
 
+                        string barcode = GetVal(r, "Barcode");
+                        if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode) || autoBarcode)
+                        {
+                            if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode))
+                            {
+                                barcode = BarcodeService.GenerateUniqueBarcode(batchUsedBarcodes, "raw", "Raw Material");
+                            }
+                        }
+                        batchUsedBarcodes.Add(barcode);
+
                         var existing = updateExisting ? _dataService.RawMaterials.FirstOrDefault(m =>
                             (!string.IsNullOrEmpty(sku) && m.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
                             m.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
@@ -268,6 +279,10 @@ namespace AsiErp.Dialogs
                             existing.Stock += stock;
                             existing.ReorderLevel = reorder;
                             if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                            if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                            {
+                                existing.Barcode = barcode;
+                            }
                             await _dataService.SaveRawMaterialAsync(existing);
                             updatedCount++;
                         }
@@ -279,6 +294,7 @@ namespace AsiErp.Dialogs
                                 Name = name,
                                 Sku = sku,
                                 Hsn = hsn,
+                                Barcode = barcode,
                                 Unit = unit,
                                 Stock = stock,
                                 ReorderLevel = reorder,
@@ -304,6 +320,16 @@ namespace AsiErp.Dialogs
                         double.TryParse(GetVal(r, "Cost", "0"), out double rate);
                         double.TryParse(GetVal(r, "Gst", "5"), out double gst);
 
+                        string barcode = GetVal(r, "Barcode");
+                        if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode) || autoBarcode)
+                        {
+                            if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode))
+                            {
+                                barcode = BarcodeService.GenerateUniqueBarcode(batchUsedBarcodes, "gen", "Packaging");
+                            }
+                        }
+                        batchUsedBarcodes.Add(barcode);
+
                         var existing = updateExisting ? _dataService.GeneralItems.FirstOrDefault(g =>
                             (!string.IsNullOrEmpty(sku) && g.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
                             g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
@@ -315,6 +341,10 @@ namespace AsiErp.Dialogs
                             existing.Stock += stock;
                             existing.ReorderLevel = reorder;
                             if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                            if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                            {
+                                existing.Barcode = barcode;
+                            }
                             await _dataService.SaveGeneralItemAsync(existing);
                             updatedCount++;
                         }
@@ -326,6 +356,7 @@ namespace AsiErp.Dialogs
                                 Name = name,
                                 Sku = sku,
                                 Hsn = hsn,
+                                Barcode = barcode,
                                 Unit = unit,
                                 Stock = stock,
                                 ReorderLevel = reorder,
@@ -367,10 +398,11 @@ namespace AsiErp.Dialogs
                         if (gst <= 0) gst = 5;
 
                         string barcode = GetVal(r, "Barcode");
-                        if (string.IsNullOrWhiteSpace(barcode) && autoBarcode)
+                        if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode) || (string.IsNullOrWhiteSpace(barcode) && autoBarcode))
                         {
-                            barcode = BarcodeService.GenerateBarcode(category, isReady ? "R" : "M", _dataService.Products.Count + importedCount + 1);
+                            barcode = BarcodeService.GenerateUniqueBarcode(batchUsedBarcodes, isReady ? "ready" : "mfg", category);
                         }
+                        batchUsedBarcodes.Add(barcode);
 
                         // Check existing
                         var existing = updateExisting ? _dataService.Products.FirstOrDefault(p =>

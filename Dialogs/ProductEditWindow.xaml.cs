@@ -63,7 +63,7 @@ namespace AsiErp.Dialogs
                 TxtReorder.Text = p.ReorderLevel.ToString();
                 TxtHsn.Text = p.Hsn;
                 TxtSku.Text = p.Sku ?? "";
-                TxtBarcode.Text = string.IsNullOrWhiteSpace(p.Barcode) ? BarcodeService.GenerateBarcode() : p.Barcode;
+                TxtBarcode.Text = string.IsNullOrWhiteSpace(p.Barcode) ? _dataService.GetNextUniqueBarcode(_type, p.Category, p.Id) : p.Barcode;
 
                 foreach (ComboBoxItem itm in CbCategory.Items)
                 {
@@ -105,7 +105,7 @@ namespace AsiErp.Dialogs
         {
             if (TxtBarcode != null)
             {
-                TxtBarcode.Text = BarcodeService.GenerateBarcode();
+                TxtBarcode.Text = _dataService.GetNextUniqueBarcode(_type);
             }
         }
 
@@ -252,7 +252,7 @@ namespace AsiErp.Dialogs
                     : TxtSku.Text.Trim();
 
                 prod.Barcode = string.IsNullOrWhiteSpace(TxtBarcode.Text)
-                    ? BarcodeService.GenerateBarcode()
+                    ? _dataService.GetNextUniqueBarcode(_type, prod.Category, prod.Id)
                     : TxtBarcode.Text.Trim();
 
                 prod.Name = name;

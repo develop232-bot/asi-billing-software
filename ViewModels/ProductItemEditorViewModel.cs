@@ -96,6 +96,7 @@ namespace AsiErp.ViewModels
                     if (!_isEditMode)
                     {
                         AutoSku();
+                        AutoBarcode();
                     }
                 }
             }
@@ -355,7 +356,7 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit;
                     Sizes = string.Join(",", p.Sizes ?? new List<string>());
                     Sku = p.Sku ?? "";
-                    Barcode = string.IsNullOrWhiteSpace(p.Barcode) ? BarcodeService.GenerateBarcode() : p.Barcode;
+                    Barcode = string.IsNullOrWhiteSpace(p.Barcode) ? _dataService.GetNextUniqueBarcode(p.SourceType == "R" ? "ready" : "mfg", p.Category, p.Id) : p.Barcode;
                     RetailPrice = p.RetailPrice;
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
                     BulkPrice = p.BulkPrice;
@@ -384,6 +385,7 @@ namespace AsiErp.ViewModels
                     MediumAlertLevel = r.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
                     HsnCode = r.Hsn;
+                    Barcode = string.IsNullOrWhiteSpace(r.Barcode) ? _dataService.GetNextUniqueBarcode("raw", "Raw Material", r.Id) : r.Barcode;
                 }
                 else if (_existingItem is GeneralItem g)
                 {
@@ -402,6 +404,7 @@ namespace AsiErp.ViewModels
                     MediumAlertLevel = g.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
                     HsnCode = g.Hsn;
+                    Barcode = string.IsNullOrWhiteSpace(g.Barcode) ? _dataService.GetNextUniqueBarcode("gen", "Packaging", g.Id) : g.Barcode;
                 }
 
                 OnPropertyChanged(nameof(ItemType));
@@ -460,7 +463,7 @@ namespace AsiErp.ViewModels
 
         private void AutoBarcode()
         {
-            Barcode = BarcodeService.GenerateBarcode();
+            Barcode = _dataService.GetNextUniqueBarcode(_itemType, Category);
         }
 
         private void NavigateBack()
@@ -512,6 +515,17 @@ namespace AsiErp.ViewModels
 
             try
             {
+                string currentId = (_existingItem as ProductItem)?.Id
+                    ?? (_existingItem as RawMaterialItem)?.Id
+                    ?? (_existingItem as GeneralItem)?.Id ?? "";
+
+                var usedBarcodes = _dataService.GetAllUsedBarcodes(currentId);
+                string candidateBarcode = (Barcode ?? "").Trim();
+                if (string.IsNullOrWhiteSpace(candidateBarcode) || candidateBarcode == "—" || usedBarcodes.Contains(candidateBarcode))
+                {
+                    candidateBarcode = _dataService.GetNextUniqueBarcode(ItemType, Category, currentId);
+                }
+
                 if (ItemType == "raw")
                 {
                     var rm = _existingItem as RawMaterialItem ?? new RawMaterialItem { Id = "r_" + Guid.NewGuid().ToString("N")[..8] };
@@ -526,6 +540,7 @@ namespace AsiErp.ViewModels
                     rm.Sku = string.IsNullOrWhiteSpace(Sku)
                         ? "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3")
                         : Sku.Trim();
+                    rm.Barcode = candidateBarcode;
 
                     await _dataService.SaveRawMaterialAsync(rm);
                 }
@@ -543,6 +558,7 @@ namespace AsiErp.ViewModels
                     gi.Sku = string.IsNullOrWhiteSpace(Sku)
                         ? "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3")
                         : Sku.Trim();
+                    gi.Barcode = candidateBarcode;
 
                     await _dataService.SaveGeneralItemAsync(gi);
                 }
@@ -557,9 +573,7 @@ namespace AsiErp.ViewModels
                         ? "ASI-" + (ItemType == "mfg" ? "MFG" : "RDY") + "-" + (_dataService.Products.Count + 1).ToString("D3")
                         : Sku.Trim();
 
-                    prod.Barcode = string.IsNullOrWhiteSpace(Barcode)
-                        ? BarcodeService.GenerateBarcode()
-                        : Barcode.Trim();
+                    prod.Barcode = candidateBarcode;
 
                     prod.Name = trimmedName;
                     prod.Category = string.IsNullOrWhiteSpace(Category) ? "Shoe" : Category;

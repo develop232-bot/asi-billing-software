@@ -31,7 +31,7 @@ namespace AsiErp.ViewModels
         public string GstDisplay => $"{Gst}%";
         public string QuantityDisplay => $"{Quantity:N0}";
 
-        public bool CanPrintBarcode => TypeKey == "mfg" || TypeKey == "ready";
+        public bool CanPrintBarcode => true;
 
         public string TypeLabel => TypeKey switch
         {
@@ -221,10 +221,23 @@ namespace AsiErp.ViewModels
                 if (p is UnifiedProductRow row)
                 {
                     var prod = _dataService.Products.FirstOrDefault(x => x.Id == row.Id);
-                    if (prod != null)
+                    if (prod == null)
                     {
-                        _openDialogAction("print_barcode", prod);
+                        prod = new ProductItem
+                        {
+                            Id = row.Id,
+                            Name = row.Name,
+                            Sku = row.Sku,
+                            Barcode = row.Barcode,
+                            Unit = row.Unit,
+                            RetailPrice = row.SellingPrice,
+                            Cost = row.CostPrice,
+                            Stock = row.Quantity,
+                            SourceType = row.TypeKey == "raw" ? "RAW" : (row.TypeKey == "gen" ? "PKG" : "R"),
+                            Category = row.TypeLabel
+                        };
                     }
+                    _openDialogAction("print_barcode", prod);
                 }
             });
 
@@ -239,6 +252,7 @@ namespace AsiErp.ViewModels
 
         public void RefreshData()
         {
+            _dataService.EnsureUniqueBarcodesAcrossCatalog();
             ApplyFilter();
         }
 
@@ -295,7 +309,7 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "meter" : r.Unit,
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku,
                     Hsn = r.Hsn,
-                    Barcode = "—",
+                    Barcode = string.IsNullOrWhiteSpace(r.Barcode) ? r.DisplayBarcode : r.Barcode,
                     CostPrice = r.Rate,
                     SellingPrice = r.Rate,
                     Gst = r.Gst,
@@ -315,7 +329,7 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit,
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku,
                     Hsn = g.Hsn,
-                    Barcode = "—",
+                    Barcode = string.IsNullOrWhiteSpace(g.Barcode) ? g.DisplayBarcode : g.Barcode,
                     CostPrice = g.Rate,
                     SellingPrice = g.Rate,
                     Gst = g.Gst,

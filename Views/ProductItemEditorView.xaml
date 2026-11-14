@@ -223,11 +223,32 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- ROW 2: SKU (Long size as Item Name below Unit & Quantity) -->
-                        <StackPanel Margin="0,0,0,16">
-                            <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                            <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}"/>
-                        </StackPanel>
+                        <!-- ROW 2: SKU, HSN, Barcode below Unit & Quantity -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- SKU -->
+                            <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <!-- HSN -->
+                            <StackPanel Grid.Column="1" Margin="0,0,14,0">
+                                <TextBlock Text="HSN" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding HsnCode, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <!-- Barcode -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Barcode" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </Grid>
 
                         <!-- ROW 3: Cost Price & Selling Price below SKU -->
                         <Grid Margin="0,0,0,16">

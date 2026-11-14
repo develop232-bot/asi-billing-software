@@ -36,12 +36,12 @@ namespace AsiErp.Services
         /// </summary>
         public static string GenerateBarcode(string category = "Shoe", string sourceType = "M", int sequence = 1)
         {
-            string catCode = category?.ToLowerInvariant() switch
+            string catCode = sourceType?.ToUpperInvariant() switch
             {
-                "shoe" => sourceType == "M" ? "640" : "641",
-                "uniform" => sourceType == "M" ? "620" : "621",
-                "accessory" => "420",
-                _ => "600"
+                "RAW" => "650",
+                "PKG" or "GEN" => "660",
+                "R" or "READY" => (category?.ToLowerInvariant() == "uniform" ? "621" : (category?.ToLowerInvariant() == "accessory" ? "421" : "641")),
+                _ => (category?.ToLowerInvariant() == "uniform" ? "620" : (category?.ToLowerInvariant() == "accessory" ? "420" : "640"))
             };
 
             string baseCode = $"890{catCode}";
@@ -51,6 +51,69 @@ namespace AsiErp.Services
             int checkDigit = CalculateEan13CheckDigit(twelveDigits);
 
             return $"{twelveDigits}{checkDigit}";
+        }
+
+        /// <summary>
+        /// Generates a guaranteed UNIQUE 13-digit EAN-13 barcode that does not exist in the provided existing collection.
+        /// </summary>
+        public static string GenerateUniqueBarcode(IEnumerable<string?> existingBarcodes, string itemType = "mfg", string category = "Shoe")
+        {
+            var usedSet = new HashSet<string>(
+                existingBarcodes?.Where(b => !string.IsNullOrWhiteSpace(b)).Select(b => b!) ?? Enumerable.Empty<string>(),
+                StringComparer.OrdinalIgnoreCase);
+
+            string normType = (itemType ?? "mfg").ToLowerInvariant();
+            string sourceType = (normType.Contains("ready") || normType == "r") ? "R"
+                              : (normType.Contains("raw") ? "RAW"
+                              : (normType.Contains("gen") || normType.Contains("pack") || normType.Contains("pkg") ? "PKG" : "M"));
+
+            string catCode = sourceType switch
+            {
+                "RAW" => "650",
+                "PKG" => "660",
+                "R" => (category?.ToLowerInvariant() == "uniform" ? "621" : (category?.ToLowerInvariant() == "accessory" ? "421" : "641")),
+                _ => (category?.ToLowerInvariant() == "uniform" ? "620" : (category?.ToLowerInvariant() == "accessory" ? "420" : "640"))
+            };
+
+            string basePrefix = $"890{catCode}";
+
+            // Find highest sequence already used for this prefix
+            int maxSeq = 0;
+            foreach (var b in usedSet)
+            {
+                if (b.StartsWith(basePrefix) && b.Length >= 12)
+                {
+                    if (int.TryParse(b.Substring(basePrefix.Length, Math.Min(6, b.Length - basePrefix.Length)), out int seqVal))
+                    {
+                        if (seqVal > maxSeq) maxSeq = seqVal;
+                    }
+                }
+            }
+
+            int candidateSeq = maxSeq + 1;
+            while (candidateSeq <= 999999)
+            {
+                string candidate = GenerateBarcode(category, sourceType, candidateSeq);
+                if (!usedSet.Contains(candidate))
+                {
+                    return candidate;
+                }
+                candidateSeq++;
+            }
+
+            // Fallback random
+            var rnd = new Random();
+            for (int attempt = 0; attempt < 1000; attempt++)
+            {
+                int rSeq = rnd.Next(1, 999999);
+                string candidate = GenerateBarcode(category, sourceType, rSeq);
+                if (!usedSet.Contains(candidate))
+                {
+                    return candidate;
+                }
+            }
+
+            return $"ASI-{DateTime.Now.Ticks % 1000000000:D9}";
         }
 
         /// <summary>

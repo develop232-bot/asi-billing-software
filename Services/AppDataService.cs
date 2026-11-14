@@ -163,10 +163,6 @@ namespace AsiErp.Services
 
                     for (int i = 0; i < Products.Count; i++)
                     {
-                        if (string.IsNullOrEmpty(Products[i].Barcode))
-                        {
-                            Products[i].Barcode = BarcodeService.GenerateBarcode(Products[i].Category, Products[i].SourceType, i + 1);
-                        }
                         if (Products[i].RegisteredQty <= 0 && Products[i].Stock > 0)
                         {
                             Products[i].RegisteredQty = Products[i].Stock;
@@ -174,6 +170,8 @@ namespace AsiErp.Services
                     }
                     foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
                     foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
+
+                    EnsureUniqueBarcodesAcrossCatalog();
 
                     return;
                 }
@@ -332,10 +330,6 @@ namespace AsiErp.Services
 
                 for (int i = 0; i < Products.Count; i++)
                 {
-                    if (string.IsNullOrEmpty(Products[i].Barcode))
-                    {
-                        Products[i].Barcode = BarcodeService.GenerateBarcode(Products[i].Category, Products[i].SourceType, i + 1);
-                    }
                     if (Products[i].RegisteredQty <= 0 && Products[i].Stock > 0)
                     {
                         Products[i].RegisteredQty = Products[i].Stock;
@@ -343,6 +337,8 @@ namespace AsiErp.Services
                 }
                 foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
                 foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
+
+                EnsureUniqueBarcodesAcrossCatalog();
 
                 IsSampleDataLoaded = false;
 
@@ -913,9 +909,135 @@ namespace AsiErp.Services
             return Task.CompletedTask;
         }
 
+        public HashSet<string> GetAllUsedBarcodes(string? excludeId = null)
+        {
+            var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var p in Products)
+            {
+                if (p.Id != excludeId && !string.IsNullOrWhiteSpace(p.Barcode) && p.Barcode != "—")
+                {
+                    set.Add(p.Barcode.Trim());
+                }
+            }
+            foreach (var r in RawMaterials)
+            {
+                if (r.Id != excludeId && !string.IsNullOrWhiteSpace(r.Barcode) && r.Barcode != "—")
+                {
+                    set.Add(r.Barcode.Trim());
+                }
+            }
+            foreach (var g in GeneralItems)
+            {
+                if (g.Id != excludeId && !string.IsNullOrWhiteSpace(g.Barcode) && g.Barcode != "—")
+                {
+                    set.Add(g.Barcode.Trim());
+                }
+            }
+            return set;
+        }
+
+        public string GetNextUniqueBarcode(string itemType = "mfg", string category = "Shoe", string? excludeId = null)
+        {
+            var used = GetAllUsedBarcodes(excludeId);
+            return BarcodeService.GenerateUniqueBarcode(used, itemType, category);
+        }
+
+        public int EnsureUniqueBarcodesAcrossCatalog()
+        {
+            var usedBarcodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            int changesCount = 0;
+
+            // 1. Process Finished & Readymade Products
+            foreach (var p in Products)
+            {
+                string current = p.Barcode?.Trim() ?? "";
+                bool needsNew = string.IsNullOrEmpty(current)
+                                || current == "—"
+                                || usedBarcodes.Contains(current);
+
+                if (needsNew)
+                {
+                    string itemType = p.SourceType == "R" ? "ready" : "mfg";
+                    string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, itemType, p.Category);
+                    p.Barcode = newBc;
+                    usedBarcodes.Add(newBc);
+                    changesCount++;
+                    if (!IsSampleDataLoaded)
+                    {
+                        SyncQueue.EnqueueSet("products", p.Id, p);
+                    }
+                }
+                else
+                {
+                    usedBarcodes.Add(current);
+                }
+            }
+
+            // 2. Process Raw Materials
+            foreach (var r in RawMaterials)
+            {
+                string current = r.Barcode?.Trim() ?? "";
+                bool needsNew = string.IsNullOrEmpty(current)
+                                || current == "—"
+                                || usedBarcodes.Contains(current);
+
+                if (needsNew)
+                {
+                    string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, "raw", "Raw Material");
+                    r.Barcode = newBc;
+                    usedBarcodes.Add(newBc);
+                    changesCount++;
+                    if (!IsSampleDataLoaded)
+                    {
+                        SyncQueue.EnqueueSet("raw_materials", r.Id, r);
+                    }
+                }
+                else
+                {
+                    usedBarcodes.Add(current);
+                }
+            }
+
+            // 3. Process General Packaging
+            foreach (var g in GeneralItems)
+            {
+                string current = g.Barcode?.Trim() ?? "";
+                bool needsNew = string.IsNullOrEmpty(current)
+                                || current == "—"
+                                || usedBarcodes.Contains(current);
+
+                if (needsNew)
+                {
+                    string newBc = BarcodeService.GenerateUniqueBarcode(usedBarcodes, "gen", "Packaging");
+                    g.Barcode = newBc;
+                    usedBarcodes.Add(newBc);
+                    changesCount++;
+                    if (!IsSampleDataLoaded)
+                    {
+                        SyncQueue.EnqueueSet("general_items", g.Id, g);
+                    }
+                }
+                else
+                {
+                    usedBarcodes.Add(current);
+                }
+            }
+
+            if (changesCount > 0)
+            {
+                SaveLocalState();
+            }
+
+            return changesCount;
+        }
+
         public Task SaveProductAsync(ProductItem p)
         {
             if (p.RegisteredQty <= 0 && p.Stock > 0) p.RegisteredQty = p.Stock;
+            if (string.IsNullOrWhiteSpace(p.Barcode) || p.Barcode == "—")
+            {
+                p.Barcode = GetNextUniqueBarcode(p.SourceType == "R" ? "ready" : "mfg", p.Category, p.Id);
+            }
             int idx = Products.FindIndex(x => x.Id == p.Id);
             if (idx >= 0) Products[idx] = p;
             else Products.Insert(0, p);
@@ -942,6 +1064,10 @@ namespace AsiErp.Services
         public Task SaveRawMaterialAsync(RawMaterialItem r)
         {
             if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
+            if (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—")
+            {
+                r.Barcode = GetNextUniqueBarcode("raw", "Raw Material", r.Id);
+            }
             int idx = RawMaterials.FindIndex(x => x.Id == r.Id);
             if (idx >= 0) RawMaterials[idx] = r;
             else RawMaterials.Insert(0, r);
@@ -968,6 +1094,10 @@ namespace AsiErp.Services
         public Task SaveGeneralItemAsync(GeneralItem g)
         {
             if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
+            if (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—")
+            {
+                g.Barcode = GetNextUniqueBarcode("gen", "Packaging", g.Id);
+            }
             int idx = GeneralItems.FindIndex(x => x.Id == g.Id);
             if (idx >= 0) GeneralItems[idx] = g;
             else GeneralItems.Insert(0, g);

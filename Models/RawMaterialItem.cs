@@ -23,6 +23,11 @@ namespace AsiErp.Models
         [FirestoreProperty("hsn")]
         public string Hsn { get; set; } = string.Empty;
 
+        [FirestoreProperty("barcode")]
+        public string Barcode { get; set; } = string.Empty;
+
+        public string DisplayBarcode => !string.IsNullOrEmpty(Barcode) ? Barcode : (!string.IsNullOrEmpty(Sku) ? Sku : Id);
+
         [FirestoreProperty("name")]
         public string Name { get; set; } = string.Empty;
 
