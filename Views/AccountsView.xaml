@@ -63,14 +63,37 @@
                     </Border>
 
                     <!-- (3) PROFIT AND LOSS (RED IN LOSS GREEN IN PROFIT) -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border Background="{Binding PlCardBrush}" Padding="16,14" Margin="0,0,14,0" CornerRadius="12">
                         <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
                         </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="PROFIT AND LOSS" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlStatusWord}" FontSize="22" FontWeight="Bold" Foreground="{Binding PlProfitLossColor}" Margin="0,5,0,0"/>
-                        </StackPanel>
+                        <Grid VerticalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Profit Icon (Coin with ₹) -->
+                            <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,12,0"
+                                  Visibility="{Binding PlIsProfit, Converter={StaticResource BoolToVis}}">
+                                <Ellipse Fill="White" Opacity="0.22"/>
+                                <Ellipse Stroke="White" StrokeThickness="2"/>
+                                <TextBlock Text="₹" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"/>
+                            </Grid>
+
+                            <!-- Loss Icon (Warning Triangle with !) -->
+                            <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,12,0"
+                                  Visibility="{Binding PlIsProfit, Converter={StaticResource InverseBoolToVis}}">
+                                <Path Data="M 18,3 L 34,31 H 2 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="!" Foreground="#DC2626" FontSize="17" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                            </Grid>
+
+                            <!-- Label and Value -->
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding PlCardLabel}" FontSize="12.5" Foreground="White" FontWeight="SemiBold" Opacity="0.95"/>
+                                <TextBlock Text="{Binding PlValueDisplay}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
                     <!-- (4) NET P&L -->
@@ -136,17 +159,17 @@
                         <DockPanel>
                             <!-- Line Chart Header -->
                             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Income &amp; Expenses Trend" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                                    <TextBlock Text="6-month financial performance curve" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
-                                </StackPanel>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                                     <!-- Legend: Income -->
                                     <Border Width="10" Height="10" CornerRadius="5" Background="#2563EB" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Income" FontSize="11" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,14,0" VerticalAlignment="Center"/>
                                     <!-- Legend: Expenses -->
                                     <Border Width="10" Height="10" CornerRadius="5" Background="#DC2626" Margin="0,0,5,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Expenses" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock Text="Income &amp; Expenses Trend" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
+                                    <TextBlock Text="6-month financial performance curve" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                                 </StackPanel>
                             </DockPanel>
 
@@ -217,11 +240,11 @@
                         <DockPanel>
                             <!-- Pie Chart Header -->
                             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <TextBlock DockPanel.Dock="Right" Text="{Binding TotalExpensesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#DC2626" VerticalAlignment="Center"/>
                                 <StackPanel VerticalAlignment="Center">
                                     <TextBlock Text="Expense Breakdown" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
                                     <TextBlock Text="Category distribution" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                                 </StackPanel>
-                                <TextBlock Text="{Binding TotalExpensesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#DC2626" VerticalAlignment="Center"/>
                             </DockPanel>
 
                             <!-- Donut and Legend -->

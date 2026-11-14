@@ -191,6 +191,26 @@ namespace AsiErp.ViewModels
         public string PlStatusWord => PlNetProfit >= 0 ? "PROFIT" : "LOSS";
         public string PlProfitLossColor => PlNetProfit >= 0 ? "#10B981" : "#DC2626";
         public string PlNetProfitDisplay => PlNetProfit >= 0 ? $"+₹{PlNetProfit:N0}" : $"-₹{Math.Abs(PlNetProfit):N0}";
+        public Brush PlCardBrush
+        {
+            get
+            {
+                var grad = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 1) };
+                if (PlIsProfit)
+                {
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#10B981"), 0));
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#059669"), 1));
+                }
+                else
+                {
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#EF4444"), 0));
+                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#DC2626"), 1));
+                }
+                return grad;
+            }
+        }
+        public string PlCardLabel => PlIsProfit ? "Profit" : "Loss";
+        public string PlValueDisplay => $"₹{Math.Abs(PlNetProfit):N0}";
 
         public PointCollection IncomeLinePoints { get; } = new();
         public PointCollection ExpenseLinePoints { get; } = new();
@@ -558,6 +578,9 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(PlStatusWord));
             OnPropertyChanged(nameof(PlProfitLossColor));
             OnPropertyChanged(nameof(PlNetProfitDisplay));
+            OnPropertyChanged(nameof(PlCardBrush));
+            OnPropertyChanged(nameof(PlCardLabel));
+            OnPropertyChanged(nameof(PlValueDisplay));
             UpdateLineChart();
             UpdatePieChart();
         }
