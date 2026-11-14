@@ -298,7 +298,7 @@ namespace AsiErp.Services
             {
                 Id = "wo3", OrderNo = "WO-0003", Customer = "Gulf Safety Wear FZE", OrderType = "export",
                 OrderDate = now.AddDays(-6).ToString("yyyy-MM-dd"), DueDate = now.AddDays(4).ToString("yyyy-MM-dd"),
-                StartDate = now.AddDays(-5).ToString("yyyy-MM-dd"), Status = "Lasting & pressing", IsDone = false, Notes = "In assembly.",
+                StartDate = now.AddDays(-5).ToString("yyyy-MM-dd"), Status = "In Progress", IsDone = false, Notes = "In assembly.",
                 Items = new() { new() { ProductId = "p2", ProductName = "Safety Shoe – Steel Toe", Size = "10", Unit = "pair", Qty = 150 } }
             });
 
@@ -306,7 +306,7 @@ namespace AsiErp.Services
             {
                 Id = "wo4", OrderNo = "WO-0004", Customer = "Sunrise Public School", OrderType = "domestic",
                 OrderDate = now.AddDays(-4).ToString("yyyy-MM-dd"), DueDate = now.AddDays(5).ToString("yyyy-MM-dd"),
-                StartDate = now.AddDays(-3).ToString("yyyy-MM-dd"), Status = "Cutting", IsDone = false, Notes = "Fabric cutting ongoing.",
+                StartDate = now.AddDays(-3).ToString("yyyy-MM-dd"), Status = "Started", IsDone = false, Notes = "Fabric cutting ongoing.",
                 Items = new() { new() { ProductId = "p6", ProductName = "School Uniform Set", Size = "M", Unit = "set", Qty = 200 } }
             });
 

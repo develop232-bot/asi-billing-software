@@ -281,7 +281,7 @@ namespace AsiErp.ViewModels
 
             // Shop Floor Stages
             ShopFloorStages.Clear();
-            string[] stages = { "Pending", "Cutting", "Stitching", "Lasting & pressing", "Finishing", "Packing", "Completed" };
+            string[] stages = { "Pending", "Started", "In Progress", "Completed" };
             foreach (var stg in stages)
             {
                 var orders = _dataService.WorkOrders.Where(w => w.Status == stg).ToList();

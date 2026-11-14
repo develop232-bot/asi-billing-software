@@ -52,9 +52,16 @@ namespace AsiErp.Dialogs
                 if (DateTime.TryParse(_existingOrder.OrderDate, out var od)) DpOrderDate.SelectedDate = od;
                 if (DateTime.TryParse(_existingOrder.DueDate, out var dd)) DpDueDate.SelectedDate = dd;
 
+                string normalizedStatus = _existingOrder.Status switch
+                {
+                    "Cutting" => "Started",
+                    "Stitching" or "Lasting & pressing" or "Finishing" or "Packing" => "In Progress",
+                    _ => _existingOrder.Status
+                };
+
                 foreach (ComboBoxItem itm in CbStatus.Items)
                 {
-                    if (itm.Content?.ToString() == _existingOrder.Status)
+                    if (string.Equals(itm.Content?.ToString(), normalizedStatus, StringComparison.OrdinalIgnoreCase))
                     {
                         CbStatus.SelectedItem = itm;
                         break;

@@ -23,6 +23,11 @@
 
 
   <ItemGroup>
+    <ApplicationDefinition Remove="App.xaml" />
+    <Page Include="App.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="firebase-key.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -63,11 +63,8 @@
                     <TextBlock Text="Production Status" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
                     <ComboBox x:Name="CbStatus" Padding="8">
                         <ComboBoxItem Content="Pending" IsSelected="True"/>
-                        <ComboBoxItem Content="Cutting"/>
-                        <ComboBoxItem Content="Stitching"/>
-                        <ComboBoxItem Content="Lasting &amp; pressing"/>
-                        <ComboBoxItem Content="Finishing"/>
-                        <ComboBoxItem Content="Packing"/>
+                        <ComboBoxItem Content="Started"/>
+                        <ComboBoxItem Content="In Progress"/>
                         <ComboBoxItem Content="Completed"/>
                     </ComboBox>
                 </StackPanel>
