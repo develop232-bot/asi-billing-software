@@ -82,8 +82,7 @@
                                     <TextBlock Text="🛒 Retail Billing" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="POS" FontSize="9" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthRetailTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,2"/>
-                                <TextBlock Text="Showroom retail sales" FontSize="10.5" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding MonthRetailTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -94,8 +93,7 @@
                                     <TextBlock Text="🇮🇳 Domestic Invoice" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="B2B" FontSize="9" FontWeight="Bold" Foreground="#2563EB" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthDomesticTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#2563EB" Margin="0,6,0,2"/>
-                                <TextBlock Text="Domestic tax invoices" FontSize="10.5" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding MonthDomesticTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#2563EB" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -106,8 +104,7 @@
                                     <TextBlock Text="✈️ Export Invoice" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="GLOBAL" FontSize="9" FontWeight="Bold" Foreground="#0D9488" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthExportTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0D9488" Margin="0,6,0,2"/>
-                                <TextBlock Text="Overseas shipments" FontSize="10.5" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding MonthExportTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0D9488" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -118,8 +115,7 @@
                                     <TextBlock Text="💰 Total Month Sales" FontSize="11.5" Foreground="#166534" FontWeight="Bold"/>
                                     <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#16A34A" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#15803D" Margin="0,6,0,2"/>
-                                <TextBlock Text="All 3 channels billed" FontSize="10.5" Foreground="#16A34A"/>
+                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#15803D" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
                     </UniformGrid>

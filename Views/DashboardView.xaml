@@ -33,8 +33,7 @@
                     </Border.Background>
                     <StackPanel>
                         <TextBlock Text="Today's Retail" FontSize="11" Foreground="#DBEAFE" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TodayRetailSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,4"/>
-                        <TextBlock Text="Showroom &amp; events" FontSize="10" Foreground="#BFDBFE"/>
+                        <TextBlock Text="{Binding TodayRetailSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -48,8 +47,7 @@
                     </Border.Background>
                     <StackPanel>
                         <TextBlock Text="Domestic + Export" FontSize="11" Foreground="#D1FAE5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TodayDomesticExportSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,4"/>
-                        <TextBlock Text="Wholesale &amp; Overseas" FontSize="10" Foreground="#A7F3D0"/>
+                        <TextBlock Text="{Binding TodayDomesticExportSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -63,8 +61,7 @@
                     </Border.Background>
                     <StackPanel>
                         <TextBlock Text="Total Sales (MTD)" FontSize="11" Foreground="#EDE9FE" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,4"/>
-                        <TextBlock Text="Month-to-date billed" FontSize="10" Foreground="#DDD6FE"/>
+                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -78,8 +75,7 @@
                     </Border.Background>
                     <StackPanel>
                         <TextBlock Text="To Receive (Clients)" FontSize="11" Foreground="#FEF3C7" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,4"/>
-                        <TextBlock Text="{Binding OutstandingCount, StringFormat={}{0} open invoices}" FontSize="10" Foreground="#FDE68A"/>
+                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -93,8 +89,7 @@
                     </Border.Background>
                     <StackPanel>
                         <TextBlock Text="To Pay (Vendors)" FontSize="11" Foreground="#CCFBF1" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,4"/>
-                        <TextBlock Text="{Binding VendorPayCount, StringFormat={}{0} open bills}" FontSize="10" Foreground="#99F6E4"/>
+                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -108,8 +103,7 @@
                     </Border.Background>
                     <StackPanel>
                         <TextBlock Text="Low Stock Alerts" FontSize="11" Foreground="#FEE2E2" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,4"/>
-                        <TextBlock Text="Need reordering" FontSize="10" Foreground="#FECACA"/>
+                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>

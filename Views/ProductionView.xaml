@@ -32,8 +32,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Pending Orders" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding PendingCount}" FontSize="22" FontWeight="Bold" Foreground="#64748B" Margin="0,5,0,2"/>
-                        <TextBlock Text="Awaiting material / start" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding PendingCount}" FontSize="22" FontWeight="Bold" Foreground="#64748B" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -43,8 +42,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="In Progress" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding InProgressCount}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
-                        <TextBlock Text="Started / in progress" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding InProgressCount}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -54,8 +52,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Completed This Month" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding CompletedThisMonthCount}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,2"/>
-                        <TextBlock Text="Moved into finished goods" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding CompletedThisMonthCount}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 
@@ -65,8 +62,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Overdue Orders" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding OverdueCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                        <TextBlock Text="Past delivery deadline" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding OverdueCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>

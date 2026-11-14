@@ -75,8 +75,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Total Revenue / Income" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding IncomeTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Taxable revenue across channels" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding IncomeTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -87,8 +86,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Total Expenses" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                            <TextBlock Text="Purchases, salaries &amp; utilities" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -99,8 +97,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Net Profit" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlNetProfit, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,2"/>
-                            <TextBlock Text="Income minus total expenses" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding PlNetProfit, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -111,8 +108,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Cash &amp; Bank Balance" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashCashBank, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
-                            <TextBlock Text="Net liquid operational funds" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding DashCashBank, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
@@ -126,8 +122,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Total Capital Invested" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#6366F1" Margin="0,5,0,2"/>
-                            <TextBlock Text="Equity &amp; partner funds" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#6366F1" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -138,8 +133,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Outstanding Loans" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashTotalLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,2"/>
-                            <TextBlock Text="Principal still to repay" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding DashTotalLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -150,8 +144,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Long-Term Assets" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashFixedAssets, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
-                            <TextBlock Text="Machinery &amp; vehicles worth" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding DashFixedAssets, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -162,8 +155,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Customers Owe You" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashReceivables, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,5,0,2"/>
-                            <TextBlock Text="Pending receivables" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding DashReceivables, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
@@ -233,8 +225,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Retail Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
-                            <TextBlock Text="Showrooms &amp; expos" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -245,8 +236,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Domestic Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DomesticIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
-                            <TextBlock Text="Indian B2B orders" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding DomesticIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -257,8 +247,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Export Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
-                            <TextBlock Text="Overseas shipments" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
@@ -337,8 +326,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Employee" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding EmployeeExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="salary, OT, allowances" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding EmployeeExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -349,8 +337,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Utility" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding UtilityExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="rent, EB, water, phone, internet" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding UtilityExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -361,8 +348,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Misc Exp" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding MiscExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="tea, water, others" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding MiscExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -373,8 +359,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Purchase bills" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="raw, readymade, general" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
@@ -497,8 +482,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Total Capital Invested" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalInvested, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="{Binding PreStartInvestmentCount, StringFormat='Includes {0} pre-operational capital injections'}" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalInvested, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -665,11 +649,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Loans Taken" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalLoansTaken, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="{Binding LoansCount}" FontSize="11" Foreground="#94A3B8"/>
-                                <TextBlock Text=" loans recorded" FontSize="11" Foreground="#94A3B8"/>
-                            </StackPanel>
+                            <TextBlock Text="{Binding TotalLoansTaken, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -679,8 +659,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Interest Paid" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalLoanInterestPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                            <TextBlock Text="Counted as expense" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalLoanInterestPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -690,8 +669,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Principal Paid" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalLoanPrincipalPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,2"/>
-                            <TextBlock Text="Loan part repaid" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalLoanPrincipalPaid, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -701,8 +679,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Outstanding to Pay" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalLoansOutstanding, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,2"/>
-                            <TextBlock Text="Balance still to repay" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalLoansOutstanding, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#F59E0B" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
@@ -791,8 +768,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Total Assets" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding AssetsCount}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                            <TextBlock Text="Capital items registered" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding AssetsCount}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -802,8 +778,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Bought For" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalAssetsCost, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
-                            <TextBlock Text="Original purchase cost" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalAssetsCost, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -813,8 +788,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Value Lost So Far" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalAssetsDepreciation, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,2"/>
-                            <TextBlock Text="Cumulative depreciation" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalAssetsDepreciation, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
 
@@ -824,8 +798,7 @@
                         </Border.Effect>
                         <StackPanel>
                             <TextBlock Text="Worth Today" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding TotalAssetsBookValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,2"/>
-                            <TextBlock Text="Shown on balance sheet" FontSize="11" Foreground="#94A3B8"/>
+                            <TextBlock Text="{Binding TotalAssetsBookValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>

@@ -65,8 +65,7 @@
                     </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Total Active SKUs" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding TotalSkusCount}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,2"/>
-                        <TextBlock Text="Across all categories" FontSize="11" Foreground="#94A3B8"/>
+                        <TextBlock Text="{Binding TotalSkusCount}" FontSize="24" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
                     </StackPanel>
                 </Border>
 

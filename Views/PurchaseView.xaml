@@ -91,8 +91,7 @@
                                     <TextBlock Text="🧵 Raw Material" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="FACTORY" FontSize="9" FontWeight="Bold" Foreground="#3B82F6" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthRawTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,2"/>
-                                <TextBlock Text="Leather, soles, fabrics" FontSize="10.5" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding MonthRawTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -103,8 +102,7 @@
                                     <TextBlock Text="👞 Ready Made" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="TRADING" FontSize="9" FontWeight="Bold" Foreground="#4F46E5" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthReadyTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#4F46E5" Margin="0,6,0,2"/>
-                                <TextBlock Text="Shoes &amp; uniform stock" FontSize="10.5" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding MonthReadyTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#4F46E5" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -115,8 +113,7 @@
                                     <TextBlock Text="📦 General Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="SUPPLIES" FontSize="9" FontWeight="Bold" Foreground="#0891B2" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthGenTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0891B2" Margin="0,6,0,2"/>
-                                <TextBlock Text="Boxes, covers, tags &amp; tape" FontSize="10.5" Foreground="#94A3B8"/>
+                                <TextBlock Text="{Binding MonthGenTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0891B2" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -127,8 +124,7 @@
                                     <TextBlock Text="💰 Total Month Sourced" FontSize="11.5" Foreground="#6B21A8" FontWeight="Bold"/>
                                     <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#9333EA" HorizontalAlignment="Right"/>
                                 </DockPanel>
-                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#7E22CE" Margin="0,6,0,2"/>
-                                <TextBlock Text="All 3 categories total" FontSize="10.5" Foreground="#9333EA"/>
+                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#7E22CE" Margin="0,6,0,0"/>
                             </StackPanel>
                         </Border>
                     </UniformGrid>
