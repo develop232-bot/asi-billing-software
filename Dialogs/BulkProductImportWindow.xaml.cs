@@ -73,34 +73,27 @@ namespace AsiErp.Dialogs
         private string GetSampleCsvContent(string type)
         {
             var sb = new StringBuilder();
-            if (type == "mfg" || type == "ready")
+            sb.AppendLine("ITEM CLASSIFICATION,CATEGORY,UNIT OF MEASUREMENT,ITEM NAME,SIZES,QTY,SKU,HSN,BARCODE,COST PRICE,SELLING PRICE,LOW ALERT,MEDIUM ALERT");
+
+            if (type == "ready" || type == "all")
             {
-                sb.AppendLine("Item Description,Unit of Measurement,Type,SKU,Barcode,Cost Price,Selling Price,GST,Quantity,Sizes,Category");
-                if (type == "mfg")
-                {
-                    sb.AppendLine("\"ASI Derby Formal Shoe Black\",\"pair\",\"Manufactured\",\"ASI-MFG-001\",\"\",\"850\",\"2499\",\"5\",\"120\",\"6,7,8,9,10,11\",\"Shoe\"");
-                    sb.AppendLine("\"ASI Sports Runner Blue\",\"pair\",\"Manufactured\",\"ASI-MFG-002\",\"\",\"650\",\"1899\",\"5\",\"85\",\"7,8,9,10\",\"Shoe\"");
-                    sb.AppendLine("\"ASI School Black Leather Oxford\",\"pair\",\"Manufactured\",\"ASI-MFG-003\",\"\",\"420\",\"999\",\"5\",\"200\",\"1,2,3,4,5,6\",\"Shoe\"");
-                }
-                else
-                {
-                    sb.AppendLine("\"Ladies hand bag\",\"pcs\",\"Readymade Product\",\"ASI-RDY-001\",\"8906400000010\",\"650\",\"1951\",\"5\",\"20\",\"Big\",\"Bag\"");
-                    sb.AppendLine("\"Black lofar\",\"pair\",\"Readymade Product\",\"ASI-RDY-002\",\"8906400000010\",\"320\",\"961\",\"5\",\"24\",\"8,9,10,11\",\"Shoe\"");
-                    sb.AppendLine("\"Readymade School Shirt White\",\"pcs\",\"Readymade Product\",\"ASI-RDY-003\",\"\",\"220\",\"550\",\"5\",\"100\",\"S,M,L,XL\",\"Uniform\"");
-                }
+                sb.AppendLine("\"Readymade Product\",\"Bag\",\"pcs\",\"Ladies checked bag\",\"Medium\",\"20\",\"ASI-RDY-004\",\"42022110\",\"\",\"500\",\"1501\",\"3\",\"7\"");
+                sb.AppendLine("\"Readymade Product\",\"Shoe\",\"pair\",\"Brown lofar\",\"7,8,9,10,11\",\"28\",\"ASI-RDY-007\",\"6403\",\"\",\"320\",\"961\",\"3\",\"7\"");
             }
-            else if (type == "raw")
+            if (type == "mfg" || type == "all")
             {
-                sb.AppendLine("Item Description,Unit of Measurement,Type,Rate,GST,Quantity,Reorder Level");
-                sb.AppendLine("\"Upper Full Grain Black Leather\",\"sq.ft\",\"Raw Material\",\"135\",\"5\",\"500\",\"50\"");
-                sb.AppendLine("\"PU Moulded Sole Unit - Size 8\",\"pair\",\"Raw Material\",\"160\",\"18\",\"300\",\"40\"");
-                sb.AppendLine("\"Heavy Duty Nylon Stitching Thread\",\"pcs\",\"Raw Material\",\"85\",\"12\",\"150\",\"20\"");
+                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Leather Formal Derby\",\"6,7,8,9,10,11\",\"50\",\"ASI-MFG-001\",\"6403\",\"\",\"850\",\"2499\",\"10\",\"25\"");
+                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Safety Shoe Steel Toe\",\"7,8,9,10\",\"35\",\"ASI-MFG-002\",\"64031990\",\"\",\"950\",\"2899\",\"5\",\"15\"");
             }
-            else
+            if (type == "raw" || type == "all")
             {
-                sb.AppendLine("Item Description,Unit of Measurement,Type,Rate,GST,Quantity,Reorder Level");
-                sb.AppendLine("\"ASI Shoe Packaging Box - Printed\",\"pcs\",\"Packaging\",\"24\",\"12\",\"1200\",\"150\"");
-                sb.AppendLine("\"Clear Poly Protective Carry Bag\",\"pcs\",\"Packaging\",\"4\",\"18\",\"2000\",\"300\"");
+                sb.AppendLine("\"Raw Material\",\"\",\"sq ft\",\"Upper Full Grain Leather\",\"\",\"300\",\"ASI-RM-001\",\"4107\",\"\",\"140\",\"0\",\"50\",\"100\"");
+                sb.AppendLine("\"Raw Material\",\"\",\"pair\",\"PU Sole Unit\",\"6,7,8,9,10\",\"250\",\"ASI-RM-002\",\"64062000\",\"\",\"160\",\"0\",\"40\",\"80\"");
+            }
+            if (type == "gen" || type == "all")
+            {
+                sb.AppendLine("\"General Packaging\",\"\",\"pcs\",\"ASI Shoe Packaging Box\",\"\",\"1000\",\"ASI-GEN-001\",\"48191010\",\"\",\"24\",\"0\",\"150\",\"300\"");
+                sb.AppendLine("\"General Packaging\",\"\",\"pcs\",\"Clear Poly Dust Bag\",\"\",\"2000\",\"ASI-GEN-002\",\"39232100\",\"\",\"4\",\"0\",\"300\",\"600\"");
             }
 
             return sb.ToString();
@@ -242,17 +235,111 @@ namespace AsiErp.Dialogs
 
             try
             {
-                if (_targetType == "mfg" || _targetType == "ready")
+                foreach (DataRow r in _currentTable.Rows)
                 {
-                    foreach (DataRow r in _currentTable.Rows)
-                    {
-                        string name = GetVal(r, "Name");
-                        if (string.IsNullOrWhiteSpace(name)) continue;
+                    string name = GetVal(r, "Name");
+                    if (string.IsNullOrWhiteSpace(name)) continue;
 
-                        string rowType = GetVal(r, "Type", "").ToLowerInvariant();
-                        bool isReady = _targetType == "ready";
-                        if (rowType.Contains("ready") || rowType == "r") isReady = true;
-                        else if (rowType.Contains("mfg") || rowType.Contains("manufactur") || rowType == "m") isReady = false;
+                    string classification = GetVal(r, "Type", _targetType).Trim().ToLowerInvariant();
+
+                    if (classification.Contains("raw"))
+                    {
+                        // 1. RAW MATERIAL
+                        string unit = GetVal(r, "Unit", "units");
+                        string sku = GetVal(r, "SKU");
+                        if (string.IsNullOrWhiteSpace(sku))
+                        {
+                            sku = "ASI-RM-" + (_dataService.RawMaterials.Count + importedCount + 1).ToString("D3");
+                        }
+                        string hsn = GetVal(r, "HSN");
+                        double.TryParse(GetVal(r, "Stock", "0"), out double stock);
+                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
+                        double.TryParse(GetVal(r, "Cost", "0"), out double rate);
+                        double.TryParse(GetVal(r, "Gst", "5"), out double gst);
+
+                        var existing = updateExisting ? _dataService.RawMaterials.FirstOrDefault(m =>
+                            (!string.IsNullOrEmpty(sku) && m.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                            m.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
+
+                        if (existing != null)
+                        {
+                            existing.Rate = rate;
+                            existing.Gst = gst;
+                            existing.Stock += stock;
+                            existing.ReorderLevel = reorder;
+                            if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                            await _dataService.SaveRawMaterialAsync(existing);
+                            updatedCount++;
+                        }
+                        else
+                        {
+                            var rm = new RawMaterialItem
+                            {
+                                Id = "rm_" + Guid.NewGuid().ToString("N")[..8],
+                                Name = name,
+                                Sku = sku,
+                                Hsn = hsn,
+                                Unit = unit,
+                                Stock = stock,
+                                ReorderLevel = reorder,
+                                Rate = rate,
+                                Gst = gst
+                            };
+                            await _dataService.SaveRawMaterialAsync(rm);
+                            importedCount++;
+                        }
+                    }
+                    else if (classification.Contains("pack") || classification.Contains("gen"))
+                    {
+                        // 2. GENERAL PACKAGING
+                        string unit = GetVal(r, "Unit", "pcs");
+                        string sku = GetVal(r, "SKU");
+                        if (string.IsNullOrWhiteSpace(sku))
+                        {
+                            sku = "ASI-GEN-" + (_dataService.GeneralItems.Count + importedCount + 1).ToString("D3");
+                        }
+                        string hsn = GetVal(r, "HSN");
+                        double.TryParse(GetVal(r, "Stock", "0"), out double stock);
+                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
+                        double.TryParse(GetVal(r, "Cost", "0"), out double rate);
+                        double.TryParse(GetVal(r, "Gst", "5"), out double gst);
+
+                        var existing = updateExisting ? _dataService.GeneralItems.FirstOrDefault(g =>
+                            (!string.IsNullOrEmpty(sku) && g.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                            g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
+
+                        if (existing != null)
+                        {
+                            existing.Rate = rate;
+                            existing.Gst = gst;
+                            existing.Stock += stock;
+                            existing.ReorderLevel = reorder;
+                            if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                            await _dataService.SaveGeneralItemAsync(existing);
+                            updatedCount++;
+                        }
+                        else
+                        {
+                            var gi = new GeneralItem
+                            {
+                                Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                                Name = name,
+                                Sku = sku,
+                                Hsn = hsn,
+                                Unit = unit,
+                                Stock = stock,
+                                ReorderLevel = reorder,
+                                Rate = rate,
+                                Gst = gst
+                            };
+                            await _dataService.SaveGeneralItemAsync(gi);
+                            importedCount++;
+                        }
+                    }
+                    else
+                    {
+                        // 3. FINISHED PRODUCT OR 4. READYMADE PRODUCT
+                        bool isReady = classification.Contains("ready") || (!classification.Contains("finish") && !classification.Contains("mfg") && _targetType == "ready");
 
                         string sku = GetVal(r, "SKU");
                         if (string.IsNullOrWhiteSpace(sku))
@@ -265,9 +352,9 @@ namespace AsiErp.Dialogs
                         {
                             category = isReady ? "Readymade" : "Shoe";
                         }
-                        string subcat = GetVal(r, "Subcategory", "All");
                         string unit = GetVal(r, "Unit", isReady ? "pcs" : "pair");
                         string sizes = GetVal(r, "Sizes", "Free size");
+                        string hsn = GetVal(r, "HSN", isReady ? "4202" : "6403");
 
                         double.TryParse(GetVal(r, "Cost", "0"), out double cost);
                         double.TryParse(GetVal(r, "RetailPrice", "0"), out double retail);
@@ -299,6 +386,7 @@ namespace AsiErp.Dialogs
                             existing.Stock += stock;
                             existing.ReorderLevel = reorder;
                             existing.Gst = gst;
+                            if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
                             if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
                             {
                                 existing.Barcode = barcode;
@@ -316,6 +404,7 @@ namespace AsiErp.Dialogs
                                 Id = "p_" + Guid.NewGuid().ToString("N")[..8],
                                 Name = name,
                                 Sku = sku,
+                                Hsn = hsn,
                                 Category = category,
                                 SourceType = isReady ? "R" : "M",
                                 Unit = unit,
@@ -331,90 +420,6 @@ namespace AsiErp.Dialogs
                             };
 
                             await _dataService.SaveProductAsync(newProd);
-                            importedCount++;
-                        }
-                    }
-                }
-                else if (_targetType == "raw")
-                {
-                    foreach (DataRow r in _currentTable.Rows)
-                    {
-                        string name = GetVal(r, "Name");
-                        if (string.IsNullOrWhiteSpace(name)) continue;
-
-                        string unit = GetVal(r, "Unit", "units");
-                        double.TryParse(GetVal(r, "Stock", "0"), out double stock);
-                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
-                        double.TryParse(GetVal(r, "Rate", "0"), out double rate);
-                        double.TryParse(GetVal(r, "Gst", "18"), out double gst);
-
-                        var existing = updateExisting ? _dataService.RawMaterials.FirstOrDefault(m =>
-                            m.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
-
-                        if (existing != null)
-                        {
-                            existing.Rate = rate;
-                            existing.Gst = gst;
-                            existing.Stock += stock;
-                            existing.ReorderLevel = reorder;
-                            await _dataService.SaveRawMaterialAsync(existing);
-                            updatedCount++;
-                        }
-                        else
-                        {
-                            var rm = new RawMaterialItem
-                            {
-                                Id = "rm_" + Guid.NewGuid().ToString("N")[..8],
-                                Name = name,
-                                Unit = unit,
-                                Stock = stock,
-                                ReorderLevel = reorder,
-                                Rate = rate,
-                                Gst = gst
-                            };
-                            await _dataService.SaveRawMaterialAsync(rm);
-                            importedCount++;
-                        }
-                    }
-                }
-                else if (_targetType == "gen")
-                {
-                    foreach (DataRow r in _currentTable.Rows)
-                    {
-                        string name = GetVal(r, "Name");
-                        if (string.IsNullOrWhiteSpace(name)) continue;
-
-                        string unit = GetVal(r, "Unit", "pcs");
-                        double.TryParse(GetVal(r, "Stock", "0"), out double stock);
-                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
-                        double.TryParse(GetVal(r, "Rate", "0"), out double rate);
-                        double.TryParse(GetVal(r, "Gst", "12"), out double gst);
-
-                        var existing = updateExisting ? _dataService.GeneralItems.FirstOrDefault(g =>
-                            g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
-
-                        if (existing != null)
-                        {
-                            existing.Rate = rate;
-                            existing.Gst = gst;
-                            existing.Stock += stock;
-                            existing.ReorderLevel = reorder;
-                            await _dataService.SaveGeneralItemAsync(existing);
-                            updatedCount++;
-                        }
-                        else
-                        {
-                            var gi = new GeneralItem
-                            {
-                                Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
-                                Name = name,
-                                Unit = unit,
-                                Stock = stock,
-                                ReorderLevel = reorder,
-                                Rate = rate,
-                                Gst = gst
-                            };
-                            await _dataService.SaveGeneralItemAsync(gi);
                             importedCount++;
                         }
                     }
@@ -464,21 +469,21 @@ namespace AsiErp.Dialogs
 
             string[] candidates = key.ToLowerInvariant() switch
             {
-                "name" => new[] { "name", "item description", "itemdescription", "description", "product name", "productname", "item name", "itemname", "product", "item", "title", "particulars" },
+                "name" => new[] { "name", "item name", "itemname", "item description", "itemdescription", "description", "product name", "productname", "product", "item", "title", "particulars" },
                 "sku" => new[] { "sku", "item code", "itemcode", "product code", "productcode", "code", "style no", "styleno", "model no", "modelno", "style" },
                 "category" => new[] { "category", "product category", "item category" },
                 "subcategory" => new[] { "subcategory", "sub category", "sub-category", "group" },
-                "unit" => new[] { "unit", "unit of measurement", "unitofmeasurement", "uom", "measurement" },
+                "unit" => new[] { "unit", "unit of measurment", "unit of measurement", "unitofmeasurment", "unitofmeasurement", "uom", "measurment", "measurement" },
                 "sizes" => new[] { "sizes", "size", "available sizes", "size list" },
-                "cost" => new[] { "cost", "cost price", "costprice", "purchase price", "purchaseprice", "buy price", "buying price", "rate", "cost rate" },
+                "cost" => new[] { "cost", "cost price", "costprice", "purchase price", "purchaseprice", "buy price", "buying price", "rate", "cost rate", "purchase rate" },
                 "retailprice" => new[] { "retailprice", "selling price", "sellingprice", "retail price", "price", "mrp", "sale price", "saleprice", "unit price" },
                 "wholesaleprice" => new[] { "wholesaleprice", "wholesale price", "bulk price", "bulkprice", "b2b price", "dealer price", "trade price" },
-                "stock" => new[] { "stock", "quantity", "qty", "opening stock", "openingstock", "units", "count" },
-                "reorderlevel" => new[] { "reorderlevel", "reorder level", "min stock", "minstock", "alert level", "reorder" },
+                "stock" => new[] { "stock", "qty", "quantity", "opening stock", "openingstock", "units", "count" },
+                "reorderlevel" => new[] { "reorderlevel", "reorder level", "low alert", "lowalert", "medium alert", "mediumalert", "min stock", "minstock", "alert level", "reorder" },
                 "barcode" => new[] { "barcode", "bar code", "ean", "ean13", "upc", "code128" },
                 "gst" => new[] { "gst", "tax", "gst%", "tax%" },
                 "hsn" => new[] { "hsn", "hsn code", "hsncode" },
-                "type" => new[] { "type", "item type", "product type", "source type" },
+                "type" => new[] { "type", "item classification", "itemclassification", "classification", "item type", "product type", "source type" },
                 _ => new[] { key.ToLowerInvariant() }
             };
 
