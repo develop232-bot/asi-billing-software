@@ -125,6 +125,37 @@ namespace AsiErp.Dialogs
             }
         }
 
+        private void ProductComboBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is ComboBox cb && cb.DataContext is WorkOrderItem item)
+            {
+                string typed = cb.Text?.Trim() ?? string.Empty;
+                if (!string.IsNullOrEmpty(typed))
+                {
+                    var match = ManufacturedProducts.FirstOrDefault(x =>
+                        string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase))
+                        ?? ManufacturedProducts.FirstOrDefault(x =>
+                            x.Name.Contains(typed, StringComparison.OrdinalIgnoreCase) ||
+                            x.Sku.Contains(typed, StringComparison.OrdinalIgnoreCase));
+
+                    if (match != null)
+                    {
+                        item.ProductId = match.Id;
+                        item.ProductName = match.Name;
+                        item.Unit = match.Unit;
+                        if (string.IsNullOrEmpty(item.Size))
+                            item.Size = match.Sizes?.FirstOrDefault() ?? "";
+                        cb.SelectedValue = match.Id;
+                    }
+                    else
+                    {
+                        item.ProductName = typed;
+                    }
+                }
+            }
+        }
+
         private void AddMat_Click(object sender, RoutedEventArgs e)
         {
             var rm = AvailableRawMaterials.FirstOrDefault();
@@ -157,6 +188,35 @@ namespace AsiErp.Dialogs
                 {
                     mat.Name = rm.Name;
                     mat.Unit = rm.Unit;
+                }
+            }
+        }
+
+        private void MaterialComboBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is ComboBox cb && cb.DataContext is WorkOrderMaterial mat)
+            {
+                string typed = cb.Text?.Trim() ?? string.Empty;
+                if (!string.IsNullOrEmpty(typed))
+                {
+                    var match = AvailableRawMaterials.FirstOrDefault(x =>
+                        string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase))
+                        ?? AvailableRawMaterials.FirstOrDefault(x =>
+                            x.Name.Contains(typed, StringComparison.OrdinalIgnoreCase) ||
+                            x.Sku.Contains(typed, StringComparison.OrdinalIgnoreCase));
+
+                    if (match != null)
+                    {
+                        mat.ItemId = match.Id;
+                        mat.Name = match.Name;
+                        mat.Unit = match.Unit;
+                        cb.SelectedValue = match.Id;
+                    }
+                    else
+                    {
+                        mat.Name = typed;
+                    }
                 }
             }
         }
@@ -212,7 +272,8 @@ namespace AsiErp.Dialogs
                 return;
             }
 
-            string orderType = (CbOrderType.SelectedItem as ComboBoxItem)?.Tag?.ToString() ?? "general";
+            string orderType = (CbOrderType.SelectedItem as ComboBoxItem)?.Tag?.ToString()
+                ?? (!string.IsNullOrWhiteSpace(CbOrderType.Text) ? CbOrderType.Text.Trim() : "general");
             string customer = TxtCustomer.Text.Trim();
             if (orderType != "general" && string.IsNullOrWhiteSpace(customer))
             {
@@ -220,14 +281,14 @@ namespace AsiErp.Dialogs
                 return;
             }
 
-            var validMaterials = Materials.Where(m => !string.IsNullOrEmpty(m.ItemId) && m.Qty > 0).ToList();
+            var validMaterials = Materials.Where(m => (!string.IsNullOrEmpty(m.ItemId) || !string.IsNullOrEmpty(m.Name)) && m.Qty > 0).ToList();
 
             // Verify stock
             if (!_isEdit || _existingOrder?.Status == "Pending")
             {
                 foreach (var m in validMaterials)
                 {
-                    var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == m.ItemId);
+                    var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == m.ItemId || x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase));
                     if (rm != null && rm.Stock < m.Qty)
                     {
                         MessageBox.Show($"Not enough {rm.Name} in stock. Available: {rm.Stock} {rm.Unit}, Needed: {m.Qty} {rm.Unit}.", "Raw Material Shortage", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -238,12 +299,13 @@ namespace AsiErp.Dialogs
                 // Deduct material
                 foreach (var m in validMaterials)
                 {
-                    var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == m.ItemId);
+                    var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == m.ItemId || x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase));
                     if (rm != null) rm.Stock = Math.Max(0, rm.Stock - m.Qty);
                 }
             }
 
-            string status = (CbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Pending";
+            string status = (CbStatus.SelectedItem as ComboBoxItem)?.Content?.ToString()
+                ?? (!string.IsNullOrWhiteSpace(CbStatus.Text) ? CbStatus.Text.Trim() : "Pending");
             string orderNo = _isEdit ? _existingOrder!.OrderNo : _dataService.NextDocNo("wo", increment: true);
             string id = _isEdit ? _existingOrder!.Id : "w_" + Guid.NewGuid().ToString("N")[..8];
 

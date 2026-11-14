@@ -76,7 +76,9 @@
                     <!-- Product Selector -->
                     <StackPanel Margin="0,0,0,10">
                         <TextBlock Text="Product to Print" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbProduct" SelectionChanged="CbProduct_SelectionChanged" DisplayMemberPath="DisplayName" Height="32" Padding="6,4" FontSize="12"/>
+                        <ComboBox x:Name="CbProduct" IsEditable="True" IsTextSearchEnabled="True"
+                                  SelectionChanged="CbProduct_SelectionChanged" DisplayMemberPath="DisplayName"
+                                  Height="32" Padding="6,4" FontSize="12"/>
                     </StackPanel>
 
                     <!-- Size & Copies -->
@@ -89,7 +91,9 @@
                         <!-- Size Selector -->
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
                             <TextBlock Text="Select Size" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
-                            <ComboBox x:Name="CbSize" SelectionChanged="CbSize_SelectionChanged" Height="30" Padding="6,3" FontSize="12"/>
+                            <ComboBox x:Name="CbSize" IsEditable="True" IsTextSearchEnabled="True"
+                                      SelectionChanged="CbSize_SelectionChanged" LostFocus="CbSize_LostFocus" KeyUp="CbSize_KeyUp"
+                                      Height="30" Padding="6,3" FontSize="12"/>
                         </StackPanel>
 
                         <!-- Number of Copies -->
@@ -230,7 +234,9 @@
                         <DataGridTemplateColumn Header="Size" Width="100">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <ComboBox ItemsSource="{Binding AvailableSizes}" SelectedItem="{Binding SelectedSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="26" Padding="4,2" FontSize="11"/>
+                                    <ComboBox ItemsSource="{Binding AvailableSizes}" SelectedItem="{Binding SelectedSize, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              Text="{Binding SelectedSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                              IsEditable="True" IsTextSearchEnabled="True" Height="26" Padding="4,2" FontSize="11"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

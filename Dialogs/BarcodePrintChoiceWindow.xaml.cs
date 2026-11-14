@@ -186,9 +186,26 @@ namespace AsiErp.Dialogs
 
         private void CbSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TxtSize != null && CbSize?.SelectedItem != null)
+            UpdateSelectedSizeLabel();
+        }
+
+        private void CbSize_LostFocus(object sender, RoutedEventArgs e)
+        {
+            UpdateSelectedSizeLabel();
+        }
+
+        private void CbSize_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            UpdateSelectedSizeLabel();
+        }
+
+        private void UpdateSelectedSizeLabel()
+        {
+            if (TxtSize == null || CbSize == null) return;
+            string sz = !string.IsNullOrWhiteSpace(CbSize.Text) ? CbSize.Text.Trim() : (CbSize.SelectedItem?.ToString() ?? "");
+            if (!string.IsNullOrEmpty(sz))
             {
-                TxtSize.Text = $"Size: {CbSize.SelectedItem}";
+                TxtSize.Text = $"Size: {sz}";
             }
         }
 
@@ -423,7 +440,7 @@ namespace AsiErp.Dialogs
                         ? Math.Min(pd.PrintableAreaHeight, 92)
                         : 90;
 
-                    string size = CbSize?.SelectedItem?.ToString() ?? (_currentProduct.Sizes?.FirstOrDefault() ?? "Free size");
+                    string size = !string.IsNullOrWhiteSpace(CbSize?.Text) ? CbSize.Text.Trim() : (CbSize?.SelectedItem?.ToString() ?? (_currentProduct.Sizes?.FirstOrDefault() ?? "Free size"));
 
                     var fixedDoc = new System.Windows.Documents.FixedDocument();
                     for (int i = 0; i < copies; i++)

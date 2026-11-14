@@ -93,7 +93,8 @@
                         </StackPanel>
                         <StackPanel Grid.Column="1">
                             <TextBlock Text="Tax Type" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
-                            <ComboBox SelectedIndex="{Binding IsInterState, Converter={StaticResource BoolToIndexConv}}" Padding="6,5">
+                            <ComboBox SelectedIndex="{Binding IsInterState, Converter={StaticResource BoolToIndexConv}}"
+                                      IsEditable="True" IsTextSearchEnabled="True" Padding="6,5">
                                 <ComboBoxItem Content="Intra (CGST+SGST)"/>
                                 <ComboBoxItem Content="Inter (IGST)"/>
                             </ComboBox>

@@ -140,7 +140,7 @@ namespace AsiErp.Dialogs
             {
                 Id = (_existingItem as ProductItem)?.Id ?? "p_preview",
                 Name = name,
-                Category = (CbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Shoe",
+                Category = (CbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? (!string.IsNullOrWhiteSpace(CbCategory.Text) ? CbCategory.Text.Trim() : "Shoe"),
                 Sku = string.IsNullOrWhiteSpace(TxtSku.Text) ? "ASI-MFG-001" : TxtSku.Text.Trim(),
                 Barcode = string.IsNullOrWhiteSpace(TxtBarcode.Text) ? BarcodeService.GenerateBarcode() : TxtBarcode.Text.Trim(),
                 RetailPrice = retail,
@@ -256,7 +256,7 @@ namespace AsiErp.Dialogs
                     : TxtBarcode.Text.Trim();
 
                 prod.Name = name;
-                prod.Category = (CbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Shoe";
+                prod.Category = (CbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? (!string.IsNullOrWhiteSpace(CbCategory.Text) ? CbCategory.Text.Trim() : "Shoe");
                 prod.SourceType = _type == "mfg" ? "M" : "R";
                 prod.Unit = TxtUnit.Text.Trim();
                 prod.Sizes = TxtSizes.Text.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();

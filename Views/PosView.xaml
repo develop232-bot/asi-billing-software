@@ -218,7 +218,10 @@
                                                     <TextBlock Text="{Binding Product.Name}" FontWeight="SemiBold" FontSize="12" Foreground="#0F172A" TextTrimming="CharacterEllipsis"/>
                                                     <StackPanel Orientation="Horizontal" Margin="0,5,0,0">
                                                         <!-- Size Dropdown -->
-                                                        <ComboBox ItemsSource="{Binding Product.Sizes}" SelectedItem="{Binding SelectedSize}" Width="65" Margin="0,0,6,0" Padding="3" FontSize="11"/>
+                                                        <ComboBox ItemsSource="{Binding Product.Sizes}" SelectedItem="{Binding SelectedSize}"
+                                                                  Text="{Binding SelectedSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                                  IsEditable="True" IsTextSearchEnabled="True"
+                                                                  Width="65" Margin="0,0,6,0" Padding="3" FontSize="11"/>
                                                         <!-- Qty Controls -->
                                                         <Button Content="−" Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Width="24" Height="24" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" Padding="0"/>
                                                         <TextBlock Text="{Binding Qty}" Width="26" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>

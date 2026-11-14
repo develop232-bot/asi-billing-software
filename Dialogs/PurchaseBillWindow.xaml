@@ -54,7 +54,7 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
                     <TextBlock Text="Purchase Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbKind" SelectionChanged="Kind_SelectionChanged" Padding="8">
+                    <ComboBox x:Name="CbKind" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Kind_SelectionChanged" Padding="8">
                         <ComboBoxItem Content="Raw Material" Tag="raw" IsSelected="True"/>
                         <ComboBoxItem Content="Readymade Product" Tag="ready"/>
                         <ComboBoxItem Content="General Packaging" Tag="gen"/>

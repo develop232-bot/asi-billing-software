@@ -38,7 +38,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Kind *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbKind" SelectionChanged="CbKind_SelectionChanged" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
+                        <ComboBox x:Name="CbKind" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="CbKind_SelectionChanged" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
                             <ComboBoxItem Content="Machinery" Tag="15"/>
                             <ComboBoxItem Content="Building" Tag="10"/>
                             <ComboBoxItem Content="Vehicle" Tag="15"/>

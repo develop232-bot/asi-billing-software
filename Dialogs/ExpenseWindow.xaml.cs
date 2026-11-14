@@ -55,8 +55,10 @@ namespace AsiErp.Dialogs
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
-            string group = (CbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Employee";
-            string type = (CbType.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? CbType.Text;
+            string group = (CbCategory.SelectedItem as ComboBoxItem)?.Content?.ToString()
+                ?? (!string.IsNullOrWhiteSpace(CbCategory.Text) ? CbCategory.Text.Trim() : "Employee");
+            string type = (CbType.SelectedItem as ComboBoxItem)?.Content?.ToString()
+                ?? (!string.IsNullOrWhiteSpace(CbType.Text) ? CbType.Text.Trim() : "");
 
             if (string.IsNullOrWhiteSpace(type))
             {
@@ -88,7 +90,8 @@ namespace AsiErp.Dialogs
             }
 
             string details = TxtDetails?.Text?.Trim() ?? "";
-            string mode = (CbPaidBy.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Cash";
+            string mode = (CbPaidBy.SelectedItem as ComboBoxItem)?.Content?.ToString()
+                ?? (!string.IsNullOrWhiteSpace(CbPaidBy.Text) ? CbPaidBy.Text.Trim() : "Cash");
 
             var expense = new ExpenseItem
             {

@@ -36,7 +36,7 @@
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbCategory" SelectionChanged="Category_Changed" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
+                        <ComboBox x:Name="CbCategory" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Category_Changed" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
                             <ComboBoxItem Content="Employee"/>
                             <ComboBoxItem Content="Utility"/>
                             <ComboBoxItem Content="Misc Exp"/>
@@ -52,7 +52,7 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbType" Padding="8" BorderBrush="#E1E5EC"/>
+                        <ComboBox x:Name="CbType" IsEditable="True" IsTextSearchEnabled="True" Padding="8" BorderBrush="#E1E5EC"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Amount (₹) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
@@ -95,7 +95,7 @@
                 <!-- Row 5: Paid by -->
                 <StackPanel Margin="0,0,0,12" Width="235" HorizontalAlignment="Left">
                     <TextBlock Text="Paid by" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbPaidBy" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
+                    <ComboBox x:Name="CbPaidBy" IsEditable="True" IsTextSearchEnabled="True" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
                         <ComboBoxItem Content="Cash"/>
                         <ComboBoxItem Content="Bank"/>
                         <ComboBoxItem Content="UPI"/>

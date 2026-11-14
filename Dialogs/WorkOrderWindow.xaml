@@ -42,7 +42,7 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
                     <TextBlock Text="Order Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbOrderType" Padding="8">
+                    <ComboBox x:Name="CbOrderType" Padding="8" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="General / stock" Tag="general" IsSelected="True"/>
                         <ComboBoxItem Content="Domestic" Tag="domestic"/>
                         <ComboBoxItem Content="Export" Tag="export"/>
@@ -61,7 +61,7 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="2">
                     <TextBlock Text="Production Status" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbStatus" Padding="8">
+                    <ComboBox x:Name="CbStatus" Padding="8" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="Pending" IsSelected="True"/>
                         <ComboBoxItem Content="Started"/>
                         <ComboBoxItem Content="In Progress"/>
@@ -93,7 +93,9 @@
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ManufacturedProducts}"
                                                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ProductId, UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectionChanged="ProductSelectionChanged" Margin="2"/>
+                                                  Text="{Binding ProductName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                  IsEditable="True" IsTextSearchEnabled="True"
+                                                  SelectionChanged="ProductSelectionChanged" LostFocus="ProductComboBox_LostFocus" Margin="2"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -131,7 +133,9 @@
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableRawMaterials}"
                                                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, UpdateSourceTrigger=PropertyChanged}"
-                                                  SelectionChanged="MaterialSelectionChanged" Margin="2"/>
+                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                  IsEditable="True" IsTextSearchEnabled="True"
+                                                  SelectionChanged="MaterialSelectionChanged" LostFocus="MaterialComboBox_LostFocus" Margin="2"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

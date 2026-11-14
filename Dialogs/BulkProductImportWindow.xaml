@@ -18,6 +18,8 @@
             <Setter Property="Padding" Value="10,6"/>
             <Setter Property="FontSize" Value="12.5"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="IsEditable" Value="True"/>
+            <Setter Property="IsTextSearchEnabled" Value="True"/>
         </Style>
 
         <Style x:Key="LightComboBoxItemStyle" TargetType="ComboBoxItem">

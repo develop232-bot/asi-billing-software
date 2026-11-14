@@ -49,7 +49,8 @@ namespace AsiErp.Dialogs
                 return;
             }
 
-            string kind = (CbKind.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "Machinery";
+            string kind = (CbKind.SelectedItem as ComboBoxItem)?.Content?.ToString()
+                ?? (!string.IsNullOrWhiteSpace(CbKind.Text) ? CbKind.Text.Trim() : "Machinery");
 
             var asset = new AssetItem
             {

@@ -84,6 +84,7 @@
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableProducts}"
                                                   DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Pid, UpdateSourceTrigger=PropertyChanged}"
+                                                  IsEditable="True" IsTextSearchEnabled="True"
                                                   SelectionChanged="ProductSelectionChanged" Margin="2"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
@@ -133,7 +134,7 @@
 
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Place of Supply: " VerticalAlignment="Center"/>
-                    <ComboBox x:Name="CbTaxType" Width="200" SelectionChanged="TaxType_Changed">
+                    <ComboBox x:Name="CbTaxType" Width="200" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="TaxType_Changed">
                         <ComboBoxItem Content="Within state (CGST + SGST)" IsSelected="True"/>
                         <ComboBoxItem Content="Other state (IGST)"/>
                     </ComboBox>

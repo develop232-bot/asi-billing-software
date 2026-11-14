@@ -52,7 +52,7 @@
                 <StackPanel>
                     <TextBlock Text="ITEM CLASSIFICATION" FontSize="11" FontWeight="Bold" Foreground="#64748B" Margin="0,0,0,8"/>
                     <ComboBox SelectedValue="{Binding ItemType, Mode=TwoWay}" SelectedValuePath="Tag"
-                              IsEnabled="{Binding CanChangeType}">
+                              IsEnabled="{Binding CanChangeType}" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="Raw Material" Tag="raw"/>
                         <ComboBoxItem Content="Finished Product" Tag="mfg"/>
                         <ComboBoxItem Content="Readymade Product" Tag="ready"/>
@@ -88,7 +88,9 @@
                         <!-- Category (Only for products, same size as Unit) -->
                         <StackPanel Grid.Row="0" Grid.Column="0" Width="220" Margin="0,0,14,16">
                             <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                            <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Category, Mode=TwoWay}"/>
+                            <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Category, Mode=TwoWay}"
+                                      Text="{Binding Category, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                      IsEditable="True" IsTextSearchEnabled="True"/>
                         </StackPanel>
 
                         <!-- Unit of Measurement (Manual input, same size as Category) -->

@@ -51,7 +51,7 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                     <TextBlock Text="Destination Country" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbCountry" SelectionChanged="Country_SelectionChanged" Padding="8">
+                    <ComboBox x:Name="CbCountry" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Country_SelectionChanged" Padding="8">
                         <ComboBoxItem Content="UAE" IsSelected="True"/>
                         <ComboBoxItem Content="Saudi Arabia"/>
                         <ComboBoxItem Content="Qatar"/>
@@ -96,6 +96,7 @@
                                 <DataTemplate>
                                     <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableProducts}"
                                               DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding Pid, UpdateSourceTrigger=PropertyChanged}"
+                                              IsEditable="True" IsTextSearchEnabled="True"
                                               SelectionChanged="ProductSelectionChanged" Margin="2"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
@@ -128,7 +129,7 @@
             <StackPanel Grid.Column="0">
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                     <TextBlock Text="Incoterm: " VerticalAlignment="Center"/>
-                    <ComboBox x:Name="CbInco" Width="90" Margin="8,0,0,0">
+                    <ComboBox x:Name="CbInco" Width="90" Margin="8,0,0,0" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="FOB" IsSelected="True"/>
                         <ComboBoxItem Content="CIF"/>
                         <ComboBoxItem Content="CFR"/>

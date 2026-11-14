@@ -61,9 +61,26 @@ namespace AsiErp.Dialogs
 
         private void CbSize_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (TxtSize != null && CbSize?.SelectedItem != null)
+            UpdateSelectedSizeLabel();
+        }
+
+        private void CbSize_LostFocus(object sender, RoutedEventArgs e)
+        {
+            UpdateSelectedSizeLabel();
+        }
+
+        private void CbSize_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            UpdateSelectedSizeLabel();
+        }
+
+        private void UpdateSelectedSizeLabel()
+        {
+            if (TxtSize == null || CbSize == null) return;
+            string sz = !string.IsNullOrWhiteSpace(CbSize.Text) ? CbSize.Text.Trim() : (CbSize.SelectedItem?.ToString() ?? "");
+            if (!string.IsNullOrEmpty(sz))
             {
-                TxtSize.Text = $"Size: {CbSize.SelectedItem}";
+                TxtSize.Text = $"Size: {sz}";
             }
         }
 
@@ -195,7 +212,7 @@ namespace AsiErp.Dialogs
             });
 
             // 3. SKU & Size Line
-            string sizeStr = CbSize?.SelectedItem?.ToString() ?? (_product.Sizes?.FirstOrDefault() ?? "Free size");
+            string sizeStr = !string.IsNullOrWhiteSpace(CbSize?.Text) ? CbSize.Text.Trim() : (CbSize?.SelectedItem?.ToString() ?? (_product.Sizes?.FirstOrDefault() ?? "Free size"));
             var dockMeta = new DockPanel { HorizontalAlignment = HorizontalAlignment.Center, Margin = new Thickness(0, 1, 0, 1) };
             dockMeta.Children.Add(new TextBlock
             {
