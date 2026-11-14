@@ -16,7 +16,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="245"/>
+            <ColumnDefinition Width="220"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -31,8 +31,8 @@
             </DockPanel>
         </Border>
 
-        <!-- MODERN HIGH-CONTRAST SIDEBAR (Always 245px, Prominently Visible) -->
-        <Border Grid.Column="0" Width="245" Background="#0A1128" BorderBrush="#1E293B" BorderThickness="0,0,1.5,0">
+        <!-- MODERN HIGH-CONTRAST SIDEBAR (Compact 220px, Prominently Visible) -->
+        <Border Grid.Column="0" Width="220" Background="#0A1128" BorderBrush="#1E293B" BorderThickness="0,0,1.5,0">
             <Border.Effect>
                 <DropShadowEffect BlurRadius="18" Direction="0" ShadowDepth="3" Color="#000000" Opacity="0.18"/>
             </Border.Effect>
@@ -129,7 +129,7 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:domestic}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="🇮🇳" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock DockPanel.Dock="Left" Text="🚩" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Domestic Invoice" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
@@ -523,20 +523,25 @@
             </Grid.RowDefinitions>
 
             <!-- Topbar -->
-            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="24,0">
-                <DockPanel LastChildFill="False">
+            <Border Grid.Row="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="16,0">
+                <Grid VerticalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
                     <!-- Section Breadcrumb Pill -->
-                    <Border VerticalAlignment="Center" Background="#F1F5F9" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14,7">
+                    <Border Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Background="#F1F5F9" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12,6" Margin="0,0,12,0">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Border Width="7" Height="7" CornerRadius="3.5" Background="#2563EB" Margin="0,0,9,0" VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding CurrentBreadcrumb}" FontSize="13.5" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <Border Width="7" Height="7" CornerRadius="3.5" Background="#2563EB" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding CurrentBreadcrumb}" FontSize="13" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
                     </Border>
 
                     <!-- Right Controls -->
-                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                         <!-- Firebase Pill -->
-                        <Button Command="{Binding TestFirebaseCommand}" Margin="0,0,10,0" Padding="11,5" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Click to check or sync with Firebase Cloud Firestore">
+                        <Button Command="{Binding TestFirebaseCommand}" Margin="0,0,8,0" Padding="10,5" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Click to check or sync with Firebase Cloud Firestore">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="16" Padding="{TemplateBinding Padding}">
@@ -545,25 +550,25 @@
                                 </ControlTemplate>
                             </Button.Template>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="7" Height="7" CornerRadius="3.5" Background="{Binding FirebaseStatusDotColor}" Margin="0,0,7,0" VerticalAlignment="Center"/>
+                                <Border Width="7" Height="7" CornerRadius="3.5" Background="{Binding FirebaseStatusDotColor}" Margin="0,0,6,0" VerticalAlignment="Center"/>
                                 <TextBlock Text="{Binding FirebaseStatusBadge}" Foreground="#065F46" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Button>
 
                         <!-- Live Date Display -->
-                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="12,4" Margin="0,0,12,0">
+                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="📅" FontSize="12" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                <TextBlock Text="📅" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding CurrentDateFormatted}" FontWeight="SemiBold" FontSize="11.5" Foreground="#1E293B"/>
+                                    <TextBlock Text="{Binding CurrentDateFormatted}" FontWeight="SemiBold" FontSize="11" Foreground="#1E293B"/>
                                     <TextBlock Text="{Binding CurrentDayOfWeek}" FontSize="9.5" Foreground="#64748B"/>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
 
                         <!-- Notification Bell Button -->
-                        <Grid Margin="0,0,12,0">
-                            <Button Command="{Binding ToggleNotificationsCommand}" Width="36" Height="36" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Notifications">
+                        <Grid Margin="0,0,8,0">
+                            <Button Command="{Binding ToggleNotificationsCommand}" Width="34" Height="34" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Notifications">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
@@ -574,13 +579,13 @@
                                 <TextBlock Text="🔔" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Button>
                             <Border Visibility="{Binding HasNotifications, Converter={StaticResource BoolToVis}}"
-                                    Background="#EF4444" CornerRadius="8" Padding="5,1" Margin="22,-4,-4,0" HorizontalAlignment="Right" VerticalAlignment="Top" IsHitTestVisible="False">
+                                    Background="#EF4444" CornerRadius="8" Padding="5,1" Margin="20,-4,-4,0" HorizontalAlignment="Right" VerticalAlignment="Top" IsHitTestVisible="False">
                                 <TextBlock Text="{Binding NotificationCount}" Foreground="White" FontSize="9" FontWeight="Bold"/>
                             </Border>
                         </Grid>
 
                         <!-- + NEW Menu Button -->
-                        <Button Content="+ New" Command="{Binding ToggleNewMenuCommand}" Height="36" Padding="14,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="12" Cursor="Hand" Margin="0,0,14,0">
+                        <Button Content="+ New" Command="{Binding ToggleNewMenuCommand}" Height="34" Padding="12,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="12" Cursor="Hand" Margin="0,0,10,0">
                             <Button.Template>
                                 <ControlTemplate TargetType="Button">
                                     <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
@@ -594,19 +599,19 @@
                         </Button>
 
                         <!-- User Avatar & Profile Button -->
-                        <Button Command="{Binding ToggleUserMenuCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="4">
+                        <Button Command="{Binding ToggleUserMenuCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="2">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="34" Height="34" CornerRadius="17" Background="{Binding LoggedInRoleColor}" Margin="0,0,8,0">
-                                    <TextBlock Text="{Binding LoggedInUserInitials}" Foreground="White" FontWeight="Bold" FontSize="11.5" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Width="32" Height="32" CornerRadius="16" Background="{Binding LoggedInRoleColor}" Margin="0,0,7,0">
+                                    <TextBlock Text="{Binding LoggedInUserInitials}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                 </Border>
                                 <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="{Binding LoggedInUserName}" FontWeight="SemiBold" FontSize="12.5" Foreground="#1E293B"/>
+                                    <TextBlock Text="{Binding LoggedInUserName}" FontWeight="SemiBold" FontSize="12" Foreground="#1E293B"/>
                                     <TextBlock Text="{Binding LoggedInRoleBadge}" FontSize="9.5" FontWeight="SemiBold" Foreground="#64748B"/>
                                 </StackPanel>
                             </StackPanel>
                         </Button>
                     </StackPanel>
-                </DockPanel>
+                </Grid>
             </Border>
 
             <!-- Main Dynamic View (Optimized with Cached View Presenter) -->

@@ -135,6 +135,13 @@ namespace AsiErp.Models
 
         public double LineTotal => NetAmount;
 
+        private List<string> _availableSizes = new();
+        public List<string> AvailableSizes
+        {
+            get => _availableSizes;
+            set { _availableSizes = value; OnPropertyChanged(); }
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string? propName = null)
         {

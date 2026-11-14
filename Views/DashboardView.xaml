@@ -9,315 +9,334 @@
         <converters:DateFormatConverter x:Key="DateConv"/>
         <converters:StatusToBrushConverter x:Key="StatusBrushConv"/>
         <converters:StatusToBackgroundConverter x:Key="StatusBgConv"/>
+
+        <Style x:Key="QuickActionButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Padding" Value="14,14"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="10"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.88"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="border" Property="Opacity" Value="0.75"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer Background="#F8FAFC" VerticalScrollBarVisibility="Auto" Padding="24" HorizontalScrollBarVisibility="Auto">
         <StackPanel>
-            <!-- Title & Subtitle -->
-            <DockPanel Margin="0,0,0,18">
-                <StackPanel>
-                    <TextBlock Text="Executive Dashboard" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Afrah Samiya Industries Pvt Ltd · Live Operational Overview" FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+            <!-- TOP BAR: Dashboard Title & Period Selector -->
+            <Grid Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Left: Title & Subtitle -->
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="Dashboard" FontSize="26" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Welcome back, Admin! Here is how the company is doing today." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
-            </DockPanel>
+
+                <!-- Right: Top-sellers period dropdown -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="Top-sellers period" FontSize="12.5" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12,6">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="8" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="This month" FontSize="12.5" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBlock Text="▾" FontSize="11" Foreground="#64748B" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
 
             <!-- 10 KPI CARDS (2 rows of 5) -->
-            <!-- Row 1: Retail, Domestic, Export, Total Sales MTD, Expenses -->
+            <!-- ROW 1: Retail, Domestic, Export, Total Sales, Expenses -->
             <UniformGrid Columns="5" Margin="0,0,0,12">
-                <!-- 1. Retail Sales · this month -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#3B82F6" Offset="0"/>
-                            <GradientStop Color="#1D4ED8" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 1. Retail Sales -->
+                <Border Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#2563EB" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Retail Sales · this month" FontSize="11" Foreground="#DBEAFE" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdRetailSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="🛒" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Retail Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdRetailSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 2. Domestic Sales · this month -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#10B981" Offset="0"/>
-                            <GradientStop Color="#047857" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 2. Domestic Sales -->
+                <Border Background="#059669" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#059669" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Domestic Sales · this month" FontSize="11" Foreground="#D1FAE5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdDomesticSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="📄" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Domestic Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdDomesticSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 3. Export Sales · this month -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#0D9488" Offset="0"/>
-                            <GradientStop Color="#0F766E" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 3. Export Sales -->
+                <Border Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0D9488" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Export Sales · this month" FontSize="11" Foreground="#CCFBF1" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="🌐" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Export Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 4. Total Sales (MTD) -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#8B5CF6" Offset="0"/>
-                            <GradientStop Color="#6D28D9" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 4. Total Sales -->
+                <Border Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#7C3AED" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Total Sales (MTD)" FontSize="11" Foreground="#EDE9FE" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="📈" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Total Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 5. Expenses · this month -->
-                <Border Padding="16,14" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#EF4444" Offset="0"/>
-                            <GradientStop Color="#B91C1C" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 5. Expenses -->
+                <Border Background="#D97706" CornerRadius="12" Padding="16,14">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#D97706" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Expenses · this month" FontSize="11" Foreground="#FEE2E2" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdExpenses, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="₹" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Expenses" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdExpenses, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
 
-            <!-- Row 2: Profit, Outstanding, Vendor Payments, Pending Loans, Low Stock -->
-            <UniformGrid Columns="5" Margin="0,0,0,18">
-                <!-- 6. Profit · this month -->
-                <Border Background="{Binding MtdProfitBrush}" Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
+            <!-- ROW 2: Profit/Loss, Outstanding, Vendor Payments, Pending Loans, Low Stock -->
+            <UniformGrid Columns="5" Margin="0,0,0,20">
+                <!-- 6. Profit / Loss -->
+                <Border Background="{Binding MtdProfitBrush}" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.18"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Profit · this month" FontSize="11" Foreground="#D1FAE5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding MtdProfit, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="{Binding MtdProfitIcon}" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="{Binding MtdProfitLabel}" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdProfitDisplayValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 7. Outstanding · To Receive -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#F59E0B" Offset="0"/>
-                            <GradientStop Color="#D97706" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 7. Outstanding - To Receive -->
+                <Border Background="#EA580C" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#EA580C" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Outstanding · To Receive" FontSize="11" Foreground="#FEF3C7" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="₹" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Outstanding - To Receive" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 8. Vendor Payments · To Pay -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#EA580C" Offset="0"/>
-                            <GradientStop Color="#C2410C" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <!-- 8. Vendor Payments - To Pay -->
+                <Border Background="#0891B2" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0891B2" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Vendor Payments · To Pay" FontSize="11" Foreground="#FFEDD5" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="💼" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Vendor Payments - To Pay" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 9. Pending Loans -->
-                <Border Padding="16,14" Margin="0,0,10,0" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#6366F1" Offset="0"/>
-                            <GradientStop Color="#4338CA" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <Border Background="#6366F1" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#6366F1" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Pending Loans" FontSize="11" Foreground="#E0E7FF" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding PendingLoans, Converter={StaticResource InrShortConv}}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="🏛️" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Pending Loans" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding PendingLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
                 <!-- 10. Low Stock Alerts -->
-                <Border Padding="16,14" CornerRadius="12">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#DC2626" Offset="0"/>
-                            <GradientStop Color="#991B1B" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
+                <Border Background="#DC2626" CornerRadius="12" Padding="16,14">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#DC2626" Opacity="0.25"/>
+                    </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="Low Stock Alerts" FontSize="11" Foreground="#FEE2E2" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,5,0,0"/>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="⚠️" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        </Border>
+                        <TextBlock Text="Low Stock Alerts" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>
 
-            <!-- ROW 1: Chart, Top Products, Quick Actions -->
-            <Grid Margin="0,0,0,18">
+            <!-- 3 MAIN CARDS: Sales Overview (Line chart), Top Selling Products (Donut), Quick Actions -->
+            <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.5*"/>
-                    <ColumnDefinition Width="1.05*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="1.45*"/>
+                    <ColumnDefinition Width="1.15*"/>
+                    <ColumnDefinition Width="0.95*"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- SALES TREND LINE GRAPH CARD -->
-                <Border Grid.Column="0" Background="White" Padding="20,16" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- CARD 1: SALES OVERVIEW (LINE CHART) -->
+                <Border Grid.Column="0" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="14" Padding="20,18" Margin="0,0,14,0">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <DockPanel>
-                        <!-- Top Header: Icon + Title on left, Period selector on right -->
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
-                            <!-- Period Dropdown on Right -->
-                            <ComboBox DockPanel.Dock="Right" ItemsSource="{Binding TrendPeriods}"
-                                      SelectedItem="{Binding SelectedTrendPeriod}"
-                                      FontSize="12" FontWeight="SemiBold"
-                                      Foreground="#1E293B" MinWidth="115"
-                                      Padding="10,5" Cursor="Hand"
-                                      VerticalAlignment="Center"/>
+                        <!-- Top Header with legends -->
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <!-- Legends on Right -->
+                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                                <Border Width="10" Height="10" Background="#3B82F6" CornerRadius="2" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Domestic" FontSize="11.5" Foreground="#64748B" Margin="0,0,14,0" VerticalAlignment="Center"/>
 
-                            <!-- Icon + Title on Left -->
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="28" Height="28" CornerRadius="7" Background="#EFF6FF" Margin="0,0,10,0" VerticalAlignment="Center">
-                                    <Path Stretch="Uniform" Width="14" Height="14" Fill="#2563EB" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                          Data="M 3,17 L 9,11 L 13,15 L 21,7 M 21,7 H 16 M 21,7 V 12"/>
-                                </Border>
-                                <TextBlock Text="Sales Trend" FontWeight="Bold" FontSize="16" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                <Border Width="10" Height="10" Background="#14B8A6" CornerRadius="2" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Export" FontSize="11.5" Foreground="#64748B" Margin="0,0,14,0" VerticalAlignment="Center"/>
+
+                                <Border Width="10" Height="10" Background="#F59E0B" CornerRadius="2" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Retail" FontSize="11.5" Foreground="#64748B" Margin="0,0,14,0" VerticalAlignment="Center"/>
+
+                                <Border Width="10" Height="10" Background="#A855F7" CornerRadius="2" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                <TextBlock Text="Expenses" FontSize="11.5" Foreground="#64748B" VerticalAlignment="Center"/>
                             </StackPanel>
+
+                            <!-- Title on Left -->
+                            <TextBlock Text="Sales Overview" FontSize="16" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
                         </DockPanel>
 
-                        <!-- Graph Canvas inside Viewbox for Perfect Scaling -->
-                        <Viewbox Stretch="Uniform" Height="190" Margin="0,4,0,0" VerticalAlignment="Center">
-                            <Canvas Width="500" Height="210" ClipToBounds="False">
-                                <!-- Horizontal Grid Lines & Y-Axis Labels -->
-                                <ItemsControl ItemsSource="{Binding YAxisTicks}">
+                        <!-- Vector Line Chart Canvas inside Viewbox for Sharp Scaling -->
+                        <Viewbox Stretch="Uniform" Height="200" VerticalAlignment="Center">
+                            <Canvas Width="480" Height="210" ClipToBounds="False">
+                                <!-- Horizontal Grid Lines and Y-Axis Ticks -->
+                                <ItemsControl ItemsSource="{Binding OverviewYAxisTicks}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <Canvas Width="500" Height="210"/>
+                                            <Canvas Width="480" Height="210"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Canvas Width="500" Height="210">
-                                                <!-- Tick Label -->
-                                                <TextBlock Canvas.Left="4" Canvas.Top="{Binding LabelTop}" Width="42"
-                                                           TextAlignment="Right" Text="{Binding Label}"
+                                            <Canvas Width="480" Height="210">
+                                                <!-- Tick text (e.g. 15L, 10L, 5L, 0) -->
+                                                <TextBlock Canvas.Left="0" Canvas.Top="{Binding LabelTop}" Width="38"
+                                                           TextAlignment="Right" Text="{Binding Text}"
                                                            FontSize="10.5" FontWeight="SemiBold" Foreground="#64748B"/>
-                                                <!-- Horizontal Line -->
-                                                <Line X1="52" Y1="{Binding Y}" X2="470" Y2="{Binding Y}"
-                                                      Stroke="#F1F5F9" StrokeThickness="1"/>
+                                                <!-- Dashed Grid Line -->
+                                                <Line X1="45" Y1="{Binding Y}" X2="465" Y2="{Binding Y}"
+                                                      Stroke="#E2E8F0" StrokeDashArray="3,3" StrokeThickness="1"/>
                                             </Canvas>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
-                                <!-- Y-Axis Vertical Line -->
-                                <Line X1="52" Y1="38" X2="52" Y2="175" Stroke="#CBD5E1" StrokeThickness="1.5"/>
-
-                                <!-- Baseline Horizontal Line -->
-                                <Line X1="52" Y1="175" X2="470" Y2="175" Stroke="#CBD5E1" StrokeThickness="1.5"/>
-
-                                <!-- Vertical Grid Lines & X-Axis Labels -->
-                                <ItemsControl ItemsSource="{Binding TrendPoints}">
+                                <!-- X-Axis Labels (Jun, Jul, Aug, Sep, Oct, Nov) -->
+                                <ItemsControl ItemsSource="{Binding OverviewXAxisLabels}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <Canvas Width="500" Height="210"/>
+                                            <Canvas Width="480" Height="210"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Canvas Width="500" Height="210">
-                                                <!-- Vertical Line -->
-                                                <Line X1="{Binding X}" Y1="38" X2="{Binding X}" Y2="175"
-                                                      Stroke="#F8FAFC" StrokeThickness="1"/>
-                                                <!-- X-Axis Label -->
-                                                <TextBlock Canvas.Left="{Binding XLabelLeft}" Canvas.Top="183" Width="60"
-                                                           TextAlignment="Center" Text="{Binding Label}"
+                                            <Canvas Width="480" Height="210">
+                                                <TextBlock Canvas.Left="{Binding XLabelLeft}" Canvas.Top="{Binding Y}" Width="32"
+                                                           TextAlignment="Center" Text="{Binding Text}"
                                                            FontSize="10.5" FontWeight="SemiBold" Foreground="#64748B"/>
                                             </Canvas>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
 
-                                <!-- Shaded Area Fill -->
-                                <Polygon Points="{Binding TrendAreaPoints}" Opacity="0.45">
+                                <!-- Soft glowing area gradient under domestic trend -->
+                                <Polygon Points="{Binding SalesOverviewAreaPoints}" Opacity="0.10">
                                     <Polygon.Fill>
                                         <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                            <GradientStop Color="#93C5FD" Offset="0"/>
-                                            <GradientStop Color="#DBEAFE" Offset="0.55"/>
-                                            <GradientStop Color="#00EFF6FF" Offset="1"/>
+                                            <GradientStop Color="#3B82F6" Offset="0"/>
+                                            <GradientStop Color="#00FFFFFF" Offset="1"/>
                                         </LinearGradientBrush>
                                     </Polygon.Fill>
                                 </Polygon>
 
-                                <!-- Main Blue Polyline -->
-                                <Polyline Points="{Binding TrendLinePoints}" Stroke="#2563EB" StrokeThickness="2.8"
+                                <!-- 4 Series Polylines -->
+                                <!-- Expenses Line (Purple) -->
+                                <Polyline Points="{Binding ExpenseLinePoints}" Stroke="#A855F7" StrokeThickness="2.4"
                                           StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
 
-                                <!-- Data Points & Labels -->
-                                <ItemsControl ItemsSource="{Binding TrendPoints}">
+                                <!-- Retail Line (Amber) -->
+                                <Polyline Points="{Binding RetailLinePoints}" Stroke="#F59E0B" StrokeThickness="2.4"
+                                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                                <!-- Export Line (Teal) -->
+                                <Polyline Points="{Binding ExportLinePoints}" Stroke="#14B8A6" StrokeThickness="2.4"
+                                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                                <!-- Domestic Line (Blue) -->
+                                <Polyline Points="{Binding DomesticLinePoints}" Stroke="#3B82F6" StrokeThickness="2.6"
+                                          StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+
+                                <!-- Interactive Data Point Dots -->
+                                <ItemsControl ItemsSource="{Binding OverviewDots}">
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
-                                            <Canvas Width="500" Height="210"/>
+                                            <Canvas Width="480" Height="210"/>
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Canvas Width="500" Height="210">
-                                                <!-- Regular Dots (Non-Last Points) -->
+                                            <Canvas Width="480" Height="210">
                                                 <Ellipse Canvas.Left="{Binding DotLeft}" Canvas.Top="{Binding DotTop}"
-                                                         Width="9" Height="9"
-                                                         Fill="#2563EB" Stroke="White" StrokeThickness="2"
-                                                         ToolTip="{Binding TooltipText}" Cursor="Hand"
-                                                         Visibility="{Binding NormalPointVisibility}"/>
-
-                                                <!-- Amount Label above regular point -->
-                                                <TextBlock Canvas.Left="{Binding LabelLeft}" Canvas.Top="{Binding LabelTop}" Width="60"
-                                                           TextAlignment="Center" Text="{Binding FormattedValue}"
-                                                           FontSize="10.5" FontWeight="Bold" Foreground="#0F172A"
-                                                           Visibility="{Binding NormalPointVisibility}"/>
-
-                                                <!-- Active / Last Point: Outer Ring -->
-                                                <Ellipse Canvas.Left="{Binding RingLeft}" Canvas.Top="{Binding RingTop}"
-                                                         Width="16" Height="16"
-                                                         Fill="White" Stroke="#2563EB" StrokeThickness="2.2"
-                                                         ToolTip="{Binding LastTrendPoint.TooltipText}" Cursor="Hand"
-                                                         Visibility="{Binding LastPointVisibility}"/>
-
-                                                <!-- Active / Last Point: Inner Dot -->
-                                                <Ellipse Canvas.Left="{Binding DotLeft}" Canvas.Top="{Binding DotTop}"
-                                                         Width="9" Height="9"
-                                                         Fill="#2563EB"
-                                                         Visibility="{Binding LastPointVisibility}"/>
-
-                                                <!-- Active / Last Point: Floating Tooltip Badge -->
-                                                <Grid Canvas.Left="{Binding BadgeLeft}" Canvas.Top="{Binding BadgeTop}"
-                                                      Visibility="{Binding LastPointVisibility}">
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition Height="Auto"/>
-                                                        <RowDefinition Height="Auto"/>
-                                                    </Grid.RowDefinitions>
-                                                    <!-- Pill Box -->
-                                                    <Border Grid.Row="0" Background="#2563EB" CornerRadius="6" Padding="7,3" HorizontalAlignment="Center">
-                                                        <Border.Effect>
-                                                            <DropShadowEffect BlurRadius="6" Direction="270" ShadowDepth="2" Color="#1E40AF" Opacity="0.25"/>
-                                                        </Border.Effect>
-                                                        <TextBlock Text="{Binding FormattedValue}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center"/>
-                                                    </Border>
-                                                    <!-- Downward Arrow Pointer -->
-                                                    <Path Grid.Row="1" Fill="#2563EB" HorizontalAlignment="Center" Margin="0,-1,0,0"
-                                                          Data="M 0,0 L 4,4 L 8,0 Z"/>
-                                                </Grid>
+                                                         Width="8" Height="8"
+                                                         Fill="{Binding ColorBrush}" Stroke="White" StrokeThickness="1.5"
+                                                         ToolTip="{Binding TooltipText}" Cursor="Hand"/>
                                             </Canvas>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -327,32 +346,30 @@
                     </DockPanel>
                 </Border>
 
-                <!-- REVENUE BREAKDOWN PIE CHART -->
-                <Border Grid.Column="1" Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- CARD 2: TOP SELLING PRODUCTS (DONUT CHART + LIST) -->
+                <Border Grid.Column="1" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="14" Padding="20,18" Margin="0,0,14,0">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <DockPanel>
-                        <!-- Top Header -->
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding TotalSalesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#2563EB" VerticalAlignment="Center"/>
-                            <StackPanel VerticalAlignment="Center">
-                                <TextBlock Text="Revenue by Channel" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A"/>
-                                <TextBlock Text="Retail vs Domestic vs Export" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
-                            </StackPanel>
+                        <!-- Header -->
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <TextBlock Text="this month" FontSize="11.5" Foreground="#64748B" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                            <TextBlock Text="Top Selling Products" FontSize="16" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
                         </DockPanel>
 
-                        <!-- Donut and Legend -->
+                        <!-- Content: Donut Chart on Left, Breakdown List on Right -->
                         <Grid Margin="0,4,0,0">
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="135"/>
+                                <ColumnDefinition Width="150"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
                             <!-- Donut Viewbox -->
-                            <Viewbox Grid.Column="0" Stretch="Uniform" Width="130" Height="130" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                <Grid Width="200" Height="200">
-                                    <ItemsControl ItemsSource="{Binding ChannelPieSlices}">
+                            <Viewbox Grid.Column="0" Stretch="Uniform" Width="145" Height="145" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Grid Width="176" Height="176">
+                                    <!-- Donut Slices -->
+                                    <ItemsControl ItemsSource="{Binding TopProductsPieSlices}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
                                                 <Grid/>
@@ -365,28 +382,28 @@
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
 
-                                    <!-- Center text for Donut hole -->
+                                    <!-- Donut Center Label -->
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                        <TextBlock Text="TOTAL" FontSize="8.5" FontWeight="Bold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="12" FontWeight="Bold" Foreground="#0F172A" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="Total sales" FontSize="10.5" Foreground="#64748B" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="15" FontWeight="Bold" Foreground="#0F172A" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Grid>
                             </Viewbox>
 
-                            <!-- Legend List -->
-                            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <ItemsControl ItemsSource="{Binding ChannelPieSlices}">
+                            <!-- Product Items Breakdown -->
+                            <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="14,0,0,0" VerticalAlignment="Center">
+                                <ItemsControl ItemsSource="{Binding TopProductsPieSlices}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid Margin="0,5">
+                                            <Grid Margin="0,6">
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto"/>
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <Border Grid.Column="0" Width="8" Height="8" CornerRadius="4" Background="{Binding FillBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="1" Text="{Binding Channel}" FontSize="11" Foreground="#334155" TextTrimming="CharacterEllipsis" ToolTip="{Binding Channel}" VerticalAlignment="Center"/>
-                                                <TextBlock Grid.Column="2" Text="{Binding PercentageDisplay}" FontSize="10.5" FontWeight="Bold" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                                <Border Grid.Column="0" Width="9" Height="9" CornerRadius="2" Background="{Binding FillBrush}" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding Channel}" FontSize="12" Foreground="#334155" TextTrimming="CharacterEllipsis" ToolTip="{Binding Channel}" VerticalAlignment="Center"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding PercentageDisplay}" FontSize="12" FontWeight="Bold" Foreground="#0F172A" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                             </Grid>
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
@@ -396,197 +413,80 @@
                     </DockPanel>
                 </Border>
 
-                <!-- Quick Actions -->
-                <Border Grid.Column="2" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <!-- CARD 3: QUICK ACTIONS (2x3 GRID OF ROUNDED ACTION TILES) -->
+                <Border Grid.Column="2" Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="14" Padding="20,18">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
                     <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Quick Actions" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
-                        <UniformGrid Columns="2">
-                            <Button Content="🛒 New Retail Bill" Command="{Binding NavigateCommand}" CommandParameter="sales:retail" Background="#1E293B" Foreground="White" BorderThickness="0" Padding="8,10" Margin="3" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+                        <!-- Header -->
+                        <TextBlock DockPanel.Dock="Top" Text="Quick Actions" FontSize="16" FontWeight="Bold" Foreground="#0F172A" Margin="0,0,0,16"/>
+
+                        <!-- 2 Columns x 3 Rows Action Tiles -->
+                        <UniformGrid Columns="2" Rows="3" VerticalAlignment="Center">
+                            <!-- 1. New Retail Bill -->
+                            <Button Style="{StaticResource QuickActionButtonStyle}"
+                                    Background="#1E293B" BorderThickness="0"
+                                    Command="{Binding NavigateCommand}" CommandParameter="sales:retail">
+                                <StackPanel>
+                                    <TextBlock Text="🛒" FontSize="17" Foreground="White"/>
+                                    <TextBlock Text="New Retail Bill" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
+                                </StackPanel>
                             </Button>
-                            <Button Content="🧾 Domestic Inv." Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice" Background="#2563EB" Foreground="White" BorderThickness="0" Padding="8,10" Margin="3" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+
+                            <!-- 2. Domestic Invoice -->
+                            <Button Style="{StaticResource QuickActionButtonStyle}"
+                                    Background="#3B82F6"
+                                    Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice">
+                                <StackPanel>
+                                    <TextBlock Text="📄" FontSize="17" Foreground="White"/>
+                                    <TextBlock Text="Domestic Invoice" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
+                                </StackPanel>
                             </Button>
-                            <Button Content="🌐 Export Invoice" Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice" Background="#0D9488" Foreground="White" BorderThickness="0" Padding="8,10" Margin="3" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+
+                            <!-- 3. Export Invoice -->
+                            <Button Style="{StaticResource QuickActionButtonStyle}"
+                                    Background="#14B8A6"
+                                    Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice">
+                                <StackPanel>
+                                    <TextBlock Text="🌐" FontSize="17" Foreground="White"/>
+                                    <TextBlock Text="Export Invoice" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
+                                </StackPanel>
                             </Button>
-                            <Button Content="🏭 Work Order" Command="{Binding OpenDialogCommand}" CommandParameter="work_order" Background="#D97706" Foreground="White" BorderThickness="0" Padding="8,10" Margin="3" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+
+                            <!-- 4. New Work Order -->
+                            <Button Style="{StaticResource QuickActionButtonStyle}"
+                                    Background="#F59E0B"
+                                    Command="{Binding OpenDialogCommand}" CommandParameter="work_order">
+                                <StackPanel>
+                                    <TextBlock Text="📋" FontSize="17" Foreground="White"/>
+                                    <TextBlock Text="New Work Order" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
+                                </StackPanel>
                             </Button>
-                            <Button Content="🏷️ Add Product" Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg" Background="#7C3AED" Foreground="White" BorderThickness="0" Padding="8,10" Margin="3" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+
+                            <!-- 5. Add Product -->
+                            <Button Style="{StaticResource QuickActionButtonStyle}"
+                                    Background="#8B5CF6"
+                                    Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg">
+                                <StackPanel>
+                                    <TextBlock Text="🏷️" FontSize="17" Foreground="White"/>
+                                    <TextBlock Text="Add Product" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
+                                </StackPanel>
                             </Button>
-                            <Button Content="💳 Payment Entry" Command="{Binding OpenDialogCommand}" CommandParameter="payment_quick" Background="#DC2626" Foreground="White" BorderThickness="0" Padding="8,10" Margin="3" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
+
+                            <!-- 6. Payment Entry -->
+                            <Button Style="{StaticResource QuickActionButtonStyle}"
+                                    Background="#EF4444"
+                                    Command="{Binding OpenDialogCommand}" CommandParameter="payment_quick">
+                                <StackPanel>
+                                    <TextBlock Text="₹" FontSize="18" FontWeight="Bold" Foreground="White"/>
+                                    <TextBlock Text="Payment Entry" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
+                                </StackPanel>
                             </Button>
                         </UniformGrid>
                     </DockPanel>
                 </Border>
             </Grid>
-
-            <!-- ROW 2: Recent Invoices, Stock Summary, Recent Activities -->
-            <Grid Margin="0,0,0,18">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.7*"/>
-                    <ColumnDefinition Width="1.05*"/>
-                    <ColumnDefinition Width="1.05*"/>
-                </Grid.ColumnDefinitions>
-
-                <!-- Recent Invoices -->
-                <Border Grid.Column="0" Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <DockPanel>
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                            <TextBlock Text="Recent Invoices" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A"/>
-                            <Button Content="View all →" Command="{Binding NavigateCommand}" CommandParameter="sales" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="SemiBold" Cursor="Hand"/>
-                        </DockPanel>
-
-                        <DataGrid ItemsSource="{Binding RecentInvoices}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="Invoice" Width="135">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="{Binding InvoiceNo}" ToolTip="{Binding InvoiceNo}" Command="{Binding DataContext.ViewInvoiceCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="Bold" HorizontalAlignment="Left" Cursor="Hand" Padding="0"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTemplateColumn Header="Customer" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Party}" ToolTip="{Binding Party}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="80"/>
-                                <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="90"/>
-                                <DataGridTemplateColumn Header="Status" Width="75">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
-                                                <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusBrushConv}}" FontSize="10.5" FontWeight="Bold"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </DockPanel>
-                </Border>
-
-                <!-- Stock Summary -->
-                <Border Grid.Column="1" Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <DockPanel>
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                            <TextBlock Text="Stock Summary" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A"/>
-                            <Button Content="View all →" Command="{Binding NavigateCommand}" CommandParameter="products" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="SemiBold" Cursor="Hand"/>
-                        </DockPanel>
-
-                        <ItemsControl ItemsSource="{Binding StockSummaryList}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel Margin="0,5">
-                                        <StackPanel MaxWidth="160">
-                                            <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontSize="12" FontWeight="SemiBold" Foreground="#1E293B" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding Stock, StringFormat={}{0:N0} units left}" FontSize="11" Foreground="#64748B"/>
-                                        </StackPanel>
-                                        <Border HorizontalAlignment="Right" VerticalAlignment="Center" Padding="8,3" CornerRadius="10" Background="{Binding StatusLevelText, Converter={StaticResource StatusBgConv}}">
-                                            <TextBlock Text="{Binding StatusLevelText}" Foreground="{Binding StatusLevelText, Converter={StaticResource StatusBrushConv}}" FontSize="10.5" FontWeight="Bold"/>
-                                        </Border>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </DockPanel>
-                </Border>
-
-                <!-- Recent Activities -->
-                <Border Grid.Column="2" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <DockPanel>
-                        <TextBlock DockPanel.Dock="Top" Text="Recent Activities" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
-                        <ItemsControl ItemsSource="{Binding RecentActivities}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel Margin="0,0,0,12">
-                                        <Border Width="28" Height="28" CornerRadius="8" Background="{Binding BadgeColor}" Margin="0,0,10,0" VerticalAlignment="Top"/>
-                                        <StackPanel>
-                                            <TextBlock Text="{Binding Title}" FontSize="12" FontWeight="SemiBold" Foreground="#1E293B"/>
-                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#64748B" TextTrimming="CharacterEllipsis"/>
-                                            <TextBlock Text="{Binding Date, Converter={StaticResource DateConv}}" FontSize="10" Foreground="#94A3B8"/>
-                                        </StackPanel>
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </DockPanel>
-                </Border>
-            </Grid>
-
-            <!-- ROW 3: Shop Floor Pipeline -->
-            <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                <DockPanel>
-                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBlock Text="Shop Floor Production Pipeline" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A"/>
-                        <Button Content="Open production →" Command="{Binding NavigateCommand}" CommandParameter="production" HorizontalAlignment="Right" Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="SemiBold" Cursor="Hand"/>
-                    </DockPanel>
-
-                    <ItemsControl ItemsSource="{Binding ShopFloorStages}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <UniformGrid Rows="1"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Background="#F8FAFC" Padding="14,12" Margin="5,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
-                                    <StackPanel HorizontalAlignment="Center">
-                                        <Border Width="40" Height="40" CornerRadius="20" Background="White" BorderBrush="#F59E0B" BorderThickness="2" Margin="0,0,0,8">
-                                            <TextBlock Text="{Binding OrderCount}" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold" FontSize="14" Foreground="#1E293B"/>
-                                        </Border>
-                                        <TextBlock Text="{Binding StageName}" FontWeight="SemiBold" FontSize="12" Foreground="#1E293B" HorizontalAlignment="Center" TextAlignment="Center"/>
-                                        <TextBlock Text="{Binding TotalUnits, StringFormat={}{0:N0} units}" FontSize="11" Foreground="#64748B" HorizontalAlignment="Center" Margin="0,3,0,0"/>
-                                    </StackPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </DockPanel>
-            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

@@ -38,11 +38,22 @@ namespace AsiErp.ViewModels
 
         public List<ProductItem> AvailableProducts { get; }
         public ObservableCollection<SaleLine> Lines { get; } = new();
+        public ObservableCollection<string> BuyerSuggestions { get; } = new();
 
         public string BuyerName { get => _buyerName; set => SetField(ref _buyerName, value); }
         public string ContactPerson { get => _contactPerson; set => SetField(ref _contactPerson, value); }
         public string PhoneNumber { get => _phoneNumber; set => SetField(ref _phoneNumber, value); }
-        public DateTime InvoiceDate { get => _invoiceDate; set => SetField(ref _invoiceDate, value); }
+        public DateTime InvoiceDate
+        {
+            get => _invoiceDate;
+            set
+            {
+                if (SetField(ref _invoiceDate, value))
+                {
+                    OnPropertyChanged(nameof(PaymentDueDateDisplay));
+                }
+            }
+        }
         public string InvoiceNo { get => _invoiceNo; set => SetField(ref _invoiceNo, value); }
 
         public string Country
@@ -94,8 +105,9 @@ namespace AsiErp.ViewModels
                 if (SetField(ref _isCredit, value))
                 {
                     OnPropertyChanged(nameof(IsCash));
+                    OnPropertyChanged(nameof(PaymentDueDateDisplay));
                     if (value) PaidNow = 0;
-                    else PaidNow = GrossAmountInr;
+                    else PaidNow = GrossAmountCurrency;
                 }
             }
         }
@@ -109,12 +121,36 @@ namespace AsiErp.ViewModels
             }
         }
 
-        public int CreditDays { get => _creditDays; set => SetField(ref _creditDays, value); }
-        public double PaidNow { get => _paidNow; set => SetField(ref _paidNow, value); }
+        public int CreditDays
+        {
+            get => _creditDays;
+            set
+            {
+                if (SetField(ref _creditDays, value))
+                {
+                    OnPropertyChanged(nameof(PaymentDueDateDisplay));
+                }
+            }
+        }
+        public double PaidNow
+        {
+            get => _paidNow;
+            set
+            {
+                if (SetField(ref _paidNow, value))
+                {
+                    OnPropertyChanged(nameof(BalanceAmountCurrency));
+                    OnPropertyChanged(nameof(BalanceAmountInr));
+                }
+            }
+        }
 
         public double SubtotalCurrency { get => _subtotalCurrency; private set => SetField(ref _subtotalCurrency, value); }
         public double GrossAmountCurrency { get => _grossAmountCurrency; private set => SetField(ref _grossAmountCurrency, value); }
         public double GrossAmountInr { get => _grossAmountInr; private set => SetField(ref _grossAmountInr, value); }
+        public double BalanceAmountCurrency => Math.Max(0, Math.Round(GrossAmountCurrency - PaidNow, 2));
+        public double BalanceAmountInr => Math.Max(0, Math.Round(GrossAmountInr - (PaidNow * FxRate), 2));
+        public string PaymentDueDateDisplay => IsCredit ? $"{CreditDays} days · {InvoiceDate.AddDays(CreditDays):dd MMM yyyy}" : string.Empty;
 
         public RelayCommand AddLineCommand { get; }
         public RelayCommand DeleteLineCommand { get; }
@@ -152,16 +188,14 @@ namespace AsiErp.ViewModels
         {
             switch (c)
             {
-                case "UAE": Currency = "AED"; PortOfDischarge = "Jebel Ali Port"; break;
-                case "Saudi Arabia": Currency = "SAR"; PortOfDischarge = "Dammam Port / Jeddah"; break;
-                case "Qatar": Currency = "QAR"; PortOfDischarge = "Hamad Port, Doha"; break;
-                case "Oman": Currency = "OMR"; PortOfDischarge = "Sohar Port"; break;
-                case "Kuwait": Currency = "KWD"; PortOfDischarge = "Shuwaikh Port"; break;
-                case "Bahrain": Currency = "BHD"; PortOfDischarge = "Khalifa Bin Salman Port"; break;
-                case "United States": Currency = "USD"; PortOfDischarge = "New York / Los Angeles"; break;
-                case "United Kingdom": Currency = "GBP"; PortOfDischarge = "Felixstowe / London Gateway"; break;
-                case "Europe": Currency = "EUR"; PortOfDischarge = "Rotterdam / Hamburg"; break;
-                default: Currency = "USD"; break;
+                case "UAE": Currency = "AED"; FxRate = 24.10; PortOfDischarge = "Jebel Ali Port"; break;
+                case "Saudi Arabia": Currency = "SAR"; FxRate = 23.60; PortOfDischarge = "Dammam / Jeddah Port"; break;
+                case "Qatar": Currency = "QAR"; FxRate = 24.30; PortOfDischarge = "Hamad Port, Doha"; break;
+                case "Oman": Currency = "OMR"; FxRate = 230.00; PortOfDischarge = "Sohar Port"; break;
+                case "Kuwait": Currency = "KWD"; FxRate = 288.00; PortOfDischarge = "Shuwaikh Port"; break;
+                case "Bahrain": Currency = "BHD"; FxRate = 235.00; PortOfDischarge = "Khalifa Bin Salman Port"; break;
+                case "Other (USD)": Currency = "USD"; FxRate = 88.50; PortOfDischarge = "New York / Los Angeles"; break;
+                default: Currency = "USD"; FxRate = 88.50; break;
             }
         }
 
@@ -170,15 +204,13 @@ namespace AsiErp.ViewModels
             FxRate = cur switch
             {
                 "AED" => 24.10,
-                "SAR" => 23.50,
-                "QAR" => 23.80,
-                "USD" => 87.20,
-                "EUR" => 93.50,
-                "GBP" => 110.00,
-                "OMR" => 226.00,
-                "KWD" => 283.00,
-                "BHD" => 231.00,
-                _ => 87.20
+                "SAR" => 23.60,
+                "QAR" => 24.30,
+                "OMR" => 230.00,
+                "KWD" => 288.00,
+                "BHD" => 235.00,
+                "USD" => 88.50,
+                _ => 88.50
             };
         }
 
@@ -191,9 +223,17 @@ namespace AsiErp.ViewModels
             InvoiceNo = _dataService.NextDocNo("export", increment: false);
             Country = "UAE";
             Incoterm = "FOB";
-            PortOfLoading = "Chennai Port";
+            PortOfLoading = "Chennai";
             IsCredit = true;
             CreditDays = 45;
+
+            BuyerSuggestions.Clear();
+            var pastBuyers = _dataService.Sales
+                .Where(s => s.Type == "export" && !string.IsNullOrWhiteSpace(s.Party))
+                .Select(s => s.Party)
+                .Distinct()
+                .OrderBy(x => x);
+            foreach (var b in pastBuyers) BuyerSuggestions.Add(b);
 
             Lines.Clear();
             AddLine();
@@ -237,7 +277,17 @@ namespace AsiErp.ViewModels
                         }
                         if (price > 0) line.Rate = price;
                         line.GstPercent = 0; // LUT export
-                        if (p.Sizes != null && p.Sizes.Count > 0) line.Size = p.Sizes[0];
+
+                        if (p.Sizes != null && p.Sizes.Count > 0)
+                        {
+                            line.AvailableSizes = p.Sizes.ToList();
+                            line.Size = p.Sizes[0];
+                        }
+                        else
+                        {
+                            line.AvailableSizes = new List<string>();
+                            line.Size = "—";
+                        }
                     }
                 }
                 Recalculate();
@@ -270,9 +320,13 @@ namespace AsiErp.ViewModels
                 GrossAmountCurrency = subCur;
                 GrossAmountInr = Math.Round(subCur * fx, 2);
 
+                OnPropertyChanged(nameof(BalanceAmountCurrency));
+                OnPropertyChanged(nameof(BalanceAmountInr));
+                OnPropertyChanged(nameof(PaymentDueDateDisplay));
+
                 if (!IsCredit)
                 {
-                    PaidNow = GrossAmountInr;
+                    PaidNow = GrossAmountCurrency;
                 }
             }
             finally

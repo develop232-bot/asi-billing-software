@@ -11,16 +11,21 @@
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
         <StackPanel>
             <!-- Header -->
-            <DockPanel Margin="0,0,0,18">
-                <StackPanel>
+            <Grid Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="Product Master &amp; Items" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Manage Raw Materials, Finished Products, General Packaging." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <Button Content="📥 Upload CSV" Command="{Binding BulkImportCommand}" Padding="14,8" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
@@ -54,7 +59,7 @@
                         </Button.Template>
                     </Button>
                 </StackPanel>
-            </DockPanel>
+            </Grid>
 
             <!-- Stat Counters (5 KPI Boxes) -->
             <UniformGrid Columns="5" Margin="0,0,0,20">

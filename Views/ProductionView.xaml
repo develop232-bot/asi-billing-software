@@ -13,16 +13,28 @@
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
         <StackPanel>
             <!-- Title & Subtitle -->
-            <DockPanel Margin="0,0,0,18">
-                <StackPanel>
+            <Grid Margin="0,0,0,18">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
                     <TextBlock Text="Production &amp; Shop Floor" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and finished goods." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                 </StackPanel>
-                <Button Content="+ New Work Order" Command="{Binding NewWorkOrderCommand}" HorizontalAlignment="Right" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
-            </DockPanel>
+                <Button Grid.Column="1" Content="+ New Work Order" Command="{Binding NewWorkOrderCommand}" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+            </Grid>
 
             <!-- 4 Stats Tiles -->
             <UniformGrid Columns="4" Margin="0,0,0,20">

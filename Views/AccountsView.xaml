@@ -14,18 +14,23 @@
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="16,14">
         <StackPanel>
             <!-- Header -->
-            <DockPanel Margin="0,0,0,18">
-                <StackPanel>
-                    <TextBlock Text="{Binding ActiveTabTitle}" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding ActiveTabTitle}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
                 </StackPanel>
 
                 <!-- Period Dropdown -->
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Period: " FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#64748B"/>
-                    <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="185" Padding="8,6">
+                    <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="170" Padding="8,5">
                         <ComboBoxItem Content="This month" Tag="m0"/>
                         <ComboBoxItem Content="Last month" Tag="m1"/>
                         <ComboBoxItem Content="Last 3 months" Tag="q"/>
@@ -33,7 +38,7 @@
                         <ComboBoxItem Content="All time" Tag="all"/>
                     </ComboBox>
                 </StackPanel>
-            </DockPanel>
+            </Grid>
 
             <!-- TAB 0: FINANCE & ACCOUNTS DASHBOARD -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}">
@@ -384,30 +389,32 @@
                             </StackPanel>
                         </DockPanel>
 
-                        <DataGrid ItemsSource="{Binding IncomeRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
-                                <DataGridTemplateColumn Header="Document" Width="145">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="{Binding InvoiceNo}" ToolTip="{Binding InvoiceNo}" Command="{Binding DataContext.ViewDocCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Left" Padding="0"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Channel" Binding="{Binding ChannelLabel}" Width="95"/>
-                                <DataGridTemplateColumn Header="Customer" Width="*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Party}" ToolTip="{Binding Party}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Taxable Value (₹)" Binding="{Binding NetAmount, Converter={StaticResource InrConv}}" Width="135" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="GST (₹)" Binding="{Binding TaxAmount, Converter={StaticResource InrConv}}" Width="110"/>
-                                <DataGridTextColumn Header="Total Billed (₹)" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="130" FontWeight="SemiBold"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <DataGrid ItemsSource="{Binding IncomeRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
+                                    <DataGridTemplateColumn Header="Document" Width="145">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="{Binding InvoiceNo}" ToolTip="{Binding InvoiceNo}" Command="{Binding DataContext.ViewDocCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Background="Transparent" BorderThickness="0" Foreground="#2563EB" FontWeight="Bold" Cursor="Hand" HorizontalAlignment="Left" Padding="0"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Channel" Binding="{Binding ChannelLabel}" Width="95"/>
+                                    <DataGridTemplateColumn Header="Customer" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <TextBlock Text="{Binding Party}" ToolTip="{Binding Party}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Taxable Value (₹)" Binding="{Binding NetAmount, Converter={StaticResource InrConv}}" Width="135" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="GST (₹)" Binding="{Binding TaxAmount, Converter={StaticResource InrConv}}" Width="110"/>
+                                    <DataGridTextColumn Header="Total Billed (₹)" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="130" FontWeight="SemiBold"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
             </StackPanel>
@@ -535,46 +542,48 @@
                         </DockPanel>
 
                         <!-- DataGrid with Columns: Date, Category, Type, Details, Amount, Delete -->
-                        <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="44">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="44">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
 
-                                <DataGridTemplateColumn Header="Category" Width="120">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border Background="{Binding GroupPillBackground}" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding GroupDisplay}" Foreground="{Binding GroupPillBrush}" FontWeight="SemiBold" FontSize="11"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Category" Width="120">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding GroupPillBackground}" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding GroupDisplay}" Foreground="{Binding GroupPillBrush}" FontWeight="SemiBold" FontSize="11"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Type" Width="200">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Category}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="12"/>
-                                                <TextBlock Text="{Binding EmployeeSubtitle}" Foreground="#64748B" FontSize="10.5"
-                                                           Visibility="{Binding HasEmployeeInfo, Converter={StaticResource BoolToVis}}"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Type" Width="200">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Category}" FontWeight="SemiBold" Foreground="#0F172A" FontSize="12"/>
+                                                    <TextBlock Text="{Binding EmployeeSubtitle}" Foreground="#64748B" FontSize="10.5"
+                                                               Visibility="{Binding HasEmployeeInfo, Converter={StaticResource BoolToVis}}"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Details" Binding="{Binding DisplayDetails}" Width="*" Foreground="#475569"/>
-                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold" Foreground="#0F172A"/>
+                                    <DataGridTextColumn Header="Details" Binding="{Binding DisplayDetails}" Width="*" Foreground="#475569"/>
+                                    <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold" Foreground="#0F172A"/>
 
-                                <DataGridTemplateColumn Width="80">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="Delete" Command="{Binding DataContext.DeleteExpenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Visibility="{Binding IsAuto, Converter={StaticResource InverseBoolToVis}}"
-                                                    Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                    <DataGridTemplateColumn Width="80">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Delete" Command="{Binding DataContext.DeleteExpenseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Visibility="{Binding IsAuto, Converter={StaticResource InverseBoolToVis}}"
+                                                        Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
             </StackPanel>
@@ -619,28 +628,42 @@
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <DockPanel>
-                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                            <TextBlock Text="Investment Ledger" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                            <Button Content="+ Add Investment" Command="{Binding AddInvestmentCommand}" HorizontalAlignment="Right" Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold"/>
-                        </DockPanel>
+                        <Grid DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Investment Ledger" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <Button Grid.Column="1" Content="+ Add Investment" Command="{Binding AddInvestmentCommand}" Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
 
-                        <DataGrid ItemsSource="{Binding InvestmentRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
-                                <DataGridTextColumn Header="Invested By" Binding="{Binding InvestedBy}" Width="180" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Purpose / Allocation" Binding="{Binding Purpose}" Width="*"/>
-                                <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <DataGrid ItemsSource="{Binding InvestmentRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
+                                    <DataGridTextColumn Header="Invested By" Binding="{Binding InvestedBy}" Width="180" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="Purpose / Allocation" Binding="{Binding Purpose}" Width="*"/>
+                                    <DataGridTextColumn Header="Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold"/>
 
-                                <DataGridTemplateColumn Width="75">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="Delete" Command="{Binding DataContext.DeleteInvestmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                    <DataGridTemplateColumn Width="75">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Delete" Command="{Binding DataContext.DeleteInvestmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Padding="6,2" Background="Transparent" Foreground="#DC2626" BorderThickness="0" Cursor="Hand" FontSize="11"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
             </StackPanel>
@@ -729,28 +752,42 @@
                     </Border.Effect>
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="Monthly Financial Breakdown" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
-                        <DataGrid ItemsSource="{Binding PlMonthBreakdowns}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Month" Binding="{Binding MonthLabel}" Width="130" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Income (₹)" Binding="{Binding Income, Converter={StaticResource InrConv}}" Width="140" Foreground="#10B981"/>
-                                <DataGridTextColumn Header="Expenses (₹)" Binding="{Binding Expenses, Converter={StaticResource InrConv}}" Width="140" Foreground="#DC2626"/>
-                                <DataGridTextColumn Header="Net Profit / Loss (₹)" Binding="{Binding ProfitLoss, Converter={StaticResource InrConv}}" Width="170" FontWeight="Bold"/>
-                                <DataGridTextColumn Header="Margin %" Binding="{Binding MarginText}" Width="100"/>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <DataGrid ItemsSource="{Binding PlMonthBreakdowns}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Month" Binding="{Binding MonthLabel}" Width="130" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="Income (₹)" Binding="{Binding Income, Converter={StaticResource InrConv}}" Width="140" Foreground="#10B981"/>
+                                    <DataGridTextColumn Header="Expenses (₹)" Binding="{Binding Expenses, Converter={StaticResource InrConv}}" Width="140" Foreground="#DC2626"/>
+                                    <DataGridTextColumn Header="Net Profit / Loss (₹)" Binding="{Binding ProfitLoss, Converter={StaticResource InrConv}}" Width="170" FontWeight="Bold"/>
+                                    <DataGridTextColumn Header="Margin %" Binding="{Binding MarginText}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
             </StackPanel>
 
             <!-- TAB 5: LOANS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=loans}">
-                <DockPanel Margin="0,0,0,16">
-                    <StackPanel>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
                         <TextBlock Text="Loans" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
                         <TextBlock Text="Money borrowed from banks or people. A loan adds to your cash but is not income. Repayments reduce the loan, and the interest becomes an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
                     </StackPanel>
-                    <Button Content="+ Add Loan" Command="{Binding AddLoanCommand}" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
-                </DockPanel>
+                    <Button Grid.Column="1" Content="+ Add Loan" Command="{Binding AddLoanCommand}" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
 
                 <!-- 4 KPI Tiles: Loan, Principal, Interest, Outstanding -->
                 <UniformGrid Columns="4" Margin="0,0,0,20">
@@ -802,76 +839,90 @@
                     </Border.Effect>
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="Loan Register &amp; Active Borrowings" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
-                        <DataGrid ItemsSource="{Binding LoanRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="48">
-                            <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="Lender" Width="2*">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Lender}" FontWeight="Bold" Foreground="#0F172A" FontSize="12.5"/>
-                                                <TextBlock Text="{Binding Note}" Foreground="#64748B" FontSize="11"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <DataGrid ItemsSource="{Binding LoanRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="48">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Lender" Width="2*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Lender}" FontWeight="Bold" Foreground="#0F172A" FontSize="12.5"/>
+                                                    <TextBlock Text="{Binding Note}" Foreground="#64748B" FontSize="11"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Taken On" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
-                                <DataGridTextColumn Header="Loan Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="140" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Interest" Binding="{Binding InterestRate, StringFormat={}{0}% a year}" Width="120"/>
+                                    <DataGridTextColumn Header="Taken On" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
+                                    <DataGridTextColumn Header="Loan Amount (₹)" Binding="{Binding Amount, Converter={StaticResource InrConv}}" Width="130" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="Interest" Binding="{Binding InterestRate, StringFormat={}{0}% a year}" Width="110"/>
 
-                                <DataGridTemplateColumn Header="Repaid" Width="140">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding TotalPrincipalPaid, Converter={StaticResource InrConv}}" FontWeight="SemiBold"/>
-                                                <TextBlock Text="{Binding Repayments.Count, StringFormat={}{0} payments}" FontSize="10.5" Foreground="#64748B"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Repaid" Width="130">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding TotalPrincipalPaid, Converter={StaticResource InrConv}}" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Repayments.Count, StringFormat={}{0} payments}" FontSize="10.5" Foreground="#64748B"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Balance (₹)" Binding="{Binding BalanceRemaining, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold" Foreground="#0F172A"/>
+                                    <DataGridTextColumn Header="Balance (₹)" Binding="{Binding BalanceRemaining, Converter={StaticResource InrConv}}" Width="130" FontWeight="Bold" Foreground="#0F172A"/>
 
-                                <DataGridTemplateColumn Header="Status" Width="100">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border Background="{Binding StatusBackground}" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontWeight="SemiBold" FontSize="11"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
+                                    <DataGridTemplateColumn Header="Status" Width="90">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{Binding StatusBackground}" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Status}" Foreground="{Binding StatusBrush}" FontWeight="SemiBold" FontSize="11"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
 
-                                <DataGridTemplateColumn Header="Actions" Width="220">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                                <Button Content="Edit" Command="{Binding DataContext.EditLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                        Padding="10,4" Margin="0,0,6,0" Background="#F1F5F9" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
-                                                <Button Content="Repay" Command="{Binding DataContext.RepayLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                        Visibility="{Binding IsOpen, Converter={StaticResource BoolToVis}}"
-                                                        Padding="10,4" Margin="0,0,6,0" Background="#EFF6FF" Foreground="#2563EB" BorderBrush="#BFDBFE" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
-                                                <Button Content="Delete" Command="{Binding DataContext.DeleteLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                        Padding="10,4" Background="White" Foreground="#DC2626" BorderBrush="#FCA5A5" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                    <DataGridTemplateColumn Header="Actions" Width="190">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                    <Button Content="Edit" Command="{Binding DataContext.EditLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                            Padding="10,4" Margin="0,0,6,0" Background="#F1F5F9" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
+                                                    <Button Content="Repay" Command="{Binding DataContext.RepayLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                            Visibility="{Binding IsOpen, Converter={StaticResource BoolToVis}}"
+                                                            Padding="10,4" Margin="0,0,6,0" Background="#EFF6FF" Foreground="#2563EB" BorderBrush="#BFDBFE" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
+                                                    <Button Content="Delete" Command="{Binding DataContext.DeleteLoanCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                            Padding="10,4" Background="White" Foreground="#DC2626" BorderBrush="#FCA5A5" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11"/>
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
             </StackPanel>
 
             <!-- TAB 6: ASSETS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=assets}">
-                <DockPanel Margin="0,0,0,16">
-                    <StackPanel>
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
                         <TextBlock Text="Assets" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
                         <TextBlock Text="Things the company owns for a long time, such as machines, vehicles and furniture. They lose value every year (depreciation), which is counted as an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
                     </StackPanel>
-                    <Button Content="+ Add Asset" Command="{Binding AddAssetCommand}" HorizontalAlignment="Right" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
-                </DockPanel>
+                    <Button Grid.Column="1" Content="+ Add Asset" Command="{Binding AddAssetCommand}" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </Grid>
 
                 <!-- 4 KPI Tiles -->
                 <UniformGrid Columns="4" Margin="0,0,0,20">
@@ -923,33 +974,35 @@
                     </Border.Effect>
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="Fixed Assets Register" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
-                        <DataGrid ItemsSource="{Binding AssetRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Asset" Binding="{Binding Name}" Width="2*" FontWeight="Bold"/>
-                                <DataGridTemplateColumn Header="Kind" Width="120">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Border Background="#EFF6FF" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                                <TextBlock Text="{Binding Kind}" Foreground="#2563EB" FontWeight="SemiBold" FontSize="11"/>
-                                            </Border>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                                <DataGridTextColumn Header="Bought On" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
-                                <DataGridTextColumn Header="Cost (₹)" Binding="{Binding Cost, Converter={StaticResource InrConv}}" Width="140" FontWeight="SemiBold"/>
-                                <DataGridTextColumn Header="Loses Value" Binding="{Binding DepreciationRate, StringFormat={}{0}% a year}" Width="120"/>
-                                <DataGridTextColumn Header="Worth Today (₹)" Binding="{Binding BookValue, Converter={StaticResource InrConv}}" Width="140" FontWeight="Bold" Foreground="#0F172A"/>
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                            <DataGrid ItemsSource="{Binding AssetRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Asset" Binding="{Binding Name}" Width="2*" FontWeight="Bold"/>
+                                    <DataGridTemplateColumn Header="Kind" Width="120">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#EFF6FF" CornerRadius="12" Padding="8,3" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Kind}" Foreground="#2563EB" FontWeight="SemiBold" FontSize="11"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Bought On" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
+                                    <DataGridTextColumn Header="Cost (₹)" Binding="{Binding Cost, Converter={StaticResource InrConv}}" Width="130" FontWeight="SemiBold"/>
+                                    <DataGridTextColumn Header="Loses Value" Binding="{Binding DepreciationRate, StringFormat={}{0}% a year}" Width="110"/>
+                                    <DataGridTextColumn Header="Worth Today (₹)" Binding="{Binding BookValue, Converter={StaticResource InrConv}}" Width="130" FontWeight="Bold" Foreground="#0F172A"/>
 
-                                <DataGridTemplateColumn Header="Actions" Width="100">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Content="Delete" Command="{Binding DataContext.DeleteAssetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="White" Foreground="#DC2626" BorderBrush="#FCA5A5" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
+                                    <DataGridTemplateColumn Header="Actions" Width="100">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Content="Delete" Command="{Binding DataContext.DeleteAssetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Padding="10,4" Background="White" Foreground="#DC2626" BorderBrush="#FCA5A5" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </ScrollViewer>
                     </DockPanel>
                 </Border>
             </StackPanel>

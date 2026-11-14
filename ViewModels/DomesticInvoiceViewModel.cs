@@ -20,6 +20,7 @@ namespace AsiErp.ViewModels
         private string _contactPerson = string.Empty;
         private string _phoneNumber = string.Empty;
         private string _customerGstin = string.Empty;
+        private string _vehicleNo = string.Empty;
         private DateTime _invoiceDate = DateTime.Now;
         private string _invoiceNo = string.Empty;
         private bool _isCredit = false;
@@ -33,12 +34,24 @@ namespace AsiErp.ViewModels
 
         public List<ProductItem> AvailableProducts { get; }
         public ObservableCollection<SaleLine> Lines { get; } = new();
+        public ObservableCollection<string> PartySuggestions { get; } = new();
 
         public string CustomerName { get => _customerName; set => SetField(ref _customerName, value); }
         public string ContactPerson { get => _contactPerson; set => SetField(ref _contactPerson, value); }
         public string PhoneNumber { get => _phoneNumber; set => SetField(ref _phoneNumber, value); }
         public string CustomerGstin { get => _customerGstin; set => SetField(ref _customerGstin, value); }
-        public DateTime InvoiceDate { get => _invoiceDate; set => SetField(ref _invoiceDate, value); }
+        public string VehicleNo { get => _vehicleNo; set => SetField(ref _vehicleNo, value); }
+        public DateTime InvoiceDate
+        {
+            get => _invoiceDate;
+            set
+            {
+                if (SetField(ref _invoiceDate, value))
+                {
+                    OnPropertyChanged(nameof(PaymentDueDateDisplay));
+                }
+            }
+        }
         public string InvoiceNo { get => _invoiceNo; set => SetField(ref _invoiceNo, value); }
 
         public bool IsCredit
@@ -49,6 +62,7 @@ namespace AsiErp.ViewModels
                 if (SetField(ref _isCredit, value))
                 {
                     OnPropertyChanged(nameof(IsCash));
+                    OnPropertyChanged(nameof(PaymentDueDateDisplay));
                     if (value) PaidNow = 0;
                     else PaidNow = GrossAmount;
                 }
@@ -64,8 +78,28 @@ namespace AsiErp.ViewModels
             }
         }
 
-        public int CreditDays { get => _creditDays; set => SetField(ref _creditDays, value); }
-        public double PaidNow { get => _paidNow; set => SetField(ref _paidNow, value); }
+        public int CreditDays
+        {
+            get => _creditDays;
+            set
+            {
+                if (SetField(ref _creditDays, value))
+                {
+                    OnPropertyChanged(nameof(PaymentDueDateDisplay));
+                }
+            }
+        }
+        public double PaidNow
+        {
+            get => _paidNow;
+            set
+            {
+                if (SetField(ref _paidNow, value))
+                {
+                    OnPropertyChanged(nameof(BalanceAmount));
+                }
+            }
+        }
 
         public bool IsInterState
         {
@@ -75,11 +109,19 @@ namespace AsiErp.ViewModels
                 if (SetField(ref _isInterState, value))
                 {
                     OnPropertyChanged(nameof(TaxLabel));
+                    OnPropertyChanged(nameof(CgstAmount));
+                    OnPropertyChanged(nameof(SgstAmount));
+                    OnPropertyChanged(nameof(IgstAmount));
                 }
             }
         }
 
-        public string TaxLabel => IsInterState ? "IGST (100% Inter-State):" : "CGST + SGST (Intra-State):";
+        public string TaxLabel => IsInterState ? "IGST (Other State):" : "CGST + SGST (Within State):";
+        public double CgstAmount => IsInterState ? 0 : Math.Round(TaxAmount / 2.0, 2);
+        public double SgstAmount => IsInterState ? 0 : Math.Round(TaxAmount / 2.0, 2);
+        public double IgstAmount => IsInterState ? TaxAmount : 0;
+        public double BalanceAmount => Math.Max(0, Math.Round(GrossAmount - PaidNow, 2));
+        public string PaymentDueDateDisplay => IsCredit ? $"{CreditDays} days · {InvoiceDate.AddDays(CreditDays):dd MMM yyyy}" : string.Empty;
 
         public double Subtotal { get => _subtotal; private set => SetField(ref _subtotal, value); }
         public double TaxAmount { get => _taxAmount; private set => SetField(ref _taxAmount, value); }
@@ -123,11 +165,20 @@ namespace AsiErp.ViewModels
             ContactPerson = string.Empty;
             PhoneNumber = string.Empty;
             CustomerGstin = string.Empty;
+            VehicleNo = string.Empty;
             InvoiceDate = DateTime.Now;
             InvoiceNo = _dataService.NextDocNo("domestic", increment: false);
             IsCredit = false;
             CreditDays = 30;
             IsInterState = false;
+
+            PartySuggestions.Clear();
+            var pastParties = _dataService.Sales
+                .Where(s => s.Type == "domestic" && !string.IsNullOrWhiteSpace(s.Party))
+                .Select(s => s.Party)
+                .Distinct()
+                .OrderBy(x => x);
+            foreach (var p in pastParties) PartySuggestions.Add(p);
 
             Lines.Clear();
             AddLine();
@@ -160,9 +211,25 @@ namespace AsiErp.ViewModels
                         line.Unit = p.Unit;
                         if (p.DomesticPrice > 0) line.Rate = p.DomesticPrice;
                         else if (p.RetailPrice > 0) line.Rate = p.RetailPrice;
-                        if (p.AutoGstRate > 0) line.GstPercent = p.AutoGstRate;
-                        if (p.Sizes != null && p.Sizes.Count > 0) line.Size = p.Sizes[0];
+
+                        line.GstPercent = line.Rate <= 2500 ? 5 : 18;
+
+                        if (p.Sizes != null && p.Sizes.Count > 0)
+                        {
+                            line.AvailableSizes = p.Sizes.ToList();
+                            line.Size = p.Sizes[0];
+                        }
+                        else
+                        {
+                            line.AvailableSizes = new List<string>();
+                            line.Size = "—";
+                        }
                     }
+                }
+                else if (e.PropertyName == nameof(SaleLine.Rate))
+                {
+                    // Auto GST rule: 5% up to ₹2500, 18% above
+                    line.GstPercent = line.Rate <= 2500 ? 5 : 18;
                 }
                 Recalculate();
             };
@@ -195,6 +262,12 @@ namespace AsiErp.ViewModels
                 Subtotal = sub;
                 TaxAmount = tax;
                 GrossAmount = Math.Round(sub + tax, 2);
+
+                OnPropertyChanged(nameof(CgstAmount));
+                OnPropertyChanged(nameof(SgstAmount));
+                OnPropertyChanged(nameof(IgstAmount));
+                OnPropertyChanged(nameof(BalanceAmount));
+                OnPropertyChanged(nameof(PaymentDueDateDisplay));
 
                 if (!IsCredit)
                 {
@@ -257,6 +330,7 @@ namespace AsiErp.ViewModels
                 ContactPerson = ContactPerson.Trim(),
                 Phone = phone,
                 CustomerGstin = CustomerGstin.Trim(),
+                VehicleNo = VehicleNo.Trim(),
                 SaleType = IsCredit ? "Credit" : "Cash",
                 CreditDays = IsCredit ? CreditDays : 0,
                 PaymentDueDate = IsCredit ? InvoiceDate.AddDays(CreditDays).ToString("yyyy-MM-dd") : InvoiceDate.ToString("yyyy-MM-dd"),
