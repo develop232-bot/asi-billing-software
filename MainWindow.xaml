@@ -59,8 +59,6 @@
                     <StackPanel>
                         <TextBlock Text="ASI ERP v2.0 · Firebase Live" FontSize="10" Foreground="#64748B" Margin="2,0,0,6"/>
                         <WrapPanel>
-                            <Button Content="Demo Data" Command="{Binding LoadDemoDataCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Show only sample demo data in software"/>
-                            <Button Content="Reset / Clear (DB)" Command="{Binding LoadCloudDbCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#0F766E" Foreground="#FFFFFF" FontWeight="SemiBold" FontSize="10" Margin="0,0,4,4" ToolTip="Clear demo data and show real database records from Firebase Firestore"/>
                             <Button Content="Sync to DB" Command="{Binding SyncToCloudCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Upload all current software data to Firebase"/>
                             <Button Content="Theme" Command="{Binding ToggleThemeCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4"/>
                         </WrapPanel>
@@ -537,23 +535,6 @@
 
                     <!-- Right Controls -->
                     <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Data Mode Pill (Demo vs Live DB) -->
-                        <Button Command="{Binding ToggleDataModeCommand}" Margin="0,0,10,0" Padding="10,4"
-                                Background="{Binding DataModeBgColor}" BorderBrush="{Binding DataModeBorderColor}" BorderThickness="1"
-                                Cursor="Hand" ToolTip="Click to switch between Demo Sample Data and Live Cloud Database">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="14" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="6" Height="6" CornerRadius="3" Background="{Binding DataModeDotColor}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding DataModeLabel}" Foreground="{Binding DataModeFgColor}" FontWeight="Bold" FontSize="11" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
                         <!-- Firebase Pill -->
                         <Button Command="{Binding TestFirebaseCommand}" Margin="0,0,10,0" Padding="11,5" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Click to check or sync with Firebase Cloud Firestore">
                             <Button.Template>

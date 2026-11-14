@@ -29,7 +29,7 @@ namespace AsiErp.Services
         public List<AssetItem> Assets { get; set; } = new();
         public Dictionary<string, int> Sequences { get; set; } = new();
 
-        public bool IsSampleDataLoaded { get; set; } = true;
+        public bool IsSampleDataLoaded { get; set; } = false;
 
         public event Action? DataChanged;
 
@@ -146,7 +146,7 @@ namespace AsiErp.Services
                     if (root.TryGetProperty("Sequences", out var sqElem))
                         Sequences = JsonSerializer.Deserialize<Dictionary<string, int>>(sqElem.GetRawText()) ?? new();
                     if (root.TryGetProperty("IsSampleDataLoaded", out var smElem))
-                        IsSampleDataLoaded = smElem.GetBoolean();
+                        IsSampleDataLoaded = false;
 
                     for (int i = 0; i < Products.Count; i++)
                     {
@@ -162,21 +162,13 @@ namespace AsiErp.Services
                     foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
                     foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
-                    if (!IsSampleDataLoaded)
-                    {
-                        return;
-                    }
-
-                    if (Products.Count > 0 || RawMaterials.Count > 0)
-                    {
-                        return;
-                    }
+                    return;
                 }
             }
             catch { }
 
-            // Default startup: Demo Data
-            LoadDemoData();
+            // Default startup: Keep fresh empty data (demo data removed)
+            IsSampleDataLoaded = false;
         }
 
         public void StartFresh()
