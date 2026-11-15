@@ -8,7 +8,7 @@ namespace AsiErp.ViewModels
     {
         public override string Kind => "raw";
         public override string Title => "Raw Material Sourcing";
-        public override string Subtitle => "Direct inwarding for leather hides, soles, lining, fabric, adhesives, and shoe trims";
+        public override string Subtitle => "Leather, soles, fabrics, thread, glue and everything that goes into production";
         public override string CategoryBadge => "RAW MATERIAL · TANNERIES & MILLS";
         public override string DefaultUnit => "sq ft";
 

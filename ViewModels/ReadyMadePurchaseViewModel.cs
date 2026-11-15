@@ -8,7 +8,7 @@ namespace AsiErp.ViewModels
     {
         public override string Kind => "ready";
         public override string Title => "Ready Made Products Purchase";
-        public override string Subtitle => "Inward wholesale finished shoes, bags, garments & uniforms with size breakdown and retail pricing";
+        public override string Subtitle => "Finished goods bought from outside vendors to resell to domestic and export customers.";
         public override string CategoryBadge => "READY MADE · FINISHED TRADING GOODS";
         public override string DefaultUnit => "pair";
 

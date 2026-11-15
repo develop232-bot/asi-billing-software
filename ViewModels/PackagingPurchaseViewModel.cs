@@ -8,7 +8,7 @@ namespace AsiErp.ViewModels
     {
         public override string Kind => "gen";
         public override string Title => "General Packaging Sourcing";
-        public override string Subtitle => "Direct inwarding for shoe boxes, corrugated cartons, poly covers, labels & packing supplies";
+        public override string Subtitle => "Shoe boxes, uniform covers, tissue paper, ASI logo bags, single-shoe covers and other packing items.";
         public override string CategoryBadge => "GENERAL PACKAGING · SUPPLIES & BOXES";
         public override string DefaultUnit => "pcs";
 
