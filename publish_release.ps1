@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Automated Velopack Release & GitHub Deployment Script for ASI ERP.
 .PARAMETER Version
@@ -9,10 +9,19 @@
     GitHub repository URL (default: https://github.com/Qnext232/AsiErp).
 #>
 param(
-    [string]$Version = "2.1.2",
-    [string]$GithubToken = "",
+    [string]$Version = "2.3.8",
+    [string]$GithubToken = $env:GITHUB_TOKEN,
     [string]$RepoUrl = "https://github.com/develop232-bot/asi-billing-software"
 )
+
+if ([string]::IsNullOrWhiteSpace($GithubToken)) {
+    try {
+        $remoteUrl = git config --get remote.origin.url
+        if ($remoteUrl -match ":([^@]+)@github\.com") {
+            $GithubToken = $matches[1]
+        }
+    } catch { }
+}
 
 $ErrorActionPreference = "Stop"
 $ProjectDir = $PSScriptRoot
