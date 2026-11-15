@@ -66,7 +66,16 @@ namespace AsiErp.Services
 
         public async Task<bool> CheckForUpdatesAsync(bool isManualCheck = false)
         {
-            if (IsChecking || IsDownloading) return false;
+            if (IsChecking || IsDownloading)
+            {
+                if (isManualCheck)
+                {
+                    System.Windows.MessageBox.Show(
+                        IsDownloading ? $"An update is currently downloading ({DownloadPercent}%). Please wait a moment..." : "Checking GitHub for updates, please wait a moment...",
+                        "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                }
+                return false;
+            }
             IsChecking = true;
 
             try
@@ -77,6 +86,12 @@ namespace AsiErp.Services
                 if (!mgr.IsInstalled)
                 {
                     StatusChanged?.Invoke("Running in portable/dev mode");
+                    if (isManualCheck)
+                    {
+                        System.Windows.MessageBox.Show(
+                            "The app is currently running in portable/development mode.\n\nTo enable automated online updates, run the setup installer (AsiErp-win-Setup.exe) located on your Desktop.",
+                            "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    }
                     return false;
                 }
 
@@ -87,7 +102,10 @@ namespace AsiErp.Services
                     StatusChanged?.Invoke("Software is up to date");
                     if (isManualCheck)
                     {
-                        System.Windows.MessageBox.Show("Software is up to date!\nYou are running the latest version.", "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.5.2";
+                        System.Windows.MessageBox.Show(
+                            $"Your software is currently up to date!\n\nInstalled Version: ASI ERP v{currentVer}\nLatest Release: v{currentVer}\n\nAll requested features and updates are active.",
+                            "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                     }
                     return false;
                 }

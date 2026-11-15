@@ -56,6 +56,8 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.5.2"}";
+
         public bool IsSidebarExpanded
         {
             get => _isSidebarExpanded;
