@@ -36,12 +36,12 @@ namespace AsiErp.Dialogs
             if (_isEdit)
             {
                 CbItemType.IsEnabled = false;
-                TxtTitle.Text = "Edit Item";
+                TxtTitle.Text = "Edit Product";
                 LoadExistingData();
             }
             else
             {
-                TxtTitle.Text = "Add New Item";
+                TxtTitle.Text = "Add Products";
                 AutoSku();
                 AutoBarcode();
                 UpdateFieldsForType();

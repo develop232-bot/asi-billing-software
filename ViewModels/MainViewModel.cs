@@ -605,7 +605,7 @@ namespace AsiErp.ViewModels
             IsNewMenuOpen = false;
             ProductItemEditorVM.LoadItem(type, existingItem, returnRoute);
             ActiveRoute = "product:editor";
-            CurrentBreadcrumb = existingItem != null ? $"Products · {ProductItemEditorVM.Title}" : "Products · Add New Item";
+            CurrentBreadcrumb = existingItem != null ? $"Products · {ProductItemEditorVM.Title}" : "Products · Add Products";
             CurrentView = ProductItemEditorVM;
         }
 

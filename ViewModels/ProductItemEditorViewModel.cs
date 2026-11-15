@@ -20,7 +20,7 @@ namespace AsiErp.ViewModels
         private object? _existingItem;
         private bool _isEditMode;
         private string _returnRoute = "products";
-        private string _title = "Add New Item";
+        private string _title = "Add Products";
         private string _itemType = "mfg"; // mfg, ready, raw, gen
         private string _name = "";
         private string _category = "Shoe";
@@ -95,6 +95,7 @@ namespace AsiErp.ViewModels
 
                     if (!_isEditMode)
                     {
+                        Title = "Add Products";
                         AutoSku();
                         if (_itemType == "ready")
                         {
@@ -358,7 +359,7 @@ namespace AsiErp.ViewModels
                 if (_existingItem is ProductItem p)
                 {
                     _itemType = p.SourceType == "R" ? "ready" : "mfg";
-                    Title = $"Edit Item: {p.Name}";
+                    Title = $"Edit Product: {p.Name}";
                     Name = p.Name;
                     Category = string.IsNullOrWhiteSpace(p.Category) ? "Shoe" : p.Category;
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit;
@@ -379,7 +380,7 @@ namespace AsiErp.ViewModels
                 else if (_existingItem is RawMaterialItem r)
                 {
                     _itemType = "raw";
-                    Title = $"Edit Raw Material: {r.Name}";
+                    Title = $"Edit Product: {r.Name}";
                     Name = r.Name;
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
                     PurchaseRate = r.Rate;
@@ -398,7 +399,7 @@ namespace AsiErp.ViewModels
                 else if (_existingItem is GeneralItem g)
                 {
                     _itemType = "gen";
-                    Title = $"Edit Packaging Item: {g.Name}";
+                    Title = $"Edit Product: {g.Name}";
                     Name = g.Name;
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
                     PurchaseRate = g.Rate;
@@ -423,13 +424,7 @@ namespace AsiErp.ViewModels
             }
             else
             {
-                Title = type switch
-                {
-                    "ready" => "Add Readymade Product",
-                    "raw" => "Add Raw Material",
-                    "gen" => "Add General Packaging Item",
-                    _ => "Add Finished Product"
-                };
+                Title = "Add Products";
 
                 Name = "";
                 Category = "Shoe";

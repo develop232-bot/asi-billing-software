@@ -46,7 +46,7 @@
                         </Button.Template>
                     </Button>
 
-                    <Button Content="+ Add New Item" Command="{Binding AddItemCommand}" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
+                    <Button Content="+ Add Products" Command="{Binding AddItemCommand}" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
