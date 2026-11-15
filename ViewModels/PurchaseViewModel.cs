@@ -133,6 +133,10 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(MonthReadyTotal));
             OnPropertyChanged(nameof(MonthGenTotal));
             OnPropertyChanged(nameof(MonthGrandTotal));
+            OnPropertyChanged(nameof(MonthRawOutstanding));
+            OnPropertyChanged(nameof(MonthReadyOutstanding));
+            OnPropertyChanged(nameof(MonthGenOutstanding));
+            OnPropertyChanged(nameof(MonthTotalOutstanding));
         }
 
         public DateTime? ReportFromDate
@@ -219,6 +223,20 @@ namespace AsiErp.ViewModels
             .Sum(p => p.GrossAmount);
 
         public double MonthGrandTotal => MonthRawTotal + MonthReadyTotal + MonthGenTotal;
+
+        public double MonthRawOutstanding => _dataService.Purchases
+            .Where(p => p.Kind == "raw" && IsInSelectedPeriod(p.Date))
+            .Sum(p => p.BalanceAmount);
+
+        public double MonthReadyOutstanding => _dataService.Purchases
+            .Where(p => p.Kind == "ready" && IsInSelectedPeriod(p.Date))
+            .Sum(p => p.BalanceAmount);
+
+        public double MonthGenOutstanding => _dataService.Purchases
+            .Where(p => p.Kind == "gen" && IsInSelectedPeriod(p.Date))
+            .Sum(p => p.BalanceAmount);
+
+        public double MonthTotalOutstanding => MonthRawOutstanding + MonthReadyOutstanding + MonthGenOutstanding;
 
         // Overall stats
         public double ToPayVendors => _dataService.Purchases

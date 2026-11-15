@@ -19,7 +19,7 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="28,20,28,32">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="28,20,28,32">
         <StackPanel MaxWidth="1050" HorizontalAlignment="Stretch">
             <!-- Top Header & Navigation Bar -->
             <DockPanel Margin="0,0,0,20">

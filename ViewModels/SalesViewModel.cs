@@ -128,6 +128,9 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(MonthDomesticTotal));
             OnPropertyChanged(nameof(MonthExportTotal));
             OnPropertyChanged(nameof(MonthGrandTotal));
+            OnPropertyChanged(nameof(MonthDomesticOutstanding));
+            OnPropertyChanged(nameof(MonthExportOutstanding));
+            OnPropertyChanged(nameof(MonthTotalOutstanding));
         }
 
         public DateTime? ReportFromDate
@@ -185,6 +188,16 @@ namespace AsiErp.ViewModels
             .Sum(s => s.GrossAmount);
 
         public double MonthGrandTotal => MonthRetailTotal + MonthDomesticTotal + MonthExportTotal;
+
+        public double MonthDomesticOutstanding => _dataService.Sales
+            .Where(s => s.Type == "domestic" && IsInSelectedPeriod(s.Date))
+            .Sum(s => s.BalanceAmount);
+
+        public double MonthExportOutstanding => _dataService.Sales
+            .Where(s => s.Type == "export" && IsInSelectedPeriod(s.Date))
+            .Sum(s => s.BalanceAmount);
+
+        public double MonthTotalOutstanding => MonthDomesticOutstanding + MonthExportOutstanding;
 
         // Overall stats
         public double OutstandingTotal => _dataService.Sales.Where(s => s.Status != "Paid").Sum(s => s.BalanceAmount);

@@ -78,8 +78,8 @@
                         <TextBlock Text="Live revenue breakdown across all 3 billing channels" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     </DockPanel>
 
-                    <!-- 4 Summary KPI Cards -->
-                    <UniformGrid Columns="4">
+                    <!-- 4 Summary KPI Cards (Row 1: Sales) -->
+                    <UniformGrid Columns="4" Margin="0,0,0,10">
                         <!-- Retail Sales -->
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
@@ -121,6 +121,57 @@
                                     <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#16A34A" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#15803D" Margin="0,6,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </UniformGrid>
+
+                    <!-- 4 Summary KPI Cards (Row 2: Outstanding to Receive) -->
+                    <UniformGrid Columns="4">
+                        <!-- Retail Counter Status -->
+                        <Border Background="#F8FAFC" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="🛒 Retail Outstanding" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="CLEARED" FontSize="9" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="₹0" FontSize="20" FontWeight="Bold" Foreground="#64748B" Margin="0,6,0,0"/>
+                                <TextBlock Text="Paid at counter" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Domestic Outstanding -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="🚩 Domestic Outstanding" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="TO RECEIVE" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthDomesticOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
+                                <TextBlock Text="unpaid domestic invoices" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Export Outstanding -->
+                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="✈️ Export Outstanding" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="TO RECEIVE" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthExportOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
+                                <TextBlock Text="unpaid export invoices" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Total Outstanding -->
+                        <Border Background="#FEF2F2" Padding="14,12" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="8">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="⚠️ Total to Receive" FontSize="11.5" Foreground="#991B1B" FontWeight="Bold"/>
+                                    <TextBlock Text="PENDING" FontSize="9" FontWeight="Bold" Foreground="#DC2626" HorizontalAlignment="Right"/>
+                                </DockPanel>
+                                <TextBlock Text="{Binding MonthTotalOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#DC2626" Margin="0,6,0,0"/>
+                                <TextBlock Text="still to receive from customers" FontSize="10" Foreground="#EF4444" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
                     </UniformGrid>

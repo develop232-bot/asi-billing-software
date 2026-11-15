@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:viewmodels="clr-namespace:AsiErp.ViewModels"
         xmlns:converters="clr-namespace:AsiErp.Converters"
-        Title="ASI ERP · Afrah Samiya Industries Pvt Ltd" Height="780" Width="1240"
+        Title="G-Track ERP · Afrah Samiya Industries Pvt Ltd" Height="780" Width="1240"
         MinWidth="900" MinHeight="580" WindowState="Maximized"
         Icon="pack://application:,,,/Assets/app.ico"
         WindowStartupLocation="CenterScreen" Background="#F8FAFC"
@@ -47,9 +47,8 @@
                             <Image Source="pack://application:,,,/Assets/logo.png" Stretch="Uniform" Margin="2" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Border>
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Afrah Samiya" FontWeight="Bold" FontSize="13.5" Foreground="White"/>
-                            <TextBlock Text="Industries Pvt Ltd" FontWeight="SemiBold" FontSize="10.5" Foreground="#94A3B8"/>
-                            <TextBlock Text="Shoes &amp; Uniforms ERP" FontSize="9.5" Foreground="#F59E0B" FontWeight="Medium"/>
+                            <TextBlock Text="G-Track ERP" FontWeight="Bold" FontSize="15" Foreground="White"/>
+                            <TextBlock Text="Shoes &amp; Uniforms" FontSize="10.5" Foreground="#94A3B8" FontWeight="SemiBold"/>
                         </StackPanel>
                     </StackPanel>
                 </Border>
@@ -540,21 +539,6 @@
 
                     <!-- Right Controls -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Firebase Pill -->
-                        <Button Command="{Binding TestFirebaseCommand}" Margin="0,0,8,0" Padding="10,5" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" Cursor="Hand" ToolTip="Click to check or sync with Firebase Cloud Firestore">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="16" Padding="{TemplateBinding Padding}">
-                                        <ContentPresenter VerticalAlignment="Center"/>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="7" Height="7" CornerRadius="3.5" Background="{Binding FirebaseStatusDotColor}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                <TextBlock Text="{Binding FirebaseStatusBadge}" Foreground="#065F46" FontWeight="SemiBold" FontSize="11" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
-
                         <!-- Live Date Display -->
                         <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

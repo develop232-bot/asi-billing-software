@@ -1,175 +1,213 @@
 <Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.WorkOrderWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Work Order" Height="730" Width="880"
+        Title="Work Order" Height="760" Width="920" MinHeight="540" MinWidth="740"
         WindowStartupLocation="CenterOwner" Background="#F1F3F7">
 
-    <Grid Margin="24">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+        <Grid Margin="22">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
 
-        <!-- Header -->
-        <Border Grid.Row="0" BorderBrush="#E5A62E" BorderThickness="0,0,0,2" Padding="0,0,0,12" Margin="0,0,0,16">
-            <TextBlock x:Name="TxtTitle" Text="New Production Work Order" FontSize="20" FontWeight="Bold" Foreground="#152039"/>
-        </Border>
+            <!-- Header -->
+            <Border Grid.Row="0" BorderBrush="#E5A62E" BorderThickness="0,0,0,2" Padding="0,0,0,12" Margin="0,0,0,14">
+                <DockPanel>
+                    <TextBlock x:Name="TxtTitle" Text="New Production Work Order" FontSize="20" FontWeight="Bold" Foreground="#152039" VerticalAlignment="Center"/>
+                    <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and finished goods." FontSize="11.5" Foreground="#78839A" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                </DockPanel>
+            </Border>
 
-        <!-- Basic Info -->
-        <Border Grid.Row="1" Background="White" Padding="18" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+            <!-- Basic Info Card -->
+            <Border Grid.Row="1" Background="White" Padding="16" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1" CornerRadius="8">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Row 1: Order No, Customer, Order Type -->
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="Work Order No." FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtOrderNo" IsReadOnly="True" Background="#F6F7FA" Height="36" VerticalContentAlignment="Center" Padding="8,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="Customer / Order For" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TxtCustomer" BorderBrush="#E1E5EC" Height="36" VerticalContentAlignment="Center" Padding="8,0"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="Order Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="CbOrderType" Height="36" VerticalContentAlignment="Center">
+                            <ComboBoxItem Content="General / stock" Tag="general" IsSelected="True"/>
+                            <ComboBoxItem Content="Domestic" Tag="domestic"/>
+                            <ComboBoxItem Content="Export" Tag="export"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Row 2: Order Date, Due Date, Status -->
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,12">
+                        <TextBlock Text="Date Order Came" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpOrderDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="Due Date *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpDueDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="1" Grid.Column="2" Margin="0,0,0,12">
+                        <TextBlock Text="Production Status" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <ComboBox x:Name="CbStatus" Height="36" VerticalContentAlignment="Center" SelectionChanged="CbStatus_SelectionChanged">
+                            <ComboBoxItem Content="Pending" IsSelected="True"/>
+                            <ComboBoxItem Content="Cutting"/>
+                            <ComboBoxItem Content="Stitching"/>
+                            <ComboBoxItem Content="Lasting &amp; pressing"/>
+                            <ComboBoxItem Content="Finishing"/>
+                            <ComboBoxItem Content="Packing"/>
+                            <ComboBoxItem Content="Completed"/>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- Row 3: Production Started, Production Ended -->
+                    <StackPanel Grid.Row="2" Grid.Column="0" Margin="0,0,12,0">
+                        <TextBlock Text="Production Started" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpStartDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="1" Margin="0,0,12,0">
+                        <TextBlock Text="Production Ended" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                        <DatePicker x:Name="DpEndDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Dual Tables: Raw Material Consumed & Products to Make -->
+            <Grid Grid.Row="2" Margin="0,0,0,14">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,10">
-                    <TextBlock Text="Work Order No." FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtOrderNo" IsReadOnly="True" Background="#F6F7FA"/>
-                </StackPanel>
+                <!-- Left: Raw Material Consumed -->
+                <Border Grid.Column="0" Background="White" Padding="14" Margin="0,0,7,0" BorderBrush="#E1E5EC" BorderThickness="1" CornerRadius="8">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                            <TextBlock Text="Raw Material Consumed" FontWeight="Bold" FontSize="13.5" Foreground="#152039" VerticalAlignment="Center"/>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                <Button Content="⚡ Recipe" Click="SuggestRecipe_Click" Padding="8,4" Background="#FBF0D6" Foreground="#7A5210" BorderBrush="#E5A62E" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,0">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                </Button>
+                                <Button Content="+ Add Material" Click="AddMat_Click" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                </Button>
+                            </StackPanel>
+                        </DockPanel>
 
-                <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,10">
-                    <TextBlock Text="Customer / Order For" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtCustomer" BorderBrush="#E1E5EC"/>
-                </StackPanel>
+                        <DataGrid x:Name="DgMaterials" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36" MinHeight="140">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Raw Material" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableRawMaterials}"
+                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, UpdateSourceTrigger=PropertyChanged}"
+                                                      Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                      IsEditable="True" IsTextSearchEnabled="True"
+                                                      SelectionChanged="MaterialSelectionChanged" LostFocus="MaterialComboBox_LostFocus" Margin="2"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
-                    <TextBlock Text="Order Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbOrderType" IsEditable="True" IsTextSearchEnabled="True">
-                        <ComboBoxItem Content="General / stock" Tag="general" IsSelected="True"/>
-                        <ComboBoxItem Content="Domestic" Tag="domestic"/>
-                        <ComboBoxItem Content="Export" Tag="export"/>
-                    </ComboBox>
-                </StackPanel>
+                                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="55" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="65"/>
 
-                <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
-                    <TextBlock Text="Order Date" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpOrderDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
-                    <TextBlock Text="Due Date *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpDueDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
-                </StackPanel>
-
-                <StackPanel Grid.Row="1" Grid.Column="2">
-                    <TextBlock Text="Production Status" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbStatus" IsEditable="True" IsTextSearchEnabled="True">
-                        <ComboBoxItem Content="Pending" IsSelected="True"/>
-                        <ComboBoxItem Content="Started"/>
-                        <ComboBoxItem Content="In Progress"/>
-                        <ComboBoxItem Content="Completed"/>
-                    </ComboBox>
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <!-- Products to make & Raw Material Consumed -->
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <!-- Products to make -->
-            <Border Grid.Column="0" Background="White" Padding="14" Margin="0,0,8,0" BorderBrush="#E1E5EC" BorderThickness="1">
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="0,0,0,10">
-                        <TextBlock Text="Products to Make" FontWeight="Bold" FontSize="14" Foreground="#152039" VerticalAlignment="Center"/>
-                        <Button Content="+ Add Product" Click="AddItem_Click" Margin="12,0,0,0" Padding="8,3" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
-                    </StackPanel>
-
-                    <DataGrid x:Name="DgItems" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Finished Product" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ManufacturedProducts}"
-                                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ProductId, UpdateSourceTrigger=PropertyChanged}"
-                                                  Text="{Binding ProductName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                                  IsEditable="True" IsTextSearchEnabled="True"
-                                                  SelectionChanged="ProductSelectionChanged" LostFocus="ProductComboBox_LostFocus" Margin="2"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-
-                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="60"/>
-                            <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="65"/>
-
-                            <DataGridTemplateColumn Width="40">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="✕" Click="DeleteItem_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </DockPanel>
-            </Border>
-
-            <!-- Raw Material Consumed -->
-            <Border Grid.Column="1" Background="White" Padding="14" Margin="8,0,0,0" BorderBrush="#E1E5EC" BorderThickness="1">
-                <DockPanel>
-                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
-                        <TextBlock Text="Raw Material Consumed" FontWeight="Bold" FontSize="14" Foreground="#152039" VerticalAlignment="Center"/>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="⚡ Suggest from Recipe" Click="SuggestRecipe_Click" Padding="8,3" Background="#E5A62E" Foreground="#7A5210" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" Margin="0,0,8,0"/>
-                            <Button Content="+ Add" Click="AddMat_Click" Padding="8,3" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand"/>
-                        </StackPanel>
+                                <DataGridTemplateColumn Width="38">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="✕" Click="DeleteMat_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
                     </DockPanel>
+                </Border>
 
-                    <DataGrid x:Name="DgMaterials" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
-                        <DataGrid.Columns>
-                            <DataGridTemplateColumn Header="Raw Material" Width="*">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableRawMaterials}"
-                                                  DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, UpdateSourceTrigger=PropertyChanged}"
-                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                                  IsEditable="True" IsTextSearchEnabled="True"
-                                                  SelectionChanged="MaterialSelectionChanged" LostFocus="MaterialComboBox_LostFocus" Margin="2"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                <!-- Right: Products to Make -->
+                <Border Grid.Column="1" Background="White" Padding="14" Margin="7,0,0,0" BorderBrush="#E1E5EC" BorderThickness="1" CornerRadius="8">
+                    <DockPanel>
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
+                            <TextBlock Text="Products to Make" FontWeight="Bold" FontSize="13.5" Foreground="#152039" VerticalAlignment="Center"/>
+                            <Button Content="+ Add Finished Good" Click="AddItem_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                            </Button>
+                        </DockPanel>
 
-                            <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="60" IsReadOnly="True"/>
-                            <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="70"/>
+                        <DataGrid x:Name="DgItems" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36" MinHeight="140">
+                            <DataGrid.Columns>
+                                <DataGridTemplateColumn Header="Finished Product" Width="*">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ManufacturedProducts}"
+                                                      DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ProductId, UpdateSourceTrigger=PropertyChanged}"
+                                                      Text="{Binding ProductName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                      IsEditable="True" IsTextSearchEnabled="True"
+                                                      SelectionChanged="ProductSelectionChanged" LostFocus="ProductComboBox_LostFocus" Margin="2"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Width="40">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Button Content="✕" Click="DeleteMat_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </DockPanel>
+                                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="50" IsReadOnly="True"/>
+                                <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="65"/>
+                                <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="65"/>
+
+                                <DataGridTemplateColumn Width="38">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="✕" Click="DeleteItem_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Border>
+            </Grid>
+
+            <!-- Notes Section -->
+            <Border Grid.Row="3" Background="White" Padding="14" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1" CornerRadius="8">
+                <StackPanel>
+                    <TextBlock Text="Notes" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtNotes" Height="50" TextWrapping="Wrap" AcceptsReturn="True" BorderBrush="#E1E5EC" Padding="8,6"/>
+                </StackPanel>
             </Border>
-        </Grid>
 
-        <!-- Footer -->
-        <DockPanel Grid.Row="3" Margin="0,16,0,0">
-            <Button x:Name="BtnDeleteOrder" Content="🗑 Delete Order" Click="Delete_Click" Height="36" Padding="14,0"
-                    Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" FontWeight="SemiBold" Cursor="Hand" Visibility="Collapsed">
-                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-            </Button>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand">
+            <!-- Footer -->
+            <DockPanel Grid.Row="4" Margin="0,4,0,0">
+                <Button x:Name="BtnDeleteOrder" Content="🗑 Delete Order" Click="Delete_Click" Height="36" Padding="14,0"
+                        Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" FontWeight="SemiBold" Cursor="Hand" Visibility="Collapsed">
                     <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                 </Button>
-                <Button Content="Save Work Order" Click="Save_Click" Height="36" Padding="18,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
-                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                </Button>
-            </StackPanel>
-        </DockPanel>
-    </Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button Content="Save Work Order" Click="Save_Click" Height="36" Padding="18,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+        </Grid>
+    </ScrollViewer>
 </Window>

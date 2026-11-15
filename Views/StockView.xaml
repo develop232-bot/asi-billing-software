@@ -22,16 +22,25 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
-                <Button Grid.Column="1" Content="📤 Download CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" VerticalAlignment="Center"/>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="{Binding Subtitle}" FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- Top Action Buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="{Binding AddButtonText}" Command="{Binding AddItemCommand}" Padding="13,7" Background="#F1F5F9" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button Content="{Binding BuyButtonText}" Command="{Binding BuyItemCommand}" Padding="13,7" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button Content="📥 Download CSV" Command="{Binding ExportCsvCommand}" Padding="13,7" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                </StackPanel>
             </Grid>
 
-            <!-- Active Category Option / Pill at Top -->
-            <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
-                <Border Background="#172443" CornerRadius="8" Padding="14,7">
-                    <TextBlock Text="{Binding Title}" Foreground="White" FontWeight="SemiBold" FontSize="12"/>
-                </Border>
-            </StackPanel>
 
             <!-- 4 Stats Tiles -->
             <UniformGrid Columns="4" Margin="0,0,0,20">
@@ -130,11 +139,19 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Action" Width="85" MinWidth="60">
+                            <DataGridTemplateColumn Header="Action" Width="145" MinWidth="130">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="12,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Foreground="#0F172A" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                            <Button Content="Adjust" Command="{Binding DataContext.AdjustStockCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Padding="10,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
+                                            <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Foreground="#0F172A" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
+                                        </StackPanel>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

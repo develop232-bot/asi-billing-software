@@ -84,6 +84,8 @@ namespace AsiErp.ViewModels
                     ApplyFilter();
                     OnPropertyChanged(nameof(Title));
                     OnPropertyChanged(nameof(Subtitle));
+                    OnPropertyChanged(nameof(AddButtonText));
+                    OnPropertyChanged(nameof(BuyButtonText));
                     OnPropertyChanged(nameof(TotalValue));
                     OnPropertyChanged(nameof(LowStockCount));
                     OnPropertyChanged(nameof(TotalUnitsOnHand));
@@ -103,13 +105,36 @@ namespace AsiErp.ViewModels
         public string Title => ActiveTab switch
         {
             "raw" => "Raw Material Stock",
-            "fg" => "Finished Products",
-            "ready" => "Readymade Stock",
-            "gen" => "Packaging & General",
+            "fg" => "Finished Goods Stock",
+            "ready" => "Readymade (Purchased) Stock",
+            "gen" => "Other (Boxes, Covers) Stock",
             _ => "Stock"
         };
 
-        public string Subtitle => string.Empty;
+        public string Subtitle => ActiveTab switch
+        {
+            "raw" => "Leather, soles, fabrics, thread and other material used in production.",
+            "fg" => "Shoes and uniforms made in our own factory, ready to sell.",
+            "ready" => "Finished products bought from vendors for resale.",
+            "gen" => "Shoe boxes, uniform covers, tissue paper, ASI logo bags, single-shoe covers and other packing items.",
+            _ => "Stock and inventory management"
+        };
+
+        public string AddButtonText => ActiveTab switch
+        {
+            "raw" => "+ Add Raw Material",
+            "gen" => "+ Add General Item",
+            "ready" => "+ Add Readymade",
+            _ => "+ Add Product"
+        };
+
+        public string BuyButtonText => ActiveTab switch
+        {
+            "raw" => "Buy Raw Material",
+            "gen" => "Buy General Items",
+            "ready" => "Buy Readymade Goods",
+            _ => "New Work Order"
+        };
 
         public double TotalValue => Items.Sum(x => x.TotalValue);
         public int LowStockCount => Items.Count(x => x.StatusLevel != "ok");
@@ -176,6 +201,11 @@ namespace AsiErp.ViewModels
 
             BuyItemCommand = new RelayCommand(_ =>
             {
+                if (ActiveTab == "fg")
+                {
+                    _openDialogAction("work_order", null);
+                    return;
+                }
                 string kind = ActiveTab switch
                 {
                     "raw" => "raw",

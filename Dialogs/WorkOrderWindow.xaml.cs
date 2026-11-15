@@ -40,6 +40,7 @@ namespace AsiErp.Dialogs
                 TxtTitle.Text = $"Edit Work Order {_existingOrder.OrderNo}";
                 TxtOrderNo.Text = _existingOrder.OrderNo;
                 TxtCustomer.Text = _existingOrder.Customer;
+                TxtNotes.Text = _existingOrder.Notes ?? "";
 
                 foreach (ComboBoxItem itm in CbOrderType.Items)
                 {
@@ -52,17 +53,12 @@ namespace AsiErp.Dialogs
 
                 if (DateTime.TryParse(_existingOrder.OrderDate, out var od)) DpOrderDate.SelectedDate = od;
                 if (DateTime.TryParse(_existingOrder.DueDate, out var dd)) DpDueDate.SelectedDate = dd;
-
-                string normalizedStatus = _existingOrder.Status switch
-                {
-                    "Cutting" => "Started",
-                    "Stitching" or "Lasting & pressing" or "Finishing" or "Packing" => "In Progress",
-                    _ => _existingOrder.Status
-                };
+                if (DateTime.TryParse(_existingOrder.StartDate, out var sd)) DpStartDate.SelectedDate = sd;
+                if (DateTime.TryParse(_existingOrder.EndDate, out var ed)) DpEndDate.SelectedDate = ed;
 
                 foreach (ComboBoxItem itm in CbStatus.Items)
                 {
-                    if (string.Equals(itm.Content?.ToString(), normalizedStatus, StringComparison.OrdinalIgnoreCase))
+                    if (string.Equals(itm.Content?.ToString(), _existingOrder.Status, StringComparison.OrdinalIgnoreCase))
                     {
                         CbStatus.SelectedItem = itm;
                         break;
@@ -83,6 +79,22 @@ namespace AsiErp.Dialogs
                 DpDueDate.SelectedDate = DateTime.Now.AddDays(7);
 
                 AddItem();
+            }
+        }
+
+        private void CbStatus_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (CbStatus?.SelectedItem is ComboBoxItem item)
+            {
+                string status = item.Content?.ToString() ?? "";
+                if (status != "Pending" && DpStartDate != null && !DpStartDate.SelectedDate.HasValue)
+                {
+                    DpStartDate.SelectedDate = DateTime.Now;
+                }
+                if (status == "Completed" && DpEndDate != null && !DpEndDate.SelectedDate.HasValue)
+                {
+                    DpEndDate.SelectedDate = DateTime.Now;
+                }
             }
         }
 
@@ -318,9 +330,10 @@ namespace AsiErp.Dialogs
                 OrderType = orderType,
                 OrderDate = DpOrderDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 DueDate = DpDueDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"),
-                StartDate = status != "Pending" ? DateTime.Now.ToString("yyyy-MM-dd") : "",
-                EndDate = status == "Completed" ? DateTime.Now.ToString("yyyy-MM-dd") : "",
+                StartDate = DpStartDate.SelectedDate?.ToString("yyyy-MM-dd") ?? (status != "Pending" ? DateTime.Now.ToString("yyyy-MM-dd") : ""),
+                EndDate = DpEndDate.SelectedDate?.ToString("yyyy-MM-dd") ?? (status == "Completed" ? DateTime.Now.ToString("yyyy-MM-dd") : ""),
                 Status = status,
+                Notes = TxtNotes.Text.Trim(),
                 Items = validItems,
                 Materials = validMaterials,
                 IsDone = status == "Completed"

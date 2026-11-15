@@ -41,14 +41,23 @@ namespace AsiErp.Services
 
         public void EnsureDefaultAdmin()
         {
-            if (!Users.Any(u => u.Role == "admin"))
+            var existingAdmin = Users.FirstOrDefault(u => u.Role == "admin");
+            if (existingAdmin != null)
+            {
+                if (existingAdmin.FullName == "System Administrator")
+                {
+                    existingAdmin.FullName = "ASI Admin";
+                    SaveUsers();
+                }
+            }
+            else
             {
                 var admin = new AppUser
                 {
                     Id = "usr_admin_001",
                     Username = "admin",
                     Password = "admin", // Simple easy-to-use initial password
-                    FullName = "System Administrator",
+                    FullName = "ASI Admin",
                     Role = "admin"
                 };
                 Users.Add(admin);
@@ -291,6 +300,10 @@ namespace AsiErp.Services
                     var list = JsonSerializer.Deserialize<List<AppUser>>(json);
                     if (list != null && list.Count > 0)
                     {
+                        foreach (var u in list)
+                        {
+                            if (u.FullName == "System Administrator") u.FullName = "ASI Admin";
+                        }
                         Users = list;
                     }
                 }

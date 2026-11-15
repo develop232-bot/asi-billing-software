@@ -166,14 +166,23 @@ namespace AsiErp.ViewModels
         public bool CanAccessFinance => IsAdmin || IsFinance;
 
         public string LoggedInUserRole => _dataService.Auth.CurrentUser?.Role ?? "guest";
-        public string LoggedInUserName => _dataService.Auth.CurrentUser?.FullName ?? "User";
-        public string LoggedInUserHandle => _dataService.Auth.CurrentUser?.Username ?? "user";
+        public string LoggedInUserName
+        {
+            get
+            {
+                var name = _dataService.Auth.CurrentUser?.FullName;
+                if (string.IsNullOrEmpty(name) || name == "System Administrator") return "ASI Admin";
+                return name;
+            }
+        }
+        public string LoggedInUserHandle => _dataService.Auth.CurrentUser?.Username ?? "admin";
         public string LoggedInUserInitials
         {
             get
             {
                 string name = LoggedInUserName;
-                if (string.IsNullOrEmpty(name)) return "U";
+                if (name == "ASI Admin") return "AS";
+                if (string.IsNullOrEmpty(name)) return "AS";
                 var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
                 if (parts.Length >= 2) return $"{parts[0][0]}{parts[1][0]}".ToUpperInvariant();
                 return name.Substring(0, Math.Min(2, name.Length)).ToUpperInvariant();

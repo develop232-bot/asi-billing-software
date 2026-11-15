@@ -43,12 +43,19 @@ namespace AsiErp.ViewModels
             _ => status
         };
 
-        public int PendingCount => _dataService.WorkOrders.Count(o => string.Equals(NormalizeStatus(o.Status), "Pending", StringComparison.OrdinalIgnoreCase));
-        public int StartedCount => _dataService.WorkOrders.Count(o => string.Equals(NormalizeStatus(o.Status), "Started", StringComparison.OrdinalIgnoreCase));
-        public int InProgressCount => _dataService.WorkOrders.Count(o => string.Equals(NormalizeStatus(o.Status), "In Progress", StringComparison.OrdinalIgnoreCase));
-        public int CompletedCount => _dataService.WorkOrders.Count(o => o.IsDone || string.Equals(NormalizeStatus(o.Status), "Completed", StringComparison.OrdinalIgnoreCase));
+        public int PendingCount => _dataService.WorkOrders.Count(o => string.Equals(o.Status, "Pending", StringComparison.OrdinalIgnoreCase));
+        public int StartedCount => _dataService.WorkOrders.Count(o => string.Equals(o.Status, "Cutting", StringComparison.OrdinalIgnoreCase));
+        public int InProgressCount => _dataService.WorkOrders.Count(o => !string.Equals(o.Status, "Pending", StringComparison.OrdinalIgnoreCase) && !string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase) && !o.IsDone);
+        public int CompletedCount => _dataService.WorkOrders.Count(o => o.IsDone || string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase));
 
-        public int CompletedThisMonthCount => CompletedCount;
+        public int CompletedThisMonthCount
+        {
+            get
+            {
+                string currentMonthPrefix = DateTime.Now.ToString("yyyy-MM");
+                return _dataService.WorkOrders.Count(o => (o.IsDone || string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase)) && (string.IsNullOrEmpty(o.EndDate) || o.EndDate.StartsWith(currentMonthPrefix)));
+            }
+        }
 
         public int OverdueCount => _dataService.WorkOrders.Count(o => o.IsOverdue);
 
