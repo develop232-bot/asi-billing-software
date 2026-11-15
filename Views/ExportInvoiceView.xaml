@@ -348,7 +348,7 @@
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
                                                         <Border Background="#FEE2E2" BorderBrush="#FCA5A5" BorderThickness="1" CornerRadius="7">
-                                                            <TextBlock Text="✕" FontSize="13" FontWeight="Bold" Foreground="#DC2626" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                            <Path Data="M 2,2 L 10,10 M 10,2 L 2,10" Stroke="#DC2626" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                         </Border>
                                                     </ControlTemplate>
                                                 </Button.Template>

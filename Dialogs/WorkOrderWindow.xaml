@@ -173,9 +173,21 @@
                                 <DataGridTemplateColumn Width="40">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="✕" Click="DeleteMat_Click" Foreground="#DC2626" Background="#FEE2E2" BorderThickness="0"
-                                                    Width="28" Height="28" Cursor="Hand" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            <Button Click="DeleteMat_Click" Width="28" Height="28" Cursor="Hand" ToolTip="Remove Material"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="btnBorder" Background="#FEE2E2" BorderBrush="#FCA5A5" BorderThickness="1" CornerRadius="5">
+                                                            <Path Data="M 2,2 L 10,10 M 10,2 L 2,10" Stroke="#DC2626" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="btnBorder" Property="Background" Value="#FECDD3"/>
+                                                                <Setter TargetName="btnBorder" Property="BorderBrush" Value="#F87171"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
                                             </Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
@@ -262,9 +274,21 @@
                                 <DataGridTemplateColumn Width="40">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="✕" Click="DeleteItem_Click" Foreground="#DC2626" Background="#FEE2E2" BorderThickness="0"
-                                                    Width="28" Height="28" Cursor="Hand" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            <Button Click="DeleteItem_Click" Width="28" Height="28" Cursor="Hand" ToolTip="Remove Finished Good"
+                                                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="btnBorder" Background="#FEE2E2" BorderBrush="#FCA5A5" BorderThickness="1" CornerRadius="5">
+                                                            <Path Data="M 2,2 L 10,10 M 10,2 L 2,10" Stroke="#DC2626" StrokeThickness="2" StrokeStartLineCap="Round" StrokeEndLineCap="Round" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="btnBorder" Property="Background" Value="#FECDD3"/>
+                                                                <Setter TargetName="btnBorder" Property="BorderBrush" Value="#F87171"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
                                             </Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
