@@ -152,6 +152,30 @@ namespace AsiErp.ViewModels
         public double BalanceAmountInr => Math.Max(0, Math.Round(GrossAmountInr - (PaidNow * FxRate), 2));
         public string PaymentDueDateDisplay => IsCredit ? $"{CreditDays} days · {InvoiceDate.AddDays(CreditDays):dd MMM yyyy}" : string.Empty;
 
+        private DateTime _receivedDate = DateTime.Now;
+        public DateTime ReceivedDate
+        {
+            get => _receivedDate;
+            set => SetField(ref _receivedDate, value);
+        }
+
+        private string _paymentMode = "Bank transfer";
+        public string PaymentMode
+        {
+            get => _paymentMode;
+            set => SetField(ref _paymentMode, value);
+        }
+
+        public List<string> AvailablePaymentModes { get; } = new() { "Bank transfer", "Cash", "UPI", "Cheque" };
+
+        private string _paymentReference = string.Empty;
+        public string PaymentReference
+        {
+            get => _paymentReference;
+            set => SetField(ref _paymentReference, value);
+        }
+
+        public RelayCommand QuickFillCommand { get; }
         public RelayCommand AddLineCommand { get; }
         public RelayCommand DeleteLineCommand { get; }
         public RelayCommand SaveInvoiceCommand { get; }
@@ -180,6 +204,13 @@ namespace AsiErp.ViewModels
             SaveInvoiceCommand = new RelayCommand(async _ => await SaveInvoiceAsync());
             BackToSalesCommand = new RelayCommand(_ => _navigateAction("sales"));
             ResetFormCommand = new RelayCommand(_ => ResetForm());
+            QuickFillCommand = new RelayCommand(p =>
+            {
+                if (double.TryParse(p?.ToString(), out double pct))
+                {
+                    PaidNow = Math.Round(GrossAmountCurrency * (pct / 100.0), 2);
+                }
+            });
 
             ResetForm();
         }
@@ -226,6 +257,9 @@ namespace AsiErp.ViewModels
             PortOfLoading = "Chennai";
             IsCredit = true;
             CreditDays = 45;
+            ReceivedDate = DateTime.Now;
+            PaymentMode = "Bank transfer";
+            PaymentReference = string.Empty;
 
             BuyerSuggestions.Clear();
             var pastBuyers = _dataService.Sales
@@ -380,6 +414,8 @@ namespace AsiErp.ViewModels
                 SaleType = IsCredit ? "Credit" : "Cash",
                 CreditDays = IsCredit ? CreditDays : 0,
                 PaymentDueDate = IsCredit ? InvoiceDate.AddDays(CreditDays).ToString("yyyy-MM-dd") : InvoiceDate.ToString("yyyy-MM-dd"),
+                PaymentMode = PaymentMode,
+                Event = PaymentReference.Trim(),
                 TaxType = "export_lut",
                 NetAmount = Math.Round(subtotalInr, 2),
                 TaxAmount = 0,

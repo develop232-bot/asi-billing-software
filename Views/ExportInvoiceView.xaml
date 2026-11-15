@@ -412,15 +412,18 @@
                             <TextBlock Text="{Binding GrossAmountInr, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" Foreground="#0D9488" FontSize="13.5"/>
                         </DockPanel>
 
-                        <!-- Received Now (Cur) -->
+                        <!-- Received Now (Cur) Display -->
                         <DockPanel Margin="0,4" VerticalAlignment="Center">
                             <TextBlock Foreground="#64748B" FontSize="12.5" VerticalAlignment="Center">
                                 <Run Text="Received now ("/>
                                 <Run Text="{Binding Currency, Mode=OneWay}"/>
                                 <Run Text=")"/>
                             </TextBlock>
-                            <TextBox Text="{Binding PaidNow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}"
-                                     Width="120" Height="36" HorizontalAlignment="Right" Padding="8,0" VerticalContentAlignment="Center" TextAlignment="Right" BorderBrush="#CBD5E1" FontWeight="SemiBold" FontSize="12.5"/>
+                            <TextBlock HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#10B981" FontSize="12.5">
+                                <Run Text="{Binding Currency, Mode=OneWay}"/>
+                                <Run Text=" "/>
+                                <Run Text="{Binding PaidNow, StringFormat='{}{0:N2}', Mode=OneWay}"/>
+                            </TextBlock>
                         </DockPanel>
 
                         <!-- Balance -->
@@ -438,15 +441,101 @@
                             <TextBlock Text="Payment due" Foreground="#64748B" FontSize="12"/>
                             <TextBlock Text="{Binding PaymentDueDateDisplay}" HorizontalAlignment="Right" FontWeight="SemiBold" Foreground="#D97706" FontSize="12"/>
                         </DockPanel>
-
-                        <!-- Big Save Button -->
-                        <Button Content="Save invoice" Command="{Binding SaveInvoiceCommand}"
-                                Height="40" Background="#0D9488" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="13" Margin="0,12,0,0">
-                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources>
-                        </Button>
                     </StackPanel>
                 </Border>
             </Grid>
+
+            <!-- Advance / payment received Section (Exact Match to Prototype & Screenshot) -->
+            <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0,16,0,16">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                </Border.Effect>
+                <StackPanel>
+                    <!-- Header with Quick fill: 25%, 50%, 100% -->
+                    <DockPanel Margin="0,0,0,12">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Quick fill" FontSize="12.5" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <Button Content="25%" Command="{Binding QuickFillCommand}" CommandParameter="25"
+                                    Padding="12,5" Margin="0,0,6,0" Background="#F8FAFC" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                    Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                            <Button Content="50%" Command="{Binding QuickFillCommand}" CommandParameter="50"
+                                    Padding="12,5" Margin="0,0,6,0" Background="#F8FAFC" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                    Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                            <Button Content="100%" Command="{Binding QuickFillCommand}" CommandParameter="100"
+                                    Padding="12,5" Background="#F8FAFC" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                    Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                        </StackPanel>
+
+                        <TextBlock Text="Advance / payment received" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
+                    </DockPanel>
+
+                    <!-- Divider -->
+                    <Border BorderBrush="#E2E8F0" BorderThickness="0,1,0,0" Margin="0,0,0,14"/>
+
+                    <!-- 4 Fields in One Row: Amount received, Received on, Mode, Reference / cheque no. -->
+                    <UniformGrid Columns="4" Margin="0,0,0,16">
+                        <!-- 1. Amount received (Cur) -->
+                        <StackPanel Margin="0,0,10,0">
+                            <TextBlock FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6">
+                                <Run Text="Amount received ("/>
+                                <Run Text="{Binding Currency, Mode=OneWay}"/>
+                                <Run Text=")"/>
+                            </TextBlock>
+                            <TextBox Text="{Binding PaidNow, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, StringFormat='{}{0:F2}'}"
+                                     Height="36" Padding="8,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" BorderThickness="1"
+                                     FontWeight="SemiBold" FontSize="12.5">
+                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></TextBox.Resources>
+                            </TextBox>
+                        </StackPanel>
+
+                        <!-- 2. Received on -->
+                        <StackPanel Margin="0,0,10,0">
+                            <TextBlock Text="Received on" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                            <DatePicker SelectedDate="{Binding ReceivedDate, Mode=TwoWay}" Height="36" Padding="6,0" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- 3. Mode -->
+                        <StackPanel Margin="0,0,10,0">
+                            <TextBlock Text="Mode" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                            <ComboBox ItemsSource="{Binding AvailablePaymentModes}" SelectedItem="{Binding PaymentMode, Mode=TwoWay}"
+                                      Height="36" Padding="8,0" VerticalContentAlignment="Center">
+                                <ComboBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></ComboBox.Resources>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- 4. Reference / cheque no. -->
+                        <StackPanel>
+                            <TextBlock Text="Reference / cheque no." FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                            <TextBox Text="{Binding PaymentReference, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                     Height="36" Padding="8,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" BorderThickness="1" FontSize="12.5">
+                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></TextBox.Resources>
+                            </TextBox>
+                        </StackPanel>
+                    </UniformGrid>
+
+                    <!-- Bottom Buttons: Cancel and Save invoice -->
+                    <DockPanel Margin="0,4,0,0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Cancel" Command="{Binding BackToSalesCommand}"
+                                    Height="38" Padding="20,0" Background="#F8FAFC" Foreground="#334155" BorderBrush="#CBD5E1" BorderThickness="1"
+                                    Cursor="Hand" FontWeight="SemiBold" FontSize="12.5" Margin="0,0,10,0">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                            <Button Content="Save invoice" Command="{Binding SaveInvoiceCommand}"
+                                    Height="38" Padding="24,0" Background="#0D9488" Foreground="White" BorderThickness="0"
+                                    Cursor="Hand" FontWeight="Bold" FontSize="12.5">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                        </StackPanel>
+                    </DockPanel>
+                </StackPanel>
+            </Border>
         </StackPanel>
     </ScrollViewer>
 </UserControl>

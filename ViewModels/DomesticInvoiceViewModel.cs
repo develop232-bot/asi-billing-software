@@ -127,6 +127,30 @@ namespace AsiErp.ViewModels
         public double TaxAmount { get => _taxAmount; private set => SetField(ref _taxAmount, value); }
         public double GrossAmount { get => _grossAmount; private set => SetField(ref _grossAmount, value); }
 
+        private DateTime _receivedDate = DateTime.Now;
+        public DateTime ReceivedDate
+        {
+            get => _receivedDate;
+            set => SetField(ref _receivedDate, value);
+        }
+
+        private string _paymentMode = "Bank transfer";
+        public string PaymentMode
+        {
+            get => _paymentMode;
+            set => SetField(ref _paymentMode, value);
+        }
+
+        public List<string> AvailablePaymentModes { get; } = new() { "Bank transfer", "Cash", "UPI", "Cheque" };
+
+        private string _paymentReference = string.Empty;
+        public string PaymentReference
+        {
+            get => _paymentReference;
+            set => SetField(ref _paymentReference, value);
+        }
+
+        public RelayCommand QuickFillCommand { get; }
         public RelayCommand AddLineCommand { get; }
         public RelayCommand DeleteLineCommand { get; }
         public RelayCommand SaveInvoiceCommand { get; }
@@ -155,6 +179,13 @@ namespace AsiErp.ViewModels
             SaveInvoiceCommand = new RelayCommand(async _ => await SaveInvoiceAsync());
             BackToSalesCommand = new RelayCommand(_ => _navigateAction("sales"));
             ResetFormCommand = new RelayCommand(_ => ResetForm());
+            QuickFillCommand = new RelayCommand(p =>
+            {
+                if (double.TryParse(p?.ToString(), out double pct))
+                {
+                    PaidNow = Math.Round(GrossAmount * (pct / 100.0), 2);
+                }
+            });
 
             ResetForm();
         }
@@ -171,6 +202,9 @@ namespace AsiErp.ViewModels
             IsCredit = false;
             CreditDays = 30;
             IsInterState = false;
+            ReceivedDate = DateTime.Now;
+            PaymentMode = "Bank transfer";
+            PaymentReference = string.Empty;
 
             PartySuggestions.Clear();
             var pastParties = _dataService.Sales
@@ -334,6 +368,8 @@ namespace AsiErp.ViewModels
                 SaleType = IsCredit ? "Credit" : "Cash",
                 CreditDays = IsCredit ? CreditDays : 0,
                 PaymentDueDate = IsCredit ? InvoiceDate.AddDays(CreditDays).ToString("yyyy-MM-dd") : InvoiceDate.ToString("yyyy-MM-dd"),
+                PaymentMode = PaymentMode,
+                Event = PaymentReference.Trim(),
                 TaxType = IsInterState ? "inter" : "intra",
                 NetAmount = Math.Round(subtotal, 2),
                 TaxAmount = Math.Round(tax, 2),
