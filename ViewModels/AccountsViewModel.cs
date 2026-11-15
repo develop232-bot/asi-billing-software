@@ -276,6 +276,98 @@ namespace AsiErp.ViewModels
 
         public RelayCommand ViewDocCommand { get; }
 
+        // --- INLINE LOAN ENTRY ---
+        private string _newLoanLender = string.Empty;
+        public string NewLoanLender
+        {
+            get => _newLoanLender;
+            set => SetField(ref _newLoanLender, value);
+        }
+
+        private DateTime _newLoanDate = DateTime.Now;
+        public DateTime NewLoanDate
+        {
+            get => _newLoanDate;
+            set => SetField(ref _newLoanDate, value);
+        }
+
+        private string _newLoanAmount = string.Empty;
+        public string NewLoanAmount
+        {
+            get => _newLoanAmount;
+            set => SetField(ref _newLoanAmount, value);
+        }
+
+        private string _newLoanInterestRate = "10.0";
+        public string NewLoanInterestRate
+        {
+            get => _newLoanInterestRate;
+            set => SetField(ref _newLoanInterestRate, value);
+        }
+
+        private string _newLoanNote = string.Empty;
+        public string NewLoanNote
+        {
+            get => _newLoanNote;
+            set => SetField(ref _newLoanNote, value);
+        }
+
+        public RelayCommand SaveInlineLoanCommand { get; }
+
+        // --- INLINE ASSET ENTRY ---
+        private string _newAssetName = string.Empty;
+        public string NewAssetName
+        {
+            get => _newAssetName;
+            set => SetField(ref _newAssetName, value);
+        }
+
+        public List<string> AssetKinds { get; } = new() { "Machinery", "Building", "Vehicle", "Furniture", "Computer", "Other" };
+
+        private string _newAssetKind = "Machinery";
+        public string NewAssetKind
+        {
+            get => _newAssetKind;
+            set
+            {
+                if (SetField(ref _newAssetKind, value))
+                {
+                    NewAssetRate = value switch
+                    {
+                        "Machinery" => "15.0",
+                        "Building" => "10.0",
+                        "Vehicle" => "15.0",
+                        "Furniture" => "10.0",
+                        "Computer" => "40.0",
+                        _ => "10.0"
+                    };
+                }
+            }
+        }
+
+        private DateTime _newAssetDate = DateTime.Now;
+        public DateTime NewAssetDate
+        {
+            get => _newAssetDate;
+            set => SetField(ref _newAssetDate, value);
+        }
+
+        private string _newAssetCost = string.Empty;
+        public string NewAssetCost
+        {
+            get => _newAssetCost;
+            set => SetField(ref _newAssetCost, value);
+        }
+
+        private string _newAssetRate = "15.0";
+        public string NewAssetRate
+        {
+            get => _newAssetRate;
+            set => SetField(ref _newAssetRate, value);
+        }
+
+        public RelayCommand SaveInlineAssetCommand { get; }
+
         public AccountsViewModel(AppDataService dataService, Action<string, object?> openDialogAction, string initialTab = "dashboard")
         {
             _dataService = dataService;
@@ -344,6 +436,86 @@ namespace AsiErp.ViewModels
             ViewDocCommand = new RelayCommand(p =>
             {
                 if (p is SaleDoc sale) _openDialogAction("view_doc", sale);
+            });
+
+            SaveInlineLoanCommand = new RelayCommand(async _ =>
+            {
+                string lender = NewLoanLender?.Trim() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(lender))
+                {
+                    MessageBox.Show("Please enter the lender name (bank or person).", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!double.TryParse(NewLoanAmount, out double amt) || amt <= 0)
+                {
+                    MessageBox.Show("Please enter a valid loan amount.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!double.TryParse(NewLoanInterestRate, out double rate) || rate < 0)
+                {
+                    MessageBox.Show("Please enter a valid interest rate % per year.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var loan = new LoanItem
+                {
+                    Id = "l_" + Guid.NewGuid().ToString("N")[..8],
+                    Lender = lender,
+                    Date = NewLoanDate.ToString("yyyy-MM-dd"),
+                    Amount = amt,
+                    InterestRate = rate,
+                    Note = NewLoanNote?.Trim() ?? string.Empty
+                };
+
+                await _dataService.AddLoanAsync(loan);
+
+                NewLoanLender = string.Empty;
+                NewLoanAmount = string.Empty;
+                NewLoanNote = string.Empty;
+                NewLoanInterestRate = "10.0";
+                NewLoanDate = DateTime.Now;
+            });
+
+            SaveInlineAssetCommand = new RelayCommand(async _ =>
+            {
+                string name = NewAssetName?.Trim() ?? string.Empty;
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    MessageBox.Show("Please enter what the asset is.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!double.TryParse(NewAssetCost, out double cost) || cost <= 0)
+                {
+                    MessageBox.Show("Please enter a valid purchase cost.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                if (!double.TryParse(NewAssetRate, out double rate) || rate < 0)
+                {
+                    MessageBox.Show("Please enter a valid depreciation rate % per year.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var asset = new AssetItem
+                {
+                    Id = "a_" + Guid.NewGuid().ToString("N")[..8],
+                    Name = name,
+                    Kind = string.IsNullOrWhiteSpace(NewAssetKind) ? "Machinery" : NewAssetKind.Trim(),
+                    Date = NewAssetDate.ToString("yyyy-MM-dd"),
+                    Cost = cost,
+                    DepreciationRate = rate
+                };
+
+                await _dataService.AddAssetAsync(asset);
+
+                NewAssetName = string.Empty;
+                NewAssetCost = string.Empty;
+                NewAssetKind = "Machinery";
+                NewAssetRate = "15.0";
+                NewAssetDate = DateTime.Now;
             });
 
             _dataService.DataChanged += RefreshData;

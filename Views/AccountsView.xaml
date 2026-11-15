@@ -779,25 +779,10 @@
 
             <!-- TAB 5: LOANS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=loans}">
-                <Grid Margin="0,0,0,16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
-                        <TextBlock Text="Loans" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
-                        <TextBlock Text="Money borrowed from banks or people. A loan adds to your cash but is not income. Repayments reduce the loan, and the interest becomes an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="+ Add Loan" Command="{Binding AddLoanCommand}" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </Grid>
+                <StackPanel Margin="0,0,0,16">
+                    <TextBlock Text="Loans" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Money borrowed from banks or people. A loan adds to your cash but is not income. Repayments reduce the loan, and the interest becomes an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                </StackPanel>
 
                 <!-- 4 KPI Tiles: Loan, Principal, Interest, Outstanding -->
                 <UniformGrid Columns="4" Margin="0,0,0,20">
@@ -842,6 +827,71 @@
                     </Border>
                 </UniformGrid>
 
+                <!-- INLINE ADD LOAN ROW (All inputs in one row below the 4 boxes) -->
+                <Border Background="White" Padding="16,14" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2.2*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.3*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.4*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="2.2*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Lender -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Lender (Bank or Person) *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewLoanLender, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" FontSize="12.5"/>
+                        </StackPanel>
+
+                        <!-- Date Received -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Date Received *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <DatePicker SelectedDate="{Binding NewLoanDate}" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Loan Amount -->
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Loan Amount (₹) *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewLoanAmount, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="13" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- Interest % / yr -->
+                        <StackPanel Grid.Column="6">
+                            <TextBlock Text="Interest % / yr *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewLoanInterestRate, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" FontSize="12.5"/>
+                        </StackPanel>
+
+                        <!-- Note / Purpose -->
+                        <StackPanel Grid.Column="8">
+                            <TextBlock Text="Note (What was it for?)" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewLoanNote, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" FontSize="12.5"/>
+                        </StackPanel>
+
+                        <!-- + Add Loan Button -->
+                        <StackPanel Grid.Column="10" VerticalAlignment="Bottom">
+                            <Button Content="+ Add Loan" Command="{Binding SaveInlineLoanCommand}" Height="36" Padding="18,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand" FontSize="12">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
                 <!-- Loans Table -->
                 <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
@@ -850,7 +900,29 @@
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="Loan Register &amp; Active Borrowings" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <DataGrid ItemsSource="{Binding LoanRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="48">
+                            <DataGrid ItemsSource="{Binding LoanRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" MinRowHeight="46" RowDetailsVisibilityMode="Visible">
+                                <DataGrid.RowDetailsTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="16,8,16,10">
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding LastPaymentInfoText}" FontSize="11.5" Foreground="#334155" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                                                <Grid Height="7" Margin="0,2">
+                                                    <ProgressBar Value="{Binding RepaidPercent}" Minimum="0" Maximum="100" Height="7" BorderThickness="0" Background="Transparent">
+                                                        <ProgressBar.Template>
+                                                            <ControlTemplate TargetType="ProgressBar">
+                                                                <Grid x:Name="Root">
+                                                                    <Border x:Name="PART_Track" Background="#E2E8F0" CornerRadius="3.5"/>
+                                                                    <Border x:Name="PART_Indicator" Background="#10B981" CornerRadius="3.5" HorizontalAlignment="Left"/>
+                                                                </Grid>
+                                                            </ControlTemplate>
+                                                        </ProgressBar.Template>
+                                                    </ProgressBar>
+                                                </Grid>
+                                                <TextBlock Text="{Binding RepaidSummaryText}" FontSize="11" Foreground="#64748B" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGrid.RowDetailsTemplate>
                                 <DataGrid.Columns>
                                     <DataGridTemplateColumn Header="Lender" Width="2*">
                                         <DataGridTemplateColumn.CellTemplate>
@@ -914,25 +986,10 @@
 
             <!-- TAB 6: ASSETS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=assets}">
-                <Grid Margin="0,0,0,16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <StackPanel Grid.Column="0" Margin="0,0,16,0">
-                        <TextBlock Text="Assets" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
-                        <TextBlock Text="Things the company owns for a long time, such as machines, vehicles and furniture. They lose value every year (depreciation), which is counted as an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="+ Add Asset" Command="{Binding AddAssetCommand}" VerticalAlignment="Center" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </Grid>
+                <StackPanel Margin="0,0,0,16">
+                    <TextBlock Text="Assets" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Things the company owns for a long time, such as machines, vehicles and furniture. They lose value every year (depreciation), which is counted as an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                </StackPanel>
 
                 <!-- 4 KPI Tiles -->
                 <UniformGrid Columns="4" Margin="0,0,0,20">
@@ -976,6 +1033,71 @@
                         </StackPanel>
                     </Border>
                 </UniformGrid>
+
+                <!-- INLINE ADD ASSET ROW (All inputs in one row below the 4 boxes) -->
+                <Border Background="White" Padding="16,14" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="2.5*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.3*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="10"/>
+                            <ColumnDefinition Width="1.2*"/>
+                            <ColumnDefinition Width="12"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Asset Name -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Asset Name *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewAssetName, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" FontSize="12.5"/>
+                        </StackPanel>
+
+                        <!-- Kind -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Kind *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <ComboBox ItemsSource="{Binding AssetKinds}" SelectedItem="{Binding NewAssetKind}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" FontSize="12.5"/>
+                        </StackPanel>
+
+                        <!-- Bought On -->
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Bought On *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <DatePicker SelectedDate="{Binding NewAssetDate}" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
+                        </StackPanel>
+
+                        <!-- Cost (₹) -->
+                        <StackPanel Grid.Column="6">
+                            <TextBlock Text="Cost (₹) *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewAssetCost, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="13" BorderBrush="#CBD5E1"/>
+                        </StackPanel>
+
+                        <!-- Depreciation % / yr -->
+                        <StackPanel Grid.Column="8">
+                            <TextBlock Text="Loses Value % / yr *" FontSize="11" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding NewAssetRate, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1" FontSize="12.5"/>
+                        </StackPanel>
+
+                        <!-- + Add Asset Button -->
+                        <StackPanel Grid.Column="10" VerticalAlignment="Bottom">
+                            <Button Content="+ Add Asset" Command="{Binding SaveInlineAssetCommand}" Height="36" Padding="18,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand" FontSize="12">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
 
                 <!-- Assets Table -->
                 <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
