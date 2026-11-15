@@ -96,6 +96,8 @@ namespace AsiErp
                     SwitchView(vm.CurrentView);
                 }
             }
+
+            Loaded += (s, e) => ThemeService.ApplyTheme(_viewModel?.IsDarkMode ?? false, this);
         }
 
         protected override void OnPreviewTextInput(TextCompositionEventArgs e)
@@ -174,6 +176,7 @@ namespace AsiErp
             if (view != null)
             {
                 view.DataContext = currentVm;
+                ThemeService.ApplyToElement(view, ThemeService.IsDark);
                 if (!ReferenceEquals(MainContentArea.Content, view))
                 {
                     MainContentArea.Content = view;

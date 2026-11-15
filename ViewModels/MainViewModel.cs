@@ -633,16 +633,7 @@ namespace AsiErp.ViewModels
 
         private void ApplyTheme()
         {
-            // Dynamic brush switching handled via ResourceDictionary or DynamicResources
-            var app = Application.Current;
-            if (app != null)
-            {
-                var res = app.Resources;
-                if (_isDarkMode)
-                {
-                    res["BgBrush"] = System.Windows.Media.Brushes.DarkSlateGray; // or custom hex
-                }
-            }
+            ThemeService.ApplyTheme(_isDarkMode);
         }
     }
 }
