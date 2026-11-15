@@ -445,7 +445,14 @@ namespace AsiErp.ViewModels
             string[] stages = { "Pending", "Started", "In Progress", "Completed" };
             foreach (var stg in stages)
             {
-                var orders = _dataService.WorkOrders.Where(w => w.Status == stg).ToList();
+                var orders = _dataService.WorkOrders.Where(w =>
+                {
+                    if (stg == "Pending") return string.Equals(w.Status, "Pending", StringComparison.OrdinalIgnoreCase);
+                    if (stg == "Started") return string.Equals(w.Status, "Started", StringComparison.OrdinalIgnoreCase) || string.Equals(w.Status, "Cutting", StringComparison.OrdinalIgnoreCase);
+                    if (stg == "In Progress") return !string.Equals(w.Status, "Pending", StringComparison.OrdinalIgnoreCase) && !string.Equals(w.Status, "Started", StringComparison.OrdinalIgnoreCase) && !string.Equals(w.Status, "Cutting", StringComparison.OrdinalIgnoreCase) && !string.Equals(w.Status, "Completed", StringComparison.OrdinalIgnoreCase) && !w.IsDone;
+                    if (stg == "Completed") return w.IsDone || string.Equals(w.Status, "Completed", StringComparison.OrdinalIgnoreCase);
+                    return false;
+                }).ToList();
                 ShopFloorStages.Add(new ShopFloorStageSummary
                 {
                     StageName = stg,

@@ -158,8 +158,11 @@ namespace AsiErp.Models
 
         public string StatusColor => Status switch
         {
-            "Completed" => "#1B8556",
+            "Completed" or "Completed This Month" => "#1B8556",
             "Pending" => "#78839A",
+            "Started" => "#4F46E5",
+            "In Progress" => "#D97706",
+            "Overdue" => "#DC2626",
             _ => "#3D62B8"
         };
     }

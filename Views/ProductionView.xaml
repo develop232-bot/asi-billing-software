@@ -27,8 +27,8 @@
                 </StackPanel>
             </DockPanel>
 
-            <!-- 4 Stats Tiles -->
-            <UniformGrid Columns="4" Margin="0,0,0,20">
+            <!-- 5 Stats Tiles -->
+            <UniformGrid Columns="5" Margin="0,0,0,20">
                 <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
@@ -37,6 +37,17 @@
                         <TextBlock Text="Pending" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding PendingCount}" FontSize="22" FontWeight="Bold" Foreground="#64748B" Margin="0,5,0,0"/>
                         <TextBlock Text="not started" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <TextBlock Text="Started" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="{Binding StartedCount}" FontSize="22" FontWeight="Bold" Foreground="#4F46E5" Margin="0,5,0,0"/>
+                        <TextBlock Text="work initiated" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
                     </StackPanel>
                 </Border>
 

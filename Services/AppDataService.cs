@@ -173,6 +173,7 @@ namespace AsiErp.Services
 
                     CleanLegacyBarcodesAndHsn();
                     EnsureUniqueBarcodesAcrossCatalog();
+                    EnsureShoeBomConnections();
 
                     return;
                 }
@@ -1123,6 +1124,65 @@ namespace AsiErp.Services
             }
 
             return changesCount;
+        }
+
+        public void EnsureShoeBomConnections()
+        {
+            if (RawMaterials == null || RawMaterials.Count == 0 || Products == null || Products.Count == 0) return;
+
+            bool modified = false;
+            foreach (var prod in Products)
+            {
+                bool isShoe = prod.Category == "Shoe" ||
+                              prod.Name.Contains("shoe", StringComparison.OrdinalIgnoreCase) ||
+                              prod.Name.Contains("lofar", StringComparison.OrdinalIgnoreCase) ||
+                              prod.Name.Contains("boot", StringComparison.OrdinalIgnoreCase) ||
+                              prod.Name.Contains("derby", StringComparison.OrdinalIgnoreCase);
+
+                if (isShoe && (prod.Bom == null || prod.Bom.Count == 0))
+                {
+                    prod.Bom ??= new();
+                    foreach (var rm in RawMaterials)
+                    {
+                        string rmLower = rm.Name.ToLowerInvariant();
+                        double qty = 0;
+                        if (rmLower.Contains("leather") || rmLower.Contains("upper"))
+                        {
+                            qty = 2.0;
+                        }
+                        else if (rmLower.Contains("insole") || rmLower.Contains("sole"))
+                        {
+                            qty = rm.Unit.Contains("pc", StringComparison.OrdinalIgnoreCase) ? 2.0 : 1.0;
+                        }
+                        else if (rmLower.Contains("last") || rmLower.Contains("mould"))
+                        {
+                            qty = rm.Unit.Contains("pc", StringComparison.OrdinalIgnoreCase) ? 2.0 : 1.0;
+                        }
+
+                        if (qty > 0)
+                        {
+                            prod.Bom.Add(new BomItem
+                            {
+                                Id = rm.Id,
+                                Name = rm.Name,
+                                Unit = rm.Unit,
+                                Qty = qty
+                            });
+                        }
+                    }
+
+                    if (prod.Bom.Count > 0)
+                    {
+                        prod.IsManufactured = true;
+                        modified = true;
+                    }
+                }
+            }
+
+            if (modified)
+            {
+                SaveLocalState();
+            }
         }
 
         public async Task SaveProductAsync(ProductItem p)

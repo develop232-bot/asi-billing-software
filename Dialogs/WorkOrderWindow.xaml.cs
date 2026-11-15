@@ -28,11 +28,7 @@ namespace AsiErp.Dialogs
             _existingOrder = existing;
             _isEdit = existing != null;
 
-            ManufacturedProducts = _dataService.Products.Where(p => p.IsManufactured).ToList();
-            if (ManufacturedProducts.Count == 0)
-            {
-                ManufacturedProducts = _dataService.Products.ToList();
-            }
+            ManufacturedProducts = _dataService.Products.ToList();
             AvailableRawMaterials = _dataService.RawMaterials.ToList();
 
             DgItems.ItemsSource = Items;
@@ -127,14 +123,23 @@ namespace AsiErp.Dialogs
 
         private void ProductSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (sender is ComboBox cb && cb.DataContext is WorkOrderItem item && cb.SelectedValue is string pid)
+            if (sender is ComboBox cb && cb.DataContext is WorkOrderItem item)
             {
-                var p = ManufacturedProducts.FirstOrDefault(x => x.Id == pid);
+                string pid = cb.SelectedValue as string ?? "";
+                var p = (!string.IsNullOrEmpty(pid) ? ManufacturedProducts.FirstOrDefault(x => x.Id == pid) : null)
+                    ?? (cb.SelectedItem as ProductItem);
+
                 if (p != null)
                 {
+                    item.ProductId = p.Id;
                     item.ProductName = p.Name;
                     item.Unit = p.Unit;
                     item.Size = p.Sizes?.FirstOrDefault() ?? "";
+
+                    if (Materials.Count == 0 && item.Qty > 0)
+                    {
+                        ApplyRecipeSuggestion(showMessage: false);
+                    }
                 }
             }
         }
@@ -149,6 +154,9 @@ namespace AsiErp.Dialogs
                     var match = ManufacturedProducts.FirstOrDefault(x =>
                         string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
                         string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase))
+                        ?? _dataService.Products.FirstOrDefault(x =>
+                            string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase))
                         ?? ManufacturedProducts.FirstOrDefault(x =>
                             x.Name.Contains(typed, StringComparison.OrdinalIgnoreCase) ||
                             x.Sku.Contains(typed, StringComparison.OrdinalIgnoreCase));
@@ -161,6 +169,11 @@ namespace AsiErp.Dialogs
                         if (string.IsNullOrEmpty(item.Size))
                             item.Size = match.Sizes?.FirstOrDefault() ?? "";
                         cb.SelectedValue = match.Id;
+
+                        if (Materials.Count == 0 && item.Qty > 0)
+                        {
+                            ApplyRecipeSuggestion(showMessage: false);
+                        }
                     }
                     else
                     {
@@ -234,31 +247,112 @@ namespace AsiErp.Dialogs
 
         private void SuggestRecipe_Click(object sender, RoutedEventArgs e)
         {
-            var need = new Dictionary<string, double>();
+            ApplyRecipeSuggestion(showMessage: true);
+        }
 
-            foreach (var item in Items.Where(x => !string.IsNullOrEmpty(x.ProductId) && x.Qty > 0))
+        private void ApplyRecipeSuggestion(bool showMessage)
+        {
+            var validItems = Items.Where(x => (!string.IsNullOrEmpty(x.ProductId) || !string.IsNullOrEmpty(x.ProductName)) && x.Qty > 0).ToList();
+            if (!validItems.Any())
             {
-                var prod = ManufacturedProducts.FirstOrDefault(x => x.Id == item.ProductId);
-                if (prod?.Bom != null)
+                if (showMessage)
+                {
+                    MessageBox.Show("Please add at least one product with quantity in 'Products to Make' first.", "Recipe Suggestion", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                return;
+            }
+
+            var need = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var item in validItems)
+            {
+                var prod = (!string.IsNullOrEmpty(item.ProductId) ? _dataService.Products.FirstOrDefault(x => x.Id == item.ProductId) : null)
+                    ?? _dataService.Products.FirstOrDefault(x => string.Equals(x.Name, item.ProductName, StringComparison.OrdinalIgnoreCase))
+                    ?? ManufacturedProducts.FirstOrDefault(x => x.Id == item.ProductId || string.Equals(x.Name, item.ProductName, StringComparison.OrdinalIgnoreCase));
+
+                // 1. Check if product has explicit BOM
+                if (prod?.Bom != null && prod.Bom.Count > 0)
                 {
                     foreach (var b in prod.Bom)
                     {
-                        need.TryGetValue(b.Id, out double cur);
-                        need[b.Id] = cur + (b.Qty * item.Qty);
+                        string key = !string.IsNullOrEmpty(b.Id) ? b.Id : b.Name;
+                        need.TryGetValue(key, out double cur);
+                        need[key] = cur + (b.Qty * item.Qty);
+                    }
+                }
+                else
+                {
+                    // 2. Auto recipe connection based on AvailableRawMaterials
+                    bool isShoe = prod?.Category == "Shoe" ||
+                                  (!string.IsNullOrEmpty(item.ProductName) &&
+                                   (item.ProductName.Contains("shoe", StringComparison.OrdinalIgnoreCase) ||
+                                    item.ProductName.Contains("lofar", StringComparison.OrdinalIgnoreCase) ||
+                                    item.ProductName.Contains("cut", StringComparison.OrdinalIgnoreCase) ||
+                                    item.ProductName.Contains("formal", StringComparison.OrdinalIgnoreCase) ||
+                                    item.ProductName.Contains("boot", StringComparison.OrdinalIgnoreCase) ||
+                                    string.Equals(item.Unit, "pair", StringComparison.OrdinalIgnoreCase)));
+
+                    if (isShoe && AvailableRawMaterials.Any())
+                    {
+                        foreach (var rm in AvailableRawMaterials)
+                        {
+                            string rmLower = rm.Name.ToLowerInvariant();
+                            double perPairRate = 0;
+
+                            if (rmLower.Contains("leather") || rmLower.Contains("upper") || rmLower.Contains("fabric") || rmLower.Contains("material"))
+                            {
+                                perPairRate = 2.0; // 2 sq.ft per pair
+                            }
+                            else if (rmLower.Contains("insole") || rmLower.Contains("sole"))
+                            {
+                                perPairRate = rm.Unit.Contains("pc", StringComparison.OrdinalIgnoreCase) ? 2.0 : 1.0;
+                            }
+                            else if (rmLower.Contains("last") || rmLower.Contains("mould"))
+                            {
+                                perPairRate = rm.Unit.Contains("pc", StringComparison.OrdinalIgnoreCase) ? 2.0 : 1.0;
+                            }
+                            else if (rmLower.Contains("thread") || rmLower.Contains("adhesive") || rmLower.Contains("glue"))
+                            {
+                                perPairRate = 0.05;
+                            }
+                            else
+                            {
+                                perPairRate = 1.0;
+                            }
+
+                            if (perPairRate > 0)
+                            {
+                                need.TryGetValue(rm.Id, out double cur);
+                                need[rm.Id] = cur + (perPairRate * item.Qty);
+                            }
+                        }
+                    }
+                    else if (AvailableRawMaterials.Any())
+                    {
+                        foreach (var rm in AvailableRawMaterials)
+                        {
+                            need.TryGetValue(rm.Id, out double cur);
+                            need[rm.Id] = cur + (1.0 * item.Qty);
+                        }
                     }
                 }
             }
 
             if (!need.Any())
             {
-                MessageBox.Show("No recipe found for the selected products. Add BOM recipe under Products first.", "Recipe Suggestion", MessageBoxButton.OK, MessageBoxImage.Information);
+                if (showMessage)
+                {
+                    MessageBox.Show("No matching raw materials found. Add raw materials under Stock > Raw Materials.", "Recipe Suggestion", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
                 return;
             }
 
             Materials.Clear();
             foreach (var kvp in need)
             {
-                var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == kvp.Key);
+                var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == kvp.Key || string.Equals(x.Name, kvp.Key, StringComparison.OrdinalIgnoreCase))
+                    ?? _dataService.RawMaterials.FirstOrDefault(x => x.Id == kvp.Key || string.Equals(x.Name, kvp.Key, StringComparison.OrdinalIgnoreCase));
+
                 if (rm != null)
                 {
                     Materials.Add(new WorkOrderMaterial
@@ -271,7 +365,10 @@ namespace AsiErp.Dialogs
                 }
             }
 
-            MessageBox.Show("Raw materials suggested based on BOM recipe! Please review and adjust as needed.", "Recipe Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            if (showMessage)
+            {
+                MessageBox.Show($"Connected {Materials.Count} raw material(s) based on recipe formula! You can review and adjust quantities.", "Recipe Applied", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private async void Save_Click(object sender, RoutedEventArgs e)
@@ -338,12 +435,12 @@ namespace AsiErp.Dialogs
                 OrderDate = DpOrderDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.ToString("yyyy-MM-dd"),
                 DueDate = DpDueDate.SelectedDate?.ToString("yyyy-MM-dd") ?? DateTime.Now.AddDays(7).ToString("yyyy-MM-dd"),
                 StartDate = DpStartDate.SelectedDate?.ToString("yyyy-MM-dd") ?? (status != "Pending" ? DateTime.Now.ToString("yyyy-MM-dd") : ""),
-                EndDate = DpEndDate.SelectedDate?.ToString("yyyy-MM-dd") ?? (status == "Completed" ? DateTime.Now.ToString("yyyy-MM-dd") : ""),
+                EndDate = DpEndDate.SelectedDate?.ToString("yyyy-MM-dd") ?? ((status == "Completed" || status == "Completed This Month") ? DateTime.Now.ToString("yyyy-MM-dd") : ""),
                 Status = status,
                 Notes = TxtNotes.Text.Trim(),
                 Items = validItems,
                 Materials = validMaterials,
-                IsDone = status == "Completed"
+                IsDone = status == "Completed" || status == "Completed This Month"
             };
 
             await _dataService.SaveWorkOrderAsync(wo, !_isEdit);

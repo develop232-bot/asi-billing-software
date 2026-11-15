@@ -44,20 +44,27 @@ namespace AsiErp.ViewModels
         };
 
         public int PendingCount => _dataService.WorkOrders.Count(o => string.Equals(o.Status, "Pending", StringComparison.OrdinalIgnoreCase));
-        public int StartedCount => _dataService.WorkOrders.Count(o => string.Equals(o.Status, "Cutting", StringComparison.OrdinalIgnoreCase));
-        public int InProgressCount => _dataService.WorkOrders.Count(o => !string.Equals(o.Status, "Pending", StringComparison.OrdinalIgnoreCase) && !string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase) && !o.IsDone);
-        public int CompletedCount => _dataService.WorkOrders.Count(o => o.IsDone || string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase));
+        public int StartedCount => _dataService.WorkOrders.Count(o => string.Equals(o.Status, "Started", StringComparison.OrdinalIgnoreCase) || string.Equals(o.Status, "Cutting", StringComparison.OrdinalIgnoreCase));
+        public int InProgressCount => _dataService.WorkOrders.Count(o => string.Equals(o.Status, "In Progress", StringComparison.OrdinalIgnoreCase)
+            || (!string.Equals(o.Status, "Pending", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(o.Status, "Started", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(o.Status, "Cutting", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(o.Status, "Completed This Month", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(o.Status, "Overdue", StringComparison.OrdinalIgnoreCase)
+                && !o.IsDone));
+        public int CompletedCount => _dataService.WorkOrders.Count(o => o.IsDone || string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase) || string.Equals(o.Status, "Completed This Month", StringComparison.OrdinalIgnoreCase));
 
         public int CompletedThisMonthCount
         {
             get
             {
                 string currentMonthPrefix = DateTime.Now.ToString("yyyy-MM");
-                return _dataService.WorkOrders.Count(o => (o.IsDone || string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase)) && (string.IsNullOrEmpty(o.EndDate) || o.EndDate.StartsWith(currentMonthPrefix)));
+                return _dataService.WorkOrders.Count(o => (o.IsDone || string.Equals(o.Status, "Completed", StringComparison.OrdinalIgnoreCase) || string.Equals(o.Status, "Completed This Month", StringComparison.OrdinalIgnoreCase)) && (string.IsNullOrEmpty(o.EndDate) || o.EndDate.StartsWith(currentMonthPrefix)));
             }
         }
 
-        public int OverdueCount => _dataService.WorkOrders.Count(o => o.IsOverdue);
+        public int OverdueCount => _dataService.WorkOrders.Count(o => o.IsOverdue || string.Equals(o.Status, "Overdue", StringComparison.OrdinalIgnoreCase));
 
         public RelayCommand SetTypeFilterCommand { get; }
         public RelayCommand NewWorkOrderCommand { get; }
