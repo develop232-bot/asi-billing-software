@@ -135,6 +135,10 @@ namespace AsiErp.Services
                     b.Background = isDark ? DarkCardBg : LightCardBg;
                     b.BorderBrush = isDark ? DarkBorder : LightBorder;
                 }
+                else if (b.Background is SolidColorBrush scb && scb.Color.A < 220)
+                {
+                    // Translucent highlight (e.g. #26FFFFFF on stat cards), preserve completely!
+                }
                 else if (IsCardBackground(b.Background))
                 {
                     b.Background = isDark ? DarkCardBg : LightCardBg;
@@ -232,6 +236,7 @@ namespace AsiErp.Services
             if (b is SolidColorBrush scb)
             {
                 var c = scb.Color;
+                if (c.A < 200) return false;
                 bool isLight = c.R >= 250 && c.G >= 250 && c.B >= 250;
                 bool isDark = (c.R == 17 && c.G == 24 && c.B == 39) ||
                               (c.R == 15 && c.G == 23 && c.B == 42);
@@ -245,6 +250,7 @@ namespace AsiErp.Services
             if (b is SolidColorBrush scb)
             {
                 var c = scb.Color;
+                if (c.A < 200) return false;
                 return (c.R >= 235 && c.R <= 248 && c.G >= 240 && c.G <= 250 && c.B >= 245 && c.B <= 252) ||
                        (c.R == 31 && c.G == 41 && c.B == 55);
             }
@@ -256,6 +262,7 @@ namespace AsiErp.Services
             if (b is SolidColorBrush scb)
             {
                 var c = scb.Color;
+                if (c.A < 200) return false;
                 return (c.R >= 246 && c.R <= 250 && c.G >= 248 && c.G <= 252 && c.B >= 250 && c.B <= 254) ||
                        (c.R == 11 && c.G == 15 && c.B == 25);
             }
@@ -267,6 +274,7 @@ namespace AsiErp.Services
             if (b is SolidColorBrush scb)
             {
                 var c = scb.Color;
+                if (c.A < 200) return false;
                 return (c.R >= 200 && c.R <= 235 && c.G >= 210 && c.G <= 240 && c.B >= 220 && c.B <= 245) ||
                        (c.R == 31 && c.G == 41 && c.B == 55) ||
                        (c.R == 55 && c.G == 65 && c.B == 81);
@@ -312,6 +320,7 @@ namespace AsiErp.Services
             if (b is SolidColorBrush scb)
             {
                 var c = scb.Color;
+                if (c.A < 200) return false;
                 return (c.R >= 240 && c.G >= 240 && c.B >= 240) ||
                        (c.R == 31 && c.G == 41 && c.B == 55);
             }

@@ -53,7 +53,11 @@ namespace AsiErp.Models
         public string StatusBrush => IsOpen ? "#D97706" : "#10B981";
         public string StatusBackground => IsOpen ? "#FEF3C7" : "#D1FAE5";
 
-        public double RepaidPercent => Amount > 0 ? Math.Min(100.0, Math.Round((TotalPrincipalPaid / Amount) * 100.0, 1)) : 0.0;
+        public double RepaidPercent
+        {
+            get => Amount > 0 ? Math.Min(100.0, Math.Round((TotalPrincipalPaid / Amount) * 100.0, 1)) : 0.0;
+            set { }
+        }
 
         public string RepaidSummaryText
         {

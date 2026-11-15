@@ -907,7 +907,7 @@
                                             <StackPanel>
                                                 <TextBlock Text="{Binding LastPaymentInfoText}" FontSize="11.5" Foreground="#334155" FontWeight="SemiBold" Margin="0,0,0,5"/>
                                                 <Grid Height="7" Margin="0,2">
-                                                    <ProgressBar Value="{Binding RepaidPercent}" Minimum="0" Maximum="100" Height="7" BorderThickness="0" Background="Transparent">
+                                                    <ProgressBar Value="{Binding RepaidPercent, Mode=OneWay}" Minimum="0" Maximum="100" Height="7" BorderThickness="0" Background="Transparent">
                                                         <ProgressBar.Template>
                                                             <ControlTemplate TargetType="ProgressBar">
                                                                 <Grid x:Name="Root">
