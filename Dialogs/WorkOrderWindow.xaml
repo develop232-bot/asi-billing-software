@@ -115,7 +115,17 @@
                             </StackPanel>
                         </DockPanel>
 
-                        <DataGrid x:Name="DgMaterials" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36" MinHeight="140">
+                        <DataGrid x:Name="DgMaterials" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White"
+                                  RowHeight="48" MinHeight="160">
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Padding" Value="4,4"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Style>
+                            </DataGrid.CellStyle>
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Raw Material" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -124,18 +134,45 @@
                                                       DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ItemId, UpdateSourceTrigger=PropertyChanged}"
                                                       Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                                       IsEditable="True" IsTextSearchEnabled="True"
-                                                      SelectionChanged="MaterialSelectionChanged" LostFocus="MaterialComboBox_LostFocus" Margin="2"/>
+                                                      Height="34" Padding="6,0" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                                                      SelectionChanged="MaterialSelectionChanged" LostFocus="MaterialComboBox_LostFocus"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="55" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="65"/>
-
-                                <DataGridTemplateColumn Width="38">
+                                <!-- Unit: Typeable / Editable -->
+                                <DataGridTemplateColumn Header="Unit" Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="✕" Click="DeleteMat_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                            <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="34" Padding="6,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
+                                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
+                                            </TextBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Qty -->
+                                <DataGridTemplateColumn Header="Qty" Width="70">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="34" Padding="6,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
+                                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
+                                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
+                                            </TextBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="40">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="✕" Click="DeleteMat_Click" Foreground="#DC2626" Background="#FEE2E2" BorderThickness="0"
+                                                    Width="28" Height="28" Cursor="Hand" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
@@ -154,7 +191,17 @@
                             </Button>
                         </DockPanel>
 
-                        <DataGrid x:Name="DgItems" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36" MinHeight="140">
+                        <DataGrid x:Name="DgItems" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White"
+                                  RowHeight="48" MinHeight="160">
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Padding" Value="4,4"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                </Style>
+                            </DataGrid.CellStyle>
                             <DataGrid.Columns>
                                 <DataGridTemplateColumn Header="Finished Product" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
@@ -163,19 +210,58 @@
                                                       DisplayMemberPath="Name" SelectedValuePath="Id" SelectedValue="{Binding ProductId, UpdateSourceTrigger=PropertyChanged}"
                                                       Text="{Binding ProductName, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                                       IsEditable="True" IsTextSearchEnabled="True"
-                                                      SelectionChanged="ProductSelectionChanged" LostFocus="ProductComboBox_LostFocus" Margin="2"/>
+                                                      Height="34" Padding="6,0" VerticalContentAlignment="Center" VerticalAlignment="Center"
+                                                      SelectionChanged="ProductSelectionChanged" LostFocus="ProductComboBox_LostFocus"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="50" IsReadOnly="True"/>
-                                <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="65"/>
-                                <DataGridTextColumn Header="Qty" Binding="{Binding Qty, UpdateSourceTrigger=PropertyChanged}" Width="65"/>
-
-                                <DataGridTemplateColumn Width="38">
+                                <!-- Unit: Typeable / Editable -->
+                                <DataGridTemplateColumn Header="Unit" Width="70">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="✕" Click="DeleteItem_Click" Foreground="#C23A32" Background="Transparent" BorderThickness="0" Cursor="Hand" FontWeight="Bold"/>
+                                            <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="34" Padding="6,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
+                                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
+                                            </TextBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Size -->
+                                <DataGridTemplateColumn Header="Size" Width="65">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="34" Padding="4,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
+                                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
+                                            </TextBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <!-- Qty -->
+                                <DataGridTemplateColumn Header="Qty" Width="70">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="34" Padding="6,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Right"
+                                                     BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
+                                                <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
+                                            </TextBox>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="40">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="✕" Click="DeleteItem_Click" Foreground="#DC2626" Background="#FEE2E2" BorderThickness="0"
+                                                    Width="28" Height="28" Cursor="Hand" FontWeight="Bold" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                            </Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

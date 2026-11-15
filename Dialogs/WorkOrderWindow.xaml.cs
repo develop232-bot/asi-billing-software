@@ -29,6 +29,10 @@ namespace AsiErp.Dialogs
             _isEdit = existing != null;
 
             ManufacturedProducts = _dataService.Products.Where(p => p.IsManufactured).ToList();
+            if (ManufacturedProducts.Count == 0)
+            {
+                ManufacturedProducts = _dataService.Products.ToList();
+            }
             AvailableRawMaterials = _dataService.RawMaterials.ToList();
 
             DgItems.ItemsSource = Items;
@@ -100,18 +104,15 @@ namespace AsiErp.Dialogs
 
         private void AddItem()
         {
-            var p = ManufacturedProducts.FirstOrDefault();
-            if (p != null)
+            var p = ManufacturedProducts.FirstOrDefault() ?? _dataService.Products.FirstOrDefault();
+            Items.Add(new WorkOrderItem
             {
-                Items.Add(new WorkOrderItem
-                {
-                    ProductId = p.Id,
-                    ProductName = p.Name,
-                    Size = p.Sizes?.FirstOrDefault() ?? "",
-                    Unit = p.Unit,
-                    Qty = 100
-                });
-            }
+                ProductId = p?.Id ?? string.Empty,
+                ProductName = p?.Name ?? string.Empty,
+                Size = p?.Sizes?.FirstOrDefault() ?? string.Empty,
+                Unit = !string.IsNullOrWhiteSpace(p?.Unit) ? p.Unit : "pairs",
+                Qty = 100
+            });
         }
 
         private void AddItem_Click(object sender, RoutedEventArgs e) => AddItem();
@@ -172,16 +173,13 @@ namespace AsiErp.Dialogs
         private void AddMat_Click(object sender, RoutedEventArgs e)
         {
             var rm = AvailableRawMaterials.FirstOrDefault();
-            if (rm != null)
+            Materials.Add(new WorkOrderMaterial
             {
-                Materials.Add(new WorkOrderMaterial
-                {
-                    ItemId = rm.Id,
-                    Name = rm.Name,
-                    Unit = rm.Unit,
-                    Qty = 10
-                });
-            }
+                ItemId = rm?.Id ?? string.Empty,
+                Name = rm?.Name ?? string.Empty,
+                Unit = !string.IsNullOrWhiteSpace(rm?.Unit) ? rm.Unit : "sq ft",
+                Qty = 10
+            });
         }
 
         private void DeleteMat_Click(object sender, RoutedEventArgs e)
@@ -278,11 +276,20 @@ namespace AsiErp.Dialogs
 
         private async void Save_Click(object sender, RoutedEventArgs e)
         {
-            var validItems = Items.Where(x => !string.IsNullOrEmpty(x.ProductId) && x.Qty > 0).ToList();
+            var validItems = Items.Where(x => (!string.IsNullOrEmpty(x.ProductId) || !string.IsNullOrEmpty(x.ProductName)) && x.Qty > 0).ToList();
             if (!validItems.Any())
             {
                 MessageBox.Show("Please add at least one product to make.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
+            }
+
+            foreach (var itm in validItems)
+            {
+                if (string.IsNullOrEmpty(itm.ProductId))
+                {
+                    var match = _dataService.Products.FirstOrDefault(p => string.Equals(p.Name, itm.ProductName, StringComparison.OrdinalIgnoreCase));
+                    itm.ProductId = match?.Id ?? ("p_" + Guid.NewGuid().ToString("N")[..8]);
+                }
             }
 
             string orderType = (CbOrderType.SelectedItem as ComboBoxItem)?.Tag?.ToString()

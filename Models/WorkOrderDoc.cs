@@ -6,38 +6,91 @@ using Google.Cloud.Firestore;
 namespace AsiErp.Models
 {
     [FirestoreData]
-    public class WorkOrderMaterial
+    public class WorkOrderMaterial : System.ComponentModel.INotifyPropertyChanged
     {
+        private string _itemId = string.Empty;
+        private string _name = string.Empty;
+        private string _unit = "sq ft";
+        private double _qty = 1;
+
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged(string prop) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+
         [FirestoreProperty("id")]
-        public string ItemId { get; set; } = string.Empty;
+        public string ItemId
+        {
+            get => _itemId;
+            set { if (_itemId != value) { _itemId = value; OnPropertyChanged(nameof(ItemId)); } }
+        }
 
         [FirestoreProperty("name")]
-        public string Name { get; set; } = string.Empty;
+        public string Name
+        {
+            get => _name;
+            set { if (_name != value) { _name = value; OnPropertyChanged(nameof(Name)); } }
+        }
 
         [FirestoreProperty("unit")]
-        public string Unit { get; set; } = "sq ft";
+        public string Unit
+        {
+            get => _unit;
+            set { if (_unit != value) { _unit = value; OnPropertyChanged(nameof(Unit)); } }
+        }
 
         [FirestoreProperty("qty")]
-        public double Qty { get; set; } = 1;
+        public double Qty
+        {
+            get => _qty;
+            set { if (_qty != value) { _qty = value; OnPropertyChanged(nameof(Qty)); } }
+        }
     }
 
     [FirestoreData]
-    public class WorkOrderItem
+    public class WorkOrderItem : System.ComponentModel.INotifyPropertyChanged
     {
+        private string _productId = string.Empty;
+        private string _productName = string.Empty;
+        private string _size = string.Empty;
+        private string _unit = "pair";
+        private double _qty = 1;
+
+        public event System.ComponentModel.PropertyChangedEventHandler? PropertyChanged;
+        private void OnPropertyChanged(string prop) => PropertyChanged?.Invoke(this, new System.ComponentModel.PropertyChangedEventArgs(prop));
+
         [FirestoreProperty("pid")]
-        public string ProductId { get; set; } = string.Empty;
+        public string ProductId
+        {
+            get => _productId;
+            set { if (_productId != value) { _productId = value; OnPropertyChanged(nameof(ProductId)); } }
+        }
 
         [FirestoreProperty("name")]
-        public string ProductName { get; set; } = string.Empty;
+        public string ProductName
+        {
+            get => _productName;
+            set { if (_productName != value) { _productName = value; OnPropertyChanged(nameof(ProductName)); } }
+        }
 
         [FirestoreProperty("size")]
-        public string Size { get; set; } = string.Empty;
+        public string Size
+        {
+            get => _size;
+            set { if (_size != value) { _size = value; OnPropertyChanged(nameof(Size)); } }
+        }
 
         [FirestoreProperty("unit")]
-        public string Unit { get; set; } = "pair";
+        public string Unit
+        {
+            get => _unit;
+            set { if (_unit != value) { _unit = value; OnPropertyChanged(nameof(Unit)); } }
+        }
 
         [FirestoreProperty("qty")]
-        public double Qty { get; set; } = 1;
+        public double Qty
+        {
+            get => _qty;
+            set { if (_qty != value) { _qty = value; OnPropertyChanged(nameof(Qty)); } }
+        }
     }
 
     [FirestoreData]
