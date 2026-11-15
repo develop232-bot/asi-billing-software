@@ -114,20 +114,8 @@
                         </Border>
                     </UniformGrid>
 
-                    <!-- 4 Summary KPI Cards (Row 2: Outstanding to Receive) -->
-                    <UniformGrid Columns="4">
-                        <!-- Retail Counter Status -->
-                        <Border Background="#F8FAFC" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
-                            <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="🛒 Retail Outstanding" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                                    <TextBlock Text="CLEARED" FontSize="9" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="₹0" FontSize="20" FontWeight="Bold" Foreground="#64748B" Margin="0,6,0,0"/>
-                                <TextBlock Text="Paid at counter" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                            </StackPanel>
-                        </Border>
-
+                    <!-- 3 Summary KPI Cards (Row 2: Outstanding to Receive) -->
+                    <UniformGrid Columns="3">
                         <!-- Domestic Outstanding -->
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>

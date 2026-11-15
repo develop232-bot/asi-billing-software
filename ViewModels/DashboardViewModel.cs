@@ -198,6 +198,21 @@ namespace AsiErp.ViewModels
             }
         }
 
+        private string _topSellersPeriod = "month";
+        public string TopSellersPeriod
+        {
+            get => _topSellersPeriod;
+            set
+            {
+                if (_topSellersPeriod != value)
+                {
+                    _topSellersPeriod = value;
+                    OnPropertyChanged(nameof(TopSellersPeriod));
+                    UpdateTopProductsChart();
+                }
+            }
+        }
+
         public PointCollection TrendLinePoints { get; } = new();
         public PointCollection TrendAreaPoints { get; } = new();
         public ObservableCollection<SalesTrendPoint> TrendPoints { get; } = new();
@@ -383,34 +398,7 @@ namespace AsiErp.ViewModels
                 MonthlyChartData.Add(pt);
             }
 
-            // Top Products
-            TopProducts.Clear();
-            var productTotals = new Dictionary<string, double>();
-            foreach (var sale in _dataService.Sales)
-            {
-                foreach (var line in sale.Lines)
-                {
-                    productTotals.TryGetValue(line.Name, out double val);
-                    productTotals[line.Name] = val + line.NetAmount;
-                }
-            }
-
-            double grandTotal = productTotals.Values.Sum();
-            if (grandTotal <= 0) grandTotal = 1;
-
-            string[] colors = { "#3D62B8", "#23968A", "#E5A62E", "#8B5CF6", "#C23A32", "#78839A" };
-            int cIdx = 0;
-            foreach (var kvp in productTotals.OrderByDescending(x => x.Value).Take(5))
-            {
-                TopProducts.Add(new TopProductShare
-                {
-                    Name = kvp.Key,
-                    Value = kvp.Value,
-                    Percentage = Math.Round((kvp.Value / grandTotal) * 100, 1),
-                    Color = colors[cIdx % colors.Length]
-                });
-                cIdx++;
-            }
+            // Top Products (updated via UpdateTopProductsChart)
 
             // Recent Invoices
             RecentInvoices.Clear();
@@ -866,16 +854,39 @@ namespace AsiErp.ViewModels
 
         private void UpdateTopProductsChart()
         {
+            TopProducts.Clear();
             TopProductsPieSlices.Clear();
 
             Point center = new Point(88, 88);
             double outerR = 76;
             double innerR = 48;
 
-            string firstOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
             var productTotals = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
-            foreach (var sale in _dataService.Sales.Where(s => string.Compare(s.Date, firstOfMonth) >= 0))
+            IEnumerable<SaleDoc> filteredSales;
+            if (_topSellersPeriod == "last_month")
+            {
+                DateTime prevMonth = DateTime.Today.AddMonths(-1);
+                string startPrev = new DateTime(prevMonth.Year, prevMonth.Month, 1).ToString("yyyy-MM-dd");
+                string endPrev = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd");
+                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, startPrev) >= 0 && string.Compare(s.Date, endPrev) < 0);
+            }
+            else if (_topSellersPeriod == "quarter")
+            {
+                string since90 = DateTime.Today.AddDays(-90).ToString("yyyy-MM-dd");
+                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, since90) >= 0);
+            }
+            else if (_topSellersPeriod == "all")
+            {
+                filteredSales = _dataService.Sales;
+            }
+            else // "month" or default
+            {
+                string firstOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
+                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, firstOfMonth) >= 0);
+            }
+
+            foreach (var sale in filteredSales)
             {
                 foreach (var line in sale.Lines)
                 {
@@ -885,7 +896,7 @@ namespace AsiErp.ViewModels
                 }
             }
 
-            if (productTotals.Count < 2)
+            if (productTotals.Count == 0)
             {
                 foreach (var sale in _dataService.Sales)
                 {
@@ -898,7 +909,7 @@ namespace AsiErp.ViewModels
                 }
             }
 
-            if (productTotals.Count < 2)
+            if (productTotals.Count == 0)
             {
                 var sampleDefaults = new (string Name, double Amount)[]
                 {
@@ -933,6 +944,18 @@ namespace AsiErp.ViewModels
             if (totalAmount <= 0) totalAmount = 1;
 
             string[] colors = { "#3B82F6", "#14B8A6", "#F59E0B", "#8B5CF6", "#64748B" };
+
+            for (int i = 0; i < finalItems.Count; i++)
+            {
+                var item = finalItems[i];
+                TopProducts.Add(new TopProductShare
+                {
+                    Name = item.Name,
+                    Value = item.Amount,
+                    Percentage = Math.Round((item.Amount / totalAmount) * 100, 1),
+                    Color = colors[i % colors.Length]
+                });
+            }
 
             double currentAngle = -90.0;
             for (int i = 0; i < finalItems.Count; i++)
