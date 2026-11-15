@@ -105,7 +105,7 @@ namespace AsiErp.ViewModels
         public string Title => ActiveTab switch
         {
             "raw" => "Raw Material Stock",
-            "fg" => "Item Stock",
+            "fg" => "Finished Products",
             "ready" => "Readymade Stock",
             "gen" => "General Package",
             _ => "Stock"
@@ -125,7 +125,7 @@ namespace AsiErp.ViewModels
             "raw" => "+ Add Raw Material",
             "gen" => "+ Add General Item",
             "ready" => "+ Add Readymade",
-            _ => "+ Add Item"
+            _ => "+ Add Product"
         };
 
         public string BuyButtonText => ActiveTab switch

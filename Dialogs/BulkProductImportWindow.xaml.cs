@@ -82,8 +82,8 @@ namespace AsiErp.Dialogs
             }
             if (type == "mfg" || type == "all")
             {
-                sb.AppendLine("\"Item\",\"Shoe\",\"pair\",\"Leather Formal Derby\",\"6,7,8,9,10,11\",\"50\",\"ASI-MFG-001\",\"6403\",\"\",\"850\",\"2499\",\"10\",\"25\"");
-                sb.AppendLine("\"Item\",\"Shoe\",\"pair\",\"Safety Shoe Steel Toe\",\"7,8,9,10\",\"35\",\"ASI-MFG-002\",\"64031990\",\"\",\"950\",\"2899\",\"5\",\"15\"");
+                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Leather Formal Derby\",\"6,7,8,9,10,11\",\"50\",\"ASI-MFG-001\",\"6403\",\"\",\"850\",\"2499\",\"10\",\"25\"");
+                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Safety Shoe Steel Toe\",\"7,8,9,10\",\"35\",\"ASI-MFG-002\",\"64031990\",\"\",\"950\",\"2899\",\"5\",\"15\"");
             }
             if (type == "raw" || type == "all")
             {

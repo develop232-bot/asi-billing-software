@@ -23,7 +23,7 @@
                 </Button>
                 <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
                     <TextBlock Text="Production &amp; Shop Floor" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and items." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                    <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and finished goods." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
 
@@ -69,7 +69,7 @@
                     <StackPanel>
                         <TextBlock Text="Completed This Month" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding CompletedThisMonthCount}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
-                        <TextBlock Text="items made" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        <TextBlock Text="finished goods made" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
                     </StackPanel>
                 </Border>
 

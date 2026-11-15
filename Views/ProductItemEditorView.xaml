@@ -60,7 +60,7 @@
                     <ComboBox SelectedValue="{Binding ItemType, Mode=TwoWay}" SelectedValuePath="Tag"
                               IsEnabled="{Binding CanChangeType}" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="Raw Material" Tag="raw"/>
-                        <ComboBoxItem Content="Item" Tag="mfg"/>
+                        <ComboBoxItem Content="Finished Product" Tag="mfg"/>
                         <ComboBoxItem Content="Readymade Product" Tag="ready"/>
                         <ComboBoxItem Content="General Packaging" Tag="gen"/>
                     </ComboBox>

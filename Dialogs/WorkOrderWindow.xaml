@@ -18,7 +18,7 @@
             <Border Grid.Row="0" BorderBrush="#E5A62E" BorderThickness="0,0,0,2" Padding="0,0,0,12" Margin="0,0,0,14">
                 <DockPanel>
                     <TextBlock x:Name="TxtTitle" Text="New Production Work Order" FontSize="20" FontWeight="Bold" Foreground="#152039" VerticalAlignment="Center"/>
-                    <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and items." FontSize="11.5" Foreground="#78839A" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                    <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and finished goods." FontSize="11.5" Foreground="#78839A" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                 </DockPanel>
             </Border>
 
@@ -190,7 +190,7 @@
                     <DockPanel>
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
                             <TextBlock Text="Products to Make" FontWeight="Bold" FontSize="13.5" Foreground="#152039" VerticalAlignment="Center"/>
-                            <Button Content="+ Add Item" Click="AddItem_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                            <Button Content="+ Add Finished Good" Click="AddItem_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                             </Button>
                         </DockPanel>
@@ -207,7 +207,7 @@
                                 </Style>
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
-                                <DataGridTemplateColumn Header="Item" Width="*">
+                                <DataGridTemplateColumn Header="Finished Product" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=ManufacturedProducts}"
