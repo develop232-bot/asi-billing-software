@@ -212,7 +212,7 @@
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:gen}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="📦" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="General Packaging" VerticalAlignment="Center"/>
+                                    <TextBlock Text="General Supplies" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
                         </StackPanel>

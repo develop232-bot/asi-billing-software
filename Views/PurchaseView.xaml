@@ -31,7 +31,7 @@
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="📦 General" Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
+                    <Button Content="📦 General Supplies" Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
                             Padding="11,6" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
@@ -45,7 +45,7 @@
                 <!-- Title & Subtitle on Left -->
                 <StackPanel VerticalAlignment="Center" Margin="0,0,12,6">
                     <TextBlock Text="Purchase &amp; Sourcing" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Vendor bills register across Raw Material, Ready Made Products &amp; General Packaging." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                    <TextBlock Text="Vendor bills register across Raw Material, Ready Made Products &amp; General Supplies." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
 
@@ -79,10 +79,11 @@
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="🧵 Raw Material" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Raw Material Purchase" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="FACTORY" FontSize="9" FontWeight="Bold" Foreground="#3B82F6" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthRawTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -90,21 +91,23 @@
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="👞 Ready Made" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Readymade Purchase" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="TRADING" FontSize="9" FontWeight="Bold" Foreground="#4F46E5" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthReadyTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#4F46E5" Margin="0,6,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- General Packaging -->
+                        <!-- General Supplies -->
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="📦 General Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="General Supplies Purchase" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="SUPPLIES" FontSize="9" FontWeight="Bold" Foreground="#0891B2" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthGenTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0891B2" Margin="0,6,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -112,10 +115,11 @@
                         <Border Background="#FAF5FF" Padding="14,12" BorderBrush="#E9D5FF" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="💰 Total Month Sourced" FontSize="11.5" Foreground="#6B21A8" FontWeight="Bold"/>
+                                    <TextBlock Text="Total Purchase" FontSize="11" Foreground="#6B21A8" FontWeight="Bold"/>
                                     <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#9333EA" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#7E22CE" Margin="0,6,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
                     </UniformGrid>
@@ -126,11 +130,11 @@
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="🧵 Raw Mat. To Pay" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Raw Material Outstanding to Pay" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="VENDORS" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthRawOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
-                                <TextBlock Text="unpaid raw material bills" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                <TextBlock Text="still to pay" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -138,23 +142,23 @@
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="👞 Readymade To Pay" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="Readymade Outstanding to Pay" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="VENDORS" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthReadyOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
-                                <TextBlock Text="unpaid readymade bills" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                <TextBlock Text="still to pay" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- General Packaging Outstanding -->
+                        <!-- General Supplies Outstanding -->
                         <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="📦 General To Pay" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                                    <TextBlock Text="General Supplies Outstanding to Pay" FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
                                     <TextBlock Text="VENDORS" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthGenOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
-                                <TextBlock Text="unpaid packaging bills" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                <TextBlock Text="still to pay" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
 
@@ -162,11 +166,11 @@
                         <Border Background="#FEF2F2" Padding="14,12" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="8">
                             <StackPanel>
                                 <DockPanel>
-                                    <TextBlock Text="⚠️ Total to Pay" FontSize="11.5" Foreground="#991B1B" FontWeight="Bold"/>
+                                    <TextBlock Text="Total Outstanding to Pay" FontSize="11" Foreground="#991B1B" FontWeight="Bold"/>
                                     <TextBlock Text="PENDING" FontSize="9" FontWeight="Bold" Foreground="#DC2626" HorizontalAlignment="Right"/>
                                 </DockPanel>
                                 <TextBlock Text="{Binding MonthTotalOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#DC2626" Margin="0,6,0,0"/>
-                                <TextBlock Text="still to pay vendors" FontSize="10" Foreground="#EF4444" Margin="0,2,0,0"/>
+                                <TextBlock Text="still to pay" FontSize="10" Foreground="#EF4444" Margin="0,2,0,0"/>
                             </StackPanel>
                         </Border>
                     </UniformGrid>
@@ -209,7 +213,7 @@
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"/>
 
-                                    <Button Content="General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen"
+                                    <Button Content="General Supplies" Command="{Binding SetKindCommand}" CommandParameter="gen"
                                             Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"

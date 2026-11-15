@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="📦 General Packaging Sourcing" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="📦 General Supplies Sourcing" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
 
@@ -148,7 +148,7 @@
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
                                 <!-- Packaging Item Selection / Custom Name -->
-                                <DataGridTemplateColumn Header="Packaging Item (Select or Type Name)" Width="*">
+                                <DataGridTemplateColumn Header="General Supplies Item (Select or Type Name)" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AvailableItems}"
