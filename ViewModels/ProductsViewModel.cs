@@ -158,6 +158,7 @@ namespace AsiErp.ViewModels
         public RelayCommand PrintBarcodeOptionsCommand { get; }
         public RelayCommand BulkImportCommand { get; }
         public RelayCommand ExportCsvCommand { get; }
+        public RelayCommand DownloadFileCommand { get; }
         public RelayCommand ClearDateFilterCommand { get; }
 
         public ProductsViewModel(AppDataService dataService, Action<string, object?> openDialogAction)
@@ -188,7 +189,8 @@ namespace AsiErp.ViewModels
             });
 
             BulkImportCommand = new RelayCommand(_ => _openDialogAction("bulk_csv_import", null));
-            ExportCsvCommand = new RelayCommand(_ => ExportCsv());
+            ExportCsvCommand = new RelayCommand(_ => DownloadFile());
+            DownloadFileCommand = new RelayCommand(_ => DownloadFile());
 
             EditItemCommand = new RelayCommand(p =>
             {
@@ -406,6 +408,110 @@ namespace AsiErp.ViewModels
                 {
                     FilteredRows.Add(row);
                 }
+            }
+        }
+
+        private void DownloadFile()
+        {
+            var format = AsiErp.Dialogs.DownloadFormatDialog.PromptFormat(System.Windows.Application.Current?.MainWindow, "Master Products Report");
+            if (format == AsiErp.Dialogs.DownloadFormat.Pdf)
+            {
+                ExportPdf();
+            }
+            else if (format == AsiErp.Dialogs.DownloadFormat.Csv)
+            {
+                ExportCsv();
+            }
+        }
+
+        private void ExportPdf()
+        {
+            try
+            {
+                var printDialog = new System.Windows.Controls.PrintDialog();
+                if (printDialog.ShowDialog() != true) return;
+
+                var printArea = new System.Windows.Controls.Border
+                {
+                    Background = System.Windows.Media.Brushes.White,
+                    Padding = new System.Windows.Thickness(36),
+                    Width = printDialog.PrintableAreaWidth > 0 ? printDialog.PrintableAreaWidth : 790
+                };
+
+                var mainStack = new System.Windows.Controls.StackPanel();
+
+                var compStack = new System.Windows.Controls.StackPanel { Margin = new System.Windows.Thickness(0, 0, 0, 14) };
+                compStack.Children.Add(new System.Windows.Controls.TextBlock { Text = "G-TRACK ERP · MASTER PRODUCTS & ITEMS REPORT", FontSize = 16, FontWeight = System.Windows.FontWeights.Bold, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(15, 23, 42)) });
+                compStack.Children.Add(new System.Windows.Controls.TextBlock { Text = $"Category: {ActiveFilter.ToUpper()} | Total Items: {FilteredRows.Count}", FontSize = 11, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(100, 116, 139)), Margin = new System.Windows.Thickness(0, 2, 0, 0) });
+                mainStack.Children.Add(compStack);
+
+                mainStack.Children.Add(new System.Windows.Controls.Separator { Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(226, 232, 240)), Margin = new System.Windows.Thickness(0, 0, 0, 12) });
+
+                var thGrid = new System.Windows.Controls.Grid { Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(241, 245, 249)), Margin = new System.Windows.Thickness(0, 0, 0, 6) };
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(1, System.Windows.GridUnitType.Star) });
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(90) });
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(80) });
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(60) });
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(80) });
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(80) });
+                thGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(65) });
+
+                void AddHeaderCell(string text, int col, System.Windows.TextAlignment align = System.Windows.TextAlignment.Left)
+                {
+                    var tb = new System.Windows.Controls.TextBlock { Text = text, FontWeight = System.Windows.FontWeights.Bold, FontSize = 10, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 41, 59)), Padding = new System.Windows.Thickness(6), TextAlignment = align };
+                    System.Windows.Controls.Grid.SetColumn(tb, col);
+                    thGrid.Children.Add(tb);
+                }
+
+                AddHeaderCell("ITEM DESCRIPTION", 0);
+                AddHeaderCell("TYPE", 1);
+                AddHeaderCell("SKU", 2);
+                AddHeaderCell("UNIT", 3);
+                AddHeaderCell("COST (₹)", 4, System.Windows.TextAlignment.Right);
+                AddHeaderCell("SELL (₹)", 5, System.Windows.TextAlignment.Right);
+                AddHeaderCell("STOCK", 6, System.Windows.TextAlignment.Right);
+                mainStack.Children.Add(thGrid);
+
+                int rowIdx = 0;
+                foreach (var r in FilteredRows)
+                {
+                    var trGrid = new System.Windows.Controls.Grid { Margin = new System.Windows.Thickness(0, 2, 0, 2), Background = rowIdx % 2 == 1 ? new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(248, 250, 252)) : System.Windows.Media.Brushes.White };
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(1, System.Windows.GridUnitType.Star) });
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(90) });
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(80) });
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(60) });
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(80) });
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(80) });
+                    trGrid.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new System.Windows.GridLength(65) });
+
+                    void AddCell(string text, int col, bool bold = false, System.Windows.TextAlignment align = System.Windows.TextAlignment.Left)
+                    {
+                        var tb = new System.Windows.Controls.TextBlock { Text = text, FontSize = 9.5, FontWeight = bold ? System.Windows.FontWeights.Bold : System.Windows.FontWeights.Normal, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(15, 23, 42)), Padding = new System.Windows.Thickness(6, 4, 6, 4), TextAlignment = align };
+                        System.Windows.Controls.Grid.SetColumn(tb, col);
+                        trGrid.Children.Add(tb);
+                    }
+
+                    AddCell(r.Name, 0, true);
+                    AddCell(r.TypeLabel, 1);
+                    AddCell(r.Sku, 2);
+                    AddCell(r.Unit, 3);
+                    AddCell(r.CostPriceDisplay, 4, false, System.Windows.TextAlignment.Right);
+                    AddCell(r.SellingPriceDisplay, 5, false, System.Windows.TextAlignment.Right);
+                    AddCell(r.QuantityDisplay, 6, true, System.Windows.TextAlignment.Right);
+
+                    mainStack.Children.Add(trGrid);
+                    rowIdx++;
+                }
+
+                printArea.Child = mainStack;
+                printArea.Measure(new System.Windows.Size(printDialog.PrintableAreaWidth, double.PositiveInfinity));
+                printArea.Arrange(new System.Windows.Rect(new System.Windows.Point(0, 0), printArea.DesiredSize));
+
+                printDialog.PrintVisual(printArea, "Master Products Report");
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show($"Could not print/export PDF: {ex.Message}", "Print Error", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
             }
         }
 

@@ -27,6 +27,15 @@ namespace AsiErp.ViewModels
 
         public ObservableCollection<SaleDoc> FilteredSales { get; } = new();
 
+        private string _filteredSummaryText = "0 entries · Total ₹0 · Balance ₹0";
+        public string FilteredSummaryText
+        {
+            get => _filteredSummaryText;
+            private set => SetField(ref _filteredSummaryText, value);
+        }
+
+        public bool HasCustomDates => ReportFromDate.HasValue || ReportToDate.HasValue;
+
         public string SearchQuery
         {
             get => _searchQuery;
@@ -217,6 +226,8 @@ namespace AsiErp.ViewModels
         public RelayCommand CurrentMonthCommand { get; }
         public RelayCommand ResetSummaryDatesCommand { get; }
         public RelayCommand ResetFilterDatesCommand { get; }
+        public RelayCommand ClearCustomDatesCommand { get; }
+        public RelayCommand DownloadFileCommand { get; }
         public RelayCommand ExportExcelCommand { get; }
         public RelayCommand ExportPdfCommand { get; }
 
@@ -314,6 +325,12 @@ namespace AsiErp.ViewModels
 
             ExportExcelCommand = new RelayCommand(_ => ExportExcel());
             ExportPdfCommand = new RelayCommand(_ => ExportPdf());
+            DownloadFileCommand = new RelayCommand(_ => DownloadReport());
+            ClearCustomDatesCommand = new RelayCommand(_ =>
+            {
+                ReportFromDate = null;
+                ReportToDate = null;
+            });
 
             _dataService.DataChanged += RefreshData;
             RefreshData();
@@ -420,6 +437,30 @@ namespace AsiErp.ViewModels
                 {
                     FilteredSales.Add(s);
                 }
+            }
+
+            double totGross = 0;
+            double totBal = 0;
+            foreach (var s in FilteredSales)
+            {
+                totGross += s.GrossAmount;
+                totBal += s.BalanceAmount;
+            }
+            FilteredSummaryText = $"{FilteredSales.Count} {(FilteredSales.Count == 1 ? "entry" : "entries")} · Total ₹{totGross:N0} · Balance ₹{totBal:N0}";
+            OnPropertyChanged(nameof(FilteredSummaryText));
+            OnPropertyChanged(nameof(HasCustomDates));
+        }
+
+        private void DownloadReport()
+        {
+            var format = AsiErp.Dialogs.DownloadFormatDialog.PromptFormat(System.Windows.Application.Current?.MainWindow, "Download Sales Report");
+            if (format == AsiErp.Dialogs.DownloadFormat.Pdf)
+            {
+                ExportPdf();
+            }
+            else if (format == AsiErp.Dialogs.DownloadFormat.Csv)
+            {
+                ExportExcel();
             }
         }
 

@@ -26,7 +26,7 @@
                     <Button Content="{Binding BuyButtonText}" Command="{Binding BuyItemCommand}" Padding="11,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
-                    <Button Content="📥 Download CSV" Command="{Binding ExportCsvCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,0,6">
+                    <Button Content="📥 Download file" Command="{Binding DownloadFileCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,0,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
                 </WrapPanel>
