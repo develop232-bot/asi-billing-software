@@ -505,6 +505,15 @@
                                     <TextBlock Text="Staff Logins &amp; Roles" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
+
+                            <Button Style="{StaticResource ModernSidebarButton}"
+                                    Command="{Binding CheckForUpdatesCommand}"
+                                    ToolTip="Check GitHub for Online Software Updates">
+                                <DockPanel LastChildFill="True">
+                                    <TextBlock DockPanel.Dock="Left" Text="🔄" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Online Update" VerticalAlignment="Center"/>
+                                </DockPanel>
+                            </Button>
                         </StackPanel>
                     </StackPanel>
                 </ScrollViewer>
@@ -536,6 +545,20 @@
 
                     <!-- Right Controls -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Online Update Button -->
+                        <Button Command="{Binding CheckForUpdatesCommand}" Height="34" Padding="10,0" Background="#F0FDF4" BorderBrush="#86EFAC" BorderThickness="1" Cursor="Hand" ToolTip="Check GitHub for Online Software Updates" Margin="0,0,8,0">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
+                                            <TextBlock Text="🔄" FontSize="11" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Online Update" FontSize="11" FontWeight="SemiBold" Foreground="#166534" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+
                         <!-- Live Date Display -->
                         <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

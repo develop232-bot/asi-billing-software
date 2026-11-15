@@ -208,6 +208,7 @@ namespace AsiErp.ViewModels
         public RelayCommand SyncToCloudCommand { get; }
         public RelayCommand TestFirebaseCommand { get; }
         public RelayCommand OpenDialogCommand { get; }
+        public RelayCommand CheckForUpdatesCommand { get; }
 
         public event Action<string, object?>? RequestOpenDialog;
 
@@ -343,6 +344,11 @@ namespace AsiErp.ViewModels
             {
                 IsNewMenuOpen = false;
                 if (p is string dlg) OpenDialog(dlg, null);
+            });
+
+            CheckForUpdatesCommand = new RelayCommand(async _ =>
+            {
+                await Services.UpdateService.Instance.CheckForUpdatesAsync(isManualCheck: true);
             });
 
             ToggleUserMenuCommand = new RelayCommand(_ => IsUserMenuOpen = !IsUserMenuOpen);

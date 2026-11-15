@@ -85,6 +85,10 @@ namespace AsiErp.Services
                 if (updateInfo == null)
                 {
                     StatusChanged?.Invoke("Software is up to date");
+                    if (isManualCheck)
+                    {
+                        System.Windows.MessageBox.Show("Software is up to date!\nYou are running the latest version.", "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                    }
                     return false;
                 }
 
@@ -99,6 +103,10 @@ namespace AsiErp.Services
             catch (Exception ex)
             {
                 StatusChanged?.Invoke($"Update check: {ex.Message}");
+                if (isManualCheck)
+                {
+                    System.Windows.MessageBox.Show($"Could not check for online updates:\n{ex.Message}", "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
+                }
             }
             finally
             {
