@@ -14,24 +14,24 @@
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
             <!-- Header -->
-            <DockPanel Margin="0,0,0,18">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="Retail Billing (POS)" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Showroom and exhibition counter. Fast billing with automatic barcode scanning and bulk rates." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
-                </StackPanel>
-                <Border HorizontalAlignment="Right" Background="#FEF3C7" CornerRadius="10" Padding="14,6" BorderBrush="#F59E0B" BorderThickness="1" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding NextBillNo, StringFormat='Next Bill: {0}'}" FontWeight="Bold" Foreground="#92400E" FontSize="12"/>
+            <DockPanel Margin="0,0,0,16">
+                <Border DockPanel.Dock="Right" Background="#FEF3C7" CornerRadius="8" Padding="12,5" BorderBrush="#F59E0B" BorderThickness="1" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding NextBillNo, StringFormat='Next Bill: {0}'}" FontWeight="Bold" Foreground="#92400E" FontSize="11.5"/>
                 </Border>
+                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                    <TextBlock Text="Retail Billing (POS)" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Showroom and exhibition counter. Fast billing with automatic barcode scanning and bulk rates." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
             </DockPanel>
 
             <!-- Main POS Layout: Catalog on Left, Cart on Right -->
             <Grid Margin="0,0,0,22">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="390"/>
+                    <ColumnDefinition Width="360"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- LEFT: Catalog -->

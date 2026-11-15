@@ -15,43 +15,39 @@
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
-            <!-- 1. Header with Top 3 Action Buttons -->
-            <Grid Margin="0,0,0,18">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="Purchase &amp; Sourcing" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Vendor bills register across Raw Material, Ready Made Products &amp; General Packaging." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
-                </StackPanel>
-
-                <!-- Top 3 Action Buttons requested by user -->
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+            <!-- 1. Header with Top Action Buttons (Responsive WrapPanel) -->
+            <DockPanel Margin="0,0,0,16">
+                <!-- Action Buttons on Right (Wraps cleanly if screen is smaller) -->
+                <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🧵 Raw Material" Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
-                            Padding="14,8" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
+                            Padding="11,6" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="👞 Ready Made Products" Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
-                            Padding="14,8" Background="#4F46E5" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
+                    <Button Content="👞 Ready Made" Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
+                            Padding="11,6" Background="#4F46E5" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="📦 General Packaging" Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
-                            Padding="14,8" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
+                    <Button Content="📦 General" Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
+                            Padding="11,6" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
                     <Button Content="+ New Purchase Bill" Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
-                            Padding="16,8" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="7"/></Style></Button.Resources>
+                            Padding="13,6" Background="#7C3AED" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="0,0,0,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
+                </WrapPanel>
+
+                <!-- Title & Subtitle on Left -->
+                <StackPanel VerticalAlignment="Center" Margin="0,0,12,6">
+                    <TextBlock Text="Purchase &amp; Sourcing" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Vendor bills register across Raw Material, Ready Made Products &amp; General Packaging." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
-            </Grid>
+            </DockPanel>
 
             <!-- 2. Particular Month Purchase Amount Section (Always Reflects) -->
             <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="0,0,0,20">
@@ -192,26 +188,26 @@
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
 
-                            <!-- Row 1: Title & Download buttons -->
+                            <!-- Row 1: Title & Download buttons (Responsive Wrap) -->
                             <DockPanel Grid.Row="0" Margin="0,0,0,10">
-                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <TextBlock Text="📊 Custom Report:" FontWeight="Bold" FontSize="13" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Filter by custom dates &amp; sourcing category, then export" FontSize="11" Foreground="#64748B" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                                </StackPanel>
-
-                                <!-- Download File Buttons (PDF & EXCEL) -->
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                <!-- Download File Buttons on Right -->
+                                <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                                     <TextBlock Text="Download file:" FontWeight="SemiBold" FontSize="11" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,8,0"/>
 
                                     <Button Content="📄 PDF" Command="{Binding ExportPdfCommand}"
-                                            Height="36" Padding="14,0" Background="#DC2626" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="0,0,6,0">
+                                            Height="32" Padding="12,0" Background="#DC2626" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11" Margin="0,0,6,0">
                                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
 
                                     <Button Content="📊 EXCEL" Command="{Binding ExportExcelCommand}"
-                                            Height="36" Padding="14,0" Background="#16A34A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11.5">
+                                            Height="32" Padding="12,0" Background="#16A34A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11">
                                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
+                                </WrapPanel>
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock Text="📊 Custom Report:" FontWeight="Bold" FontSize="13" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Filter by custom dates &amp; sourcing category, then export" FontSize="11" Foreground="#64748B" Margin="8,0,0,0" VerticalAlignment="Center"/>
                                 </StackPanel>
                             </DockPanel>
 
@@ -321,29 +317,29 @@
 
                     <!-- 4. Table Columns in EXACT requested order: -->
                     <!-- | DATE | Channel | Invoice | Vendor | Contact no | Amount | Rest in purchase (Vendor Ref, Terms, Payment, Actions) | -->
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
-                                  CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
-                        <DataGrid ItemsSource="{Binding FilteredPurchases}" AutoGenerateColumns="False" CanUserAddRows="False"
-                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40" MinWidth="980">
-                            <DataGrid.Columns>
+                    <!-- Table: Responsive, Fits 100% of Screen without any Horizontal Scrollbar -->
+                    <DataGrid ItemsSource="{Binding FilteredPurchases}" AutoGenerateColumns="False" CanUserAddRows="False"
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
+                        <DataGrid.Columns>
                             <!-- 1. DATE -->
-                            <DataGridTextColumn Header="DATE" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="100"/>
+                            <DataGridTextColumn Header="DATE" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="85"/>
 
                             <!-- 2. Channel -->
-                            <DataGridTemplateColumn Header="Channel" Width="145">
+                            <DataGridTemplateColumn Header="Channel" Width="105">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="#EEF2FF">
-                                            <TextBlock Text="{Binding KindLabel}" Foreground="#4338CA" FontSize="10.5" FontWeight="SemiBold"/>
+                                        <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#EEF2FF">
+                                            <TextBlock Text="{Binding KindLabel}" Foreground="#4338CA" FontSize="10" FontWeight="SemiBold"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- 3. Invoice -->
-                            <DataGridTextColumn Header="Invoice" Binding="{Binding BillNo}" Width="135" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Invoice" Binding="{Binding BillNo}" Width="105" FontWeight="Bold"/>
 
-                            <!-- 4. Vendor -->
+                            <!-- 4. Vendor (Proportional * sizing with Ellipsis) -->
                             <DataGridTemplateColumn Header="Vendor" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -353,39 +349,39 @@
                             </DataGridTemplateColumn>
 
                             <!-- 5. Contact no -->
-                            <DataGridTextColumn Header="Contact no" Binding="{Binding Phone}" Width="125"/>
+                            <DataGridTextColumn Header="Contact no" Binding="{Binding Phone}" Width="95"/>
 
                             <!-- 6. Amount -->
-                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="125" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="95" FontWeight="Bold"/>
 
                             <!-- 7. Vendor Ref -->
-                            <DataGridTextColumn Header="Vendor Ref" Binding="{Binding VendorBillRef}" Width="110"/>
+                            <DataGridTextColumn Header="Vendor Ref" Binding="{Binding VendorBillRef}" Width="85"/>
 
                             <!-- 8. Terms -->
-                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="85"/>
+                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="70"/>
 
                             <!-- 9. Payment -->
-                            <DataGridTemplateColumn Header="Payment" Width="90">
+                            <DataGridTemplateColumn Header="Payment" Width="75">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
-                                            <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusBrushConv}}" FontSize="10.5" FontWeight="Bold"/>
+                                        <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
+                                            <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusBrushConv}}" FontSize="10" FontWeight="Bold"/>
                                         </Border>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
                             <!-- 10. Actions -->
-                            <DataGridTemplateColumn Width="135">
+                            <DataGridTemplateColumn Width="95">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                             <Button Content="View" Command="{Binding DataContext.ViewPurchaseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="12,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0">
+                                                    Padding="9,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>
                                             <Button Content="Delete" Command="{Binding DataContext.DeletePurchaseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="8,4" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                                    Padding="7,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>
                                         </StackPanel>
@@ -394,7 +390,6 @@
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    </ScrollViewer>
                 </DockPanel>
             </Border>
         </StackPanel>

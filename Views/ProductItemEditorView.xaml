@@ -19,34 +19,34 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="28,20,28,32">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel MaxWidth="1050" HorizontalAlignment="Stretch">
-            <!-- Top Header & Navigation Bar -->
-            <DockPanel Margin="0,0,0,20">
-                <StackPanel VerticalAlignment="Center">
-                    <TextBlock Text="{Binding Title}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Product &amp; Item Master Record Editor" FontSize="12" Foreground="#64748B" Margin="0,3,0,0"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <!-- Top Header & Navigation Bar (Responsive WrapPanel) -->
+            <DockPanel Margin="0,0,0,16">
+                <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🖨️ Print Barcode" Command="{Binding PrintBarcodeCommand}"
                             Visibility="{Binding ProductVisibility}"
-                            Height="36" Padding="14,0" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1"
-                            Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,10,0">
+                            Height="34" Padding="12,0" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
                     <Button Content="📥 Bulk CSV Upload" Command="{Binding BulkUploadCommand}"
-                            Height="36" Padding="14,0" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
-                            Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
+                            Height="34" Padding="12,0" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
                     <Button Content="💾 Save Item" Command="{Binding SaveCommand}"
-                            Height="36" Padding="20,0" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
-                            Cursor="Hand" FontWeight="Bold" FontSize="12.5">
+                            Height="34" Padding="16,0" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
+                            Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,0,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
+                </WrapPanel>
+
+                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                    <TextBlock Text="{Binding Title}" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Product &amp; Item Master Record Editor" FontSize="12" Foreground="#64748B" Margin="0,3,0,0"/>
                 </StackPanel>
             </DockPanel>
 

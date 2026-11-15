@@ -111,8 +111,8 @@ namespace AsiErp.Services
         {
             if (depth > 60) return;
 
-            // Preserve Sidebar which stays in its permanent dark navy styling
-            if (d is FrameworkElement fe && fe.Name == "SidebarBorder")
+            // Preserve Sidebar and any element explicitly marked PreserveTheme
+            if (d is FrameworkElement fe && (fe.Name == "SidebarBorder" || Equals(fe.Tag, "PreserveTheme")))
             {
                 return;
             }

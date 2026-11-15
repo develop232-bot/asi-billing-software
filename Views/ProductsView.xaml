@@ -11,55 +11,29 @@
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
-            <!-- Header -->
-            <Grid Margin="0,0,0,18">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <!-- Header (Responsive DockPanel + WrapPanel) -->
+            <DockPanel Margin="0,0,0,16">
+                <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Button Content="📥 Upload CSV" Command="{Binding BulkImportCommand}" Padding="11,6" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
 
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="Master Products" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Every item lives here: raw material and general packing (not for sale) plus your finished and readymade sale products with retail, domestic and export pricing." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0" TextWrapping="Wrap"/>
+                    <Button Content="📤 Download CSV" Command="{Binding ExportCsvCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+
+                    <Button Content="+ Add Products" Command="{Binding AddItemCommand}" Padding="13,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="0,0,0,6">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                </WrapPanel>
+
+                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
+                    <TextBlock Text="Master Products" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Every item lives here: raw material and general packing (not for sale) plus your finished and readymade sale products with retail, domestic and export pricing." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Content="📥 Upload CSV" Command="{Binding BulkImportCommand}" Padding="14,8" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,8,0">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-
-                    <Button Content="📤 Download CSV" Command="{Binding ExportCsvCommand}" Padding="14,8" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-
-                    <Button Content="+ Add Products" Command="{Binding AddItemCommand}" Padding="16,8" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="12">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                    <Border.Effect>
-                                        <DropShadowEffect BlurRadius="8" ShadowDepth="2" Direction="270" Color="#172443" Opacity="0.2"/>
-                                    </Border.Effect>
-                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
-                    </Button>
-                </StackPanel>
-            </Grid>
+            </DockPanel>
 
             <!-- Stat Counters (5 KPI Boxes) -->
             <UniformGrid Columns="5" Margin="0,0,0,20">
@@ -125,142 +99,137 @@
                     <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
                 <DockPanel>
-                    <!-- Filter Bar: Search, Date Range (From - To), and Category Tabs -->
-                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <!-- Left: Search Box -->
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="200" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,14,0" VerticalAlignment="Center"/>
+                    <!-- Filter Bar: Search, Date Range, and Category Tabs (Responsive WrapPanel) -->
+                    <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,14" VerticalAlignment="Center">
+                        <!-- Search Box -->
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="180" Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="0,0,10,6" VerticalAlignment="Center"/>
 
-                        <!-- Center: Date Filter (From - To) -->
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,14,0">
-                            <TextBlock Text="From:" VerticalAlignment="Center" FontSize="11.5" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,5,0"/>
-                            <DatePicker SelectedDate="{Binding FromDate, Mode=TwoWay}" Width="120" Height="36" Padding="4,0" VerticalContentAlignment="Center" FontSize="11.5" VerticalAlignment="Center"/>
-                            <TextBlock Text="To:" VerticalAlignment="Center" FontSize="11.5" FontWeight="SemiBold" Foreground="#64748B" Margin="10,0,5,0"/>
-                            <DatePicker SelectedDate="{Binding ToDate, Mode=TwoWay}" Width="120" Height="36" Padding="4,0" VerticalContentAlignment="Center" FontSize="11.5" VerticalAlignment="Center"/>
+                        <!-- Date Filter (From - To) -->
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,6">
+                            <TextBlock Text="From:" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,4,0"/>
+                            <DatePicker SelectedDate="{Binding FromDate, Mode=TwoWay}" Width="105" Height="34" Padding="3,0" VerticalContentAlignment="Center" FontSize="11" VerticalAlignment="Center"/>
+                            <TextBlock Text="To:" VerticalAlignment="Center" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="6,0,4,0"/>
+                            <DatePicker SelectedDate="{Binding ToDate, Mode=TwoWay}" Width="105" Height="34" Padding="3,0" VerticalContentAlignment="Center" FontSize="11" VerticalAlignment="Center"/>
                             <Button Content="Reset" Command="{Binding ClearDateFilterCommand}" ToolTip="Reset Date Filter"
-                                    Height="36" Padding="12,0" Margin="6,0,0,0" Background="#F1F5F9" Foreground="#475569" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                    Height="34" Padding="10,0" Margin="4,0,0,0" Background="#F1F5F9" Foreground="#475569" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
                         </StackPanel>
 
-                        <!-- Right: Type Tabs (Order: All, Raw Material, Finished Product, Readymade Product, General Packaging) -->
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                            <Button Content="All" Command="{Binding SetFilterCommand}" CommandParameter="all" Margin="0,0,4,0" Height="36" Padding="12,0"
+                        <!-- Type Tabs -->
+                        <WrapPanel VerticalAlignment="Center" Margin="0,0,0,6">
+                            <Button Content="All" Command="{Binding SetFilterCommand}" CommandParameter="all" Margin="0,0,4,0" Height="34" Padding="10,0"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                    BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="Raw Material" Command="{Binding SetFilterCommand}" CommandParameter="raw" Margin="0,0,4,0" Height="36" Padding="12,0"
+                            <Button Content="Raw Material" Command="{Binding SetFilterCommand}" CommandParameter="raw" Margin="0,0,4,0" Height="34" Padding="10,0"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                    BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="Finished Product" Command="{Binding SetFilterCommand}" CommandParameter="mfg" Margin="0,0,4,0" Height="36" Padding="12,0"
+                            <Button Content="Finished Product" Command="{Binding SetFilterCommand}" CommandParameter="mfg" Margin="0,0,4,0" Height="34" Padding="10,0"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=mfg}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=mfg}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=mfg}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                    BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="Readymade Product" Command="{Binding SetFilterCommand}" CommandParameter="ready" Margin="0,0,4,0" Height="36" Padding="12,0"
+                            <Button Content="Readymade Product" Command="{Binding SetFilterCommand}" CommandParameter="ready" Margin="0,0,4,0" Height="34" Padding="10,0"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                    BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="General Packaging" Command="{Binding SetFilterCommand}" CommandParameter="gen" Height="36" Padding="12,0"
+                            <Button Content="General Packaging" Command="{Binding SetFilterCommand}" CommandParameter="gen" Height="34" Padding="10,0"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                                    BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                        </StackPanel>
-                    </DockPanel>
+                        </WrapPanel>
+                    </WrapPanel>
 
-                    <!-- Catalog Table: Date / item description / unit of measurement / Type / SKU / barcode / cost price / selling price / GST / quantity -->
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
-                                  CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
-                        <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
-                                  AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column"
-                                  GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42" MinWidth="1350">
-                            <DataGrid.Columns>
-                            <!-- 1. Date -->
-                            <DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="100" MinWidth="70"/>
+                    <!-- Catalog Table (Responsive, No Horizontal Scroll) -->
+                    <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True" HeadersVisibility="Column"
+                              GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
+                        <DataGrid.Columns>
+                        <!-- 1. Date -->
+                        <DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="75" MinWidth="60"/>
 
-                            <!-- 2. Item Description -->
-                            <DataGridTemplateColumn Header="Item Description" Width="260" MinWidth="120">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                        <!-- 2. Item Description -->
+                        <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="110">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="12" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                            <!-- 3. Unit of Measurement -->
-                            <DataGridTextColumn Header="Unit of Measurement" Binding="{Binding Unit}" Width="150" MinWidth="80"/>
+                        <!-- 3. Unit -->
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="50" MinWidth="40"/>
 
-                            <!-- 4. Type -->
-                            <DataGridTemplateColumn Header="Type" Width="135" MinWidth="80">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="#F1F5F9" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeColor}" FontSize="10.5" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                        <!-- 4. Type -->
+                        <DataGridTemplateColumn Header="Type" Width="85" MinWidth="70">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#F1F5F9" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeColor}" FontSize="10" FontWeight="SemiBold"/>
+                                    </Border>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
 
-                            <!-- 5. SKU -->
-                            <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="120" MinWidth="80" FontWeight="SemiBold"/>
+                        <!-- 5. SKU -->
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="85" MinWidth="65" FontWeight="SemiBold"/>
 
-                            <!-- 6. HSN -->
-                            <DataGridTextColumn Header="HSN" Binding="{Binding HsnDisplay}" Width="85" MinWidth="60"/>
+                        <!-- 6. HSN -->
+                        <DataGridTextColumn Header="HSN" Binding="{Binding HsnDisplay}" Width="55" MinWidth="45"/>
 
-                            <!-- 7. Barcode -->
-                            <DataGridTextColumn Header="Barcode" Binding="{Binding BarcodeDisplay}" Width="130" MinWidth="80" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                        <!-- 7. Cost Price -->
+                        <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPriceDisplay}" Width="80" MinWidth="60"/>
 
-                            <!-- 7. Cost Price -->
-                            <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPriceDisplay}" Width="105" MinWidth="70"/>
+                        <!-- 8. Selling Price -->
+                        <DataGridTextColumn Header="Selling Price" Binding="{Binding SellingPriceDisplay}" Width="80" MinWidth="60"/>
 
-                            <!-- 8. Selling Price -->
-                            <DataGridTextColumn Header="Selling Price" Binding="{Binding SellingPriceDisplay}" Width="105" MinWidth="70"/>
+                        <!-- 9. GST -->
+                        <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" Width="50" MinWidth="40"/>
 
-                            <!-- 9. GST -->
-                            <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" Width="80" MinWidth="55"/>
+                        <!-- 10. Stock -->
+                        <DataGridTextColumn Header="Stock" Binding="{Binding QuantityDisplay}" Width="65" MinWidth="50" FontWeight="Bold"/>
 
-                            <!-- 10. Stock -->
-                            <DataGridTextColumn Header="Stock" Binding="{Binding QuantityDisplay}" Width="95" MinWidth="60" FontWeight="Bold"/>
-
-                            <!-- 11. Actions -->
-                            <DataGridTemplateColumn Header="Actions" Width="235" MinWidth="220">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Content="🖨️ Barcode" Command="{Binding DataContext.PrintBarcodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Visibility="{Binding CanPrintBarcode, Converter={StaticResource BoolToVis}}"
-                                                    Padding="8,4" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
-                                            </Button>
-                                            <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="11" Margin="0,0,6,0">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
-                                            </Button>
-                                            <Button Content="Delete" Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="10,4" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
-                                            </Button>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                    </ScrollViewer>
+                        <!-- 11. Actions -->
+                        <DataGridTemplateColumn Header="Actions" Width="140" MinWidth="130">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Button Content="🖨️" ToolTip="Print Barcode" Command="{Binding DataContext.PrintBarcodeCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                Visibility="{Binding CanPrintBarcode, Converter={StaticResource BoolToVis}}"
+                                                Padding="6,3" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold" Margin="0,0,4,0">
+                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        </Button>
+                                        <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                Padding="8,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
+                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        </Button>
+                                        <Button Content="Delete" Command="{Binding DataContext.DeleteItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                Padding="6,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        </Button>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
                 </DockPanel>
             </Border>
         </StackPanel>
