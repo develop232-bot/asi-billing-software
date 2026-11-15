@@ -85,13 +85,17 @@
 
                 <StackPanel Grid.Row="2" Grid.Column="2">
                     <TextBlock Text="Sale type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <Border Background="#F1F3F7" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="36">
-                        <UniformGrid Columns="2">
-                            <RadioButton x:Name="RbCash" Content="Cash sale" IsChecked="True" Checked="Terms_Changed"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"/>
-                            <RadioButton x:Name="RbCredit" Content="Credit sale" Checked="Terms_Changed"
-                                         HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"/>
-                        </UniformGrid>
+                    <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Height="36" ClipToBounds="True">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="1"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <RadioButton x:Name="RbCash" Grid.Column="0" Content="Cash sale" IsChecked="True" Checked="Terms_Changed" GroupName="SaleTypeGroup" Style="{StaticResource SegmentRadioButtonStyle}"/>
+                            <Rectangle Grid.Column="1" Fill="#CBD5E1"/>
+                            <RadioButton x:Name="RbCredit" Grid.Column="2" Content="Credit sale" Checked="Terms_Changed" GroupName="SaleTypeGroup" Style="{StaticResource SegmentRadioButtonStyle}"/>
+                        </Grid>
                     </Border>
                 </StackPanel>
 

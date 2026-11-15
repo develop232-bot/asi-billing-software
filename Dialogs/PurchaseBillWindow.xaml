@@ -196,16 +196,24 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Grid.Column="0">
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <TextBlock Text="Payment Terms: " FontWeight="SemiBold" VerticalAlignment="Center"/>
-                    <RadioButton x:Name="RbCash" Content="Cash Purchase" IsChecked="True" Checked="Terms_Changed" Margin="8,0,12,0"/>
-                    <RadioButton x:Name="RbCredit" Content="Credit Purchase" Checked="Terms_Changed"/>
-                </StackPanel>
+                <TextBlock Text="Purchase type" FontWeight="SemiBold" FontSize="12.5" Foreground="#1E293B" Margin="0,0,0,6"/>
+                <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Height="36" ClipToBounds="True" HorizontalAlignment="Left" Width="280" Margin="0,0,0,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <RadioButton x:Name="RbCash" Grid.Column="0" Content="Cash purchase" IsChecked="True" Checked="Terms_Changed" GroupName="PurchaseTypeGroup" Style="{StaticResource SegmentRadioButtonStyle}"/>
+                        <Rectangle Grid.Column="1" Fill="#CBD5E1"/>
+                        <RadioButton x:Name="RbCredit" Grid.Column="2" Content="Credit purchase" Checked="Terms_Changed" GroupName="PurchaseTypeGroup" Style="{StaticResource SegmentRadioButtonStyle}"/>
+                    </Grid>
+                </Border>
 
                 <StackPanel x:Name="CreditWrap" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,0,8">
-                    <TextBlock Text="Credit Period: " VerticalAlignment="Center"/>
-                    <TextBox x:Name="TxtCreditDays" Text="30" Width="55" Height="28" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center" FontWeight="Bold" Margin="6,0,6,0"/>
-                    <TextBlock Text="days" VerticalAlignment="Center"/>
+                    <TextBlock Text="Credit period: " VerticalAlignment="Center" Foreground="#475569" FontSize="12.5"/>
+                    <TextBox x:Name="TxtCreditDays" Text="30" Width="55" Height="30" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center" FontWeight="Bold" Margin="6,0,6,0"/>
+                    <TextBlock Text="days" VerticalAlignment="Center" Foreground="#475569" FontSize="12.5"/>
                 </StackPanel>
             </StackPanel>
 

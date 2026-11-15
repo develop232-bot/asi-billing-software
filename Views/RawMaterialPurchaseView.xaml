@@ -88,16 +88,31 @@
                         <TextBox Text="{Binding VendorGstin, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
-                    <!-- Payment Type -->
+                    <!-- Purchase type (Segmented Control matching prototype) -->
                     <StackPanel Grid.Row="1" Grid.Column="2">
-                        <TextBlock Text="Payment Type *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,6,0,0">
-                            <RadioButton Content="Cash / Immediate" IsChecked="{Binding IsCash, Mode=TwoWay}" GroupName="TermsRawTop" Margin="0,0,14,0" VerticalAlignment="Center" FontWeight="Medium"/>
-                            <RadioButton Content="Credit Purchase" IsChecked="{Binding IsCredit, Mode=TwoWay}" GroupName="TermsRawTop" Margin="0,0,8,0" VerticalAlignment="Center" FontWeight="Medium"/>
-                            <StackPanel Orientation="Horizontal" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVis}}" VerticalAlignment="Center">
-                                <TextBox Text="{Binding CreditDays, UpdateSourceTrigger=PropertyChanged}" Width="45" Height="28" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center" BorderBrush="#CBD5E1" FontWeight="Bold"/>
-                                <TextBlock Text="days" VerticalAlignment="Center" Foreground="#64748B" FontSize="11" Margin="4,0,0,0"/>
-                            </StackPanel>
+                        <TextBlock Text="Purchase type" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Height="36" ClipToBounds="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <RadioButton Grid.Column="0" Content="Cash purchase"
+                                             IsChecked="{Binding IsCash, Mode=TwoWay}"
+                                             GroupName="TermsRawTop"
+                                             Style="{StaticResource SegmentRadioButtonStyle}"/>
+                                <Rectangle Grid.Column="1" Fill="#CBD5E1"/>
+                                <RadioButton Grid.Column="2" Content="Credit purchase"
+                                             IsChecked="{Binding IsCredit, Mode=TwoWay}"
+                                             GroupName="TermsRawTop"
+                                             Style="{StaticResource SegmentRadioButtonStyle}"/>
+                            </Grid>
+                        </Border>
+                        <StackPanel Orientation="Horizontal" Visibility="{Binding IsCredit, Converter={StaticResource BoolToVis}}" Margin="0,6,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="Credit period:" FontSize="11.5" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <TextBox Text="{Binding CreditDays, UpdateSourceTrigger=PropertyChanged}" Width="50" Height="28" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center" BorderBrush="#CBD5E1" FontWeight="Bold"/>
+                            <TextBlock Text="days" VerticalAlignment="Center" Foreground="#64748B" FontSize="11" Margin="4,0,0,0"/>
                         </StackPanel>
                     </StackPanel>
                 </Grid>

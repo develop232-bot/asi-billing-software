@@ -118,13 +118,23 @@
                     <!-- Sale type (Segmented Cash / Credit) -->
                     <StackPanel Grid.Row="2" Grid.Column="2" Margin="0,0,0,12">
                         <TextBlock Text="Sale type" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
-                        <Border Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Height="36">
-                            <UniformGrid Columns="2">
-                                <RadioButton Content="Cash sale" IsChecked="{Binding IsCash, Mode=TwoWay}"
-                                             HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"/>
-                                <RadioButton Content="Credit sale" IsChecked="{Binding IsCredit, Mode=TwoWay}"
-                                             HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="SemiBold" FontSize="12"/>
-                            </UniformGrid>
+                        <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Height="36" ClipToBounds="True">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="1"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <RadioButton Grid.Column="0" Content="Cash sale"
+                                             IsChecked="{Binding IsCash, Mode=TwoWay}"
+                                             GroupName="DomSaleType"
+                                             Style="{StaticResource SegmentRadioButtonStyle}"/>
+                                <Rectangle Grid.Column="1" Fill="#CBD5E1"/>
+                                <RadioButton Grid.Column="2" Content="Credit sale"
+                                             IsChecked="{Binding IsCredit, Mode=TwoWay}"
+                                             GroupName="DomSaleType"
+                                             Style="{StaticResource SegmentRadioButtonStyle}"/>
+                            </Grid>
                         </Border>
                     </StackPanel>
 
