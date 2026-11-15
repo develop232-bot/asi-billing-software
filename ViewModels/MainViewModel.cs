@@ -548,7 +548,7 @@ namespace AsiErp.ViewModels
             else if (route == "products")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Products";
+                CurrentBreadcrumb = "Master Products";
                 ProductsVM.RefreshData();
                 CurrentView = ProductsVM;
             }
@@ -605,7 +605,7 @@ namespace AsiErp.ViewModels
             IsNewMenuOpen = false;
             ProductItemEditorVM.LoadItem(type, existingItem, returnRoute);
             ActiveRoute = "product:editor";
-            CurrentBreadcrumb = existingItem != null ? $"Products · {ProductItemEditorVM.Title}" : "Products · Add Products";
+            CurrentBreadcrumb = existingItem != null ? $"Master Products · {ProductItemEditorVM.Title}" : "Master Products · Add Products";
             CurrentView = ProductItemEditorVM;
         }
 

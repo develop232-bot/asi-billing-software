@@ -21,8 +21,8 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="Product Master &amp; Items" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Manage Raw Materials, Finished Products, General Packaging." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                    <TextBlock Text="Master Products" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Every item lives here: raw material and general packing (not for sale) plus your finished and readymade sale products with retail, domestic and export pricing." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
