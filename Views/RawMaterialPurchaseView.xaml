@@ -152,10 +152,11 @@
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AvailableItems}"
-                                                      DisplayMemberPath="DisplayText" SelectedValuePath="Id" SelectedValue="{Binding ItemId, Mode=TwoWay}"
-                                                      Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
+                                                      SelectedValuePath="Id" SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                      Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                       IsEditable="True" Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"
-                                                      IsTextSearchEnabled="True" TextSearch.TextPath="DisplayText">
+                                                      IsTextSearchEnabled="True" TextSearch.TextPath="Name"
+                                                      SelectionChanged="ItemSelectionChanged" LostFocus="ItemComboBox_LostFocus">
                                                 <ComboBox.ItemTemplate>
                                                     <DataTemplate>
                                                         <Border Padding="4,3">

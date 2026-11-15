@@ -22,7 +22,7 @@ namespace AsiErp.ViewModels
         public double Stock { get; set; }
 
         public string DisplayText => string.IsNullOrWhiteSpace(Sku) ? Name : $"{Name} ({Sku})";
-        public override string ToString() => DisplayText;
+        public override string ToString() => Name;
     }
 
     public abstract class PurchaseEntryViewModelBase : ViewModelBase
