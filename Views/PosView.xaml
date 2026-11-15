@@ -131,7 +131,33 @@
                         <!-- Search & Filter Bar -->
                         <Border DockPanel.Dock="Top" Padding="16,12" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
                             <DockPanel>
-                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="240" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,14,0"/>
+                                <!-- Search Box with Hint & Clean Focus -->
+                                <Border Style="{StaticResource SearchContainerBorderStyle}" Width="240" Margin="0,0,14,0" VerticalAlignment="Center">
+                                    <Grid Margin="10,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="20"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                        <TextBlock Grid.Column="1" Text="Search shoes, uniforms..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Text, ElementName=TxtPosSearch}" Value="">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Text, ElementName=TxtPosSearch}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBox x:Name="TxtPosSearch" Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource CleanSearchTextBoxStyle}"/>
+                                    </Grid>
+                                </Border>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Button Content="All" Command="{Binding SetCategoryCommand}" CommandParameter="all" Margin="0,0,6,0" Padding="16,0" Height="36"
                                             Background="{Binding SelectedCategory, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"

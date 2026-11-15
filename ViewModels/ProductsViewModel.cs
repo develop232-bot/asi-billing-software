@@ -413,7 +413,7 @@ namespace AsiErp.ViewModels
 
         private void DownloadFile()
         {
-            var format = AsiErp.Dialogs.DownloadFormatDialog.PromptFormat(System.Windows.Application.Current?.MainWindow, "Master Products Report");
+            var format = AsiErp.Dialogs.DownloadFormatDialog.PromptFormat(System.Windows.Application.Current?.MainWindow, "Products Report");
             if (format == AsiErp.Dialogs.DownloadFormat.Pdf)
             {
                 ExportPdf();
@@ -441,7 +441,7 @@ namespace AsiErp.ViewModels
                 var mainStack = new System.Windows.Controls.StackPanel();
 
                 var compStack = new System.Windows.Controls.StackPanel { Margin = new System.Windows.Thickness(0, 0, 0, 14) };
-                compStack.Children.Add(new System.Windows.Controls.TextBlock { Text = "G-TRACK ERP · MASTER PRODUCTS & ITEMS REPORT", FontSize = 16, FontWeight = System.Windows.FontWeights.Bold, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(15, 23, 42)) });
+                compStack.Children.Add(new System.Windows.Controls.TextBlock { Text = "G-TRACK ERP · PRODUCTS & ITEMS REPORT", FontSize = 16, FontWeight = System.Windows.FontWeights.Bold, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(15, 23, 42)) });
                 compStack.Children.Add(new System.Windows.Controls.TextBlock { Text = $"Category: {ActiveFilter.ToUpper()} | Total Items: {FilteredRows.Count}", FontSize = 11, Foreground = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(100, 116, 139)), Margin = new System.Windows.Thickness(0, 2, 0, 0) });
                 mainStack.Children.Add(compStack);
 
@@ -507,7 +507,7 @@ namespace AsiErp.ViewModels
                 printArea.Measure(new System.Windows.Size(printDialog.PrintableAreaWidth, double.PositiveInfinity));
                 printArea.Arrange(new System.Windows.Rect(new System.Windows.Point(0, 0), printArea.DesiredSize));
 
-                printDialog.PrintVisual(printArea, "Master Products Report");
+                printDialog.PrintVisual(printArea, "Products Report");
             }
             catch (Exception ex)
             {

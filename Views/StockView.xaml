@@ -90,7 +90,33 @@
                 </Border.Effect>
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Height="36" HorizontalAlignment="Left" Padding="10,0" VerticalContentAlignment="Center"/>
+                        <!-- Search Box with Hint & Clean Focus -->
+                        <Border Style="{StaticResource SearchContainerBorderStyle}" Width="260" HorizontalAlignment="Left">
+                            <Grid Margin="10,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                <TextBlock Grid.Column="1" Text="Search items, stock..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=TxtStockSearch}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Text, ElementName=TxtStockSearch}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBox x:Name="TxtStockSearch" Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource CleanSearchTextBoxStyle}"/>
+                            </Grid>
+                        </Border>
                     </DockPanel>
 
                     <!-- Stock Table (Responsive, No Horizontal Scroll) -->

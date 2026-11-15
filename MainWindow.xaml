@@ -327,12 +327,12 @@
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=products}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=products}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=products}"
-                                    ToolTip="Master Products, Categories &amp; Bulk Price Lists">
+                                    ToolTip="Products, Categories &amp; Bulk Price Lists">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=products}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="🏷️" FontSize="13" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Master Products" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Products" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 

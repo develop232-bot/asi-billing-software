@@ -513,7 +513,7 @@ namespace AsiErp.ViewModels
             }
             else if (route == "purchase" || route == "pur")
             {
-                ActiveRoute = "pur";
+                ActiveRoute = "purchase";
                 CurrentBreadcrumb = "Purchase & Sourcing";
                 PurchaseVM.ActiveKind = "all";
                 PurchaseVM.RefreshData();
@@ -557,7 +557,7 @@ namespace AsiErp.ViewModels
             else if (route == "products")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Master Products";
+                CurrentBreadcrumb = "Products";
                 ProductsVM.RefreshData();
                 CurrentView = ProductsVM;
             }
@@ -614,7 +614,7 @@ namespace AsiErp.ViewModels
             IsNewMenuOpen = false;
             ProductItemEditorVM.LoadItem(type, existingItem, returnRoute);
             ActiveRoute = "product:editor";
-            CurrentBreadcrumb = existingItem != null ? $"Master Products · {ProductItemEditorVM.Title}" : "Master Products · Add Products";
+            CurrentBreadcrumb = existingItem != null ? $"Products · {ProductItemEditorVM.Title}" : "Products · Add Products";
             CurrentView = ProductItemEditorVM;
         }
 

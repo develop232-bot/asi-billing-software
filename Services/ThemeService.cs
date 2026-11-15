@@ -117,6 +117,12 @@ namespace AsiErp.Services
                 return;
             }
 
+            // Do NOT modify Buttons, RadioButtons, or ToggleButtons - they have intentional styling/colors!
+            if (d is Button || d is RadioButton || (d is System.Windows.Controls.Primitives.ToggleButton && d is not CheckBox))
+            {
+                return;
+            }
+
             if (d is Window win)
             {
                 win.Background = isDark ? DarkPageBg : LightPageBg;
@@ -238,8 +244,7 @@ namespace AsiErp.Services
                 var c = scb.Color;
                 if (c.A < 200) return false;
                 bool isLight = c.R >= 250 && c.G >= 250 && c.B >= 250;
-                bool isDark = (c.R == 17 && c.G == 24 && c.B == 39) ||
-                              (c.R == 15 && c.G == 23 && c.B == 42);
+                bool isDark = (c.R == 17 && c.G == 24 && c.B == 39);
                 return isLight || isDark;
             }
             return false;

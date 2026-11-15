@@ -118,9 +118,23 @@ namespace AsiErp.Converters
 
     public class RouteToActiveBackgroundConverter : IValueConverter
     {
+        public static bool IsRouteActive(object? value, object? parameter)
+        {
+            if (value == null || parameter == null) return false;
+            string v = value.ToString() ?? "";
+            string p = parameter.ToString() ?? "";
+            if (string.Equals(v, p, StringComparison.OrdinalIgnoreCase)) return true;
+            if ((v.Equals("pur", StringComparison.OrdinalIgnoreCase) || v.Equals("purchase", StringComparison.OrdinalIgnoreCase)) &&
+                (p.Equals("pur", StringComparison.OrdinalIgnoreCase) || p.Equals("purchase", StringComparison.OrdinalIgnoreCase)))
+            {
+                return true;
+            }
+            return false;
+        }
+
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value != null && parameter != null && string.Equals(value.ToString(), parameter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (IsRouteActive(value, parameter))
             {
                 return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#2563EB")); // Vibrant Royal Blue
             }
@@ -134,7 +148,7 @@ namespace AsiErp.Converters
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value != null && parameter != null && string.Equals(value.ToString(), parameter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (RouteToActiveBackgroundConverter.IsRouteActive(value, parameter))
             {
                 return Brushes.White;
             }
@@ -148,7 +162,7 @@ namespace AsiErp.Converters
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value != null && parameter != null && string.Equals(value.ToString(), parameter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (RouteToActiveBackgroundConverter.IsRouteActive(value, parameter))
             {
                 return FontWeights.Bold;
             }
@@ -162,7 +176,7 @@ namespace AsiErp.Converters
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value != null && parameter != null && string.Equals(value.ToString(), parameter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (RouteToActiveBackgroundConverter.IsRouteActive(value, parameter))
             {
                 return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#3B82F6"));
             }
@@ -176,7 +190,7 @@ namespace AsiErp.Converters
     {
         public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
         {
-            if (value != null && parameter != null && string.Equals(value.ToString(), parameter.ToString(), StringComparison.OrdinalIgnoreCase))
+            if (RouteToActiveBackgroundConverter.IsRouteActive(value, parameter))
             {
                 return Visibility.Visible;
             }

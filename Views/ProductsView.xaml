@@ -30,7 +30,7 @@
                 </WrapPanel>
 
                 <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
-                    <TextBlock Text="Master Products" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Products" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Every item lives here: raw material and general packing (not for sale) plus your finished and readymade sale products with retail, domestic and export pricing." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
@@ -101,8 +101,33 @@
                 <DockPanel>
                     <!-- Filter Bar: Search, Date Range, and Category Tabs (Responsive WrapPanel) -->
                     <WrapPanel DockPanel.Dock="Top" Margin="0,0,0,14" VerticalAlignment="Center">
-                        <!-- Search Box -->
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="180" Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="0,0,10,6" VerticalAlignment="Center"/>
+                        <!-- Search Box with Hint & Clean Focus -->
+                        <Border Style="{StaticResource SearchContainerBorderStyle}" Width="240" Margin="0,0,10,6" VerticalAlignment="Center">
+                            <Grid Margin="10,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                <TextBlock Grid.Column="1" Text="Search products, SKU..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Text, ElementName=TxtProdSearch}" Value="">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding Text, ElementName=TxtProdSearch}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
+                                <TextBox x:Name="TxtProdSearch" Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource CleanSearchTextBoxStyle}"/>
+                            </Grid>
+                        </Border>
 
                         <!-- Date Filter (From - To) -->
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,10,6">

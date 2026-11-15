@@ -22,7 +22,7 @@
                 <!-- Action Buttons on Right (Wraps cleanly if screen is smaller) -->
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🛒 Retail Billing" Command="{Binding NavigateCommand}" CommandParameter="pos"
-                            Padding="12,6" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
+                            Padding="12,6" Background="#172443" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
@@ -185,50 +185,56 @@
                             <!-- Row 1: Search Box (Left) + Category Chips (Right) -->
                             <DockPanel Grid.Row="0" Margin="0,0,0,10">
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <Button Content="All" Command="{Binding SetChannelCommand}" CommandParameter="all" Margin="0,0,5,0" Height="30" Padding="14,0"
+                                    <Button Content="All" Command="{Binding SetChannelCommand}" CommandParameter="all" Margin="0,0,5,0"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                             Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
-                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"/>
 
-                                    <Button Content="Retail" Command="{Binding SetChannelCommand}" CommandParameter="retail" Margin="0,0,5,0" Height="30" Padding="14,0"
+                                    <Button Content="Retail" Command="{Binding SetChannelCommand}" CommandParameter="retail" Margin="0,0,5,0"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=retail}"
                                             Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=retail}"
-                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=retail}"/>
 
-                                    <Button Content="Domestic" Command="{Binding SetChannelCommand}" CommandParameter="domestic" Margin="0,0,5,0" Height="30" Padding="14,0"
+                                    <Button Content="Domestic" Command="{Binding SetChannelCommand}" CommandParameter="domestic" Margin="0,0,5,0"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
                                             Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
-                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"/>
 
-                                    <Button Content="Export" Command="{Binding SetChannelCommand}" CommandParameter="export" Height="30" Padding="14,0"
+                                    <Button Content="Export" Command="{Binding SetChannelCommand}" CommandParameter="export"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedChannel, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
                                             Foreground="{Binding SelectedChannel, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
-                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedChannel, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"/>
                                 </StackPanel>
 
-                                <!-- Search Box -->
-                                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="32" Width="230" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                    <Grid>
+                                <!-- Search Box with Hint & Clean Focus -->
+                                <Border Style="{StaticResource SearchContainerBorderStyle}" Width="260" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <Grid Margin="10,0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="26"/>
+                                            <ColumnDefinition Width="20"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        <TextBox Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                                                 BorderThickness="0" Background="Transparent" Foreground="#0F172A" CaretBrush="#0F172A"
-                                                 Padding="2,0" Height="30" VerticalContentAlignment="Center" FontSize="12"/>
+                                        <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                        <TextBlock Grid.Column="1" Text="Search customer, invoice no..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Text, ElementName=TxtSalesSearch}" Value="">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding Text, ElementName=TxtSalesSearch}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                        <TextBox x:Name="TxtSalesSearch" Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                                 Style="{StaticResource CleanSearchTextBoxStyle}"/>
                                     </Grid>
                                 </Border>
                             </DockPanel>
@@ -236,29 +242,23 @@
                             <!-- Row 2: Custom report From/To (Left) + Status Chips & Download file (Right) -->
                             <DockPanel Grid.Row="1">
                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <Button Content="All" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,5,0" Height="30" Padding="14,0"
+                                    <Button Content="All" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,5,0"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                             Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
-                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"/>
 
-                                    <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,5,0" Height="30" Padding="14,0"
+                                    <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,5,0"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Unpaid}"
                                             Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Unpaid}"
-                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Unpaid}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Unpaid}"/>
 
-                                    <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Margin="0,0,8,0" Height="30" Padding="14,0"
+                                    <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Margin="0,0,8,0"
+                                            Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Paid}"
                                             Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Paid}"
-                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Paid}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="15"/></Style></Button.Resources>
-                                    </Button>
+                                            BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Paid}"/>
 
                                     <!-- Single Download file button asking PDF or CSV -->
                                     <Button Content="Download file" Command="{Binding DownloadFileCommand}"
