@@ -43,10 +43,10 @@
                                 <!-- Barcode Quick Scanner Line -->
                                 <Border Background="#EEF2FF" CornerRadius="8" Padding="10,6" Margin="0,0,0,10" BorderBrush="#C7D2FE" BorderThickness="1">
                                     <DockPanel>
-                                        <Button DockPanel.Dock="Right" Content="Scan &amp; Add" Command="{Binding ScanBarcodeCommand}" Background="#4F46E5" Foreground="White" BorderThickness="0" Padding="16,6" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="8,0,0,0">
+                                        <Button DockPanel.Dock="Right" Content="Scan &amp; Add" Command="{Binding ScanBarcodeCommand}" Background="#4F46E5" Foreground="White" BorderThickness="0" Padding="16,0" Height="36" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="8,0,0,0">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                         </Button>
-                                        <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="34">
+                                        <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="36">
                                             <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="34"/>
@@ -56,6 +56,7 @@
                                                 <TextBox Grid.Column="1" x:Name="TxtBarcodeScan" Text="{Binding ScannedBarcode, UpdateSourceTrigger=PropertyChanged}"
                                                          BorderThickness="0" Background="Transparent" Foreground="#0F172A" CaretBrush="#0F172A"
                                                          Padding="4,0" FontSize="12.5" FontFamily="Consolas, Segoe UI" VerticalContentAlignment="Center"
+                                                         Height="34" VerticalAlignment="Center"
                                                          ToolTip="Scan barcode or type SKU and press Enter">
                                                     <TextBox.InputBindings>
                                                         <KeyBinding Key="Return" Command="{Binding ScanBarcodeCommand}"/>
@@ -90,7 +91,7 @@
                                               IsTextSearchEnabled="False"
                                               TextSearch.TextPath="Name"
                                               DropDownOpened="CbQuickAdd_DropDownOpened"
-                                              Padding="10,6" Margin="0,0,8,0"
+                                              Padding="10,0" Margin="0,0,8,0"
                                               Height="36" FontSize="12.5" VerticalContentAlignment="Center">
                                         <ComboBox.InputBindings>
                                             <KeyBinding Key="Return" Command="{Binding QuickAddCommand}"/>
@@ -130,28 +131,36 @@
                         <!-- Search & Filter Bar -->
                         <Border DockPanel.Dock="Top" Padding="16,12" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1">
                             <DockPanel>
-                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="240" Padding="10,7" Margin="0,0,14,0"/>
+                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="240" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,14,0"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                    <Button Content="All" Command="{Binding SetCategoryCommand}" CommandParameter="all" Margin="0,0,6,0" Padding="14,6"
+                                    <Button Content="All" Command="{Binding SetCategoryCommand}" CommandParameter="all" Margin="0,0,6,0" Padding="16,0" Height="36"
                                             Background="{Binding SelectedCategory, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                             Foreground="{Binding SelectedCategory, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                             BorderBrush="{Binding SelectedCategory, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                                    <Button Content="Shoe" Command="{Binding SetCategoryCommand}" CommandParameter="Shoe" Margin="0,0,6,0" Padding="14,6"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Shoe" Command="{Binding SetCategoryCommand}" CommandParameter="Shoe" Margin="0,0,6,0" Padding="16,0" Height="36"
                                             Background="{Binding SelectedCategory, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Shoe}"
                                             Foreground="{Binding SelectedCategory, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Shoe}"
                                             BorderBrush="{Binding SelectedCategory, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Shoe}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                                    <Button Content="Uniform" Command="{Binding SetCategoryCommand}" CommandParameter="Uniform" Margin="0,0,6,0" Padding="14,6"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Uniform" Command="{Binding SetCategoryCommand}" CommandParameter="Uniform" Margin="0,0,6,0" Padding="16,0" Height="36"
                                             Background="{Binding SelectedCategory, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Uniform}"
                                             Foreground="{Binding SelectedCategory, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Uniform}"
                                             BorderBrush="{Binding SelectedCategory, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Uniform}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                                    <Button Content="Accessory" Command="{Binding SetCategoryCommand}" CommandParameter="Accessory" Padding="14,6"
+                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
+                                    <Button Content="Accessory" Command="{Binding SetCategoryCommand}" CommandParameter="Accessory" Padding="16,0" Height="36"
                                             Background="{Binding SelectedCategory, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Accessory}"
                                             Foreground="{Binding SelectedCategory, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Accessory}"
                                             BorderBrush="{Binding SelectedCategory, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Accessory}"
-                                            BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                                            BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                    </Button>
                                 </StackPanel>
                             </DockPanel>
                         </Border>
@@ -221,11 +230,15 @@
                                                         <ComboBox ItemsSource="{Binding Product.Sizes}" SelectedItem="{Binding SelectedSize}"
                                                                   Text="{Binding SelectedSize, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
                                                                   IsEditable="True" IsTextSearchEnabled="True"
-                                                                  Width="65" Margin="0,0,6,0" Padding="3" FontSize="11"/>
+                                                                  Width="65" Height="28" Margin="0,0,6,0" Padding="4,0" FontSize="11" VerticalContentAlignment="Center"/>
                                                         <!-- Qty Controls -->
-                                                        <Button Content="−" Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Width="24" Height="24" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" Padding="0"/>
+                                                        <Button Content="−" Command="{Binding DataContext.DecrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Width="28" Height="28" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" Padding="0">
+                                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                        </Button>
                                                         <TextBlock Text="{Binding Qty}" Width="26" TextAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-                                                        <Button Content="+" Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Width="24" Height="24" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" Padding="0"/>
+                                                        <Button Content="+" Command="{Binding DataContext.IncrementQtyCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Width="28" Height="28" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" Padding="0">
+                                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                        </Button>
                                                     </StackPanel>
                                                 </StackPanel>
 
@@ -249,7 +262,7 @@
                                 </DockPanel>
                                 <DockPanel Margin="0,3">
                                     <TextBlock Text="Discount %:" Foreground="#64748B" FontSize="12" VerticalAlignment="Center"/>
-                                    <TextBox Text="{Binding DiscountPercent, UpdateSourceTrigger=PropertyChanged}" Width="50" HorizontalAlignment="Right" Padding="4" HorizontalContentAlignment="Center"/>
+                                    <TextBox Text="{Binding DiscountPercent, UpdateSourceTrigger=PropertyChanged}" Width="60" Height="36" HorizontalAlignment="Right" Padding="4,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"/>
                                 </DockPanel>
                                 <DockPanel Margin="0,3">
                                     <TextBlock Text="GST Included:" Foreground="#64748B" FontSize="12"/>
@@ -270,33 +283,39 @@
                             <!-- Payment Mode Chips -->
                             <TextBlock Text="Payment Mode" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,5"/>
                             <UniformGrid Columns="3" Margin="0,0,0,10">
-                                <Button Content="Cash" Command="{Binding SetPaymentModeCommand}" CommandParameter="Cash" Margin="0,0,4,0" Padding="8"
+                                <Button Content="Cash" Command="{Binding SetPaymentModeCommand}" CommandParameter="Cash" Margin="0,0,4,0" Height="36" Padding="0"
                                         Background="{Binding PaymentMode, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Cash}"
                                         Foreground="{Binding PaymentMode, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Cash}"
                                         BorderBrush="{Binding PaymentMode, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Cash}"
-                                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="UPI" Command="{Binding SetPaymentModeCommand}" CommandParameter="UPI" Margin="0,0,4,0" Padding="8"
+                                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                </Button>
+                                <Button Content="UPI" Command="{Binding SetPaymentModeCommand}" CommandParameter="UPI" Margin="0,0,4,0" Height="36" Padding="0"
                                         Background="{Binding PaymentMode, Converter={StaticResource TabActiveBgConv}, ConverterParameter=UPI}"
                                         Foreground="{Binding PaymentMode, Converter={StaticResource TabActiveFgConv}, ConverterParameter=UPI}"
                                         BorderBrush="{Binding PaymentMode, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=UPI}"
-                                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
-                                <Button Content="Card" Command="{Binding SetPaymentModeCommand}" CommandParameter="Card" Padding="8"
+                                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                </Button>
+                                <Button Content="Card" Command="{Binding SetPaymentModeCommand}" CommandParameter="Card" Height="36" Padding="0"
                                         Background="{Binding PaymentMode, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Card}"
                                         Foreground="{Binding PaymentMode, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Card}"
                                         BorderBrush="{Binding PaymentMode, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Card}"
-                                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+                                        BorderThickness="1" Cursor="Hand" FontWeight="SemiBold">
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                                </Button>
                             </UniformGrid>
 
                             <!-- Location -->
                             <TextBlock Text="Sold At Location" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding SoldAtLocation, UpdateSourceTrigger=PropertyChanged}" Padding="8" Margin="0,0,0,8"/>
+                            <TextBox Text="{Binding SoldAtLocation, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,8"/>
 
                             <!-- Customer Info -->
                             <TextBlock Text="Customer Name *" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}" Padding="8" Margin="0,0,0,8"/>
+                            <TextBox Text="{Binding CustomerName, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,8"/>
 
                             <TextBlock Text="Phone Number *" FontSize="11" FontWeight="SemiBold" Foreground="#64748B" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding CustomerPhone, UpdateSourceTrigger=PropertyChanged}" Padding="8" Margin="0,0,0,14"/>
+                            <TextBox Text="{Binding CustomerPhone, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,14"/>
 
                             <!-- Complete Sale Button -->
                             <Button Content="Complete Sale &amp; Print Bill" Command="{Binding CompleteSaleCommand}" Height="42" Background="#10B981" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="13" Cursor="Hand">

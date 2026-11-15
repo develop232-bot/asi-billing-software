@@ -119,8 +119,12 @@
 
         <!-- Action Footer -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="Close" Click="Close_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
-            <Button Content="🖨️ Print / Save as PDF" Click="Print_Click" Padding="18,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+            <Button Content="Close" Click="Close_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
+            <Button Content="🖨️ Print / Save as PDF" Click="Print_Click" Height="36" Padding="18,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

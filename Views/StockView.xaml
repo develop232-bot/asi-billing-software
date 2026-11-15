@@ -85,7 +85,7 @@
                 </Border.Effect>
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" HorizontalAlignment="Left" Padding="10,6"/>
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Height="36" HorizontalAlignment="Left" Padding="10,0" VerticalContentAlignment="Center"/>
                     </DockPanel>
 
                     <!-- Stock Table -->

@@ -760,10 +760,10 @@
 
                     <!-- Inputs -->
                     <TextBlock Text="Username / Login ID" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,4"/>
-                    <TextBox x:Name="LoginUsernameBox" Text="admin" Height="38" Background="#030712" Foreground="#FFFFFF" BorderBrush="#374151" BorderThickness="1" Padding="10,8" Margin="0,0,0,12" VerticalContentAlignment="Center" KeyDown="LoginInput_KeyDown"/>
+                    <TextBox x:Name="LoginUsernameBox" Text="admin" Height="36" Background="#030712" Foreground="#FFFFFF" BorderBrush="#374151" BorderThickness="1" Padding="10,0" Margin="0,0,0,12" VerticalContentAlignment="Center" KeyDown="LoginInput_KeyDown"/>
 
                     <TextBlock Text="Password" FontSize="11" FontWeight="SemiBold" Foreground="#94A3B8" Margin="0,0,0,4"/>
-                    <PasswordBox x:Name="LoginPasswordBox" Height="38" Background="#030712" Foreground="#FFFFFF" BorderBrush="#374151" BorderThickness="1" Padding="10,8" Margin="0,0,0,12" VerticalContentAlignment="Center" KeyDown="LoginInput_KeyDown"/>
+                    <PasswordBox x:Name="LoginPasswordBox" Height="36" Background="#030712" Foreground="#FFFFFF" BorderBrush="#374151" BorderThickness="1" Padding="10,0" Margin="0,0,0,12" VerticalContentAlignment="Center" KeyDown="LoginInput_KeyDown"/>
 
                     <!-- Remember Me / Auto-login -->
                     <CheckBox x:Name="LoginRememberCheckBox" IsChecked="True" Margin="0,0,0,16" Foreground="#CBD5E1" FontSize="11.5" Cursor="Hand">

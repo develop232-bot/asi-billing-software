@@ -32,17 +32,17 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,10">
                     <TextBlock Text="Work Order No." FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtOrderNo" IsReadOnly="True" Background="#F6F7FA" Padding="8"/>
+                    <TextBox x:Name="TxtOrderNo" IsReadOnly="True" Background="#F6F7FA"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,10">
                     <TextBlock Text="Customer / Order For" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtCustomer" Padding="8" BorderBrush="#E1E5EC"/>
+                    <TextBox x:Name="TxtCustomer" BorderBrush="#E1E5EC"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
                     <TextBlock Text="Order Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbOrderType" Padding="8" IsEditable="True" IsTextSearchEnabled="True">
+                    <ComboBox x:Name="CbOrderType" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="General / stock" Tag="general" IsSelected="True"/>
                         <ComboBoxItem Content="Domestic" Tag="domestic"/>
                         <ComboBoxItem Content="Export" Tag="export"/>
@@ -51,17 +51,17 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                     <TextBlock Text="Order Date" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpOrderDate" Padding="6"/>
+                    <DatePicker x:Name="DpOrderDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
                     <TextBlock Text="Due Date *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpDueDate" Padding="6"/>
+                    <DatePicker x:Name="DpDueDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="2">
                     <TextBlock Text="Production Status" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbStatus" Padding="8" IsEditable="True" IsTextSearchEnabled="True">
+                    <ComboBox x:Name="CbStatus" IsEditable="True" IsTextSearchEnabled="True">
                         <ComboBoxItem Content="Pending" IsSelected="True"/>
                         <ComboBoxItem Content="Started"/>
                         <ComboBoxItem Content="In Progress"/>
@@ -158,11 +158,17 @@
 
         <!-- Footer -->
         <DockPanel Grid.Row="3" Margin="0,16,0,0">
-            <Button x:Name="BtnDeleteOrder" Content="🗑 Delete Order" Click="Delete_Click" Padding="14,8"
-                    Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" FontWeight="SemiBold" Cursor="Hand" Visibility="Collapsed"/>
+            <Button x:Name="BtnDeleteOrder" Content="🗑 Delete Order" Click="Delete_Click" Height="36" Padding="14,0"
+                    Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" FontWeight="SemiBold" Cursor="Hand" Visibility="Collapsed">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
-                <Button Content="Save Work Order" Click="Save_Click" Padding="18,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+                <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
+                <Button Content="Save Work Order" Click="Save_Click" Height="36" Padding="18,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
             </StackPanel>
         </DockPanel>
     </Grid>

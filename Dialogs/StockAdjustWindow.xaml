@@ -20,20 +20,24 @@
 
         <StackPanel Grid.Row="1">
             <TextBlock Text="Adjustment Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-            <ComboBox x:Name="CbDirection" Padding="8" Margin="0,0,0,12">
+            <ComboBox x:Name="CbDirection" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,12">
                 <ComboBoxItem Content="Add to Stock (Received / Found / Opening)" IsSelected="True"/>
                 <ComboBoxItem Content="Remove from Stock (Damaged / Sample / Loss)"/>
             </ComboBox>
 
             <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-            <TextBox x:Name="TxtQty" Text="1" Padding="8" Margin="0,0,0,12"/>
+            <TextBox x:Name="TxtQty" Text="1" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,12"/>
 
             <TextBlock Text="Use this for opening balance adjustments, factory floor corrections, or damaged goods." FontSize="11" Foreground="#78839A" TextWrapping="Wrap"/>
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="Cancel" Click="Cancel_Click" Padding="14,6" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand"/>
-            <Button Content="Update Stock" Click="Save_Click" Padding="16,6" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+            <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="14,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
+            <Button Content="Update Stock" Click="Save_Click" Height="36" Padding="16,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>

@@ -153,12 +153,12 @@
                                     <TextBlock Text="Download file:" FontWeight="SemiBold" FontSize="11" Foreground="#475569" VerticalAlignment="Center" Margin="0,0,8,0"/>
 
                                     <Button Content="📄 PDF" Command="{Binding ExportPdfCommand}"
-                                            Padding="12,5" Background="#DC2626" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11" Margin="0,0,6,0">
+                                            Height="36" Padding="14,0" Background="#DC2626" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="0,0,6,0">
                                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
 
                                     <Button Content="📊 EXCEL" Command="{Binding ExportExcelCommand}"
-                                            Padding="12,5" Background="#16A34A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11">
+                                            Height="36" Padding="14,0" Background="#16A34A" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="11.5">
                                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
                                 </StackPanel>
@@ -169,95 +169,95 @@
                                 <!-- From Date -->
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,6">
                                     <TextBlock Text="From:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                    <DatePicker SelectedDate="{Binding ReportFromDate, Mode=TwoWay}" Width="120" Height="28" VerticalContentAlignment="Center"/>
+                                    <DatePicker SelectedDate="{Binding ReportFromDate, Mode=TwoWay}" Width="120" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                                 </StackPanel>
 
                                 <!-- To Date -->
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
                                     <TextBlock Text="To:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                    <DatePicker SelectedDate="{Binding ReportToDate, Mode=TwoWay}" Width="120" Height="28" VerticalContentAlignment="Center"/>
+                                    <DatePicker SelectedDate="{Binding ReportToDate, Mode=TwoWay}" Width="120" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                                 </StackPanel>
 
                                 <!-- Category Chips: All, Raw Material, Ready Made Products, General Packaging -->
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
                                     <TextBlock Text="Category:" FontWeight="SemiBold" FontSize="11.5" Foreground="#334155" VerticalAlignment="Center" Margin="0,0,6,0"/>
 
-                                    <Button Content="🌐 All" Command="{Binding SetKindCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="10,4"
+                                    <Button Content="🌐 All" Command="{Binding SetKindCommand}" CommandParameter="all" Margin="0,0,4,0" Height="36" Padding="12,0"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
                                             BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
 
-                                    <Button Content="🧵 Raw Material" Command="{Binding SetKindCommand}" CommandParameter="raw" Margin="0,0,4,0" Padding="10,4"
+                                    <Button Content="🧵 Raw Material" Command="{Binding SetKindCommand}" CommandParameter="raw" Margin="0,0,4,0" Height="36" Padding="12,0"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"
                                             BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
 
-                                    <Button Content="👞 Ready Made" Command="{Binding SetKindCommand}" CommandParameter="ready" Margin="0,0,4,0" Padding="10,4"
+                                    <Button Content="👞 Ready Made" Command="{Binding SetKindCommand}" CommandParameter="ready" Margin="0,0,4,0" Height="36" Padding="12,0"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=ready}"
                                             BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
 
-                                    <Button Content="📦 General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen" Padding="10,4"
+                                    <Button Content="📦 General Packaging" Command="{Binding SetKindCommand}" CommandParameter="gen" Height="36" Padding="12,0"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"
                                             BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
                                 </StackPanel>
 
                                 <!-- Status Filter -->
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,6">
-                                    <Button Content="All Status" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,3,0" Padding="8,4"
+                                    <Button Content="All Status" Command="{Binding SetStatusCommand}" CommandParameter="all" Margin="0,0,3,0" Height="36" Padding="10,0"
                                             Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                             Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                             BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
                                             BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
-                                    <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,3,0" Padding="8,4"
+                                    <Button Content="Unpaid" Command="{Binding SetStatusCommand}" CommandParameter="Unpaid" Margin="0,0,3,0" Height="36" Padding="10,0"
                                             Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Unpaid}"
                                             Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Unpaid}"
                                             BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Unpaid}"
                                             BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
-                                    <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Padding="8,4"
+                                    <Button Content="Paid" Command="{Binding SetStatusCommand}" CommandParameter="Paid" Height="36" Padding="10,0"
                                             Background="{Binding SelectedStatus, Converter={StaticResource TabActiveBgConv}, ConverterParameter=Paid}"
                                             Foreground="{Binding SelectedStatus, Converter={StaticResource TabActiveFgConv}, ConverterParameter=Paid}"
                                             BorderBrush="{Binding SelectedStatus, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=Paid}"
                                             BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
-                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                     </Button>
                                 </StackPanel>
 
                                 <!-- Search Box with Icon -->
-                                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="30" Width="210" Margin="0,0,8,6" VerticalAlignment="Center">
+                                <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="6" Height="36" Width="210" Margin="0,0,8,6" VerticalAlignment="Center">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="26"/>
+                                            <ColumnDefinition Width="28"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                         <TextBox Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
                                                  BorderThickness="0" Background="Transparent" Foreground="#0F172A" CaretBrush="#0F172A"
-                                                 Padding="2,0" VerticalContentAlignment="Center" FontSize="12"/>
+                                                 Padding="4,0" Height="34" VerticalContentAlignment="Center" FontSize="12"/>
                                     </Grid>
                                 </Border>
 
                                 <!-- Reset Dates / Filters -->
-                                <Button Content="Reset" Command="{Binding ResetFilterDatesCommand}" Padding="10,4" Background="#F1F5F9"
+                                <Button Content="Reset" Command="{Binding ResetFilterDatesCommand}" Height="36" Padding="12,0" Background="#F1F5F9"
                                         BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,0,6">
-                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                                 </Button>
                             </WrapPanel>
                         </Grid>

@@ -4,14 +4,14 @@
 
     <UserControl.Resources>
         <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="36"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="10,0"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="BorderBrush" Value="#CBD5E1"/>
         </Style>
         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
-            <Setter Property="Height" Value="40"/>
+            <Setter Property="Height" Value="36"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Padding" Value="10,0"/>
             <Setter Property="FontSize" Value="13"/>
@@ -31,16 +31,22 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🖨️ Print Barcode" Command="{Binding PrintBarcodeCommand}"
                             Visibility="{Binding ProductVisibility}"
-                            Padding="14,8" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1"
-                            Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,10,0"/>
+                            Height="36" Padding="14,0" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,10,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
 
                     <Button Content="📥 Bulk CSV Upload" Command="{Binding BulkUploadCommand}"
-                            Padding="14,8" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
-                            Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0"/>
+                            Height="36" Padding="14,0" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
+                            Cursor="Hand" FontWeight="SemiBold" FontSize="12" Margin="0,0,10,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
 
                     <Button Content="💾 Save Item" Command="{Binding SaveCommand}"
-                            Padding="20,9" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
-                            Cursor="Hand" FontWeight="Bold" FontSize="12.5"/>
+                            Height="36" Padding="20,0" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
+                            Cursor="Hand" FontWeight="Bold" FontSize="12.5">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
                 </StackPanel>
             </DockPanel>
 

@@ -36,7 +36,7 @@
 
                 <StackPanel Margin="0,0,0,12">
                     <TextBlock Text="Repayment Date *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpDate" Padding="6"/>
+                    <DatePicker x:Name="DpDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <Grid Margin="0,0,0,14">
@@ -46,11 +46,11 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Loan Part (Principal ₹) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <TextBox x:Name="TxtPrincipal" Text="0" Padding="8" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
+                        <TextBox x:Name="TxtPrincipal" Text="0" Height="36" Padding="10,0" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Interest Part (₹) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <TextBox x:Name="TxtInterest" Text="0" Padding="8" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
+                        <TextBox x:Name="TxtInterest" Text="0" Height="36" Padding="10,0" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
                     </StackPanel>
                 </Grid>
 
@@ -63,8 +63,12 @@
         <!-- Footer -->
         <Border Grid.Row="2" BorderBrush="#E1E5EC" BorderThickness="0,1,0,0" Padding="0,12,0,0" Margin="0,10,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Save Payment" Click="Save_Click" Padding="20,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+                <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand" FontWeight="SemiBold">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
+                <Button Content="Save Payment" Click="Save_Click" Height="36" Padding="20,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
             </StackPanel>
         </Border>
     </Grid>

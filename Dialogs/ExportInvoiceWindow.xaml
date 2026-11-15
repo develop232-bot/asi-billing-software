@@ -41,12 +41,12 @@
                 <!-- Row 1 -->
                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,10">
                     <TextBlock Text="Company name (buyer) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbParty" IsEditable="True" Height="34" Padding="6,4" VerticalContentAlignment="Center" FontSize="12"/>
+                    <ComboBox x:Name="CbParty" IsEditable="True" Height="36" Padding="10,0" VerticalContentAlignment="Center" FontSize="12.5"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,10">
                     <TextBlock Text="Date *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpDate" Height="34" Padding="6,4"/>
+                    <DatePicker x:Name="DpDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
@@ -172,7 +172,7 @@
                                         <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableProducts}"
                                                   DisplayMemberPath="FullDisplayName" SelectedValuePath="Id" SelectedValue="{Binding Pid, UpdateSourceTrigger=PropertyChanged}"
                                                   IsEditable="True" IsTextSearchEnabled="True"
-                                                  SelectionChanged="ProductSelectionChanged" Margin="2" Height="32"/>
+                                                  SelectionChanged="ProductSelectionChanged" Margin="2" Height="34" VerticalContentAlignment="Center"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
@@ -262,7 +262,7 @@
 
                     <DockPanel Margin="0,2" VerticalAlignment="Center">
                         <TextBlock x:Name="LblPaidNow" Text="Received now (AED):" VerticalAlignment="Center" Foreground="#48546F" FontSize="12"/>
-                        <TextBox x:Name="TxtPaidNow" Text="0.00" Width="100" HorizontalAlignment="Right" Padding="4" TextAlignment="Right" TextChanged="PaidNow_Changed" FontWeight="SemiBold"/>
+                        <TextBox x:Name="TxtPaidNow" Text="0.00" Width="100" Height="36" Padding="8,0" VerticalContentAlignment="Center" HorizontalAlignment="Right" TextAlignment="Right" TextChanged="PaidNow_Changed" FontWeight="SemiBold"/>
                     </DockPanel>
                     <DockPanel Margin="0,2">
                         <TextBlock Text="Balance:" Foreground="#48546F" FontSize="12"/>

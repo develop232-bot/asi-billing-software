@@ -34,27 +34,27 @@
 
                 <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,10">
                     <TextBlock Text="Vendor Name *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtParty" Padding="8" BorderBrush="#E1E5EC"/>
+                    <TextBox x:Name="TxtParty" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,10">
                     <TextBlock Text="Bill Date" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <DatePicker x:Name="DpDate" Padding="6"/>
+                    <DatePicker x:Name="DpDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
                     <TextBlock Text="Vendor Invoice / Bill No." FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtRef" Text="INV-1001" Padding="8" BorderBrush="#E1E5EC"/>
+                    <TextBox x:Name="TxtRef" Text="INV-1001" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                     <TextBlock Text="Vendor Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtPhone" Padding="8" BorderBrush="#E1E5EC"/>
+                    <TextBox x:Name="TxtPhone" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
                     <TextBlock Text="Purchase Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbKind" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Kind_SelectionChanged" Padding="8">
+                    <ComboBox x:Name="CbKind" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Kind_SelectionChanged" Height="36" Padding="10,0" VerticalContentAlignment="Center">
                         <ComboBoxItem Content="Raw Material" Tag="raw" IsSelected="True"/>
                         <ComboBoxItem Content="Readymade Product" Tag="ready"/>
                         <ComboBoxItem Content="General Packaging" Tag="gen"/>
@@ -63,7 +63,7 @@
 
                 <StackPanel Grid.Row="1" Grid.Column="2">
                     <TextBlock Text="System Bill Number" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtBillNo" Padding="8" IsReadOnly="True" Background="#F6F7FA" BorderBrush="#E1E5EC"/>
+                    <TextBox x:Name="TxtBillNo" Height="36" Padding="10,0" VerticalContentAlignment="Center" IsReadOnly="True" Background="#F6F7FA" BorderBrush="#E1E5EC"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -204,7 +204,7 @@
 
                 <StackPanel x:Name="CreditWrap" Orientation="Horizontal" Visibility="Collapsed" Margin="0,0,0,8">
                     <TextBlock Text="Credit Period: " VerticalAlignment="Center"/>
-                    <TextBox x:Name="TxtCreditDays" Text="30" Width="50" Padding="4" Margin="6,0,6,0"/>
+                    <TextBox x:Name="TxtCreditDays" Text="30" Width="55" Height="28" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center" FontWeight="Bold" Margin="6,0,6,0"/>
                     <TextBlock Text="days" VerticalAlignment="Center"/>
                 </StackPanel>
             </StackPanel>
@@ -227,7 +227,7 @@
                     </Border>
                     <DockPanel Margin="0,2">
                         <TextBlock Text="Paid Now (₹):" VerticalAlignment="Center"/>
-                        <TextBox x:Name="TxtPaidNow" Text="0.00" Width="90" HorizontalAlignment="Right" Padding="4"/>
+                        <TextBox x:Name="TxtPaidNow" Text="0.00" Width="100" Height="36" Padding="8,0" VerticalContentAlignment="Center" HorizontalAlignment="Right" TextAlignment="Right"/>
                     </DockPanel>
                 </StackPanel>
             </Border>

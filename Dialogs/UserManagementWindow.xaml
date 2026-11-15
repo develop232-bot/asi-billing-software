@@ -86,15 +86,15 @@
 
                         <!-- Full Name -->
                         <TextBlock Text="Full Name" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
-                        <TextBox x:Name="TxtFullName" Height="34" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Padding="10,6" Margin="0,0,0,10" VerticalContentAlignment="Center" FontSize="12.5"/>
+                        <TextBox x:Name="TxtFullName" Height="36" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Padding="10,0" Margin="0,0,0,10" VerticalContentAlignment="Center" FontSize="12.5"/>
 
                         <!-- Username -->
                         <TextBlock Text="Username / Login ID *" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
-                        <TextBox x:Name="TxtUsername" Height="34" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Padding="10,6" Margin="0,0,0,10" VerticalContentAlignment="Center" FontSize="12.5"/>
+                        <TextBox x:Name="TxtUsername" Height="36" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Padding="10,0" Margin="0,0,0,10" VerticalContentAlignment="Center" FontSize="12.5"/>
 
                         <!-- Password -->
                         <TextBlock Text="Password *" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,4"/>
-                        <PasswordBox x:Name="TxtPassword" Height="34" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Padding="10,6" Margin="0,0,12,0" VerticalContentAlignment="Center" FontSize="12.5"/>
+                        <PasswordBox x:Name="TxtPassword" Height="36" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Padding="10,0" Margin="0,0,12,0" VerticalContentAlignment="Center" FontSize="12.5"/>
 
                         <!-- Role Selection (Direct Clickable Cards - No Dropdown Glitches) -->
                         <TextBlock Text="Panel Role &amp; Permissions *" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,6"/>
@@ -131,10 +131,10 @@
                         </StackPanel>
 
                         <!-- Submit Button -->
-                        <Button Content="➕ Create Staff Login" Click="CreateUser_Click" Height="40" Background="#4F46E5" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" Cursor="Hand" BorderThickness="0" Margin="0,0,0,8">
+                        <Button Content="➕ Create Staff Login" Click="CreateUser_Click" Height="36" Background="#4F46E5" Foreground="#FFFFFF" FontWeight="Bold" FontSize="12.5" Cursor="Hand" BorderThickness="0" Margin="0,0,0,8">
                             <Button.Resources>
                                 <Style TargetType="Border">
-                                    <Setter Property="CornerRadius" Value="8"/>
+                                    <Setter Property="CornerRadius" Value="6"/>
                                 </Style>
                             </Button.Resources>
                         </Button>

@@ -34,7 +34,7 @@
                 <Border Background="White" Padding="14" Margin="0,0,0,14" BorderBrush="#E1E5EC" BorderThickness="1">
                     <StackPanel>
                         <TextBlock Text="Item Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,6"/>
-                        <ComboBox x:Name="CbItemType" SelectionChanged="ItemType_Changed" Padding="8" IsEditable="True" IsTextSearchEnabled="True">
+                        <ComboBox x:Name="CbItemType" SelectionChanged="ItemType_Changed" IsEditable="True" IsTextSearchEnabled="True">
                             <ComboBoxItem Content="Finished Product (Made in Factory)" Tag="mfg" IsSelected="True"/>
                             <ComboBoxItem Content="Readymade Product (Purchased for Resale)" Tag="ready"/>
                             <ComboBoxItem Content="Raw Material (Leather, Sole, Fabric, Trims)" Tag="raw"/>
@@ -59,12 +59,12 @@
 
                         <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Margin="0,0,0,10">
                             <TextBlock Text="Item Name *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtName" Padding="8" BorderBrush="#E1E5EC"/>
+                            <TextBox x:Name="TxtName" BorderBrush="#E1E5EC"/>
                         </StackPanel>
 
                         <StackPanel x:Name="CatWrap" Grid.Row="1" Grid.Column="0" Margin="0,0,12,10">
                             <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <ComboBox x:Name="CbCategory" SelectionChanged="Category_Changed" Padding="8" IsEditable="True" IsTextSearchEnabled="True">
+                            <ComboBox x:Name="CbCategory" SelectionChanged="Category_Changed" IsEditable="True" IsTextSearchEnabled="True">
                                 <ComboBoxItem Content="Shoe" IsSelected="True"/>
                                 <ComboBoxItem Content="Formal Shoes"/>
                                 <ComboBoxItem Content="School Shoes"/>
@@ -79,7 +79,7 @@
 
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,0,10">
                             <TextBlock Text="Unit of Measurement *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <ComboBox x:Name="TxtUnit" IsEditable="True" Text="pair" Padding="8" BorderBrush="#E1E5EC">
+                            <ComboBox x:Name="TxtUnit" IsEditable="True" Text="pair" BorderBrush="#E1E5EC">
                                 <ComboBoxItem Content="pair"/>
                                 <ComboBoxItem Content="pcs"/>
                                 <ComboBoxItem Content="set"/>
@@ -103,7 +103,7 @@
                                     <Button Content="Free Size" Click="SizePreset_Click" Tag="Free Size" Padding="6,2" FontSize="10.5" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand"/>
                                 </StackPanel>
                             </DockPanel>
-                            <TextBox x:Name="TxtSizes" Text="6,7,8,9,10,11" Padding="8" BorderBrush="#E1E5EC"/>
+                            <TextBox x:Name="TxtSizes" Text="6,7,8,9,10,11" BorderBrush="#E1E5EC"/>
                         </StackPanel>
 
                         <!-- SKU & Auto Barcode Row -->
@@ -117,7 +117,7 @@
                                     <TextBlock Text="Product SKU *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" VerticalAlignment="Center"/>
                                     <Button Content="⚡ Auto SKU" Click="AutoSku_Click" HorizontalAlignment="Right" Padding="6,2" FontSize="11" Background="#E8EEFA" Foreground="#2A5C99" BorderThickness="0" Cursor="Hand"/>
                                 </DockPanel>
-                                <TextBox x:Name="TxtSku" Padding="8" BorderBrush="#E1E5EC"/>
+                                <TextBox x:Name="TxtSku" BorderBrush="#E1E5EC"/>
                             </StackPanel>
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
                                 <DockPanel Margin="0,0,0,4">
@@ -127,7 +127,7 @@
                                         <Button Content="🖨️ Print Label" Click="PrintBarcode_Click" Padding="6,2" FontSize="11" Background="#EEF2FF" Foreground="#4F46E5" BorderThickness="0" Cursor="Hand"/>
                                     </StackPanel>
                                 </DockPanel>
-                                <TextBox x:Name="TxtBarcode" Padding="8" BorderBrush="#E1E5EC" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                                <TextBox x:Name="TxtBarcode" BorderBrush="#E1E5EC" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
                             </StackPanel>
                         </Grid>
                     </Grid>
@@ -150,49 +150,49 @@
                         <!-- Product Prices -->
                         <StackPanel x:Name="RetailPriceWrap" Grid.Row="0" Grid.Column="0" Margin="0,0,8,10">
                             <TextBlock Text="Retail MRP (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtRetailPrice" Text="0" Padding="8"/>
+                            <TextBox x:Name="TxtRetailPrice" Text="0"/>
                         </StackPanel>
 
                         <StackPanel x:Name="BulkPriceWrap" Grid.Row="0" Grid.Column="1" Margin="0,0,8,10">
                             <TextBlock Text="Bulk Retail (₹ 10+)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtBulkPrice" Text="0" Padding="8"/>
+                            <TextBox x:Name="TxtBulkPrice" Text="0"/>
                         </StackPanel>
 
                         <StackPanel x:Name="DomesticPriceWrap" Grid.Row="0" Grid.Column="2" Margin="0,0,8,10">
                             <TextBlock Text="Domestic Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtDomPrice" Text="0" Padding="8"/>
+                            <TextBox x:Name="TxtDomPrice" Text="0"/>
                         </StackPanel>
 
                         <StackPanel x:Name="ExportPriceWrap" Grid.Row="0" Grid.Column="3" Margin="0,0,0,10">
                             <TextBlock Text="Export Price ($)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtExpPrice" Text="0.00" Padding="8"/>
+                            <TextBox x:Name="TxtExpPrice" Text="0.00"/>
                         </StackPanel>
 
                         <!-- Raw / Gen Rate -->
                         <StackPanel x:Name="RateWrap" Grid.Row="0" Grid.Column="0" Margin="0,0,8,10" Visibility="Collapsed">
                             <TextBlock Text="Purchase Rate (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtRate" Text="0" Padding="8"/>
+                            <TextBox x:Name="TxtRate" Text="0"/>
                         </StackPanel>
 
                         <StackPanel x:Name="GstWrap" Grid.Row="0" Grid.Column="1" Margin="0,0,8,10" Visibility="Collapsed">
                             <TextBlock Text="GST Rate %" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtGst" Text="5" Padding="8"/>
+                            <TextBox x:Name="TxtGst" Text="5"/>
                         </StackPanel>
 
                         <!-- Stock Info -->
                         <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,8,0">
                             <TextBlock Text="Current / Opening Stock" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtStock" Text="0" Padding="8"/>
+                            <TextBox x:Name="TxtStock" Text="0"/>
                         </StackPanel>
 
                         <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,8,0">
                             <TextBlock Text="Reorder Alert Level" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtReorder" Text="50" Padding="8"/>
+                            <TextBox x:Name="TxtReorder" Text="50"/>
                         </StackPanel>
 
                         <StackPanel x:Name="HsnWrap" Grid.Row="1" Grid.Column="2" Margin="0,0,8,0">
                             <TextBlock Text="HSN Code" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                            <TextBox x:Name="TxtHsn" Text="6403" Padding="8"/>
+                            <TextBox x:Name="TxtHsn" Text="6403"/>
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -201,10 +201,16 @@
 
         <!-- Footer -->
         <DockPanel Grid.Row="2" Margin="0,16,0,0">
-            <Button x:Name="BtnFooterPrintBarcode" Content="🖨️ Print Barcode Label" Click="PrintBarcode_Click" Padding="14,8" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold"/>
+            <Button x:Name="BtnFooterPrintBarcode" Content="🖨️ Print Barcode Label" Click="PrintBarcode_Click" Height="36" Padding="14,0" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand"/>
-                <Button Content="Save Item" Click="Save_Click" Padding="18,8" Background="#3D62B8" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+                <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,10,0" Cursor="Hand">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
+                <Button Content="Save Item" Click="Save_Click" Height="36" Padding="18,0" Background="#3D62B8" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
             </StackPanel>
         </DockPanel>
     </Grid>

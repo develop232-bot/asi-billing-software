@@ -32,11 +32,11 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Date" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <DatePicker x:Name="DpDate" Padding="6"/>
+                        <DatePicker x:Name="DpDate" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbCategory" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Category_Changed" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
+                        <ComboBox x:Name="CbCategory" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Category_Changed" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC" SelectedIndex="0">
                             <ComboBoxItem Content="Employee"/>
                             <ComboBoxItem Content="Utility"/>
                             <ComboBoxItem Content="Misc Exp"/>
@@ -52,11 +52,11 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbType" IsEditable="True" IsTextSearchEnabled="True" Padding="8" BorderBrush="#E1E5EC"/>
+                        <ComboBox x:Name="CbType" IsEditable="True" IsTextSearchEnabled="True" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Amount (₹) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <TextBox x:Name="TxtAmount" Padding="8" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
+                        <TextBox x:Name="TxtAmount" Height="36" Padding="10,0" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="13" BorderBrush="#E1E5EC"/>
                     </StackPanel>
                 </Grid>
 
@@ -68,11 +68,11 @@
                     </Grid.ColumnDefinitions>
                     <StackPanel Margin="0,0,8,0">
                         <TextBlock Text="Employee name" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <TextBox x:Name="TxtEmployeeName" Padding="8" BorderBrush="#E1E5EC" FontSize="12.5"/>
+                        <TextBox x:Name="TxtEmployeeName" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC" FontSize="12.5"/>
                     </StackPanel>
                     <StackPanel Grid.Column="1">
                         <TextBlock Text="Position" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                        <ComboBox x:Name="CbPosition" IsEditable="True" Text="" Padding="8" BorderBrush="#E1E5EC">
+                        <ComboBox x:Name="CbPosition" IsEditable="True" Text="" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC">
                             <ComboBoxItem Content="Operator"/>
                             <ComboBoxItem Content="Supervisor"/>
                             <ComboBoxItem Content="Cutter"/>
@@ -89,13 +89,13 @@
                 <!-- Row 4: Details (optional) -->
                 <StackPanel Margin="0,0,0,12">
                     <TextBlock Text="Details (optional)" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtDetails" Padding="8" BorderBrush="#E1E5EC" FontSize="12.5"/>
+                    <TextBox x:Name="TxtDetails" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC" FontSize="12.5"/>
                 </StackPanel>
 
                 <!-- Row 5: Paid by -->
                 <StackPanel Margin="0,0,0,12" Width="235" HorizontalAlignment="Left">
                     <TextBlock Text="Paid by" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <ComboBox x:Name="CbPaidBy" IsEditable="True" IsTextSearchEnabled="True" Padding="8" BorderBrush="#E1E5EC" SelectedIndex="0">
+                    <ComboBox x:Name="CbPaidBy" IsEditable="True" IsTextSearchEnabled="True" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC" SelectedIndex="0">
                         <ComboBoxItem Content="Cash"/>
                         <ComboBoxItem Content="Bank"/>
                         <ComboBoxItem Content="UPI"/>
@@ -107,8 +107,12 @@
         <!-- Footer Buttons: Cancel and Save expense -->
         <Border Grid.Row="2" BorderBrush="#E1E5EC" BorderThickness="0,1,0,0" Padding="0,12,0,0" Margin="0,10,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Content="Cancel" Click="Cancel_Click" Padding="16,8" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand" FontWeight="SemiBold"/>
-                <Button Content="Save expense" Click="Save_Click" Padding="20,8" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand"/>
+                <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="16,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand" FontWeight="SemiBold">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
+                <Button Content="Save expense" Click="Save_Click" Height="36" Padding="20,0" Background="#172443" Foreground="White" BorderThickness="0" FontWeight="Bold" Cursor="Hand">
+                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                </Button>
             </StackPanel>
         </Border>
     </Grid>

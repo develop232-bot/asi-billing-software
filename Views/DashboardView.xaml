@@ -59,11 +59,11 @@
                 <!-- Right: Top-sellers period dropdown -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Top-sellers period" FontSize="12.5" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12,6">
+                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Height="36" Padding="12,0">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="8" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock Text="This month" FontSize="12.5" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" Margin="0,0,8,0"/>
                             <TextBlock Text="▾" FontSize="11" Foreground="#64748B" VerticalAlignment="Center"/>
                         </StackPanel>

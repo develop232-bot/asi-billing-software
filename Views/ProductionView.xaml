@@ -87,30 +87,38 @@
                 <DockPanel>
                     <!-- Filter Tools with Dynamic Active Color Chips -->
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Padding="10,6" Margin="0,0,16,0"/>
+                        <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}" Width="260" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,16,0"/>
 
                         <!-- Type Chips -->
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="All Orders" Command="{Binding SetTypeFilterCommand}" CommandParameter="all" Margin="0,0,4,0" Padding="12,5"
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="All Orders" Command="{Binding SetTypeFilterCommand}" CommandParameter="all" Margin="0,0,4,0" Height="36" Padding="14,0"
                                     Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
                                     Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                     BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="General / Stock" Command="{Binding SetTypeFilterCommand}" CommandParameter="general" Margin="0,0,4,0" Padding="12,5"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                            <Button Content="General / Stock" Command="{Binding SetTypeFilterCommand}" CommandParameter="general" Margin="0,0,4,0" Height="36" Padding="14,0"
                                     Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=general}"
                                     Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=general}"
                                     BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=general}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Domestic" Command="{Binding SetTypeFilterCommand}" CommandParameter="domestic" Margin="0,0,4,0" Padding="12,5"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                            <Button Content="Domestic" Command="{Binding SetTypeFilterCommand}" CommandParameter="domestic" Margin="0,0,4,0" Height="36" Padding="14,0"
                                     Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
                                     Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
                                     BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
-                            <Button Content="Export" Command="{Binding SetTypeFilterCommand}" CommandParameter="export" Padding="12,5"
+                                    BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
+                            <Button Content="Export" Command="{Binding SetTypeFilterCommand}" CommandParameter="export" Height="36" Padding="14,0"
                                     Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
                                     Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
                                     BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"
-                                    BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold"/>
+                                    BorderThickness="1" Cursor="Hand" FontSize="11.5" FontWeight="SemiBold">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
                         </StackPanel>
                     </DockPanel>
 

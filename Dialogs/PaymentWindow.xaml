@@ -20,10 +20,10 @@
 
         <StackPanel Grid.Row="1">
             <TextBlock Text="Payment Amount (₹) *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-            <TextBox x:Name="TxtAmount" Padding="8" Margin="0,0,0,14"/>
+            <TextBox x:Name="TxtAmount" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,14"/>
 
             <TextBlock Text="Payment Mode" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-            <ComboBox x:Name="CbMode" Padding="8">
+            <ComboBox x:Name="CbMode" Height="36" Padding="10,0" VerticalContentAlignment="Center">
                 <ComboBoxItem Content="Bank Transfer / NEFT / RTGS" IsSelected="True"/>
                 <ComboBoxItem Content="UPI"/>
                 <ComboBoxItem Content="Cash"/>
@@ -32,8 +32,12 @@
         </StackPanel>
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
-            <Button Content="Cancel" Click="Cancel_Click" Padding="14,6" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand"/>
-            <Button Content="Save Payment" Click="Save_Click" Padding="16,6" Background="#1B8556" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand"/>
+            <Button Content="Cancel" Click="Cancel_Click" Height="36" Padding="14,0" Background="White" BorderBrush="#E1E5EC" Margin="0,0,8,0" Cursor="Hand">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
+            <Button Content="Save Payment" Click="Save_Click" Height="36" Padding="16,0" Background="#1B8556" Foreground="White" BorderThickness="0" FontWeight="SemiBold" Cursor="Hand">
+                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+            </Button>
         </StackPanel>
     </Grid>
 </Window>
