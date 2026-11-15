@@ -35,7 +35,7 @@
                     <StackPanel>
                         <TextBlock Text="Item Type" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,6"/>
                         <ComboBox x:Name="CbItemType" SelectionChanged="ItemType_Changed" IsEditable="True" IsTextSearchEnabled="True">
-                            <ComboBoxItem Content="Finished Product (Made in Factory)" Tag="mfg" IsSelected="True"/>
+                            <ComboBoxItem Content="Item (Made in Factory)" Tag="mfg" IsSelected="True"/>
                             <ComboBoxItem Content="Readymade Product (Purchased for Resale)" Tag="ready"/>
                             <ComboBoxItem Content="Raw Material (Leather, Sole, Fabric, Trims)" Tag="raw"/>
                             <ComboBoxItem Content="General / Packaging (Boxes, Bags, Tape)" Tag="gen"/>

@@ -105,7 +105,7 @@ namespace AsiErp.ViewModels
         public string Title => ActiveTab switch
         {
             "raw" => "Raw Material Stock",
-            "fg" => "Finished Goods Stock",
+            "fg" => "Item Stock",
             "ready" => "Readymade (Purchased) Stock",
             "gen" => "Other (Boxes, Covers) Stock",
             _ => "Stock"
@@ -115,7 +115,7 @@ namespace AsiErp.ViewModels
         {
             "raw" => "Leather, soles, fabrics, thread and other material used in production.",
             "fg" => "Shoes and uniforms made in our own factory, ready to sell.",
-            "ready" => "Finished products bought from vendors for resale.",
+            "ready" => "Readymade items bought from vendors for resale.",
             "gen" => "Shoe boxes, uniform covers, tissue paper, ASI logo bags, single-shoe covers and other packing items.",
             _ => "Stock and inventory management"
         };
@@ -125,7 +125,7 @@ namespace AsiErp.ViewModels
             "raw" => "+ Add Raw Material",
             "gen" => "+ Add General Item",
             "ready" => "+ Add Readymade",
-            _ => "+ Add Product"
+            _ => "+ Add Item"
         };
 
         public string BuyButtonText => ActiveTab switch
