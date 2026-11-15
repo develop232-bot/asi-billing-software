@@ -302,10 +302,10 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
                         <DataGrid.Columns>
                             <!-- 1. Bill -->
-                            <DataGridTextColumn Header="Bill" Binding="{Binding BillNo}" Width="105" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Bill" Binding="{Binding BillNo}" Width="100" FontWeight="Bold"/>
 
                             <!-- 2. Type -->
-                            <DataGridTemplateColumn Header="Type" Width="110">
+                            <DataGridTemplateColumn Header="Type" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#EEF2FF">
@@ -325,16 +325,16 @@
                             </DataGridTemplateColumn>
 
                             <!-- 4. Date -->
-                            <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="85"/>
+                            <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="80"/>
 
                             <!-- 5. Amount -->
-                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="95" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="90" FontWeight="Bold"/>
 
                             <!-- 6. Paid -->
-                            <DataGridTextColumn Header="Paid" Binding="{Binding PaidAmount, Converter={StaticResource InrConv}}" Width="90"/>
+                            <DataGridTextColumn Header="Paid" Binding="{Binding PaidAmount, Converter={StaticResource InrConv}}" Width="85"/>
 
                             <!-- 7. Balance -->
-                            <DataGridTemplateColumn Header="Balance" Width="90">
+                            <DataGridTemplateColumn Header="Balance" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding BalanceAmount, Converter={StaticResource InrConv}}" FontWeight="Bold" Foreground="#DC2626" VerticalAlignment="Center"/>
@@ -343,10 +343,10 @@
                             </DataGridTemplateColumn>
 
                             <!-- 8. Terms -->
-                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="70"/>
+                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="60"/>
 
                             <!-- 9. Status -->
-                            <DataGridTemplateColumn Header="Status" Width="75">
+                            <DataGridTemplateColumn Header="Status" Width="70">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
@@ -357,20 +357,20 @@
                             </DataGridTemplateColumn>
 
                             <!-- 10. Actions -->
-                            <DataGridTemplateColumn Width="150">
+                            <DataGridTemplateColumn Width="185" MinWidth="185">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                             <Button Content="View" Command="{Binding DataContext.ViewPurchaseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="9,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
+                                                    Padding="8,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>
                                             <Button Content="Pay" Command="{Binding DataContext.PayBillCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="9,3" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
+                                                    Padding="8,3" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>
                                             <Button Content="Delete" Command="{Binding DataContext.DeletePurchaseCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="7,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                                    Padding="8,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>
                                         </StackPanel>

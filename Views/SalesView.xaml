@@ -295,10 +295,10 @@
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                         <DataGrid.Columns>
                         <!-- 1. Invoice -->
-                        <DataGridTextColumn Header="Invoice" Binding="{Binding InvoiceNo}" Width="105" FontWeight="Bold"/>
+                        <DataGridTextColumn Header="Invoice" Binding="{Binding InvoiceNo}" Width="100" FontWeight="Bold"/>
 
                         <!-- 2. Type -->
-                        <DataGridTemplateColumn Header="Type" Width="85">
+                        <DataGridTemplateColumn Header="Type" Width="75">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding Type, Converter={StaticResource StatusBgConv}}">
@@ -318,16 +318,16 @@
                         </DataGridTemplateColumn>
 
                         <!-- 4. Date -->
-                        <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="85"/>
+                        <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="80"/>
 
                         <!-- 5. Amount -->
-                        <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="95" FontWeight="Bold"/>
+                        <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="90" FontWeight="Bold"/>
 
                         <!-- 6. Received -->
-                        <DataGridTextColumn Header="Received" Binding="{Binding PaidAmount, Converter={StaticResource InrConv}}" Width="90"/>
+                        <DataGridTextColumn Header="Received" Binding="{Binding PaidAmount, Converter={StaticResource InrConv}}" Width="85"/>
 
                         <!-- 7. Balance -->
-                        <DataGridTemplateColumn Header="Balance" Width="90">
+                        <DataGridTemplateColumn Header="Balance" Width="85">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding BalanceAmount, Converter={StaticResource InrConv}}" FontWeight="Bold" Foreground="#DC2626" VerticalAlignment="Center"/>
@@ -336,10 +336,10 @@
                         </DataGridTemplateColumn>
 
                         <!-- 8. Terms -->
-                        <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="65"/>
+                        <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="60"/>
 
                         <!-- 9. Status -->
-                        <DataGridTemplateColumn Header="Status" Width="75">
+                        <DataGridTemplateColumn Header="Status" Width="70">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
@@ -350,20 +350,20 @@
                         </DataGridTemplateColumn>
 
                         <!-- 10. Actions -->
-                        <DataGridTemplateColumn Width="160">
+                        <DataGridTemplateColumn Width="195" MinWidth="195">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Button Content="View" Command="{Binding DataContext.ViewSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="9,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
+                                                Padding="8,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                         </Button>
                                         <Button Content="Receive" Command="{Binding DataContext.ReceivePaymentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="9,3" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
+                                                Padding="8,3" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                         </Button>
                                         <Button Content="Delete" Command="{Binding DataContext.DeleteSaleCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="7,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                                Padding="8,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                         </Button>
                                     </StackPanel>
