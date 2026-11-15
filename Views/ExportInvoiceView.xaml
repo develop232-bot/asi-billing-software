@@ -368,16 +368,6 @@
                     <ColumnDefinition Width="380"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: Export & LUT Notice Card -->
-                <Border Grid.Column="0" Background="#F8FAFC" Padding="18" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <StackPanel>
-                        <TextBlock Text="Export &amp; Foreign Currency Terms" FontWeight="Bold" FontSize="13" Foreground="#0F172A" Margin="0,0,0,6"/>
-                        <TextBlock Text="• GST is zero-rated under Letter of Undertaking (LUT). No IGST is levied on overseas shipments." FontSize="11.5" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <TextBlock Text="• Exchange rates are auto-configured by destination country and can be adjusted live to match the day's conversion." FontSize="11.5" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <TextBlock Text="• Financial registers record equivalent INR figures while maintaining original foreign currency balances." FontSize="11.5" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
-
                 <!-- Right: Totals Box -->
                 <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <StackPanel>

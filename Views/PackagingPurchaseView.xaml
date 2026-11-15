@@ -263,16 +263,6 @@
                     <ColumnDefinition Width="380"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: Guidelines / Info -->
-                <Border Grid.Column="0" Background="#F8FAFC" Padding="18" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <StackPanel>
-                        <TextBlock Text="Tax &amp; Sourcing Guidelines" FontWeight="Bold" FontSize="13" Foreground="#0F172A" Margin="0,0,0,6"/>
-                        <TextBlock Text="• Input GST Credit is recorded automatically for all items with valid supplier GSTIN." FontSize="11.5" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <TextBlock Text="• Cash purchases are recorded as fully settled. Credit purchases update Accounts Payable." FontSize="11.5" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <TextBlock Text="• Packaging stock inventory balances and reorder levels are updated upon saving." FontSize="11.5" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
-
                 <!-- Right: Totals Box -->
                 <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <StackPanel>

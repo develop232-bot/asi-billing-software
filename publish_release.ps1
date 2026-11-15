@@ -16,7 +16,7 @@ param(
 
 if ([string]::IsNullOrWhiteSpace($GithubToken)) {
     try {
-        $remoteUrl = git config --get remote.origin.url
+        $remoteUrl = git -C $PSScriptRoot config --get remote.origin.url
         if ($remoteUrl -match ":([^@]+)@github\.com") {
             $GithubToken = $matches[1]
         }

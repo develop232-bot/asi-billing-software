@@ -231,15 +231,6 @@
                 <ColumnDefinition Width="380"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Left: Info Note -->
-            <Border Grid.Column="0" Background="#F8FAFC" Padding="14" Margin="0,0,16,0" BorderBrush="#E1E5EC" BorderThickness="1" CornerRadius="8">
-                <StackPanel>
-                    <TextBlock Text="Export Terms &amp; LUT Notice" FontWeight="Bold" FontSize="12.5" Foreground="#152039" Margin="0,0,0,4"/>
-                    <TextBlock Text="• GST: Zero-rated supply under LUT (Letter of Undertaking). No IGST levied." FontSize="11.5" Foreground="#1B8556" FontWeight="SemiBold" Margin="0,0,0,2"/>
-                    <TextBlock Text="• Financial registers record equivalent INR figures while maintaining foreign currency balances." FontSize="11.5" Foreground="#64748B"/>
-                </StackPanel>
-            </Border>
-
             <!-- Right: Totals Box -->
             <Border Grid.Column="1" Background="White" Padding="14" BorderBrush="#E1E5EC" BorderThickness="1" CornerRadius="8">
                 <StackPanel>

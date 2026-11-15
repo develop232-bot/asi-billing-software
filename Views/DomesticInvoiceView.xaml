@@ -340,16 +340,6 @@
                     <ColumnDefinition Width="360"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Left: GST Notice & Info -->
-                <Border Grid.Column="0" Background="#F8FAFC" Padding="18" Margin="0,0,16,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <StackPanel>
-                        <TextBlock Text="GST &amp; Billing Rules (GST 2.0)" FontWeight="Bold" FontSize="13" Foreground="#0F172A" Margin="0,0,0,6"/>
-                        <TextBlock Text="• Footwear &amp; Apparel GST is automatically calculated: 5% up to ₹2,500/unit, 18% above." FontSize="11.5" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <TextBlock Text="• Within state supply splits equally into CGST (50%) + SGST (50%). Other state supply applies IGST (100%)." FontSize="11.5" Foreground="#64748B" Margin="0,0,0,4"/>
-                        <TextBlock Text="• Cash sales mark the invoice as Paid in full upon saving. Credit sales register balance under Accounts Receivable." FontSize="11.5" Foreground="#64748B"/>
-                    </StackPanel>
-                </Border>
-
                 <!-- Right: Totals Box -->
                 <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <StackPanel>
