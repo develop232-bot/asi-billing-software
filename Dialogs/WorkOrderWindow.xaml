@@ -1,7 +1,7 @@
 <Window Icon="pack://application:,,,/Assets/app.ico" x:Class="AsiErp.Dialogs.WorkOrderWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Work Order" Height="760" Width="920" MinHeight="540" MinWidth="740"
+        Title="Work Order" Height="780" Width="1100" MinHeight="560" MinWidth="880"
         WindowStartupLocation="CenterOwner" Background="#F1F3F7">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
@@ -145,11 +145,11 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Unit: Typeable / Editable -->
-                                <DataGridTemplateColumn Header="Unit" Width="75">
+                                <DataGridTemplateColumn Header="Unit" Width="95">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     Height="34" Padding="6,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                     Height="34" Padding="4,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                                      BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
                                                 <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
                                             </TextBox>
@@ -158,7 +158,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Qty -->
-                                <DataGridTemplateColumn Header="Qty" Width="70">
+                                <DataGridTemplateColumn Header="Qty" Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -233,11 +233,11 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Unit: Typeable / Editable -->
-                                <DataGridTemplateColumn Header="Unit" Width="70">
+                                <DataGridTemplateColumn Header="Unit" Width="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     Height="34" Padding="6,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
+                                                     Height="34" Padding="4,0" VerticalContentAlignment="Center" HorizontalContentAlignment="Center"
                                                      BorderBrush="#CBD5E1" BorderThickness="1" Background="White" FontSize="12">
                                                 <TextBox.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></TextBox.Resources>
                                             </TextBox>
@@ -259,7 +259,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Qty -->
-                                <DataGridTemplateColumn Header="Qty" Width="70">
+                                <DataGridTemplateColumn Header="Qty" Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

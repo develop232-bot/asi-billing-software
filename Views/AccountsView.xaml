@@ -32,13 +32,11 @@
                 <!-- Period Dropdown -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <TextBlock Text="Period: " FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="{DynamicResource AppTextSecondary}"/>
-                    <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="180" Height="36" Padding="10,0" VerticalContentAlignment="Center">
-                        <ComboBoxItem Content="This month" Tag="m0"/>
-                        <ComboBoxItem Content="Last month" Tag="m1"/>
-                        <ComboBoxItem Content="Last 3 months" Tag="q"/>
-                        <ComboBoxItem Content="Calendar Year (Jan - Dec)" Tag="fy"/>
-                        <ComboBoxItem Content="All time" Tag="all"/>
-                    </ComboBox>
+                    <ComboBox ItemsSource="{Binding AccountsPeriods}"
+                              SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}"
+                              SelectedValuePath="Tag"
+                              DisplayMemberPath="Display"
+                              Width="180" Height="36" Padding="10,0" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Grid>
 

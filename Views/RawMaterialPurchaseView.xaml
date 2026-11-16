@@ -23,18 +23,18 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="🧵 Raw Material Sourcing" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Purchase · Raw Material" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="🔄 Reset" Command="{Binding ResetFormCommand}"
+                    <Button Content="Reset" Command="{Binding ResetFormCommand}"
                             Padding="12,6" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1"
                             Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="💾 Save Bill" Command="{Binding SaveBillCommand}"
+                    <Button Content="Save Bill" Command="{Binding SaveBillCommand}"
                             Padding="16,8" Background="#0F172A" Foreground="#FFFFFF" BorderThickness="0"
                             Cursor="Hand" FontWeight="Bold" FontSize="12">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
@@ -132,7 +132,7 @@
                             <TextBlock Text="Raw Material Sourcing Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
                             <TextBlock Text=" (Leather, Soles, Fabric, Adhesive, Thread)" FontSize="11" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Button Content="➕ Add Material" Command="{Binding AddLineCommand}" HorizontalAlignment="Right"
+                        <Button Content="+ Add Material" Command="{Binding AddLineCommand}" HorizontalAlignment="Right"
                                 Padding="14,6" Background="#0F172A" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold">
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                         </Button>
@@ -295,7 +295,7 @@
                             <TextBlock Text="{Binding BalancePayable, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" Foreground="#DC2626"/>
                         </DockPanel>
 
-                        <Button Content="💾 Save Purchase Bill" Command="{Binding SaveBillCommand}"
+                        <Button Content="Save Purchase Bill" Command="{Binding SaveBillCommand}"
                                 Height="42" Background="#0F172A" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="13">
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources>
                         </Button>

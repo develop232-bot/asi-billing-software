@@ -73,7 +73,7 @@
                                 <DockPanel Margin="0,0,0,8">
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                         <Border Width="6" Height="6" CornerRadius="3" Background="#F59E0B" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                        <TextBlock Text="⚡ Quick Add to Bill" FontWeight="Bold" FontSize="12.5" Foreground="#0F172A"/>
+                                        <TextBlock Text="Quick Add to Bill" FontWeight="Bold" FontSize="12.5" Foreground="#0F172A"/>
                                     </StackPanel>
                                     <TextBlock Text="Select item from dropdown or scan barcode directly" FontSize="11" Foreground="#64748B" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                                 </DockPanel>

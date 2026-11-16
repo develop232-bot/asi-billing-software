@@ -114,6 +114,8 @@ namespace AsiErp.ViewModels
             _ => "Finance and Accounts"
         };
 
+        public ObservableCollection<PeriodOption> AccountsPeriods { get; } = new();
+
         public string SelectedPeriod
         {
             get => _selectedPeriod;
@@ -375,6 +377,19 @@ namespace AsiErp.ViewModels
             _openDialogAction = openDialogAction;
             _activeTab = initialTab;
 
+            AccountsPeriods.Clear();
+            AccountsPeriods.Add(new PeriodOption { Tag = "m0", Display = "This month" });
+            AccountsPeriods.Add(new PeriodOption { Tag = "m1", Display = "Last month" });
+            DateTime cur = DateTime.Today;
+            for (int i = 2; i <= 12; i++)
+            {
+                DateTime dt = cur.AddMonths(-i);
+                AccountsPeriods.Add(new PeriodOption { Tag = $"m:{dt:yyyy-MM}", Display = dt.ToString("MMMM yyyy") });
+            }
+            AccountsPeriods.Add(new PeriodOption { Tag = "q", Display = "Last 3 months" });
+            AccountsPeriods.Add(new PeriodOption { Tag = "fy", Display = "This financial year" });
+            AccountsPeriods.Add(new PeriodOption { Tag = "all", Display = "All time" });
+
             SetTabCommand = new RelayCommand(p => ActiveTab = p?.ToString() ?? "dashboard");
             SetPeriodCommand = new RelayCommand(p => SelectedPeriod = p?.ToString() ?? "m0");
             SetIncomeChannelCommand = new RelayCommand(p => SelectedIncomeChannel = p?.ToString() ?? "all");
@@ -526,27 +541,38 @@ namespace AsiErp.ViewModels
         public (string from, string to, string label) GetDateRange(string periodKey)
         {
             var now = DateTime.Now;
-            if (periodKey == "m0")
+            if (periodKey == "m0" || periodKey == "this_month")
             {
                 var f = new DateTime(now.Year, now.Month, 1);
                 var t = now;
                 return (f.ToString("yyyy-MM-dd"), t.ToString("yyyy-MM-dd"), "this month");
             }
-            if (periodKey == "m1")
+            if (periodKey == "m1" || periodKey == "last_month")
             {
                 var prev = now.AddMonths(-1);
                 var f = new DateTime(prev.Year, prev.Month, 1);
                 var t = new DateTime(prev.Year, prev.Month, DateTime.DaysInMonth(prev.Year, prev.Month));
                 return (f.ToString("yyyy-MM-dd"), t.ToString("yyyy-MM-dd"), "last month");
             }
-            if (periodKey == "q")
+            if (!string.IsNullOrEmpty(periodKey) && periodKey.StartsWith("m:"))
+            {
+                string ym = periodKey.Substring(2);
+                if (DateTime.TryParse($"{ym}-01", out DateTime dtMonth))
+                {
+                    string f = dtMonth.ToString("yyyy-MM-dd");
+                    string t = new DateTime(dtMonth.Year, dtMonth.Month, DateTime.DaysInMonth(dtMonth.Year, dtMonth.Month)).ToString("yyyy-MM-dd");
+                    return (f, t, dtMonth.ToString("MMMM yyyy"));
+                }
+            }
+            if (periodKey == "q" || periodKey == "quarter")
             {
                 var f = now.AddMonths(-3);
                 return (f.ToString("yyyy-MM-dd"), now.ToString("yyyy-MM-dd"), "last 3 months");
             }
             if (periodKey == "fy" || periodKey == "cy" || periodKey == "year")
             {
-                return ($"{now.Year}-01-01", $"{now.Year}-12-31", $"Calendar Year {now.Year} (Jan - Dec)");
+                int fyYear = now.Month >= 4 ? now.Year : now.Year - 1;
+                return ($"{fyYear}-04-01", $"{fyYear + 1}-03-31", $"Financial Year {fyYear}-{fyYear + 1}");
             }
             return ("0000-00-00", "9999-12-31", "all time");
         }

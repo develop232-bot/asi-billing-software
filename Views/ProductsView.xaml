@@ -16,11 +16,11 @@
             <!-- Header (Responsive DockPanel + WrapPanel) -->
             <DockPanel Margin="0,0,0,14">
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="📥 Upload CSV" Command="{Binding BulkImportCommand}" Padding="11,6" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
+                    <Button Content="Upload CSV" Command="{Binding BulkImportCommand}" Padding="11,6" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="📤 Download file" Command="{Binding DownloadFileCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
+                    <Button Content="Download file" Command="{Binding DownloadFileCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 

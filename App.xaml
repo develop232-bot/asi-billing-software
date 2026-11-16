@@ -35,33 +35,6 @@
         <SolidColorBrush x:Key="AppInputBg" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="AppInputBorder" Color="#CBD5E1"/>
 
-        <!-- Global DataGrid / Sheet Styles for Seamless Theme Switching -->
-        <Style TargetType="{x:Type DataGrid}">
-            <Setter Property="Background" Value="{DynamicResource AppCardBackground}"/>
-            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
-            <Setter Property="RowBackground" Value="{DynamicResource AppCardBackground}"/>
-            <Setter Property="AlternatingRowBackground" Value="{DynamicResource AppSubtleBg}"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource AppBorderBrush}"/>
-            <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource AppBorderBrush}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}"/>
-        </Style>
-        <Style TargetType="{x:Type DataGridRow}">
-            <Setter Property="Background" Value="{DynamicResource AppCardBackground}"/>
-            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
-        </Style>
-        <Style TargetType="{x:Type DataGridCell}">
-            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
-        <Style TargetType="{x:Type primitives:DataGridColumnHeader}">
-            <Setter Property="Background" Value="{DynamicResource AppSubtleBg}"/>
-            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
-            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Height" Value="32"/>
-        </Style>
-
         <!-- Segment Control RadioButton Style (Match .seg design) -->
         <Style x:Key="SegmentRadioButtonStyle" TargetType="{x:Type RadioButton}">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
@@ -782,12 +755,12 @@
         </Style>
 
         <Style TargetType="{x:Type DataGridColumnHeader}">
-            <Setter Property="Background" Value="#F8FAFC"/>
-            <Setter Property="Foreground" Value="#475569"/>
+            <Setter Property="Background" Value="{DynamicResource AppSubtleBg}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="11.5"/>
             <Setter Property="Padding" Value="12,9"/>
-            <Setter Property="BorderBrush" Value="#E2E8F0"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}"/>
             <Setter Property="BorderThickness" Value="0,0,1,1"/>
             <Setter Property="SeparatorVisibility" Value="Collapsed"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
@@ -812,20 +785,22 @@
 
         <Style TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#F8FAFC"/>
+                    <Setter Property="Background" Value="{DynamicResource AppSubtleBg}"/>
                 </Trigger>
                 <Trigger Property="IsSelected" Value="True">
-                    <Setter Property="Background" Value="#F1F5F9"/>
-                    <Setter Property="Foreground" Value="#0F172A"/>
+                    <Setter Property="Background" Value="{DynamicResource AppSubtleBg}"/>
+                    <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
             <Setter Property="Padding" Value="12,6"/>
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Template">
@@ -840,16 +815,20 @@
             <Style.Triggers>
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="Transparent"/>
-                    <Setter Property="Foreground" Value="#0F172A"/>
+                    <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
         <Style TargetType="{x:Type DataGrid}">
-            <Setter Property="Background" Value="White"/>
+            <Setter Property="Background" Value="{DynamicResource AppCardBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+            <Setter Property="RowBackground" Value="{DynamicResource AppCardBackground}"/>
+            <Setter Property="AlternatingRowBackground" Value="{DynamicResource AppSubtleBg}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource AppBorderBrush}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="GridLinesVisibility" Value="Horizontal"/>
-            <Setter Property="HorizontalGridLinesBrush" Value="#F1F5F9"/>
             <Setter Property="RowHeight" Value="38"/>
             <Setter Property="AutoGenerateColumns" Value="False"/>
             <Setter Property="CanUserAddRows" Value="False"/>

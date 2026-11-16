@@ -209,7 +209,7 @@ namespace AsiErp.ViewModels
                     _topSellersPeriod = value;
                     OnPropertyChanged(nameof(TopSellersPeriod));
                     UpdateTopSellersPeriodLabel();
-                    UpdateTopProductsChart();
+                    RefreshData();
                 }
             }
         }
@@ -314,48 +314,109 @@ namespace AsiErp.ViewModels
             }
         }
 
+        public (string? start, string? end) GetPeriodDateRange(string tag)
+        {
+            DateTime now = DateTime.Today;
+            if (tag == "last_month")
+            {
+                DateTime prevMonth = now.AddMonths(-1);
+                string startPrev = new DateTime(prevMonth.Year, prevMonth.Month, 1).ToString("yyyy-MM-dd");
+                string endPrev = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+                return (startPrev, endPrev);
+            }
+            if (!string.IsNullOrEmpty(tag) && tag.StartsWith("m:"))
+            {
+                string ym = tag.Substring(2);
+                if (DateTime.TryParse($"{ym}-01", out DateTime dtMonth))
+                {
+                    string start = dtMonth.ToString("yyyy-MM-dd");
+                    string end = dtMonth.AddMonths(1).ToString("yyyy-MM-dd");
+                    return (start, end);
+                }
+                return ($"{ym}-01", null);
+            }
+            if (tag == "quarter")
+            {
+                string since90 = now.AddDays(-90).ToString("yyyy-MM-dd");
+                return (since90, null);
+            }
+            if (tag == "fy")
+            {
+                int fyYear = now.Month >= 4 ? now.Year : now.Year - 1;
+                string fyStart = $"{fyYear}-04-01";
+                return (fyStart, null);
+            }
+            if (tag == "all")
+            {
+                return (null, null);
+            }
+            // default "this_month"
+            string firstOfMonth = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
+            return (firstOfMonth, null);
+        }
+
         public void RefreshData()
         {
-            string firstOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
+            var (start, end) = GetPeriodDateRange(_topSellersPeriod);
 
-            // 1. Retail Sales MTD
+            bool InPeriod(string? d)
+            {
+                if (string.IsNullOrEmpty(d)) return false;
+                if (start != null && string.Compare(d, start) < 0) return false;
+                if (end != null && string.Compare(d, end) >= 0) return false;
+                return true;
+            }
+
+            // 1. Retail Sales
             MtdRetailSales = _dataService.Sales
-                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0 && s.Type == "retail")
+                .Where(s => InPeriod(s.Date) && s.Type == "retail")
                 .Sum(s => s.GrossAmount);
 
-            // 2. Domestic Sales MTD
+            // 2. Domestic Sales
             MtdDomesticSales = _dataService.Sales
-                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0 && s.Type == "domestic")
+                .Where(s => InPeriod(s.Date) && s.Type == "domestic")
                 .Sum(s => s.GrossAmount);
 
-            // 3. Export Sales MTD
+            // 3. Export Sales
             MtdExportSales = _dataService.Sales
-                .Where(s => string.Compare(s.Date, firstOfMonth) >= 0 && s.Type == "export")
+                .Where(s => InPeriod(s.Date) && s.Type == "export")
                 .Sum(s => s.GrossAmount);
 
-            // 4. Total Sales (MTD)
+            // 4. Total Sales
             MtdTotalSales = MtdRetailSales + MtdDomesticSales + MtdExportSales;
 
-            // 5. Expenses · this month (Operating expenses + Purchases + Loan interest)
+            // 5. Expenses (Operating expenses + Purchases + Loan interest)
             double opExp = _dataService.Expenses
-                .Where(e => string.Compare(e.Date, firstOfMonth) >= 0)
+                .Where(e => InPeriod(e.Date))
                 .Sum(e => e.Amount);
             double purExp = _dataService.Purchases
-                .Where(p => string.Compare(p.Date, firstOfMonth) >= 0)
+                .Where(p => InPeriod(p.Date))
                 .Sum(p => p.GrossAmount);
             double loanInt = _dataService.Loans
                 .SelectMany(l => l.Repayments ?? new())
-                .Where(r => string.Compare(r.Date, firstOfMonth) >= 0)
+                .Where(r => InPeriod(r.Date))
                 .Sum(r => r.Interest);
             MtdExpenses = opExp + purExp + loanInt;
 
             // 7. Outstanding · To Receive
-            var unpaidSales = _dataService.Sales.Where(s => s.Status != "Paid").ToList();
+            var unpaidSales = (_topSellersPeriod == "all" || _topSellersPeriod == "this_month")
+                ? _dataService.Sales.Where(s => s.Status != "Paid").ToList()
+                : _dataService.Sales.Where(s => InPeriod(s.Date) && s.Status != "Paid").ToList();
+            if (unpaidSales.Count == 0 && _dataService.Sales.Any(s => s.Status != "Paid"))
+            {
+                unpaidSales = _dataService.Sales.Where(s => s.Status != "Paid").ToList();
+            }
             OutstandingToReceive = unpaidSales.Sum(s => s.BalanceAmount);
             OutstandingCount = unpaidSales.Count;
 
             // 8. Vendor Payments · To Pay
-            var unpaidPurchases = _dataService.Purchases.Where(p => p.Status != "Paid").ToList();
+            var unpaidPurchases = (_topSellersPeriod == "all" || _topSellersPeriod == "this_month")
+                ? _dataService.Purchases.Where(p => p.Status != "Paid").ToList()
+                : _dataService.Purchases.Where(p => InPeriod(p.Date) && p.Status != "Paid").ToList();
+            if (unpaidPurchases.Count == 0 && _dataService.Purchases.Any(p => p.Status != "Paid"))
+            {
+                unpaidPurchases = _dataService.Purchases.Where(p => p.Status != "Paid").ToList();
+            }
             VendorToPay = unpaidPurchases.Sum(p => p.BalanceAmount);
             VendorPayCount = unpaidPurchases.Count;
 
@@ -921,51 +982,14 @@ namespace AsiErp.ViewModels
 
             var productTotals = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
-            IEnumerable<SaleDoc> filteredSales;
-            DateTime now = DateTime.Today;
-
-            if (_topSellersPeriod == "last_month")
+            var (start, end) = GetPeriodDateRange(_topSellersPeriod);
+            var filteredSales = _dataService.Sales.Where(s =>
             {
-                DateTime prevMonth = now.AddMonths(-1);
-                string startPrev = new DateTime(prevMonth.Year, prevMonth.Month, 1).ToString("yyyy-MM-dd");
-                string endPrev = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
-                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, startPrev) >= 0 && string.Compare(s.Date, endPrev) < 0);
-            }
-            else if (_topSellersPeriod.StartsWith("m:"))
-            {
-                // Month tag format: "m:yyyy-MM"
-                string ym = _topSellersPeriod.Substring(2);
-                if (DateTime.TryParse($"{ym}-01", out DateTime dtMonth))
-                {
-                    string start = dtMonth.ToString("yyyy-MM-dd");
-                    string end = dtMonth.AddMonths(1).ToString("yyyy-MM-dd");
-                    filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, start) >= 0 && string.Compare(s.Date, end) < 0);
-                }
-                else
-                {
-                    filteredSales = _dataService.Sales.Where(s => (s.Date ?? "").StartsWith(ym));
-                }
-            }
-            else if (_topSellersPeriod == "quarter")
-            {
-                string since90 = now.AddDays(-90).ToString("yyyy-MM-dd");
-                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, since90) >= 0);
-            }
-            else if (_topSellersPeriod == "fy")
-            {
-                int fyYear = now.Month >= 4 ? now.Year : now.Year - 1;
-                string fyStart = $"{fyYear}-04-01";
-                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, fyStart) >= 0);
-            }
-            else if (_topSellersPeriod == "all")
-            {
-                filteredSales = _dataService.Sales;
-            }
-            else // "this_month" or "month" or default
-            {
-                string firstOfMonth = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
-                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, firstOfMonth) >= 0);
-            }
+                if (string.IsNullOrEmpty(s.Date)) return false;
+                if (start != null && string.Compare(s.Date, start) < 0) return false;
+                if (end != null && string.Compare(s.Date, end) >= 0) return false;
+                return true;
+            });
 
             var salesList = filteredSales.ToList();
             double periodTotalSales = salesList.Sum(s => s.GrossAmount);

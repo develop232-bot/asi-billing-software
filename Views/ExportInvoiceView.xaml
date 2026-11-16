@@ -25,13 +25,13 @@
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="🔄 Reset" Command="{Binding ResetFormCommand}"
+                    <Button Content="Reset" Command="{Binding ResetFormCommand}"
                             Padding="12,6" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1"
                             Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="💾 Save Export Invoice" Command="{Binding SaveInvoiceCommand}"
+                    <Button Content="Save Export Invoice" Command="{Binding SaveInvoiceCommand}"
                             Padding="16,8" Background="#0D9488" Foreground="#FFFFFF" BorderThickness="0"
                             Cursor="Hand" FontWeight="Bold" FontSize="12">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>

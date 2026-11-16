@@ -24,20 +24,20 @@
             <!-- Top Header & Navigation Bar (Responsive WrapPanel) -->
             <DockPanel Margin="0,0,0,14">
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="🖨️ Print Barcode" Command="{Binding PrintBarcodeCommand}"
+                    <Button Content="Print Barcode" Command="{Binding PrintBarcodeCommand}"
                             Visibility="{Binding ProductVisibility}"
                             Height="34" Padding="12,0" Background="#EEF2FF" Foreground="#4338CA" BorderBrush="#C7D2FE" BorderThickness="1"
                             Cursor="Hand" FontWeight="Bold" FontSize="11.5" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="📥 Bulk CSV Upload" Command="{Binding BulkUploadCommand}"
+                    <Button Content="Bulk CSV Upload" Command="{Binding BulkUploadCommand}"
                             Height="34" Padding="12,0" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
                             Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="💾 Save Item" Command="{Binding SaveCommand}"
+                    <Button Content="Save Item" Command="{Binding SaveCommand}"
                             Height="34" Padding="16,0" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
                             Cursor="Hand" FontWeight="Bold" FontSize="12" Margin="0,0,0,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
@@ -88,14 +88,14 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1*" MinWidth="130"/>
+                            <ColumnDefinition Width="1*" MinWidth="130"/>
+                            <ColumnDefinition Width="2*" MinWidth="180"/>
                         </Grid.ColumnDefinitions>
 
                         <!-- ROW 0: Category, Unit, Item Name in that order -->
                         <!-- Category (Only for products, same size as Unit) -->
-                        <StackPanel Grid.Row="0" Grid.Column="0" Width="220" Margin="0,0,14,16">
+                        <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,14,16">
                             <TextBlock Text="Category" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                             <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding Category, Mode=TwoWay}"
                                       Text="{Binding Category, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
@@ -103,7 +103,7 @@
                         </StackPanel>
 
                         <!-- Unit of Measurement (Manual input, same size as Category) -->
-                        <StackPanel Grid.Row="0" Grid.Column="1" Width="220" Margin="0,0,14,16">
+                        <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,14,16">
                             <TextBlock Text="Unit of Measurement *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                             <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
@@ -308,7 +308,7 @@
                     <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.05"/>
                 </Border.Effect>
                 <DockPanel>
-                    <Button Content="🖨️ Print Barcode Label" Command="{Binding PrintBarcodeCommand}"
+                    <Button Content="Print Barcode Label" Command="{Binding PrintBarcodeCommand}"
                             Visibility="{Binding ProductVisibility}"
                             Padding="16,9" Background="#EEF2FF" Foreground="#4F46E5" BorderBrush="#C7D2FE" BorderThickness="1"
                             Cursor="Hand" FontWeight="SemiBold" FontSize="12"/>
@@ -318,7 +318,7 @@
                                 Padding="18,9" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1"
                                 Cursor="Hand" FontWeight="SemiBold" FontSize="12.5" Margin="0,0,12,0"/>
 
-                        <Button Content="💾 Save Item" Command="{Binding SaveCommand}"
+                        <Button Content="Save Item" Command="{Binding SaveCommand}"
                                 Padding="24,9" Background="#172443" Foreground="#FFFFFF" BorderThickness="0"
                                 Cursor="Hand" FontWeight="Bold" FontSize="12.5"/>
                     </StackPanel>
