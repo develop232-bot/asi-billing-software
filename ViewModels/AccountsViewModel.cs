@@ -103,7 +103,7 @@ namespace AsiErp.ViewModels
 
         public string ActiveTabTitle => ActiveTab switch
         {
-            "dashboard" => "Finance & Accounts Dashboard",
+            "dashboard" => "Finance and Accounts",
             "income" => "Income",
             "exp" => "Expenses",
             "inv" => "Investments",
@@ -111,7 +111,7 @@ namespace AsiErp.ViewModels
             "assets" => "Assets",
             "pl" => "Profit & Loss",
             "bs" => "Balance Sheet",
-            _ => "Finance & Accounts"
+            _ => "Finance and Accounts"
         };
 
         public string SelectedPeriod
@@ -185,6 +185,7 @@ namespace AsiErp.ViewModels
         public double PlTotalIncome { get; private set; }
         public double PlTotalExpense { get; private set; }
         public double PlNetProfit { get; private set; }
+        public double PlLoanInterestAndDepreciation { get; private set; }
         public double PlTotalSide => Math.Max(PlTotalIncome, PlTotalExpense);
         public bool PlIsProfit => PlNetProfit >= 0;
         public string PlPeriodLabel { get; private set; } = "This month";
@@ -710,10 +711,12 @@ namespace AsiErp.ViewModels
             PlTotalIncome = totals.totalIncome;
             PlTotalExpense = totals.totalExpense + fxInterest + fxDepr;
             PlNetProfit = PlTotalIncome - PlTotalExpense;
+            PlLoanInterestAndDepreciation = fxInterest + fxDepr;
 
             OnPropertyChanged(nameof(PlTotalIncome));
             OnPropertyChanged(nameof(PlTotalExpense));
             OnPropertyChanged(nameof(PlNetProfit));
+            OnPropertyChanged(nameof(PlLoanInterestAndDepreciation));
             OnPropertyChanged(nameof(PlTotalSide));
             OnPropertyChanged(nameof(PlIsProfit));
             OnPropertyChanged(nameof(PlPeriodLabel));

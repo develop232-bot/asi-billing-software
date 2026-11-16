@@ -57,6 +57,39 @@ namespace AsiErp.Services
                     ApplyToElement(win, IsDark);
                 }
             }));
+
+            EventManager.RegisterClassHandler(typeof(UserControl), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
+            {
+                if (s is UserControl uc)
+                {
+                    ApplyToElement(uc, IsDark);
+                }
+            }));
+
+            EventManager.RegisterClassHandler(typeof(DataGrid), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
+            {
+                if (s is DataGrid dg)
+                {
+                    ApplyToElement(dg, IsDark);
+                }
+            }));
+
+            EventManager.RegisterClassHandler(typeof(DataGridRow), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
+            {
+                if (s is DataGridRow row)
+                {
+                    row.Foreground = IsDark ? DarkTextPrimary : LightTextPrimary;
+                    row.Background = IsDark ? DarkCardBg : LightCardBg;
+                }
+            }));
+
+            EventManager.RegisterClassHandler(typeof(DataGridCell), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
+            {
+                if (s is DataGridCell cell)
+                {
+                    cell.Foreground = IsDark ? DarkTextPrimary : LightTextPrimary;
+                }
+            }));
         }
 
         public static void ApplyTheme(bool isDark, Window? window = null)
@@ -68,9 +101,12 @@ namespace AsiErp.Services
             {
                 app.Resources["AppPageBackground"] = isDark ? DarkPageBg : LightPageBg;
                 app.Resources["AppCardBackground"] = isDark ? DarkCardBg : LightCardBg;
+                app.Resources["AppSubtleBg"] = isDark ? DarkSubtleBg : LightSubtleBg;
                 app.Resources["AppBorderBrush"] = isDark ? DarkBorder : LightBorder;
                 app.Resources["AppTextPrimary"] = isDark ? DarkTextPrimary : LightTextPrimary;
                 app.Resources["AppTextSecondary"] = isDark ? DarkTextSecondary : LightTextSecondary;
+                app.Resources["AppInputBg"] = isDark ? DarkInputBg : LightInputBg;
+                app.Resources["AppInputBorder"] = isDark ? DarkInputBorder : LightInputBorder;
 
                 foreach (Window win in app.Windows)
                 {
@@ -179,6 +215,7 @@ namespace AsiErp.Services
             }
             else if (d is DataGrid dg)
             {
+                dg.Foreground = isDark ? DarkTextPrimary : LightTextPrimary;
                 dg.Background = isDark ? DarkCardBg : LightCardBg;
                 dg.RowBackground = isDark ? DarkCardBg : LightCardBg;
                 dg.AlternatingRowBackground = isDark ? DarkSubtleBg : LightCardBg;
@@ -195,6 +232,10 @@ namespace AsiErp.Services
             {
                 dgr.Background = isDark ? DarkCardBg : LightCardBg;
                 dgr.Foreground = isDark ? DarkTextPrimary : LightTextPrimary;
+            }
+            else if (d is DataGridCell dgc)
+            {
+                dgc.Foreground = isDark ? DarkTextPrimary : LightTextPrimary;
             }
             else if (d is TextBox txt)
             {

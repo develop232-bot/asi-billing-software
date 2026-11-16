@@ -24,12 +24,14 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center">
-                    <TextBlock Text="{Binding ActiveTabTitle}" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="{Binding ActiveTabTitle}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}"/>
+                    <TextBlock Text="Overall summary of income, expenses, profit, loans, assets and your balance sheet." FontSize="12.5" Foreground="{DynamicResource AppTextSecondary}" Margin="0,3,0,0"
+                               Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}"/>
                 </StackPanel>
 
                 <!-- Period Dropdown -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <TextBlock Text="Period: " FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="#64748B"/>
+                    <TextBlock Text="Period: " FontWeight="SemiBold" VerticalAlignment="Center" Margin="0,0,8,0" Foreground="{DynamicResource AppTextSecondary}"/>
                     <ComboBox SelectedValue="{Binding SelectedPeriod, Mode=TwoWay}" SelectedValuePath="Tag" Width="180" Height="36" Padding="10,0" VerticalContentAlignment="Center">
                         <ComboBoxItem Content="This month" Tag="m0"/>
                         <ComboBoxItem Content="Last month" Tag="m1"/>
@@ -45,275 +47,454 @@
 
             <!-- TAB 0: FINANCE & ACCOUNTS DASHBOARD -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}">
-                <!-- 7 KPI Tiles -->
-                <!-- Row 1: Income, Expenses, Profit and Loss, Net P&L -->
-                <UniformGrid Columns="4" Margin="0,0,0,14">
-                    <!-- (1) INCOME -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="INCOME" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlTotalIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
 
-                    <!-- (2) EXPENSES -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="EXPENSES" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- (3) PROFIT AND LOSS (RED IN LOSS GREEN IN PROFIT) -->
-                    <Border Background="{Binding PlCardBrush}" Padding="16,14" Margin="0,0,14,0" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
-                        </Border.Effect>
-                        <Grid VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Profit Icon (Coin with ₹) -->
-                            <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,12,0"
-                                  Visibility="{Binding PlIsProfit, Converter={StaticResource BoolToVis}}">
-                                <Ellipse Fill="White" Opacity="0.22"/>
-                                <Ellipse Stroke="White" StrokeThickness="2"/>
-                                <TextBlock Text="₹" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"/>
-                            </Grid>
-
-                            <!-- Loss Icon (Warning Triangle with !) -->
-                            <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,12,0"
-                                  Visibility="{Binding PlIsProfit, Converter={StaticResource InverseBoolToVis}}">
-                                <Path Data="M 18,3 L 34,31 H 2 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <TextBlock Text="!" Foreground="#DC2626" FontSize="17" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,6,0,0"/>
-                            </Grid>
-
-                            <!-- Label and Value -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding PlCardLabel}" FontSize="12.5" Foreground="White" FontWeight="SemiBold" Opacity="0.95"/>
-                                <TextBlock Text="{Binding PlValueDisplay}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,3,0,0"/>
+                <!-- 1. INCOME -->
+                <StackPanel Margin="0,0,0,22">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Income" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="income"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Retail Sales (Blue) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,4 L 6,4 L 7.5,12 L 15,12 L 16.5,6 L 6.5,6 M 7.5,14 A 1.2,1.2 0 1,0 7.5,16.4 A 1.2,1.2 0 1,0 7.5,14 M 14.5,14 A 1.2,1.2 0 1,0 14.5,16.4 A 1.2,1.2 0 1,0 14.5,14" Stroke="White" StrokeThickness="1.5" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Retail Sales" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding RetailIncome, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
                             </StackPanel>
-                        </Grid>
-                    </Border>
+                        </Border>
+                        <!-- Domestic Sales (Green) -->
+                        <Border Grid.Column="1" Tag="PreserveTheme" Background="#16A34A" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,2 L 11,2 L 15,6 L 15,18 L 3,18 Z M 11,2 L 11,6 L 15,6 M 5,9 L 13,9 M 5,12 L 13,12 M 5,15 L 10,15" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Domestic Sales" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding DomesticIncome, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Export Sales (Teal) -->
+                        <Border Grid.Column="2" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 9,1 A 8,8 0 1,0 9,17 A 8,8 0 1,0 9,1 M 1,9 L 17,9 M 9,1 C 6,4 6,14 9,17 M 9,1 C 12,4 12,14 9,17" Stroke="White" StrokeThickness="1.3" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Export Sales" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding ExportIncome, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Total Income (Purple) -->
+                        <Border Grid.Column="3" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 2,13 L 6,8 L 10,11 L 16,3 M 11,3 L 16,3 L 16,8" Stroke="White" StrokeThickness="1.6" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Total Income" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding PlTotalIncome, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
-                    <!-- (4) NET P&L -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="NET P&amp;L" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlNetProfitDisplay}" FontSize="22" FontWeight="Bold" Foreground="{Binding PlProfitLossColor}" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
+                <!-- 2. EXPENSES -->
+                <StackPanel Margin="0,0,0,22">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Expenses" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="exp"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Employee (Amber) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Employee" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding EmployeeExpenseTotal, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Utility (Purple) -->
+                        <Border Grid.Column="1" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Utility" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding UtilityExpenseTotal, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Misc Exp (Blue) -->
+                        <Border Grid.Column="2" Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Misc Exp" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding MiscExpenseTotal, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Purchase Bills (Teal Green) -->
+                        <Border Grid.Column="3" Tag="PreserveTheme" Background="#059669" CornerRadius="12" Padding="16,14">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,5 L 15,5 M 6,5 L 6,2 L 12,2 L 12,5 M 4,5 L 5,17 L 13,17 L 14,5" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Purchase Bills" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding PurchaseExpenseTotal, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
-                <!-- Row 2: Loan Outstanding, Investment, Asset Value -->
-                <UniformGrid Columns="3" Margin="0,0,0,20">
-                    <!-- (5) LOAN OUTSTANDING -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="LOAN OUTSTANDING" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashTotalLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
+                <!-- 3. PROFIT & LOSS -->
+                <StackPanel Margin="0,0,0,22">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Profit &amp; Loss" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="pl"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Total Income (Purple) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 2,13 L 6,8 L 10,11 L 16,3 M 11,3 L 16,3 L 16,8" Stroke="White" StrokeThickness="1.6" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Total Income" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding PlTotalIncome, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Total Expenses (Amber) -->
+                        <Border Grid.Column="1" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Total Expenses" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Profit (Green) -->
+                        <Border Grid.Column="2" Tag="PreserveTheme" Background="#16A34A" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 2,13 L 6,8 L 10,11 L 16,3 M 11,3 L 16,3 L 16,8" Stroke="White" StrokeThickness="1.6" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="{Binding PlCardLabel}" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding PlValueDisplay}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Loan Interest & Depreciation (Blue) -->
+                        <Border Grid.Column="3" Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,2 L 11,2 L 15,6 L 15,18 L 3,18 Z M 11,2 L 11,6 L 15,6 M 5,9 L 13,9 M 5,12 L 13,12 M 5,15 L 10,15" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Loan Interest &amp; Depreciation" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding PlLoanInterestAndDepreciation, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
-                    <!-- (6) INVESTMENT -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="INVESTMENT" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#4F46E5" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
+                <!-- 4. LOANS -->
+                <StackPanel Margin="0,0,0,22">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Loans" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="loans"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Loans Taken (Purple) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,2 L 13,2 L 15,4 L 15,18 L 3,18 Z M 6,6 L 12,6 M 6,10 L 12,10 M 6,14 L 10,14" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Loans Taken" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalLoansTaken, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Interest Paid (Amber) -->
+                        <Border Grid.Column="1" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Interest Paid" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalLoanInterestPaid, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Principal Paid (Teal) -->
+                        <Border Grid.Column="2" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Principal Paid" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalLoanPrincipalPaid, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Outstanding to Pay (Red) -->
+                        <Border Grid.Column="3" Tag="PreserveTheme" Background="#DC2626" CornerRadius="12" Padding="16,14">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,2 L 13,2 L 15,4 L 15,18 L 3,18 Z M 6,6 L 12,6 M 6,10 L 12,10 M 6,14 L 10,14" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Outstanding to Pay" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalLoansOutstanding, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
-                    <!-- (7) ASSET VALUE -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="ASSET VALUE" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashFixedAssets, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
+                <!-- 5. ASSETS -->
+                <StackPanel Margin="0,0,0,22">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Assets" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="assets"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Bought For (Blue) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 9,1 L 17,5 L 9,9 L 1,5 Z M 1,5 L 1,13 L 9,17 L 9,9 M 17,5 L 17,13 L 9,17" Stroke="White" StrokeThickness="1.3" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Bought For" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalAssetsCost, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Value Lost So Far (Amber) -->
+                        <Border Grid.Column="1" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 2,13 L 6,8 L 10,11 L 16,3 M 11,3 L 16,3 L 16,8" Stroke="White" StrokeThickness="1.6" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Value Lost So Far" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalAssetsDepreciation, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Worth Today (Green) -->
+                        <Border Grid.Column="2" Tag="PreserveTheme" Background="#16A34A" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 9,1 L 17,5 L 9,9 L 1,5 Z M 1,5 L 1,13 L 9,17 L 9,9 M 17,5 L 17,13 L 9,17" Stroke="White" StrokeThickness="1.3" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Worth Today" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding TotalAssetsBookValue, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
-                <!-- CHARTS: LINE CHART & PIE CHART -->
-                <Grid Margin="0,0,0,20">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.5*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
+                <!-- 6. BALANCE SHEET -->
+                <StackPanel Margin="0,0,0,22">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Balance Sheet" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="bs"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Total Owned (Purple) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 2,3 L 7,3 L 9,5 L 16,5 L 16,15 L 2,15 Z" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Total Owned" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding BsAssetsTotal, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Cash & Bank (Green) -->
+                        <Border Grid.Column="1" Tag="PreserveTheme" Background="#16A34A" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock Text="₹" Foreground="White" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Cash &amp; Bank" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding BsCash, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Customers Owe You (Teal) -->
+                        <Border Grid.Column="2" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,2 L 11,2 L 15,6 L 15,18 L 3,18 Z M 11,2 L 11,6 L 15,6 M 5,9 L 13,9 M 5,12 L 13,12 M 5,15 L 10,15" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Customers Owe You" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding BsRecv, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                        <!-- Vendors to Pay (Red) -->
+                        <Border Grid.Column="3" Tag="PreserveTheme" Background="#DC2626" CornerRadius="12" Padding="16,14">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 3,5 L 15,5 M 6,5 L 6,2 L 12,2 L 12,5 M 4,5 L 5,17 L 13,17 L 14,5" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="13" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Vendors to Pay" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding BsPay, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
 
-                    <!-- LINE CHART (Income vs Expenses Trend) -->
-                    <Border Grid.Column="0" Background="White" Padding="20" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <DockPanel>
-                            <!-- Line Chart Header -->
-                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <!-- Legend: Income -->
-                                    <Border Width="10" Height="10" CornerRadius="5" Background="#2563EB" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Income" FontSize="11" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,14,0" VerticalAlignment="Center"/>
-                                    <!-- Legend: Expenses -->
-                                    <Border Width="10" Height="10" CornerRadius="5" Background="#DC2626" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Expenses" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
-                                </StackPanel>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Income &amp; Expenses Trend" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                                    <TextBlock Text="6-month financial performance curve" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
-                                </StackPanel>
-                            </DockPanel>
-
-                            <!-- Line Chart Viewbox -->
-                            <Viewbox Stretch="Uniform" Height="210">
-                                <Canvas Width="500" Height="200" ClipToBounds="True">
-                                    <!-- Grid lines and Y-axis labels -->
-                                    <Line X1="50" Y1="20" X2="480" Y2="20" Stroke="#F1F5F9" StrokeThickness="1"/>
-                                    <TextBlock Text="{Binding ChartYMaxLabel}" Canvas.Left="4" Canvas.Top="12" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
-
-                                    <Line X1="50" Y1="90" X2="480" Y2="90" Stroke="#F1F5F9" StrokeThickness="1"/>
-                                    <TextBlock Text="{Binding ChartYMidLabel}" Canvas.Left="4" Canvas.Top="82" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
-
-                                    <Line X1="50" Y1="160" X2="480" Y2="160" Stroke="#E2E8F0" StrokeThickness="1.5"/>
-                                    <TextBlock Text="{Binding ChartYZeroLabel}" Canvas.Left="4" Canvas.Top="152" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
-
-                                    <!-- Shaded Area Fills -->
-                                    <Polygon Points="{Binding IncomeAreaPoints}" Fill="#2563EB" Opacity="0.08"/>
-                                    <Polygon Points="{Binding ExpenseAreaPoints}" Fill="#DC2626" Opacity="0.06"/>
-
-                                    <!-- Main Polylines -->
-                                    <Polyline Points="{Binding IncomeLinePoints}" Stroke="#2563EB" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                                    <Polyline Points="{Binding ExpenseLinePoints}" Stroke="#DC2626" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-
-                                    <!-- Data Points & Tooltips -->
-                                    <ItemsControl ItemsSource="{Binding LineChartPoints}">
-                                        <ItemsControl.ItemsPanel>
-                                            <ItemsPanelTemplate>
-                                                <Canvas Width="500" Height="200"/>
-                                            </ItemsPanelTemplate>
-                                        </ItemsControl.ItemsPanel>
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Canvas Width="500" Height="200">
-                                                    <!-- Vertical Guide Line -->
-                                                    <Line X1="{Binding X}" Y1="20" X2="{Binding X}" Y2="160" Stroke="#F8FAFC" StrokeThickness="1" StrokeDashArray="2 2"/>
-
-                                                    <!-- Month Label on X Axis -->
-                                                    <TextBlock Text="{Binding MonthLabel}" Canvas.Left="{Binding X}" Canvas.Top="168"
-                                                               FontSize="10" FontWeight="SemiBold" Foreground="#64748B"
-                                                               HorizontalAlignment="Center" Margin="-16,0,0,0" Width="32" TextAlignment="Center"/>
-
-                                                    <!-- Income Point (Blue Dot) -->
-                                                    <Ellipse Canvas.Left="{Binding X}" Canvas.Top="{Binding IncomeY}"
-                                                             Width="8" Height="8" Margin="-4,-4,0,0"
-                                                             Fill="#2563EB" Stroke="White" StrokeThickness="2"
-                                                             ToolTip="{Binding TooltipText}" Cursor="Hand"/>
-
-                                                    <!-- Expense Point (Red Dot) -->
-                                                    <Ellipse Canvas.Left="{Binding X}" Canvas.Top="{Binding ExpenseY}"
-                                                             Width="8" Height="8" Margin="-4,-4,0,0"
-                                                             Fill="#DC2626" Stroke="White" StrokeThickness="2"
-                                                             ToolTip="{Binding TooltipText}" Cursor="Hand"/>
-                                                </Canvas>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Canvas>
-                            </Viewbox>
-                        </DockPanel>
-                    </Border>
-
-                    <!-- PIE / DONUT CHART (Expense Breakdown) -->
-                    <Border Grid.Column="1" Background="White" Padding="20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <DockPanel>
-                            <!-- Pie Chart Header -->
-                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding TotalExpensesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#DC2626" VerticalAlignment="Center"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Expense Breakdown" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                                    <TextBlock Text="Category distribution" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
-                                </StackPanel>
-                            </DockPanel>
-
-                            <!-- Donut and Legend -->
-                            <Grid Margin="0,4,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Donut Viewbox -->
-                                <Viewbox Grid.Column="0" Stretch="Uniform" Width="145" Height="145" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <Grid Width="200" Height="200">
-                                        <!-- Donut Slices -->
-                                        <ItemsControl ItemsSource="{Binding PieChartSlices}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <Grid/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}" Cursor="Hand"/>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-
-                                        <!-- Center text for Donut hole -->
-                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="TOTAL" FontSize="9" FontWeight="Bold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="12" FontWeight="Bold" Foreground="#0F172A" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Viewbox>
-
-                                <!-- Legend List -->
-                                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="10,0,0,0" MaxHeight="190">
-                                    <ItemsControl ItemsSource="{Binding PieChartSlices}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,3">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Border Grid.Column="0" Width="8" Height="8" CornerRadius="4" Background="{Binding FillBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding Category}" FontSize="11" Foreground="#334155" TextTrimming="CharacterEllipsis" ToolTip="{Binding Category}" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="2" Text="{Binding PercentageDisplay}" FontSize="10.5" FontWeight="Bold" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
-                                                </Grid>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </ScrollViewer>
-                            </Grid>
-                        </DockPanel>
-                    </Border>
-                </Grid>
+                <!-- 7. INVESTMENT -->
+                <StackPanel Margin="0,0,0,24">
+                    <DockPanel Margin="0,0,0,10">
+                        <TextBlock Text="Investment" FontSize="15" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                        <Button Content="View details" Command="{Binding SetTabCommand}" CommandParameter="inv"
+                                DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                Padding="12,5" Background="#172443" Foreground="White" BorderThickness="0"
+                                FontWeight="SemiBold" FontSize="11" Cursor="Hand" Tag="PreserveTheme">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </DockPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <!-- Capital Invested (Teal) -->
+                        <Border Grid.Column="0" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <Path Data="M 2,4 L 16,4 L 16,14 L 2,14 Z M 12,8 L 16,8 L 16,11 L 12,11 Z" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="14" Height="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Capital Invested" Foreground="White" Opacity="0.9" FontSize="11" FontWeight="SemiBold"/>
+                                <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" Foreground="White" FontSize="20" FontWeight="Bold" Margin="0,3,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
             </StackPanel>
 
             <!-- TAB 1: INCOME -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=income}">
+                <DockPanel Margin="0,0,0,14">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
+
                 <UniformGrid Columns="4" Margin="0,0,0,20">
                     <!-- 1. Retail Sales -->
                     <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
@@ -424,6 +605,21 @@
 
             <!-- TAB 2: EXPENSES -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=exp}">
+                <DockPanel Margin="0,0,0,14">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
+
                 <!-- Subtitle -->
                 <TextBlock Text="Employee, utility and miscellaneous costs. Purchase bills are added automatically." FontSize="12.5" Foreground="#64748B" Margin="0,0,0,16"/>
 
@@ -611,6 +807,20 @@
 
             <!-- TAB 3: INVESTMENT -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=inv}">
+                <DockPanel Margin="0,0,0,14">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
                 <Grid Margin="0,0,0,20">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -691,6 +901,21 @@
 
             <!-- TAB 4: PROFIT & LOSS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pl}">
+                <DockPanel Margin="0,0,0,14">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
+
                 <!-- P&L Running Statement -->
                 <Border Background="White" Padding="20" Margin="0,0,0,20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
@@ -790,6 +1015,21 @@
 
             <!-- TAB 5: LOANS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=loans}">
+                <DockPanel Margin="0,0,0,14">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
+
                 <StackPanel Margin="0,0,0,16">
                     <TextBlock Text="Loans" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Money borrowed from banks or people. A loan adds to your cash but is not income. Repayments reduce the loan, and the interest becomes an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
@@ -997,6 +1237,21 @@
 
             <!-- TAB 6: ASSETS -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=assets}">
+                <DockPanel Margin="0,0,0,14">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
+
                 <StackPanel Margin="0,0,0,16">
                     <TextBlock Text="Assets" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Things the company owns for a long time, such as machines, vehicles and furniture. They lose value every year (depreciation), which is counted as an expense in Profit &amp; Loss." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
@@ -1153,14 +1408,26 @@
             <!-- TAB 7: BALANCE SHEET -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=bs}">
                 <DockPanel Margin="0,0,0,16">
+                    <Button Content="← Back to Overview" Command="{Binding SetTabCommand}" CommandParameter="dashboard"
+                            DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0"
+                            FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Tag="PreserveTheme">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
                     <StackPanel>
-                        <TextBlock Text="Balance Sheet" FontSize="18" FontWeight="Bold" Foreground="#0F172A"/>
-                        <TextBlock Text="What the company owns, what it owes, and what the owners have in it. Worked out from the bills, purchases, expenses, loans and assets you have already entered." FontSize="12" Foreground="#64748B" TextWrapping="Wrap" Margin="0,3,0,0"/>
+                        <TextBlock Text="Balance Sheet" FontSize="18" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}"/>
+                        <TextBlock Text="What the company owns, what it owes, and what the owners have in it. Worked out from the bills, purchases, expenses, loans and assets you have already entered." FontSize="12" Foreground="{DynamicResource AppTextSecondary}" TextWrapping="Wrap" Margin="0,3,0,0"/>
                     </StackPanel>
                 </DockPanel>
 
                 <!-- Balance Sheet Statement Panel -->
-                <Border Background="White" Padding="24" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <Border Background="{DynamicResource AppCardBackground}" Padding="24" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
@@ -1168,17 +1435,17 @@
                         <!-- Header with Match indicator -->
                         <DockPanel Margin="0,0,0,20">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="Balance Sheet" FontWeight="Bold" FontSize="16" Foreground="#0F172A"/>
-                                <TextBlock Text=" · " FontWeight="Bold" FontSize="16" Foreground="#94A3B8"/>
-                                <TextBlock Text="{Binding BsTodayDate}" FontWeight="SemiBold" FontSize="15" Foreground="#64748B"/>
+                                <TextBlock Text="Balance Sheet" FontWeight="Bold" FontSize="16" Foreground="{DynamicResource AppTextPrimary}"/>
+                                <TextBlock Text=" · " FontWeight="Bold" FontSize="16" Foreground="{DynamicResource AppTextSecondary}"/>
+                                <TextBlock Text="{Binding BsTodayDate}" FontWeight="SemiBold" FontSize="15" Foreground="{DynamicResource AppTextSecondary}"/>
                             </StackPanel>
                             <!-- Pill: Both sides match vs difference -->
                             <Border Background="#D1FAE5" CornerRadius="16" Padding="12,5" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Visibility="{Binding BsIsBalanced, Converter={StaticResource BoolToVis}}">
+                                    Visibility="{Binding BsIsBalanced, Converter={StaticResource BoolToVis}}" Tag="PreserveTheme">
                                 <TextBlock Text="✓ Both sides match" Foreground="#065F46" FontWeight="Bold" FontSize="12"/>
                             </Border>
                             <Border Background="#FEE2E2" CornerRadius="16" Padding="12,5" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                    Visibility="{Binding BsIsBalanced, Converter={StaticResource InverseBoolToVis}}">
+                                    Visibility="{Binding BsIsBalanced, Converter={StaticResource InverseBoolToVis}}" Tag="PreserveTheme">
                                 <StackPanel Orientation="Horizontal">
                                     <TextBlock Text="Difference: " Foreground="#991B1B" FontWeight="Bold" FontSize="12"/>
                                     <TextBlock Text="{Binding BsDifference, Converter={StaticResource InrConv}}" Foreground="#991B1B" FontWeight="Bold" FontSize="12"/>
@@ -1196,109 +1463,109 @@
 
                             <!-- LEFT COLUMN: Assets -->
                             <StackPanel Grid.Column="0" Margin="0,0,24,0">
-                                <Border Background="#F8FAFC" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
-                                    <TextBlock Text="Assets (what it owns)" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
+                                <Border Background="{DynamicResource AppSubtleBg}" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
+                                    <TextBlock Text="Assets (what it owns)" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource AppTextPrimary}"/>
                                 </Border>
 
                                 <!-- Machines, vehicles & other assets -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Machines, vehicles &amp; other assets" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsFixedAssets, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Machines, vehicles &amp; other assets" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsFixedAssets, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Stock in hand -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Stock in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Stock in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Customers owe you -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Customers owe you" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsRecv, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Customers owe you" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsRecv, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Cash & bank -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Cash &amp; bank" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsCash, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Cash &amp; bank" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsCash, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
 
                                 <!-- Total Assets -->
-                                <Border BorderBrush="#0F172A" BorderThickness="0,2,0,0" Margin="0,96,0,0" Padding="0,10,0,0">
+                                <Border BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,2,0,0" Margin="0,96,0,0" Padding="0,10,0,0">
                                     <DockPanel>
-                                        <TextBlock Text="Total Assets" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                        <TextBlock Text="{Binding BsAssetsTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                        <TextBlock Text="Total Assets" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}"/>
+                                        <TextBlock Text="{Binding BsAssetsTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}"/>
                                     </DockPanel>
                                 </Border>
                             </StackPanel>
 
                             <!-- Vertical Divider -->
-                            <Rectangle Grid.Column="1" Fill="#E2E8F0" VerticalAlignment="Stretch" Width="1"/>
+                            <Rectangle Grid.Column="1" Fill="{DynamicResource AppBorderBrush}" VerticalAlignment="Stretch" Width="1"/>
 
                             <!-- RIGHT COLUMN: Liabilities & Capital -->
                             <StackPanel Grid.Column="2" Margin="24,0,0,0">
-                                <Border Background="#F8FAFC" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
-                                    <TextBlock Text="Liabilities &amp; Capital (what it owes + owners' share)" FontWeight="Bold" FontSize="13" Foreground="#1E293B"/>
+                                <Border Background="{DynamicResource AppSubtleBg}" Padding="12,8" CornerRadius="6" Margin="0,0,0,12">
+                                    <TextBlock Text="Liabilities &amp; Capital (what it owes + owners' share)" FontWeight="Bold" FontSize="13" Foreground="{DynamicResource AppTextPrimary}"/>
                                 </Border>
 
                                 <!-- Capital -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Capital — money the owners put in" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsCap, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Capital — money the owners put in" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsCap, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Profit so far -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Profit so far" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsProfit, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Profit so far" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsProfit, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Stock still in hand -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Stock still in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Stock still in hand" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsStock, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Loans to repay -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Loans to repay" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsLoans, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Loans to repay" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsLoans, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- Vendors to pay -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="Vendors to pay" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsPay, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="Vendors to pay" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsPay, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
-                                <Separator Margin="0,2" Background="#F1F5F9"/>
+                                <Separator Margin="0,2" Background="{DynamicResource AppBorderBrush}"/>
 
                                 <!-- GST to pay -->
                                 <DockPanel Margin="0,10">
-                                    <TextBlock Text="GST to pay government" FontWeight="SemiBold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                    <TextBlock Text="{Binding BsGst, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
+                                    <TextBlock Text="GST to pay government" FontWeight="SemiBold" FontSize="12.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding BsGst, Converter={StaticResource InrConv}}" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Right" VerticalAlignment="Center" FontWeight="Bold" FontSize="13"/>
                                 </DockPanel>
 
                                 <!-- Total Liabilities & Capital -->
-                                <Border BorderBrush="#0F172A" BorderThickness="0,2,0,0" Margin="0,16,0,0" Padding="0,10,0,0">
+                                <Border BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="0,2,0,0" Margin="0,16,0,0" Padding="0,10,0,0">
                                     <DockPanel>
-                                        <TextBlock Text="Total Liabilities &amp; Capital" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
-                                        <TextBlock Text="{Binding BsLiabilitiesTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="#0F172A"/>
+                                        <TextBlock Text="Total Liabilities &amp; Capital" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}"/>
+                                        <TextBlock Text="{Binding BsLiabilitiesTotal, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}"/>
                                     </DockPanel>
                                 </Border>
                             </StackPanel>
                         </Grid>
 
                         <!-- Footnote note -->
-                        <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,24,0,0">
-                            <TextBlock Text="💡 Cash &amp; bank is calculated from the payments recorded in this software. If you had cash or bank money before you started using it, add it under Investment so it is counted." FontSize="11.5" Foreground="#64748B" TextWrapping="Wrap"/>
+                        <Border Background="{DynamicResource AppSubtleBg}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,24,0,0">
+                            <TextBlock Text="💡 Cash &amp; bank is calculated from the payments recorded in this software. If you had cash or bank money before you started using it, add it under Investment so it is counted." FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" TextWrapping="Wrap"/>
                         </Border>
                     </StackPanel>
                 </Border>

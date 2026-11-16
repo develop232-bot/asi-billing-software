@@ -25,6 +25,43 @@
         <converters:TabActiveForegroundConverter x:Key="TabActiveFgConv"/>
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
 
+        <!-- Default Theme Brushes (Updated dynamically by ThemeService) -->
+        <SolidColorBrush x:Key="AppPageBackground" Color="#F8FAFC"/>
+        <SolidColorBrush x:Key="AppCardBackground" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="AppSubtleBg" Color="#F1F5F9"/>
+        <SolidColorBrush x:Key="AppBorderBrush" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="AppTextPrimary" Color="#0F172A"/>
+        <SolidColorBrush x:Key="AppTextSecondary" Color="#64748B"/>
+        <SolidColorBrush x:Key="AppInputBg" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="AppInputBorder" Color="#CBD5E1"/>
+
+        <!-- Global DataGrid / Sheet Styles for Seamless Theme Switching -->
+        <Style TargetType="{x:Type DataGrid}">
+            <Setter Property="Background" Value="{DynamicResource AppCardBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+            <Setter Property="RowBackground" Value="{DynamicResource AppCardBackground}"/>
+            <Setter Property="AlternatingRowBackground" Value="{DynamicResource AppSubtleBg}"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource AppBorderBrush}"/>
+            <Setter Property="VerticalGridLinesBrush" Value="{DynamicResource AppBorderBrush}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}"/>
+        </Style>
+        <Style TargetType="{x:Type DataGridRow}">
+            <Setter Property="Background" Value="{DynamicResource AppCardBackground}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+        </Style>
+        <Style TargetType="{x:Type DataGridCell}">
+            <Setter Property="Foreground" Value="{DynamicResource AppTextPrimary}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style TargetType="{x:Type primitives:DataGridColumnHeader}">
+            <Setter Property="Background" Value="{DynamicResource AppSubtleBg}"/>
+            <Setter Property="Foreground" Value="{DynamicResource AppTextSecondary}"/>
+            <Setter Property="BorderBrush" Value="{DynamicResource AppBorderBrush}"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="32"/>
+        </Style>
+
         <!-- Segment Control RadioButton Style (Match .seg design) -->
         <Style x:Key="SegmentRadioButtonStyle" TargetType="{x:Type RadioButton}">
             <Setter Property="OverridesDefaultStyle" Value="True"/>
