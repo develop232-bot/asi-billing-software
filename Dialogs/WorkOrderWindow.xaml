@@ -202,7 +202,7 @@
                     <DockPanel>
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,10">
                             <TextBlock Text="Products to Make" FontWeight="Bold" FontSize="13.5" Foreground="#152039" VerticalAlignment="Center"/>
-                            <Button Content="+ Add Finished Good" Click="AddItem_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
+                            <Button Content="+ Add Product" Click="AddItem_Click" HorizontalAlignment="Right" Padding="8,4" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                             </Button>
                         </DockPanel>
@@ -274,7 +274,7 @@
                                 <DataGridTemplateColumn Width="40">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Click="DeleteItem_Click" Width="28" Height="28" Cursor="Hand" ToolTip="Remove Finished Good"
+                                            <Button Click="DeleteItem_Click" Width="28" Height="28" Cursor="Hand" ToolTip="Remove Product"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">

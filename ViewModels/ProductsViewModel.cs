@@ -307,8 +307,8 @@ namespace AsiErp.ViewModels
                 });
             }
 
-            // Raw Materials
-            foreach (var r in _dataService.RawMaterials)
+            // Raw Materials (pure product catalog only, excluding purchase entries)
+            foreach (var r in _dataService.RawMaterials.Where(x => !x.Id.StartsWith("pur_it_") && !x.Id.StartsWith("pur_")))
             {
                 all.Add(new UnifiedProductRow
                 {

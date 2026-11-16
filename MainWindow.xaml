@@ -113,7 +113,6 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:retail}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="🛒" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Retail Billing" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
@@ -129,7 +128,6 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:domestic}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="🚩" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Domestic Invoice" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
@@ -145,7 +143,6 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=sales:export}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="✈️" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Export Invoice" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
@@ -180,7 +177,6 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:raw}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="🧵" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Raw Material" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
@@ -196,12 +192,11 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:ready}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="👞" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Ready Made Products" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 </DockPanel>
                             </Button>
 
-                            <!-- Sub-item 3: General Packaging -->
+                            <!-- Sub-item 3: General Supplies -->
                             <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
                                     Command="{Binding NavigateCommand}" CommandParameter="pur:gen"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:gen}"
@@ -212,7 +207,6 @@
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:gen}"/>
-                                    <TextBlock DockPanel.Dock="Left" Text="📦" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="General Supplies" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
@@ -650,17 +644,17 @@
                     <DropShadowEffect BlurRadius="24" ShadowDepth="6" Direction="270" Color="#0F172A" Opacity="0.14"/>
                 </Border.Effect>
                 <StackPanel>
-                    <Button Content="🛒  New Retail Bill" Command="{Binding NavigateCommand}" CommandParameter="sales:retail" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🧾  Domestic Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🌐  Export Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="New Retail Bill" Command="{Binding NavigateCommand}" CommandParameter="sales:retail" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Domestic Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Export Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
-                    <Button Content="🧵  Raw Material Sourcing" Command="{Binding NavigateCommand}" CommandParameter="pur:raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="👞  Ready Made Purchase" Command="{Binding NavigateCommand}" CommandParameter="pur:ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="📦  General Packaging Sourcing" Command="{Binding NavigateCommand}" CommandParameter="pur:gen" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Raw Material" Command="{Binding NavigateCommand}" CommandParameter="pur:raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Ready Made Products" Command="{Binding NavigateCommand}" CommandParameter="pur:ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="General Supplies" Command="{Binding NavigateCommand}" CommandParameter="pur:gen" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
-                    <Button Content="🏭  New Work Order" Command="{Binding OpenDialogCommand}" CommandParameter="work_order" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="💸  Add Expense" Command="{Binding OpenDialogCommand}" CommandParameter="expense_add" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="🏷️  Add Product / Item" Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="New Work Order" Command="{Binding OpenDialogCommand}" CommandParameter="work_order" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Add Expense" Command="{Binding OpenDialogCommand}" CommandParameter="expense_add" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Add Product / Item" Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                 </StackPanel>
             </Border>
 

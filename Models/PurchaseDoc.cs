@@ -25,6 +25,9 @@ namespace AsiErp.Models
         [FirestoreProperty("party")]
         public string Party { get; set; } = string.Empty;
 
+        [FirestoreProperty("contactPerson")]
+        public string ContactPerson { get; set; } = string.Empty;
+
         [FirestoreProperty("phone")]
         public string Phone { get; set; } = string.Empty;
 
@@ -63,6 +66,9 @@ namespace AsiErp.Models
                 return "Partial";
             }
         }
+
+        public bool CanPay => Status != "Paid" && BalanceAmount > 0.5;
+        public System.Windows.Visibility PayVisibility => CanPay ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 
         public string KindLabel => Kind switch
         {

@@ -132,8 +132,8 @@
                     </Border.Effect>
                     <StackPanel>
                         <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <Path Data="M 9,1 A 8,8 0 1,0 9,17 A 8,8 0 1,0 9,1 Z M 1,9 L 17,9 M 9,1 A 14,8 0 0,0 9,17 M 9,1 A 14,8 0 0,1 9,17"
-                                  Stroke="#FFFFFF" StrokeThickness="1.4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Path Data="M 11,2 L 13,2 L 13,9 L 20,13 L 20,15 L 13,13 L 13,18 L 15,20 L 15,21.5 L 12,20.5 L 9,21.5 L 9,20 L 11,18 L 11,13 L 4,15 L 4,13 L 11,9 Z"
+                                  Fill="#FFFFFF" Stretch="Uniform" Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
                         <TextBlock Text="Export Sales" FontSize="11.5" FontWeight="SemiBold" Foreground="#CCFBF1" Margin="0,10,0,0"/>
                         <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
@@ -465,7 +465,7 @@
                                     Background="#1E293B" BorderThickness="0"
                                     Command="{Binding NavigateCommand}" CommandParameter="sales:retail">
                                 <StackPanel>
-                                    <TextBlock Text="🛒" FontSize="17" Foreground="White"/>
+                                    <Path Data="M 3,4 L 6,4 L 7.5,12 L 15,12 L 16.5,6 L 6.5,6 M 7.5,14 A 1.2,1.2 0 1,0 7.5,16.4 A 1.2,1.2 0 1,0 7.5,14 M 14.5,14 A 1.2,1.2 0 1,0 14.5,16.4 A 1.2,1.2 0 1,0 14.5,14" Stroke="White" StrokeThickness="1.5" Fill="Transparent" Stretch="Uniform" Width="16" Height="16" HorizontalAlignment="Center"/>
                                     <TextBlock Text="New Retail Bill" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
                                 </StackPanel>
                             </Button>
@@ -475,7 +475,7 @@
                                     Background="#3B82F6"
                                     Command="{Binding OpenDialogCommand}" CommandParameter="domestic_invoice">
                                 <StackPanel>
-                                    <TextBlock Text="📄" FontSize="17" Foreground="White"/>
+                                    <Path Data="M 3,2 L 11,2 L 15,6 L 15,18 L 3,18 Z M 11,2 L 11,6 L 15,6 M 5,9 L 13,9 M 5,12 L 13,12 M 5,15 L 10,15" Stroke="White" StrokeThickness="1.5" Fill="Transparent" Stretch="Uniform" Width="14" Height="16" HorizontalAlignment="Center"/>
                                     <TextBlock Text="Domestic Invoice" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
                                 </StackPanel>
                             </Button>
@@ -485,7 +485,7 @@
                                     Background="#14B8A6"
                                     Command="{Binding OpenDialogCommand}" CommandParameter="export_invoice">
                                 <StackPanel>
-                                    <TextBlock Text="🌐" FontSize="17" Foreground="White"/>
+                                    <Path Data="M 2,11 L 8,11 L 11,3 L 13,3 L 11,11 L 17,11 L 18,8 L 19.5,8 L 19,12 L 19.5,16 L 18,16 L 17,13 L 11,13 L 13,21 L 11,21 L 8,13 L 2,13 Z" Fill="White" Stretch="Uniform" Width="16" Height="16" HorizontalAlignment="Center"/>
                                     <TextBlock Text="Export Invoice" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
                                 </StackPanel>
                             </Button>
@@ -495,7 +495,7 @@
                                     Background="#F59E0B"
                                     Command="{Binding OpenDialogCommand}" CommandParameter="work_order">
                                 <StackPanel>
-                                    <TextBlock Text="📋" FontSize="17" Foreground="White"/>
+                                    <Path Data="M 6,3 L 14,3 L 14,5 L 16,5 L 16,19 L 4,19 L 4,5 L 6,5 Z M 8,1 L 12,1 L 12,4 L 8,4 Z" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="14" Height="16" HorizontalAlignment="Center"/>
                                     <TextBlock Text="New Work Order" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
                                 </StackPanel>
                             </Button>
@@ -505,7 +505,7 @@
                                     Background="#8B5CF6"
                                     Command="{Binding OpenDialogCommand}" CommandParameter="product_edit_mfg">
                                 <StackPanel>
-                                    <TextBlock Text="🏷️" FontSize="17" Foreground="White"/>
+                                    <Path Data="M 2,10 L 10,2 L 18,2 L 18,10 L 10,18 Z M 14,6 A 1.5,1.5 0 1,0 14,9 A 1.5,1.5 0 1,0 14,6" Stroke="White" StrokeThickness="1.4" Fill="Transparent" Stretch="Uniform" Width="16" Height="16" HorizontalAlignment="Center"/>
                                     <TextBlock Text="Add Product" FontSize="12" FontWeight="SemiBold" Foreground="White" Margin="0,8,0,0"/>
                                 </StackPanel>
                             </Button>

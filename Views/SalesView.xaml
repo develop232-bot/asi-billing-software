@@ -124,8 +124,8 @@
                         </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
-                                <Path Data="M 9,1 A 8,8 0 1,0 9,17 A 8,8 0 1,0 9,1 Z M 1,9 L 17,9 M 9,1 A 14,8 0 0,0 9,17 M 9,1 A 14,8 0 0,1 9,17"
-                                      Stroke="#FFFFFF" StrokeThickness="1.4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                <Path Data="M 11,2 L 13,2 L 13,9 L 20,13 L 20,15 L 13,13 L 13,18 L 15,20 L 15,21.5 L 12,20.5 L 9,21.5 L 9,20 L 11,18 L 11,13 L 4,15 L 4,13 L 11,9 Z"
+                                      Fill="#FFFFFF" Stretch="Uniform" Width="15" Height="15" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="Export Sale" FontSize="11.5" FontWeight="SemiBold" Foreground="#CCFBF1" Margin="0,10,0,0"/>
                             <TextBlock Text="{Binding MonthExportTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
@@ -391,7 +391,7 @@
                                                 Padding="8,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                         </Button>
-                                        <Button Content="Receive" Command="{Binding DataContext.ReceivePaymentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                        <Button Content="Receive" Visibility="{Binding ReceivePaymentVisibility}" Command="{Binding DataContext.ReceivePaymentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                                 Padding="8,3" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                         </Button>

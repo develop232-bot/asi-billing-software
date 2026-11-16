@@ -155,6 +155,7 @@ namespace AsiErp.Services
                     Assets.RemoveAll(a => a.Id == "a0" || a.Id == "a1" || a.Id.StartsWith("a_sample"));
                     Products.RemoveAll(p => p.Id.StartsWith("p") && int.TryParse(p.Id.Substring(1), out _));
                     RawMaterials.RemoveAll(r => r.Id.StartsWith("r") && int.TryParse(r.Id.Substring(1), out _));
+                    RawMaterials.RemoveAll(r => r.Id.StartsWith("pur_it_") || r.Id.StartsWith("pur_"));
                     GeneralItems.RemoveAll(g => g.Id.StartsWith("g") && int.TryParse(g.Id.Substring(1), out _));
                     Sales.RemoveAll(s => s.Id.StartsWith("s") && int.TryParse(s.Id.Substring(1), out _));
                     Purchases.RemoveAll(pu => pu.Id.StartsWith("b") && int.TryParse(pu.Id.Substring(1), out _));
@@ -247,11 +248,11 @@ namespace AsiErp.Services
                 }
                 Products = prodDict.Values.OrderBy(p => p.Name).ToList();
 
-                // RawMaterials
-                var rmDict = RawMaterials.Where(r => !string.IsNullOrEmpty(r.Id)).ToDictionary(r => r.Id, r => r);
+                // RawMaterials (exclude items from purchase bills)
+                var rmDict = RawMaterials.Where(r => !string.IsNullOrEmpty(r.Id) && !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).ToDictionary(r => r.Id, r => r);
                 foreach (var crm in bundle.RawMaterials)
                 {
-                    if (!string.IsNullOrEmpty(crm.Id)) rmDict[crm.Id] = crm;
+                    if (!string.IsNullOrEmpty(crm.Id) && !crm.Id.StartsWith("pur_it_") && !crm.Id.StartsWith("pur_")) rmDict[crm.Id] = crm;
                 }
                 RawMaterials = rmDict.Values.OrderBy(r => r.Name).ToList();
 
@@ -645,31 +646,8 @@ namespace AsiErp.Services
 
                 if (purchase.Kind == "raw")
                 {
-                    var r = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
-                                                             x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
-                    if (r != null)
-                    {
-                        r.Stock += line.Qty;
-                        r.Rate = line.Rate;
-                        if (!string.IsNullOrWhiteSpace(line.Unit)) r.Unit = line.Unit;
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", r.Id, r);
-                    }
-                    else
-                    {
-                        var newRaw = new RawMaterialItem
-                        {
-                            Id = !string.IsNullOrWhiteSpace(line.ItemId) ? line.ItemId : "raw_" + Guid.NewGuid().ToString("N")[..8],
-                            Name = line.Name,
-                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "sq ft" : line.Unit,
-                            Rate = line.Rate,
-                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
-                            Stock = line.Qty,
-                            Sku = !string.IsNullOrWhiteSpace(line.Sku) ? line.Sku : ""
-                        };
-                        line.ItemId = newRaw.Id;
-                        RawMaterials.Add(newRaw);
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", newRaw.Id, newRaw);
-                    }
+                    // User requirement: Purchase (Raw Material) and Product (Raw Material) are completely decoupled
+                    // Purchases record inward sourcing bills and lines, but do NOT inject items into Product RawMaterials
                 }
                 else if (purchase.Kind == "ready")
                 {

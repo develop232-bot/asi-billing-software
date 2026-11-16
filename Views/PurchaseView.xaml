@@ -405,7 +405,7 @@
                                                     Padding="8,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>
-                                            <Button Content="Pay" Command="{Binding DataContext.PayBillCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                            <Button Content="Pay" Visibility="{Binding PayVisibility}" Command="{Binding DataContext.PayBillCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
                                                     Padding="8,3" Background="#10B981" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
                                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                             </Button>

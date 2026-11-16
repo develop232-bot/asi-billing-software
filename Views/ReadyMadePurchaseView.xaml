@@ -54,40 +54,47 @@
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Vendor / Wholesaler Name -->
+                    <!-- Supplier Name -->
                     <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12">
-                        <TextBlock Text="Wholesaler / Supplier Name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Supplier name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorName, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
-                    <!-- Vendor Phone -->
+                    <!-- Contact Person Name -->
                     <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,12">
+                        <TextBlock Text="Contact person name" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBox Text="{Binding ContactPerson, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
+                    </StackPanel>
+
+                    <!-- Supplier Phone -->
+                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,12,12">
                         <TextBlock Text="Supplier Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorPhone, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
                     <!-- Inward Bill Date -->
-                    <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,12">
+                    <StackPanel Grid.Row="0" Grid.Column="3" Margin="0,0,0,12">
                         <TextBlock Text="Bill Date *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <DatePicker SelectedDate="{Binding BillDate, Mode=TwoWay}" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Vendor Invoice / Challan Ref -->
+                    <!-- Supplier Bill No -->
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
-                        <TextBlock Text="Supplier Invoice / Ref No." FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Bill No." FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorInvoiceRef, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
-                    <!-- Vendor GSTIN -->
+                    <!-- Supplier GSTIN -->
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
                         <TextBlock Text="Supplier GSTIN (Optional)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorGstin, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
                     <!-- Purchase type (Segmented Control matching prototype) -->
-                    <StackPanel Grid.Row="1" Grid.Column="2">
+                    <StackPanel Grid.Row="1" Grid.Column="2" Grid.ColumnSpan="2">
                         <TextBlock Text="Purchase type" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <Border BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8" Height="36" ClipToBounds="True">
                             <Grid>
@@ -128,7 +135,7 @@
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                         </Button>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
-                            <TextBlock Text="Ready Made Products Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <TextBlock Text="Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
                             <TextBlock Text=" (Finished Footwear, Bags, Garments &amp; Trading Goods)" FontSize="11" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                         </StackPanel>
                     </DockPanel>
@@ -175,31 +182,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <!-- SKU / Barcode -->
-                                <DataGridTemplateColumn Header="SKU" Width="85">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Sku, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
-                                                     FontWeight="SemiBold" FontSize="11.5" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!-- Size -->
-                                <DataGridTemplateColumn Header="Sizes" Width="80">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     ToolTip="e.g. 6,7,8,9,10 or Free"
-                                                     Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Center"
-                                                     FontWeight="SemiBold" FontSize="12" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
                                 <!-- Unit -->
-                                <DataGridTemplateColumn Header="Unit" Width="70">
+                                <DataGridTemplateColumn Header="Unit" Width="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -210,7 +194,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Inward Quantity -->
-                                <DataGridTemplateColumn Header="Qty" Width="65">
+                                <DataGridTemplateColumn Header="Qty" Width="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -220,25 +204,13 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <!-- Purchase Cost Rate (₹) -->
-                                <DataGridTemplateColumn Header="Cost (₹)" Width="85">
+                                <!-- Purchase Rate (₹) -->
+                                <DataGridTemplateColumn Header="Rate (₹)" Width="110">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                      Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Right"
                                                      FontWeight="SemiBold" FontSize="12.5" BorderBrush="#CBD5E1" Margin="2,0"/>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-
-                                <!-- Selling Price (₹) -->
-                                <DataGridTemplateColumn Header="Selling (₹)" Width="85">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBox Text="{Binding SellingPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                     ToolTip="Retail selling price / MRP"
-                                                     Height="34" Padding="4,0" VerticalContentAlignment="Center" TextAlignment="Right"
-                                                     FontWeight="SemiBold" FontSize="12.5" Foreground="#15803D" BorderBrush="#CBD5E1" Margin="2,0"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

@@ -32,6 +32,7 @@ namespace AsiErp.ViewModels
         protected readonly Action<string, object?> _openDialogAction;
 
         private string _vendorName = string.Empty;
+        private string _contactPerson = string.Empty;
         private string _vendorPhone = string.Empty;
         private string _vendorInvoiceRef = "INV-1001";
         private DateTime _billDate = DateTime.Now;
@@ -57,6 +58,7 @@ namespace AsiErp.ViewModels
         public ObservableCollection<PurchaseDoc> RecentBills { get; } = new();
 
         public string VendorName { get => _vendorName; set => SetField(ref _vendorName, value); }
+        public string ContactPerson { get => _contactPerson; set => SetField(ref _contactPerson, value); }
         public string VendorPhone { get => _vendorPhone; set => SetField(ref _vendorPhone, value); }
         public string VendorInvoiceRef { get => _vendorInvoiceRef; set => SetField(ref _vendorInvoiceRef, value); }
         public DateTime BillDate { get => _billDate; set => SetField(ref _billDate, value); }
@@ -173,6 +175,7 @@ namespace AsiErp.ViewModels
         public virtual void ResetForm()
         {
             VendorName = string.Empty;
+            ContactPerson = string.Empty;
             VendorPhone = string.Empty;
             VendorInvoiceRef = "INV-1001";
             BillDate = DateTime.Now;
@@ -312,6 +315,7 @@ namespace AsiErp.ViewModels
                 VendorBillRef = VendorInvoiceRef.Trim(),
                 Date = BillDate.ToString("yyyy-MM-dd"),
                 Party = party,
+                ContactPerson = ContactPerson.Trim(),
                 Phone = VendorPhone.Trim(),
                 SaleType = isCredit ? "Credit" : "Cash",
                 CreditDays = creditDays,

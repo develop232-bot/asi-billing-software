@@ -21,31 +21,46 @@ namespace AsiErp.ViewModels
         public override void ReloadAvailableItems()
         {
             AvailableItems.Clear();
-            if (_dataService.RawMaterials != null && _dataService.RawMaterials.Any())
+
+            // Sourcing items from past raw purchases
+            var pastItems = _dataService.Purchases
+                .Where(p => p.Kind == "raw")
+                .SelectMany(p => p.Lines ?? new())
+                .Where(l => !string.IsNullOrWhiteSpace(l.Name))
+                .GroupBy(l => l.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Select(g => g.First())
+                .ToList();
+
+            foreach (var l in pastItems)
             {
-                foreach (var r in _dataService.RawMaterials)
+                AvailableItems.Add(new SourcingItemOption
                 {
-                    AvailableItems.Add(new SourcingItemOption
-                    {
-                        Id = r.Id,
-                        Name = r.Name,
-                        Sku = r.Sku,
-                        Unit = r.Unit,
-                        Rate = r.Rate,
-                        Gst = r.Gst,
-                        Stock = r.Stock
-                    });
-                }
+                    Id = l.ItemId,
+                    Name = l.Name,
+                    Sku = l.Sku,
+                    Unit = l.Unit,
+                    Rate = l.Rate,
+                    Gst = l.GstPercent
+                });
             }
-            else
+
+            // Standard baseline raw material options
+            var standardOptions = new[]
             {
-                // Fallbacks so user always has standard options ready
-                AvailableItems.Add(new SourcingItemOption { Id = "raw_leather", Name = "Upper Leather (Black / Brown)", Sku = "ASI-RAW-001", Unit = "sq ft", Rate = 65, Gst = 5 });
-                AvailableItems.Add(new SourcingItemOption { Id = "raw_sole", Name = "Rubber / PVC Sole (Pairs)", Sku = "ASI-RAW-002", Unit = "pair", Rate = 85, Gst = 5 });
-                AvailableItems.Add(new SourcingItemOption { Id = "raw_fabric", Name = "Uniform Shirting Fabric", Sku = "ASI-RAW-003", Unit = "meter", Rate = 95, Gst = 5 });
-                AvailableItems.Add(new SourcingItemOption { Id = "raw_lining", Name = "Inner Breathable Lining", Sku = "ASI-RAW-004", Unit = "meter", Rate = 45, Gst = 5 });
-                AvailableItems.Add(new SourcingItemOption { Id = "raw_thread", Name = "Heavy Duty Thread Spool", Sku = "ASI-RAW-005", Unit = "roll", Rate = 120, Gst = 5 });
-                AvailableItems.Add(new SourcingItemOption { Id = "raw_adhesive", Name = "Shoe Adhesive / Chemical Glue", Sku = "ASI-RAW-006", Unit = "kg", Rate = 210, Gst = 18 });
+                new SourcingItemOption { Id = "raw_leather", Name = "Upper Leather (Black / Brown)", Sku = "ASI-RAW-001", Unit = "sq ft", Rate = 65, Gst = 5 },
+                new SourcingItemOption { Id = "raw_sole", Name = "Rubber / PVC Sole (Pairs)", Sku = "ASI-RAW-002", Unit = "pair", Rate = 85, Gst = 5 },
+                new SourcingItemOption { Id = "raw_fabric", Name = "Uniform Shirting Fabric", Sku = "ASI-RAW-003", Unit = "meter", Rate = 95, Gst = 5 },
+                new SourcingItemOption { Id = "raw_lining", Name = "Inner Breathable Lining", Sku = "ASI-RAW-004", Unit = "meter", Rate = 45, Gst = 5 },
+                new SourcingItemOption { Id = "raw_thread", Name = "Heavy Duty Thread Spool", Sku = "ASI-RAW-005", Unit = "roll", Rate = 120, Gst = 5 },
+                new SourcingItemOption { Id = "raw_adhesive", Name = "Shoe Adhesive / Chemical Glue", Sku = "ASI-RAW-006", Unit = "kg", Rate = 210, Gst = 18 }
+            };
+
+            foreach (var opt in standardOptions)
+            {
+                if (!AvailableItems.Any(x => x.Name.Equals(opt.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    AvailableItems.Add(opt);
+                }
             }
         }
     }

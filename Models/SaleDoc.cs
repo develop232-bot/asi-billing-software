@@ -104,6 +104,9 @@ namespace AsiErp.Models
             }
         }
 
+        public bool CanReceivePayment => Status != "Paid" && BalanceAmount > 0.5;
+        public System.Windows.Visibility ReceivePaymentVisibility => CanReceivePayment ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+
         public string ChannelLabel => Type switch
         {
             "retail" => "Retail",
