@@ -59,21 +59,18 @@
                 <!-- Right: Top-sellers period dropdown -->
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
                     <TextBlock Text="Top-sellers period" FontSize="12.5" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,10,0"/>
-                    <ComboBox SelectedValue="{Binding TopSellersPeriod, Mode=TwoWay}"
+                    <ComboBox ItemsSource="{Binding TopSellersPeriods}"
+                              SelectedValue="{Binding TopSellersPeriod, Mode=TwoWay}"
                               SelectedValuePath="Tag"
-                              Height="36" Width="140"
+                              DisplayMemberPath="Display"
+                              Height="36" Width="170"
                               Background="White"
                               BorderBrush="#CBD5E1"
                               BorderThickness="1"
-                              FontSize="12.5"
+                              FontSize="12"
                               FontWeight="SemiBold"
                               VerticalContentAlignment="Center"
-                              Padding="10,0">
-                        <ComboBoxItem Content="This month" Tag="month" IsSelected="True"/>
-                        <ComboBoxItem Content="Last month" Tag="last_month"/>
-                        <ComboBoxItem Content="Last 90 days" Tag="quarter"/>
-                        <ComboBoxItem Content="All time" Tag="all"/>
-                    </ComboBox>
+                              Padding="10,0"/>
                 </StackPanel>
             </Grid>
 
@@ -360,7 +357,7 @@
                     <DockPanel>
                         <!-- Header -->
                         <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                            <TextBlock Text="this month" FontSize="11.5" Foreground="#64748B" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding TopSellersPeriodLabel}" FontSize="11.5" Foreground="#64748B" DockPanel.Dock="Right" VerticalAlignment="Center"/>
                             <TextBlock Text="Top Selling Products" FontSize="16" FontWeight="Bold" Foreground="#0F172A" VerticalAlignment="Center"/>
                         </DockPanel>
 
@@ -391,7 +388,7 @@
                                     <!-- Donut Center Label -->
                                     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <TextBlock Text="Total sales" FontSize="10.5" Foreground="#64748B" HorizontalAlignment="Center"/>
-                                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="15" FontWeight="Bold" Foreground="#0F172A" HorizontalAlignment="Center" Margin="0,2,0,0"/>
+                                        <TextBlock Text="{Binding TopSellersTotalSales, Converter={StaticResource InrShortConv}}" FontSize="15" FontWeight="Bold" Foreground="#0F172A" HorizontalAlignment="Center" Margin="0,2,0,0"/>
                                     </StackPanel>
                                 </Grid>
                             </Viewbox>

@@ -60,6 +60,7 @@
                         <WrapPanel>
                             <Button Content="Sync to DB" Command="{Binding SyncToCloudCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Upload all current software data to Firebase"/>
                             <Button Content="Light / Dark" Command="{Binding ToggleThemeCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Toggle Light / Dark theme"/>
+                            <Button Content="🔄 Online Update" Command="{Binding CheckForUpdatesCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#86EFAC" FontSize="10" Margin="0,0,4,4" ToolTip="Check GitHub for Online Software Updates"/>
                         </WrapPanel>
                     </StackPanel>
                 </Border>
@@ -185,7 +186,7 @@
                             </Button>
 
                             <!-- Sub-item 2: Ready Made Products -->
-                            <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
+                            <Button Style="{StaticResource ModernSidebarButton}" Margin="8,1,0,1" FontSize="11.5"
                                     Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:ready}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:ready}"
@@ -196,7 +197,7 @@
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:ready}"/>
                                     <TextBlock DockPanel.Dock="Left" Text="👞" FontSize="12" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Ready Made Products" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Ready Made Products" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 </DockPanel>
                             </Button>
 
@@ -545,20 +546,6 @@
 
                     <!-- Right Controls -->
                     <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                        <!-- Online Update Button -->
-                        <Button Command="{Binding CheckForUpdatesCommand}" Height="34" Padding="10,0" Background="#F0FDF4" BorderBrush="#86EFAC" BorderThickness="1" Cursor="Hand" ToolTip="Check GitHub for Online Software Updates" Margin="0,0,8,0">
-                            <Button.Template>
-                                <ControlTemplate TargetType="Button">
-                                    <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="8">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0">
-                                            <TextBlock Text="🔄" FontSize="11" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                            <TextBlock Text="Online Update" FontSize="11" FontWeight="SemiBold" Foreground="#166534" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Border>
-                                </ControlTemplate>
-                            </Button.Template>
-                        </Button>
-
                         <!-- Live Date Display -->
                         <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10" Padding="10,4" Margin="0,0,8,0">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">

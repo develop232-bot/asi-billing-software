@@ -13,21 +13,11 @@
         <converters:BoolToIndexConverter x:Key="BoolToIndexConv"/>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="16,14">
         <StackPanel>
             <!-- Top Header & Navigation -->
-            <Grid Margin="0,0,0,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="👞 Ready Made Products Purchase" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
-                </StackPanel>
-
-                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <DockPanel Margin="0,0,0,16">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🔄 Reset" Command="{Binding ResetFormCommand}"
                             Padding="12,6" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1"
                             Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
@@ -40,10 +30,15 @@
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
                 </StackPanel>
-            </Grid>
+
+                <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="👞 Ready Made Products Purchase" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+            </DockPanel>
 
             <!-- Vendor & Inward Bill Information Card -->
-            <Border Background="White" Padding="18" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+            <Border Background="White" Padding="16" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
@@ -59,13 +54,13 @@
                     </Grid.ColumnDefinitions>
 
                     <!-- Vendor / Wholesaler Name -->
-                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,14,12">
+                    <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12">
                         <TextBlock Text="Wholesaler / Supplier Name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorName, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
                     <!-- Vendor Phone -->
-                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,14,12">
+                    <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,0,12,12">
                         <TextBlock Text="Supplier Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorPhone, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
@@ -77,13 +72,13 @@
                     </StackPanel>
 
                     <!-- Vendor Invoice / Challan Ref -->
-                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,14,0">
+                    <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
                         <TextBlock Text="Supplier Invoice / Ref No." FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorInvoiceRef, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
                     <!-- Vendor GSTIN -->
-                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,14,0">
+                    <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
                         <TextBlock Text="Supplier GSTIN (Optional)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorGstin, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
@@ -119,27 +114,27 @@
             </Border>
 
             <!-- Line Items Table Card -->
-            <Border Background="White" Padding="18" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+            <Border Background="White" Padding="16" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                 <Border.Effect>
                     <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Ready Made Products Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
-                            <TextBlock Text=" (Finished Footwear, Bags, Garments &amp; Trading Goods)" FontSize="11" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <Button Content="➕ Add Product" Command="{Binding AddLineCommand}" HorizontalAlignment="Right"
-                                Padding="14,6" Background="#4F46E5" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold">
+                        <Button DockPanel.Dock="Right" Content="➕ Add Product" Command="{Binding AddLineCommand}" HorizontalAlignment="Right"
+                                Padding="12,6" Background="#4F46E5" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold">
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                         </Button>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,12,0">
+                            <TextBlock Text="Ready Made Products Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <TextBlock Text=" (Finished Footwear, Bags, Garments &amp; Trading Goods)" FontSize="11" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                        </StackPanel>
                     </DockPanel>
 
-                    <ScrollViewer HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled"
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                   CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
                         <DataGrid ItemsSource="{Binding Lines}" AutoGenerateColumns="False" CanUserAddRows="False"
                                   HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White"
-                                  RowHeight="50" MinWidth="950">
+                                  RowHeight="48" MinWidth="740">
                             <DataGrid.CellStyle>
                                 <Style TargetType="DataGridCell" BasedOn="{StaticResource {x:Type DataGridCell}}">
                                     <Setter Property="Padding" Value="4,2"/>
@@ -148,7 +143,7 @@
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
                                 <!-- Product Selection / Custom Name -->
-                                <DataGridTemplateColumn Header="Product (Select or Type Name)" Width="*">
+                                <DataGridTemplateColumn Header="Product (Select or Type Name)" Width="*" MinWidth="150">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AvailableItems}"
@@ -178,7 +173,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- SKU / Barcode -->
-                                <DataGridTemplateColumn Header="SKU" Width="105">
+                                <DataGridTemplateColumn Header="SKU" Width="85">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Sku, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -189,7 +184,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Size -->
-                                <DataGridTemplateColumn Header="Sizes" Width="95">
+                                <DataGridTemplateColumn Header="Sizes" Width="80">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Size, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -201,7 +196,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Unit -->
-                                <DataGridTemplateColumn Header="Unit" Width="70">
+                                <DataGridTemplateColumn Header="Unit" Width="60">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Unit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -212,7 +207,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Inward Quantity -->
-                                <DataGridTemplateColumn Header="Qty" Width="75">
+                                <DataGridTemplateColumn Header="Qty" Width="60">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Qty, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -223,7 +218,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Purchase Cost Rate (₹) -->
-                                <DataGridTemplateColumn Header="Cost (₹)" Width="95">
+                                <DataGridTemplateColumn Header="Cost (₹)" Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -234,7 +229,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Selling Price (₹) -->
-                                <DataGridTemplateColumn Header="Selling (₹)" Width="95">
+                                <DataGridTemplateColumn Header="Selling (₹)" Width="75">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding SellingPrice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -246,7 +241,7 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- GST % -->
-                                <DataGridTemplateColumn Header="GST %" Width="70">
+                                <DataGridTemplateColumn Header="GST %" Width="55">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding GstPercent, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -257,23 +252,23 @@
                                 </DataGridTemplateColumn>
 
                                 <!-- Total Gross Amount -->
-                                <DataGridTemplateColumn Header="Total (₹)" Width="110">
+                                <DataGridTemplateColumn Header="Total (₹)" Width="90">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Border Background="#F1F5F9" CornerRadius="6" Height="34" Padding="8,0" Margin="2,0" VerticalAlignment="Center">
+                                            <Border Background="#F1F5F9" CornerRadius="6" Height="34" Padding="6,0" Margin="2,0" VerticalAlignment="Center">
                                                 <TextBlock Text="{Binding GrossAmount, StringFormat='{}{0:N2}'}"
-                                                           FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                                           FontWeight="Bold" FontSize="12" Foreground="#0F172A" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                             </Border>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
                                 <!-- Delete Row Button -->
-                                <DataGridTemplateColumn Width="56">
+                                <DataGridTemplateColumn Width="44">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Button Command="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.DeleteLineCommand}"
-                                                    CommandParameter="{Binding}" Width="30" Height="30" Cursor="Hand" ToolTip="Remove item"
+                                                    CommandParameter="{Binding}" Width="28" Height="28" Cursor="Hand" ToolTip="Remove item"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center">
                                                 <Button.Template>
                                                     <ControlTemplate TargetType="Button">
@@ -293,14 +288,9 @@
             </Border>
 
             <!-- Bottom Summary & Actions -->
-            <Grid Margin="0,0,0,24">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="380"/>
-                </Grid.ColumnDefinitions>
-
+            <DockPanel Margin="0,0,0,24" LastChildFill="False">
                 <!-- Right: Totals Box -->
-                <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                <Border DockPanel.Dock="Right" HorizontalAlignment="Right" Width="350" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <StackPanel>
                         <DockPanel Margin="0,2">
                             <TextBlock Text="Subtotal (Taxable):" Foreground="#64748B"/>
@@ -333,7 +323,7 @@
                         </Button>
                     </StackPanel>
                 </Border>
-            </Grid>
+            </DockPanel>
 
             <!-- Recent Bills Section -->
             <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="18">

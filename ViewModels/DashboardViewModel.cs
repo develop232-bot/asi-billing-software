@@ -42,6 +42,12 @@ namespace AsiErp.ViewModels
         public string TooltipText => $"{Channel}: ₹{Amount:N0} ({Percentage:F0}%)";
     }
 
+    public class PeriodOption
+    {
+        public string Tag { get; set; } = string.Empty;
+        public string Display { get; set; } = string.Empty;
+    }
+
     public class DashboardActivity
     {
         public string Title { get; set; } = string.Empty;
@@ -198,7 +204,9 @@ namespace AsiErp.ViewModels
             }
         }
 
-        private string _topSellersPeriod = "month";
+        public ObservableCollection<PeriodOption> TopSellersPeriods { get; } = new();
+
+        private string _topSellersPeriod = "this_month";
         public string TopSellersPeriod
         {
             get => _topSellersPeriod;
@@ -208,9 +216,24 @@ namespace AsiErp.ViewModels
                 {
                     _topSellersPeriod = value;
                     OnPropertyChanged(nameof(TopSellersPeriod));
+                    UpdateTopSellersPeriodLabel();
                     UpdateTopProductsChart();
                 }
             }
+        }
+
+        private string _topSellersPeriodLabel = "this month";
+        public string TopSellersPeriodLabel
+        {
+            get => _topSellersPeriodLabel;
+            private set => SetField(ref _topSellersPeriodLabel, value);
+        }
+
+        private double _topSellersTotalSales;
+        public double TopSellersTotalSales
+        {
+            get => _topSellersTotalSales;
+            private set => SetField(ref _topSellersTotalSales, value);
         }
 
         public PointCollection TrendLinePoints { get; } = new();
@@ -260,8 +283,43 @@ namespace AsiErp.ViewModels
                 if (p is SaleDoc sale) _openDialogAction("view_doc", sale);
             });
 
+            InitializeTopSellersPeriods();
             _dataService.DataChanged += RefreshData;
             RefreshData();
+        }
+
+        private void InitializeTopSellersPeriods()
+        {
+            TopSellersPeriods.Clear();
+            TopSellersPeriods.Add(new PeriodOption { Tag = "this_month", Display = "This month" });
+            TopSellersPeriods.Add(new PeriodOption { Tag = "last_month", Display = "Last month" });
+
+            DateTime cur = DateTime.Today;
+            // Generate all previous months (from 2 months ago back through past 12 months)
+            for (int i = 2; i <= 12; i++)
+            {
+                DateTime dt = cur.AddMonths(-i);
+                TopSellersPeriods.Add(new PeriodOption { Tag = $"m:{dt:yyyy-MM}", Display = dt.ToString("MMMM yyyy") });
+            }
+
+            TopSellersPeriods.Add(new PeriodOption { Tag = "quarter", Display = "Last 3 months" });
+            TopSellersPeriods.Add(new PeriodOption { Tag = "fy", Display = "This financial year" });
+            TopSellersPeriods.Add(new PeriodOption { Tag = "all", Display = "All time" });
+
+            UpdateTopSellersPeriodLabel();
+        }
+
+        private void UpdateTopSellersPeriodLabel()
+        {
+            var match = TopSellersPeriods.FirstOrDefault(p => p.Tag == _topSellersPeriod);
+            if (match != null)
+            {
+                TopSellersPeriodLabel = match.Display.ToLowerInvariant();
+            }
+            else
+            {
+                TopSellersPeriodLabel = "this month";
+            }
         }
 
         public void RefreshData()
@@ -871,66 +929,86 @@ namespace AsiErp.ViewModels
             var productTotals = new Dictionary<string, double>(StringComparer.OrdinalIgnoreCase);
 
             IEnumerable<SaleDoc> filteredSales;
+            DateTime now = DateTime.Today;
+
             if (_topSellersPeriod == "last_month")
             {
-                DateTime prevMonth = DateTime.Today.AddMonths(-1);
+                DateTime prevMonth = now.AddMonths(-1);
                 string startPrev = new DateTime(prevMonth.Year, prevMonth.Month, 1).ToString("yyyy-MM-dd");
-                string endPrev = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1).ToString("yyyy-MM-dd");
+                string endPrev = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
                 filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, startPrev) >= 0 && string.Compare(s.Date, endPrev) < 0);
+            }
+            else if (_topSellersPeriod.StartsWith("m:"))
+            {
+                // Month tag format: "m:yyyy-MM"
+                string ym = _topSellersPeriod.Substring(2);
+                if (DateTime.TryParse($"{ym}-01", out DateTime dtMonth))
+                {
+                    string start = dtMonth.ToString("yyyy-MM-dd");
+                    string end = dtMonth.AddMonths(1).ToString("yyyy-MM-dd");
+                    filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, start) >= 0 && string.Compare(s.Date, end) < 0);
+                }
+                else
+                {
+                    filteredSales = _dataService.Sales.Where(s => (s.Date ?? "").StartsWith(ym));
+                }
             }
             else if (_topSellersPeriod == "quarter")
             {
-                string since90 = DateTime.Today.AddDays(-90).ToString("yyyy-MM-dd");
+                string since90 = now.AddDays(-90).ToString("yyyy-MM-dd");
                 filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, since90) >= 0);
+            }
+            else if (_topSellersPeriod == "fy")
+            {
+                int fyYear = now.Month >= 4 ? now.Year : now.Year - 1;
+                string fyStart = $"{fyYear}-04-01";
+                filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, fyStart) >= 0);
             }
             else if (_topSellersPeriod == "all")
             {
                 filteredSales = _dataService.Sales;
             }
-            else // "month" or default
+            else // "this_month" or "month" or default
             {
-                string firstOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).ToString("yyyy-MM-dd");
+                string firstOfMonth = new DateTime(now.Year, now.Month, 1).ToString("yyyy-MM-dd");
                 filteredSales = _dataService.Sales.Where(s => string.Compare(s.Date, firstOfMonth) >= 0);
             }
 
-            foreach (var sale in filteredSales)
+            var salesList = filteredSales.ToList();
+            double periodTotalSales = salesList.Sum(s => s.GrossAmount);
+            TopSellersTotalSales = periodTotalSales;
+
+            foreach (var sale in salesList)
             {
                 foreach (var line in sale.Lines)
                 {
                     if (string.IsNullOrWhiteSpace(line.Name)) continue;
                     productTotals.TryGetValue(line.Name, out double val);
-                    productTotals[line.Name] = val + line.NetAmount;
+                    double lineAmt = line.NetAmount > 0 ? line.NetAmount : line.GrossAmount;
+                    productTotals[line.Name] = val + lineAmt;
                 }
             }
 
             if (productTotals.Count == 0)
             {
-                foreach (var sale in _dataService.Sales)
-                {
-                    foreach (var line in sale.Lines)
-                    {
-                        if (string.IsNullOrWhiteSpace(line.Name)) continue;
-                        productTotals.TryGetValue(line.Name, out double val);
-                        productTotals[line.Name] = val + line.NetAmount;
-                    }
-                }
-            }
+                TopSellersTotalSales = 0;
+                var outer = new EllipseGeometry(center, outerR, outerR);
+                var inner = new EllipseGeometry(center, innerR, innerR);
+                var emptyGeom = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                emptyGeom.Freeze();
 
-            if (productTotals.Count == 0)
-            {
-                var sampleDefaults = new (string Name, double Amount)[]
-                {
-                    ("School Shoe - Black Lace-up", 244000),
-                    ("Hospital Scrub Set", 235000),
-                    ("Industrial Coverall", 169000),
-                    ("Safety Shoe - Steel Toe", 141000),
-                    ("Others", 150000)
-                };
+                var emptyBrush = new SolidColorBrush(Color.FromRgb(226, 232, 240));
+                emptyBrush.Freeze();
 
-                foreach (var sample in sampleDefaults)
+                TopProductsPieSlices.Add(new DashboardPieSlice
                 {
-                    productTotals[sample.Name] = sample.Amount;
-                }
+                    Channel = "No sales in this period",
+                    Amount = 0,
+                    Percentage = 0,
+                    FillBrush = emptyBrush,
+                    SliceGeometry = emptyGeom
+                });
+                return;
             }
 
             var sorted = productTotals.OrderByDescending(x => x.Value).ToList();
