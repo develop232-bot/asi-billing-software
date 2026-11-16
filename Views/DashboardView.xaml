@@ -4,6 +4,8 @@
              xmlns:converters="clr-namespace:AsiErp.Converters">
 
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <converters:InverseBoolToVisibilityConverter x:Key="InverseBoolToVis"/>
         <converters:InrCurrencyConverter x:Key="InrConv"/>
         <converters:InrShortConverter x:Key="InrShortConv"/>
         <converters:DateFormatConverter x:Key="DateConv"/>
@@ -44,7 +46,7 @@
     <ScrollViewer Background="#F8FAFC" VerticalScrollBarVisibility="Auto" Padding="18,16" HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
             <!-- TOP BAR: Dashboard Title & Period Selector -->
-            <Grid Margin="0,0,0,20">
+            <Grid Margin="0,0,0,14">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -74,152 +76,183 @@
                 </StackPanel>
             </Grid>
 
-            <!-- 10 KPI CARDS (2 rows of 5) -->
-            <!-- ROW 1: Retail, Domestic, Export, Total Sales, Expenses -->
-            <UniformGrid Columns="5" Margin="0,0,0,12">
-                <!-- 1. Retail Sales -->
-                <Border Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+            <!-- Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#CBD5E1" StrokeThickness="1" StrokeDashArray="3 3" Stretch="Fill" Margin="0,2,0,16"/>
+
+            <!-- 10 KPI CARDS (2 rows x 5 columns Grid) -->
+            <Grid Margin="0,0,0,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- ROW 0, COL 0: Retail Sales (Blue) -->
+                <Border Grid.Row="0" Grid.Column="0" Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,10,12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#2563EB" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="🛒" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 2,3 L 5,3 L 7,12 L 17,12 L 19,6 L 6,6 M 7.5,15 A 1.5,1.5 0 1,1 7.5,15.01 M 15.5,15 A 1.5,1.5 0 1,1 15.5,15.01"
+                                  Stroke="#FFFFFF" StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Retail Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding MtdRetailSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Retail Sales" FontSize="11.5" FontWeight="SemiBold" Foreground="#E0E7FF" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdRetailSales, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 2. Domestic Sales -->
-                <Border Tag="PreserveTheme" Background="#059669" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 0, COL 1: Domestic Sales (Green) -->
+                <Border Grid.Row="0" Grid.Column="1" Tag="PreserveTheme" Background="#15803D" CornerRadius="12" Padding="16,14" Margin="0,0,10,12">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#059669" Opacity="0.25"/>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#15803D" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="📄" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 3,2 L 10,2 L 14,6 L 14,16 L 3,16 Z M 10,2 L 10,6 L 14,6 M 5,9 L 11,9 M 5,12 L 11,12"
+                                  Stroke="#FFFFFF" StrokeThickness="1.5" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Domestic Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding MtdDomesticSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Domestic Sales" FontSize="11.5" FontWeight="SemiBold" Foreground="#DCFCE7" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdDomesticSales, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 3. Export Sales -->
-                <Border Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 0, COL 2: Export Sales (Teal) -->
+                <Border Grid.Row="0" Grid.Column="2" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,10,12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0D9488" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="🌐" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 9,1 A 8,8 0 1,0 9,17 A 8,8 0 1,0 9,1 Z M 1,9 L 17,9 M 9,1 A 14,8 0 0,0 9,17 M 9,1 A 14,8 0 0,1 9,17"
+                                  Stroke="#FFFFFF" StrokeThickness="1.4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Export Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Export Sales" FontSize="11.5" FontWeight="SemiBold" Foreground="#CCFBF1" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdExportSales, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 4. Total Sales -->
-                <Border Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 0, COL 3: Total Sales (Purple) -->
+                <Border Grid.Row="0" Grid.Column="3" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,10,12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#7C3AED" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="📈" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 2,12 L 6,8 L 10,11 L 16,4 M 11,4 L 16,4 L 16,9"
+                                  Stroke="#FFFFFF" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Total Sales" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Total Sales" FontSize="11.5" FontWeight="SemiBold" Foreground="#EDE9FE" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdTotalSales, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 5. Expenses -->
-                <Border Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14">
+                <!-- ROW 0, COL 4: Expenses (Amber) -->
+                <Border Grid.Row="0" Grid.Column="4" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,0,12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#D97706" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="₹" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Expenses" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding MtdExpenses, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Expenses" FontSize="11.5" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdExpenses, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-            </UniformGrid>
 
-            <!-- ROW 2: Profit/Loss, Outstanding, Vendor Payments, Pending Loans, Low Stock -->
-            <UniformGrid Columns="5" Margin="0,0,0,20">
-                <!-- 6. Profit / Loss -->
-                <Border Tag="PreserveTheme" Background="{Binding MtdProfitBrush}" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 1, COL 0: Profit / Loss (Green #15803D / Red #DC2626) -->
+                <Border Grid.Row="1" Grid.Column="0" Tag="PreserveTheme" Background="{Binding MtdProfitBrush}" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.18"/>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.2"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="{Binding MtdProfitIcon}" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <Path Visibility="{Binding MtdProfitIsPositive, Converter={StaticResource BoolToVis}}"
+                                      Data="M 2,12 L 6,8 L 10,11 L 16,4 M 11,4 L 16,4 L 16,9"
+                                      Stroke="#FFFFFF" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                                <Path Visibility="{Binding MtdProfitIsPositive, Converter={StaticResource InverseBoolToVis}}"
+                                      Data="M 5,2 L 13,2 L 17,6 L 17,12 L 13,16 L 5,16 L 1,12 L 1,6 Z M 9,5 L 9,9.5 M 9,12.5 L 9,13"
+                                      Stroke="#FFFFFF" StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            </Grid>
                         </Border>
-                        <TextBlock Text="{Binding MtdProfitLabel}" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding MtdProfitDisplayValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="{Binding MtdProfitLabel}" FontSize="11.5" FontWeight="SemiBold" Foreground="#DCFCE7" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding MtdProfitDisplayValue, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 7. Outstanding - To Receive -->
-                <Border Tag="PreserveTheme" Background="#EA580C" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 1, COL 1: Outstanding · To Receive (Amber) -->
+                <Border Grid.Row="1" Grid.Column="1" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#EA580C" Opacity="0.25"/>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#D97706" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="₹" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Outstanding - To Receive" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Outstanding · To Receive" FontSize="11.5" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding OutstandingToReceive, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 8. Vendor Payments - To Pay -->
-                <Border Tag="PreserveTheme" Background="#0891B2" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 1, COL 2: Vendor Payments · To Pay (Teal) -->
+                <Border Grid.Row="1" Grid.Column="2" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0891B2" Opacity="0.25"/>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0D9488" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="💼" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 4,6 L 14,6 L 15,16 L 3,16 Z M 6,6 A 3,3 0 0,1 12,6"
+                                  Stroke="#FFFFFF" StrokeThickness="1.5" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Vendor Payments - To Pay" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Vendor Payments · To Pay" FontSize="11.5" FontWeight="SemiBold" Foreground="#CCFBF1" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding VendorToPay, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 9. Pending Loans -->
-                <Border Tag="PreserveTheme" Background="#6366F1" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
+                <!-- ROW 1, COL 3: Pending Loans (Purple) -->
+                <Border Grid.Row="1" Grid.Column="3" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,10,0">
                     <Border.Effect>
-                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#6366F1" Opacity="0.25"/>
+                        <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#7C3AED" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="🏛️" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 2,5 C 2,3.9 2.9,3 4,3 L 15,3 C 16.1,3 17,3.9 17,5 L 17,13 C 17,14.1 16.1,15 15,15 L 4,15 C 2.9,15 2,14.1 2,13 Z M 13,8 L 17,8 L 17,11 L 13,11 C 12.2,11 11.5,10.3 11.5,9.5 C 11.5,8.7 12.2,8 13,8 Z M 14,9.5 A 0.5,0.5 0 1,1 14,9.51"
+                                  Stroke="#FFFFFF" StrokeThickness="1.4" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Pending Loans" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding PendingLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Pending Loans" FontSize="11.5" FontWeight="SemiBold" Foreground="#EDE9FE" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding PendingLoans, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
 
-                <!-- 10. Low Stock Alerts -->
-                <Border Tag="PreserveTheme" Background="#DC2626" CornerRadius="12" Padding="16,14">
+                <!-- ROW 1, COL 4: Low Stock Alerts (Red) -->
+                <Border Grid.Row="1" Grid.Column="4" Tag="PreserveTheme" Background="#DC2626" CornerRadius="12" Padding="16,14" Margin="0,0,0,0">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#DC2626" Opacity="0.25"/>
                     </Border.Effect>
                     <StackPanel>
-                        <Border Tag="PreserveTheme" Width="32" Height="32" CornerRadius="8" Background="#26FFFFFF" HorizontalAlignment="Left">
-                            <TextBlock Text="⚠️" FontFamily="Segoe UI Emoji, Segoe UI" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White"/>
+                        <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                            <Path Data="M 5,2 L 13,2 L 17,6 L 17,12 L 13,16 L 5,16 L 1,12 L 1,6 Z M 9,5 L 9,9.5 M 9,12.5 L 9,13"
+                                  Stroke="#FFFFFF" StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                  VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Border>
-                        <TextBlock Text="Low Stock Alerts" FontSize="11.5" Foreground="#E2E8F0" FontWeight="SemiBold" Margin="0,10,0,0"/>
-                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="22" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        <TextBlock Text="Low Stock Alerts" FontSize="11.5" FontWeight="SemiBold" Foreground="#FEE2E2" Margin="0,10,0,0"/>
+                        <TextBlock Text="{Binding LowStockAlertsCount}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                     </StackPanel>
                 </Border>
-            </UniformGrid>
+            </Grid>
 
             <!-- 3 MAIN CARDS: Sales Overview (Line chart), Top Selling Products (Donut), Quick Actions -->
             <Grid Margin="0,0,0,10">

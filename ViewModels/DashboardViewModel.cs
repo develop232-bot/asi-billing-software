@@ -143,27 +143,19 @@ namespace AsiErp.ViewModels
         public double MtdTotalSales { get; private set; }
         public double MtdExpenses { get; private set; }
         public double MtdProfit => MtdTotalSales - MtdExpenses;
-        public string MtdProfitColor => MtdProfit >= 0 ? "#10B981" : "#DC2626";
+        public bool MtdProfitIsPositive => MtdProfit >= 0;
+        public string MtdProfitColor => MtdProfit >= 0 ? "#15803D" : "#DC2626";
         public string MtdProfitLabel => MtdProfit >= 0 ? "Profit" : "Loss";
         public string MtdProfitIcon => MtdProfit >= 0 ? "📈" : "⚠️";
         public double MtdProfitDisplayValue => Math.Abs(MtdProfit);
-        public Brush MtdProfitSubtextBrush => new SolidColorBrush((Color)ColorConverter.ConvertFromString(MtdProfit >= 0 ? "#D1FAE5" : "#FEE2E2"));
+        public Brush MtdProfitSubtextBrush => new SolidColorBrush((Color)ColorConverter.ConvertFromString(MtdProfit >= 0 ? "#DCFCE7" : "#FEE2E2"));
         public Brush MtdProfitBrush
         {
             get
             {
-                var grad = new LinearGradientBrush { StartPoint = new Point(0, 0), EndPoint = new Point(1, 1) };
                 if (MtdProfit >= 0)
-                {
-                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#10B981"), 0));
-                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#047857"), 1));
-                }
-                else
-                {
-                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#EF4444"), 0));
-                    grad.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#B91C1C"), 1));
-                }
-                return grad;
+                    return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#15803D"));
+                return new SolidColorBrush((Color)ColorConverter.ConvertFromString("#DC2626"));
             }
         }
 
@@ -382,6 +374,7 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(MtdTotalSales));
             OnPropertyChanged(nameof(MtdExpenses));
             OnPropertyChanged(nameof(MtdProfit));
+            OnPropertyChanged(nameof(MtdProfitIsPositive));
             OnPropertyChanged(nameof(MtdProfitColor));
             OnPropertyChanged(nameof(MtdProfitBrush));
             OnPropertyChanged(nameof(MtdProfitLabel));
