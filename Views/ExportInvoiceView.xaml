@@ -13,7 +13,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="24">
         <StackPanel>
             <!-- 1. Top Header -->
-            <Grid Margin="0,0,0,16">
+            <Grid Margin="0,0,0,14">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -38,6 +38,9 @@
                     </Button>
                 </StackPanel>
             </Grid>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- 2. Form Grid (3 Columns) - Matching Prototype Option & Alignment -->
             <Border Background="White" Padding="18" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">

@@ -22,7 +22,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel MaxWidth="1050" HorizontalAlignment="Stretch">
             <!-- Top Header & Navigation Bar (Responsive WrapPanel) -->
-            <DockPanel Margin="0,0,0,16">
+            <DockPanel Margin="0,0,0,14">
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🖨️ Print Barcode" Command="{Binding PrintBarcodeCommand}"
                             Visibility="{Binding ProductVisibility}"
@@ -49,6 +49,9 @@
                     <TextBlock Text="Product &amp; Item Master Record Editor" FontSize="12" Foreground="#64748B" Margin="0,3,0,0"/>
                 </StackPanel>
             </DockPanel>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- Card 1: Item Classification / Type -->
             <Border Background="White" Padding="20" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">

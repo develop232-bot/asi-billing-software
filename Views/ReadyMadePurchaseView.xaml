@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto" Padding="16,14">
         <StackPanel>
             <!-- Top Header & Navigation -->
-            <DockPanel Margin="0,0,0,16">
+            <DockPanel Margin="0,0,0,14">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="🔄 Reset" Command="{Binding ResetFormCommand}"
                             Padding="12,6" Background="#F1F5F9" BorderBrush="#CBD5E1" BorderThickness="1"
@@ -36,6 +36,9 @@
                     <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- Vendor & Inward Bill Information Card -->
             <Border Background="White" Padding="16" Margin="0,0,0,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">

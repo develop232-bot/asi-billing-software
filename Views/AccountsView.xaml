@@ -17,7 +17,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="16,14">
         <StackPanel>
             <!-- Header -->
-            <Grid Margin="0,0,0,16">
+            <Grid Margin="0,0,0,14">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -39,6 +39,9 @@
                     </ComboBox>
                 </StackPanel>
             </Grid>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- TAB 0: FINANCE & ACCOUNTS DASHBOARD -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}">

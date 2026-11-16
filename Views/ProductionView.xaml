@@ -16,7 +16,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
             <!-- Title & Subtitle (Responsive DockPanel) -->
-            <DockPanel Margin="0,0,0,16">
+            <DockPanel Margin="0,0,0,14">
                 <Button DockPanel.Dock="Right" Content="+ New Work Order" Command="{Binding NewWorkOrderCommand}"
                         VerticalAlignment="Center" Padding="13,7" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5">
                     <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
@@ -26,6 +26,9 @@
                     <TextBlock Text="Work orders track customer allocations, production stages, raw material consumption and finished goods." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- 5 Stats Tiles -->
             <UniformGrid Columns="5" Margin="0,0,0,20">

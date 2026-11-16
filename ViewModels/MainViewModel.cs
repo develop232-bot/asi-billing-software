@@ -56,7 +56,7 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
-        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.5.8"}";
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.5.9"}";
 
         public bool IsSidebarExpanded
         {
@@ -522,7 +522,7 @@ namespace AsiErp.ViewModels
             else if (route == "purchase" || route == "pur")
             {
                 ActiveRoute = "purchase";
-                CurrentBreadcrumb = "Purchase & Sourcing";
+                CurrentBreadcrumb = "Purchase";
                 PurchaseVM.ActiveKind = "all";
                 PurchaseVM.RefreshData();
                 CurrentView = PurchaseVM;
@@ -530,21 +530,21 @@ namespace AsiErp.ViewModels
             else if (route == "pur:raw")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Purchase & Sourcing · Raw Material";
+                CurrentBreadcrumb = "Purchase · Raw Material";
                 RawMaterialPurchaseVM.ResetForm();
                 CurrentView = RawMaterialPurchaseVM;
             }
             else if (route == "pur:ready")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Purchase & Sourcing · Ready Made Products";
+                CurrentBreadcrumb = "Purchase · Ready Made Products";
                 ReadyMadePurchaseVM.ResetForm();
                 CurrentView = ReadyMadePurchaseVM;
             }
             else if (route == "pur:gen")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Purchase & Sourcing · General Packaging";
+                CurrentBreadcrumb = "Purchase · General Packaging";
                 PackagingPurchaseVM.ResetForm();
                 CurrentView = PackagingPurchaseVM;
             }

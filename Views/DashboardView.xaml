@@ -76,8 +76,8 @@
                 </StackPanel>
             </Grid>
 
-            <!-- Dotted Line Separator -->
-            <Line X1="0" X2="1" Stroke="#CBD5E1" StrokeThickness="1" StrokeDashArray="3 3" Stretch="Fill" Margin="0,2,0,16"/>
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- 10 KPI CARDS (2 rows x 5 columns Grid) -->
             <Grid Margin="0,0,0,20">

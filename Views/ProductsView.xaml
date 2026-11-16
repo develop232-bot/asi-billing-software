@@ -14,7 +14,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
             <!-- Header (Responsive DockPanel + WrapPanel) -->
-            <DockPanel Margin="0,0,0,16">
+            <DockPanel Margin="0,0,0,14">
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="📥 Upload CSV" Command="{Binding BulkImportCommand}" Padding="11,6" Background="#1E293B" Foreground="#38BDF8" BorderBrush="#0284C7" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,6,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
@@ -34,6 +34,9 @@
                     <TextBlock Text="Every item lives here: raw material and general packing (not for sale) plus your finished and readymade sale products with retail, domestic and export pricing." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
             <!-- Stat Counters (5 KPI Boxes) -->
             <UniformGrid Columns="5" Margin="0,0,0,20">

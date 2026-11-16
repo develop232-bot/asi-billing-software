@@ -17,7 +17,7 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
             <!-- Header (Responsive DockPanel + WrapPanel) -->
-            <DockPanel Margin="0,0,0,16">
+            <DockPanel Margin="0,0,0,14">
                 <!-- Top Action Buttons (Wraps on smaller screens) -->
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
                     <Button Content="📥 Download file" Command="{Binding DownloadFileCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,0,6">
@@ -30,6 +30,9 @@
                     <TextBlock Text="{Binding Subtitle}" FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
+
+            <!-- Yellow Dotted Line Separator -->
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
 
 
             <!-- 4 Stats Tiles -->
