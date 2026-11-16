@@ -362,6 +362,13 @@ namespace AsiErp.ViewModels
             bool InPeriod(string? d)
             {
                 if (string.IsNullOrEmpty(d)) return false;
+                if (DateTime.TryParse(d, out var dt))
+                {
+                    var dateOnly = dt.Date;
+                    if (start != null && DateTime.TryParse(start, out var sDt) && dateOnly < sDt.Date) return false;
+                    if (end != null && DateTime.TryParse(end, out var eDt) && dateOnly >= eDt.Date) return false;
+                    return true;
+                }
                 if (start != null && string.Compare(d, start) < 0) return false;
                 if (end != null && string.Compare(d, end) >= 0) return false;
                 return true;
@@ -986,6 +993,13 @@ namespace AsiErp.ViewModels
             var filteredSales = _dataService.Sales.Where(s =>
             {
                 if (string.IsNullOrEmpty(s.Date)) return false;
+                if (DateTime.TryParse(s.Date, out var dt))
+                {
+                    var dateOnly = dt.Date;
+                    if (start != null && DateTime.TryParse(start, out var sDt) && dateOnly < sDt.Date) return false;
+                    if (end != null && DateTime.TryParse(end, out var eDt) && dateOnly >= eDt.Date) return false;
+                    return true;
+                }
                 if (start != null && string.Compare(s.Date, start) < 0) return false;
                 if (end != null && string.Compare(s.Date, end) >= 0) return false;
                 return true;

@@ -22,7 +22,7 @@
                     <TextBlock Text="{Binding NextBillNo, StringFormat='Next Bill: {0}'}" FontWeight="Bold" Foreground="#92400E" FontSize="11.5"/>
                 </Border>
                 <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
-                    <TextBlock Text="Retail Billing" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Sales &amp; Billing · Retail Billing" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Showroom and exhibition counter. Single pairs or bulk lots, sold to the public." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>

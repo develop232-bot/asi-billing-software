@@ -103,15 +103,15 @@ namespace AsiErp.ViewModels
 
         public string ActiveTabTitle => ActiveTab switch
         {
-            "dashboard" => "Finance and Accounts",
-            "income" => "Income",
-            "exp" => "Expenses",
-            "inv" => "Investments",
-            "loans" => "Loans",
-            "assets" => "Assets",
-            "pl" => "Profit & Loss",
-            "bs" => "Balance Sheet",
-            _ => "Finance and Accounts"
+            "dashboard" => "Finance & Accounts · Dashboard",
+            "income" => "Finance & Accounts · Income",
+            "exp" => "Finance & Accounts · Expenses",
+            "inv" => "Finance & Accounts · Investment",
+            "loans" => "Finance & Accounts · Loans",
+            "assets" => "Finance & Accounts · Assets",
+            "pl" => "Finance & Accounts · Profit & Loss",
+            "bs" => "Finance & Accounts · Balance Sheet",
+            _ => "Finance & Accounts"
         };
 
         public ObservableCollection<PeriodOption> AccountsPeriods { get; } = new();

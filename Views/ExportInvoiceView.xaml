@@ -20,7 +20,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="New Export Invoice" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Sales &amp; Billing · Export Invoice" FontSize="22" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="Overseas direct export billing (Zero-Rated GST supply under Letter of Undertaking - LUT)" FontSize="12.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
 

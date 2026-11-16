@@ -211,7 +211,7 @@ namespace AsiErp.ViewModels
             "raw" => "Purchase · Raw Material",
             "ready" => "Purchase · Ready Made Products",
             "gen" => "Purchase · General Packaging",
-            _ => "Purchase & Sourcing"
+            _ => "Purchase"
         };
 
         public string Subtitle => ActiveKind switch
