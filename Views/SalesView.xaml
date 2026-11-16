@@ -17,141 +17,167 @@
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
-            <!-- 1. Header with Top 3 Action Buttons (Responsive WrapPanel) -->
-            <DockPanel Margin="0,0,0,16">
-                <!-- Action Buttons on Right (Wraps cleanly if screen is smaller) -->
-                <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                    <Button Content="🛒 Retail Billing" Command="{Binding NavigateCommand}" CommandParameter="pos"
-                            Padding="12,6" Background="#172443" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                    </Button>
-
-                    <Button Content="🚩 Domestic Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic"
-                            Padding="12,6" Background="#2563EB" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,6,6">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                    </Button>
-
-                    <Button Content="✈️ Export Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export"
-                            Padding="12,6" Background="#0D9488" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,0,6">
-                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
-                    </Button>
-                </WrapPanel>
-
-                <StackPanel VerticalAlignment="Center" Margin="0,0,12,0">
-                    <TextBlock Text="Sales &amp; Billing" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
-                    <TextBlock Text="Retail counter billing, domestic wholesale tax invoices, and overseas export orders." FontSize="12" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
-                </StackPanel>
-            </DockPanel>
-
-            <!-- 2. Particular Month Sale Amount Section (Always Reflects) -->
-            <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Padding="16,14" Margin="0,0,0,20">
+            <!-- 1. Hero Sales & Billing Dashboard Section (Exact Match to Design Mockup) -->
+            <Border Background="#0B1120" BorderBrush="#1E293B" BorderThickness="1" CornerRadius="16" Padding="22,18" Margin="0,0,0,20">
                 <StackPanel>
-                    <!-- Month Selector & Header -->
-                    <DockPanel Margin="0,0,0,12">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="📅 Sales Breakdown:" FontWeight="Bold" FontSize="13.5" Foreground="#1E293B" VerticalAlignment="Center"/>
-                            <TextBlock Text="{Binding SelectedMonthDisplay}" FontWeight="Bold" FontSize="13.5" Foreground="#2563EB" Margin="6,0,12,0" VerticalAlignment="Center"/>
+                    <!-- Top Bar: Heading + Action Buttons -->
+                    <DockPanel Margin="0,0,0,14">
+                        <!-- Action Buttons on Right -->
+                        <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
+                            <Button Content="+ Retail billing" Command="{Binding NavigateCommand}" CommandParameter="pos"
+                                    Padding="14,7" Background="#EAB308" Foreground="#0F172A" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                            </Button>
 
-                            <!-- Month Step Controls -->
-                            <Button Content="◀ Prev" Command="{Binding PreviousMonthCommand}" ToolTip="Previous Month" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
-                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                            <Button Content="+ Domestic invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic"
+                                    Padding="14,7" Background="#6366F1" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="Next ▶" Command="{Binding NextMonthCommand}" ToolTip="Next Month" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
-                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+
+                            <Button Content="+ Export invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export"
+                                    Padding="14,7" Background="#2DD4BF" Foreground="#042F2E" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="Current Month" Command="{Binding CurrentMonthCommand}" ToolTip="This Calendar Month" Padding="8,3" Background="#FFFFFF" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="10.5">
-                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
-                            </Button>
+                        </WrapPanel>
+
+                        <!-- Heading and Subtitle on Left -->
+                        <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
+                            <TextBlock Text="Sales &amp; Billing" FontSize="22" FontWeight="Bold" Foreground="#FFFFFF"/>
+                            <TextBlock Text="Retail, domestic and export sales for the month you pick, with the amount still to receive." FontSize="12" Foreground="#94A3B8" Margin="0,4,0,0"/>
                         </StackPanel>
-
-                        <TextBlock Text="Live revenue breakdown across all 3 billing channels" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
                     </DockPanel>
 
-                    <!-- 4 Summary KPI Cards (Row 1: Sales) -->
-                    <UniformGrid Columns="4" Margin="0,0,0,10">
-                        <!-- Retail Sales -->
-                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                    <!-- Amber Dotted Line Separator -->
+                    <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1" StrokeDashArray="3 3" Stretch="Fill" Margin="0,0,0,16"/>
+
+                    <!-- Month Navigation Controls -->
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,16">
+                        <Button Content="&lt; Prev Month" Command="{Binding PreviousMonthCommand}"
+                                Background="#0F172A" BorderBrush="#334155" BorderThickness="1" Foreground="#FFFFFF"
+                                Padding="14,6" Cursor="Hand" FontSize="11" FontWeight="Medium" Margin="0,0,10,0">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="14"/></Style></Button.Resources>
+                        </Button>
+
+                        <Button Content="{Binding SelectedMonthDisplay}" Command="{Binding CurrentMonthCommand}" ToolTip="Click to return to Current Month"
+                                Background="#EAB308" BorderThickness="0" Foreground="#0F172A"
+                                Padding="16,6" Cursor="Hand" FontSize="11" FontWeight="Bold" Margin="0,0,10,0">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="14"/></Style></Button.Resources>
+                        </Button>
+
+                        <Button Content="Next Month &gt;" Command="{Binding NextMonthCommand}"
+                                Background="#0F172A" BorderBrush="#334155" BorderThickness="1" Foreground="#FFFFFF"
+                                Padding="14,6" Cursor="Hand" FontSize="11" FontWeight="Medium">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="14"/></Style></Button.Resources>
+                        </Button>
+                    </StackPanel>
+
+                    <!-- 2 Rows x 4 Columns KPI Cards Grid (Row 2 Col 0 intentionally blank) -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- ROW 0, COL 0: Retail Sale (Blue) -->
+                        <Border Grid.Row="0" Grid.Column="0" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,12,12">
                             <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="🛒 Retail Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                                    <TextBlock Text="POS" FontSize="9" FontWeight="Bold" Foreground="#10B981" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthRetailTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0F172A" Margin="0,6,0,0"/>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <Path Data="M 2,3 L 5,3 L 7,12 L 17,12 L 19,6 L 6,6 M 7.5,15 A 1.5,1.5 0 1,1 7.5,15.01 M 15.5,15 A 1.5,1.5 0 1,1 15.5,15.01"
+                                          Stroke="#FFFFFF" StrokeThickness="1.6" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Retail Sale" FontSize="11.5" FontWeight="SemiBold" Foreground="#E0E7FF" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthRetailTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#BFDBFE" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Domestic Sales -->
-                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                        <!-- ROW 0, COL 1: Domestic Sale (Green) -->
+                        <Border Grid.Row="0" Grid.Column="1" Background="#15803D" CornerRadius="12" Padding="16,14" Margin="0,0,12,12">
                             <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="🚩 Domestic Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                                    <TextBlock Text="B2B" FontSize="9" FontWeight="Bold" Foreground="#2563EB" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthDomesticTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#2563EB" Margin="0,6,0,0"/>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <Path Data="M 3,2 L 10,2 L 14,6 L 14,16 L 3,16 Z M 10,2 L 10,6 L 14,6 M 5,9 L 11,9 M 5,12 L 11,12"
+                                          Stroke="#FFFFFF" StrokeThickness="1.5" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Domestic Sale" FontSize="11.5" FontWeight="SemiBold" Foreground="#DCFCE7" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthDomesticTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#BBF7D0" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Export Sales -->
-                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                        <!-- ROW 0, COL 2: Export Sale (Teal) -->
+                        <Border Grid.Row="0" Grid.Column="2" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,12,12">
                             <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="✈️ Export Sales" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                                    <TextBlock Text="GLOBAL" FontSize="9" FontWeight="Bold" Foreground="#0D9488" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthExportTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#0D9488" Margin="0,6,0,0"/>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <Path Data="M 9,1 A 8,8 0 1,0 9,17 A 8,8 0 1,0 9,1 Z M 1,9 L 17,9 M 9,1 A 14,8 0 0,0 9,17 M 9,1 A 14,8 0 0,1 9,17"
+                                          Stroke="#FFFFFF" StrokeThickness="1.4" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Export Sale" FontSize="11.5" FontWeight="SemiBold" Foreground="#CCFBF1" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthExportTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#99F6E4" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Total Sales -->
-                        <Border Background="#F0FDF4" Padding="14,12" BorderBrush="#BBF7D0" BorderThickness="1" CornerRadius="8">
+                        <!-- ROW 0, COL 3: Total Sale (Purple) -->
+                        <Border Grid.Row="0" Grid.Column="3" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,0,12">
                             <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="💰 Total Sales" FontSize="11.5" Foreground="#166534" FontWeight="Bold"/>
-                                    <TextBlock Text="COMBINED" FontSize="9" FontWeight="Bold" Foreground="#16A34A" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#15803D" Margin="0,6,0,0"/>
-                            </StackPanel>
-                        </Border>
-                    </UniformGrid>
-
-                    <!-- 3 Summary KPI Cards (Row 2: Outstanding to Receive) -->
-                    <UniformGrid Columns="3">
-                        <!-- Domestic Outstanding -->
-                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
-                            <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="🚩 Domestic Outstanding" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                                    <TextBlock Text="TO RECEIVE" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthDomesticOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
-                                <TextBlock Text="unpaid domestic invoices" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <Path Data="M 2,12 L 6,8 L 10,11 L 16,4 M 11,4 L 16,4 L 16,9"
+                                          Stroke="#FFFFFF" StrokeThickness="1.8" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Total Sale" FontSize="11.5" FontWeight="SemiBold" Foreground="#EDE9FE" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthGrandTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="incl. GST" FontSize="10" Foreground="#DDD6FE" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Export Outstanding -->
-                        <Border Background="White" Padding="14,12" Margin="0,0,10,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8">
+                        <!-- ROW 1, COL 0: BLANK PLACE (Left empty intentional) -->
+                        <Border Grid.Row="1" Grid.Column="0" Margin="0,0,12,0" Background="Transparent"/>
+
+                        <!-- ROW 1, COL 1: Domestic Outstanding to Receive (Amber) -->
+                        <Border Grid.Row="1" Grid.Column="1" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
                             <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="✈️ Export Outstanding" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                                    <TextBlock Text="TO RECEIVE" FontSize="9" FontWeight="Bold" Foreground="#F59E0B" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthExportOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#D97706" Margin="0,6,0,0"/>
-                                <TextBlock Text="unpaid export invoices" FontSize="10" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Domestic Outstanding to Receive" FontSize="11" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthDomesticOutstanding, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="still to receive" FontSize="10" Foreground="#FDE68A" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
 
-                        <!-- Total Outstanding -->
-                        <Border Background="#FEF2F2" Padding="14,12" BorderBrush="#FECACA" BorderThickness="1" CornerRadius="8">
+                        <!-- ROW 1, COL 2: Export Outstanding to Receive (Amber) -->
+                        <Border Grid.Row="1" Grid.Column="2" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
                             <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="⚠️ Total to Receive" FontSize="11.5" Foreground="#991B1B" FontWeight="Bold"/>
-                                    <TextBlock Text="PENDING" FontSize="9" FontWeight="Bold" Foreground="#DC2626" HorizontalAlignment="Right"/>
-                                </DockPanel>
-                                <TextBlock Text="{Binding MonthTotalOutstanding, Converter={StaticResource InrConv}}" FontSize="20" FontWeight="Bold" Foreground="#DC2626" Margin="0,6,0,0"/>
-                                <TextBlock Text="still to receive from customers" FontSize="10" Foreground="#EF4444" Margin="0,2,0,0"/>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Export Outstanding to Receive" FontSize="11" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthExportOutstanding, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="still to receive" FontSize="10" Foreground="#FDE68A" Margin="0,8,0,0"/>
                             </StackPanel>
                         </Border>
-                    </UniformGrid>
+
+                        <!-- ROW 1, COL 3: Total Outstanding to Receive (Red) -->
+                        <Border Grid.Row="1" Grid.Column="3" Background="#DC2626" CornerRadius="12" Padding="16,14" Margin="0,0,0,0">
+                            <StackPanel>
+                                <Border Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
+                                    <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="Total Outstanding to Receive" FontSize="11" FontWeight="SemiBold" Foreground="#FEE2E2" Margin="0,10,0,0"/>
+                                <TextBlock Text="{Binding MonthTotalOutstanding, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                <TextBlock Text="still to receive" FontSize="10" Foreground="#FECACA" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </StackPanel>
             </Border>
 

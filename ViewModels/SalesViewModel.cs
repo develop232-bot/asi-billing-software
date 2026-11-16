@@ -107,6 +107,7 @@ namespace AsiErp.ViewModels
         {
             get
             {
+                var now = DateTime.Now;
                 if (ReportFromDate.HasValue && ReportToDate.HasValue)
                 {
                     if (ReportFromDate.Value.Day == 1 &&
@@ -114,7 +115,10 @@ namespace AsiErp.ViewModels
                         ReportFromDate.Value.Year == ReportToDate.Value.Year &&
                         ReportFromDate.Value.Month == ReportToDate.Value.Month)
                     {
-                        return ReportFromDate.Value.ToString("MMMM yyyy");
+                        var dt = ReportFromDate.Value;
+                        if (dt.Year == now.Year && dt.Month == now.Month)
+                            return $"{dt:MMMM yyyy} · Current";
+                        return dt.ToString("MMMM yyyy");
                     }
                     return $"{ReportFromDate.Value:dd MMM yyyy} - {ReportToDate.Value:dd MMM yyyy}";
                 }
@@ -126,6 +130,8 @@ namespace AsiErp.ViewModels
                 {
                     return $"Up to {ReportToDate.Value:dd MMM yyyy}";
                 }
+                if (SelectedMonth.Year == now.Year && SelectedMonth.Month == now.Month)
+                    return $"{SelectedMonth:MMMM yyyy} · Current";
                 return SelectedMonth.ToString("MMMM yyyy");
             }
         }
