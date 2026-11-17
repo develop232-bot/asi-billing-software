@@ -56,7 +56,7 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
-        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.6.5"}";
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.6.7"}";
 
         public bool IsSidebarExpanded
         {
@@ -544,7 +544,7 @@ namespace AsiErp.ViewModels
             else if (route == "pur:gen")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Purchase · General Packaging";
+                CurrentBreadcrumb = "Purchase · General Supplies";
                 PackagingPurchaseVM.ResetForm();
                 CurrentView = PackagingPurchaseVM;
             }

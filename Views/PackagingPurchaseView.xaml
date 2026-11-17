@@ -318,8 +318,8 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Recent Packaging Bills" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                            <TextBlock Text="Audit log and invoices of all recent packaging and supplies purchases" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                            <TextBlock Text="Recent General Supplies Bills" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
+                            <TextBlock Text="Audit log and invoices of all recent general supplies purchases" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                         </StackPanel>
                     </DockPanel>
 

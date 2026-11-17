@@ -102,7 +102,7 @@ namespace AsiErp.Services
                     StatusChanged?.Invoke("Software is up to date");
                     if (isManualCheck)
                     {
-                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.6.5";
+                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.6.7";
                         System.Windows.MessageBox.Show(
                             $"Your software is currently up to date!\n\nInstalled Version: ASI ERP v{currentVer}\nLatest Release: v{currentVer}\n\nAll requested features and updates are active.",
                             "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);

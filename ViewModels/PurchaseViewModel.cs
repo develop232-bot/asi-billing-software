@@ -210,7 +210,7 @@ namespace AsiErp.ViewModels
         {
             "raw" => "Purchase · Raw Material",
             "ready" => "Purchase · Ready Made Products",
-            "gen" => "Purchase · General Packaging",
+            "gen" => "Purchase · General Supplies",
             _ => "Purchase"
         };
 

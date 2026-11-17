@@ -25,14 +25,22 @@ namespace AsiErp
             {
                 app.InitializeComponent();
             }
-            catch (System.IO.IOException)
+            catch (Exception)
             {
                 try
                 {
                     var uri = new System.Uri("/AsiErp;component/App.xaml", System.UriKind.Relative);
                     System.Windows.Application.LoadComponent(app, uri);
                 }
-                catch { }
+                catch
+                {
+                    try
+                    {
+                        var uri = new System.Uri("/AsiErp;component/app.xaml", System.UriKind.Relative);
+                        System.Windows.Application.LoadComponent(app, uri);
+                    }
+                    catch { }
+                }
             }
             app.Run();
         }
