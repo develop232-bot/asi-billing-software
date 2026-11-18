@@ -401,7 +401,7 @@ namespace AsiErp.Dialogs
             var validMaterials = Materials.Where(m => (!string.IsNullOrEmpty(m.ItemId) || !string.IsNullOrEmpty(m.Name)) && m.Qty > 0).ToList();
 
             // Verify stock
-            if (!_isEdit || _existingOrder?.Status == "Pending")
+            if (!_isEdit)
             {
                 foreach (var m in validMaterials)
                 {
@@ -411,13 +411,6 @@ namespace AsiErp.Dialogs
                         MessageBox.Show($"Not enough {rm.Name} in stock. Available: {rm.Stock} {rm.Unit}, Needed: {m.Qty} {rm.Unit}.", "Raw Material Shortage", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-                }
-
-                // Deduct material
-                foreach (var m in validMaterials)
-                {
-                    var rm = AvailableRawMaterials.FirstOrDefault(x => x.Id == m.ItemId || x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase));
-                    if (rm != null) rm.Stock = Math.Max(0, rm.Stock - m.Qty);
                 }
             }
 

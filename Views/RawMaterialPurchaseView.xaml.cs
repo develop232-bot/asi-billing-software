@@ -43,7 +43,10 @@ namespace AsiErp.Views
                     {
                         var match = vm.AvailableItems.FirstOrDefault(x =>
                             string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase));
+                            (!string.IsNullOrWhiteSpace(x.Sku) && string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase)))
+                            ?? vm.AvailableItems.FirstOrDefault(x =>
+                                (!string.IsNullOrWhiteSpace(x.Name) && x.Name.StartsWith(typed, StringComparison.OrdinalIgnoreCase)) ||
+                                (!string.IsNullOrWhiteSpace(x.Name) && typed.Contains(x.Name, StringComparison.OrdinalIgnoreCase)));
                         if (match != null)
                         {
                             line.ItemId = match.Id;

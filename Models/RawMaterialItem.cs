@@ -16,8 +16,8 @@ namespace AsiErp.Models
         [FirestoreProperty("sku")]
         public string Sku
         {
-            get => !string.IsNullOrWhiteSpace(_sku) ? _sku : (!string.IsNullOrWhiteSpace(Id) ? $"ASI-RAW-{Id.Replace("r", "").PadLeft(3, '0')}" : string.Empty);
-            set => _sku = value;
+            get => _sku;
+            set => _sku = value ?? string.Empty;
         }
 
         [FirestoreProperty("hsn")]

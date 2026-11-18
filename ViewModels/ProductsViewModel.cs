@@ -303,7 +303,7 @@ namespace AsiErp.ViewModels
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice * 0.7),
                     SellingPrice = p.RetailPrice,
                     Gst = p.AutoGstRate,
-                    Quantity = p.RegisteredQty > 0 ? p.RegisteredQty : p.Stock
+                    Quantity = p.Stock
                 });
             }
 
@@ -323,7 +323,7 @@ namespace AsiErp.ViewModels
                     CostPrice = r.Rate,
                     SellingPrice = 0,
                     Gst = r.Gst,
-                    Quantity = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock
+                    Quantity = r.Stock
                 });
             }
 
@@ -343,7 +343,7 @@ namespace AsiErp.ViewModels
                     CostPrice = g.Rate,
                     SellingPrice = 0,
                     Gst = g.Gst,
-                    Quantity = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock
+                    Quantity = g.Stock
                 });
             }
 

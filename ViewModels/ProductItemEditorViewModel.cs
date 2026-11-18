@@ -559,15 +559,13 @@ namespace AsiErp.ViewModels
                     rm.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
                     rm.Hsn = cleanHsn;
                     rm.Barcode = cleanBarcode;
-                    if (string.IsNullOrWhiteSpace(rm.Sku))
-                    {
-                        rm.Sku = string.IsNullOrWhiteSpace(Sku)
-                            ? "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3")
-                            : Sku.Trim();
-                    }
-                    else if (!string.IsNullOrWhiteSpace(Sku))
+                    if (!string.IsNullOrWhiteSpace(Sku))
                     {
                         rm.Sku = Sku.Trim();
+                    }
+                    else if (string.IsNullOrWhiteSpace(rm.Sku))
+                    {
+                        rm.Sku = "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3");
                     }
 
                     await _dataService.SaveRawMaterialAsync(rm);
@@ -587,15 +585,13 @@ namespace AsiErp.ViewModels
                     gi.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
                     gi.Hsn = cleanHsn;
                     gi.Barcode = cleanBarcode;
-                    if (string.IsNullOrWhiteSpace(gi.Sku))
-                    {
-                        gi.Sku = string.IsNullOrWhiteSpace(Sku)
-                            ? "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3")
-                            : Sku.Trim();
-                    }
-                    else if (!string.IsNullOrWhiteSpace(Sku))
+                    if (!string.IsNullOrWhiteSpace(Sku))
                     {
                         gi.Sku = Sku.Trim();
+                    }
+                    else if (string.IsNullOrWhiteSpace(gi.Sku))
+                    {
+                        gi.Sku = "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3");
                     }
 
                     await _dataService.SaveGeneralItemAsync(gi);
@@ -606,15 +602,13 @@ namespace AsiErp.ViewModels
                         ?? (_existingItem as ProductItem)
                         ?? new ProductItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "p_" + Guid.NewGuid().ToString("N")[..8] };
 
-                    if (string.IsNullOrWhiteSpace(prod.Sku))
-                    {
-                        prod.Sku = string.IsNullOrWhiteSpace(Sku)
-                            ? "ASI-" + (ItemType == "mfg" ? "MFG" : "RDY") + "-" + (_dataService.Products.Count + 1).ToString("D3")
-                            : Sku.Trim();
-                    }
-                    else if (!string.IsNullOrWhiteSpace(Sku))
+                    if (!string.IsNullOrWhiteSpace(Sku))
                     {
                         prod.Sku = Sku.Trim();
+                    }
+                    else if (string.IsNullOrWhiteSpace(prod.Sku))
+                    {
+                        prod.Sku = "ASI-" + (ItemType == "mfg" ? "MFG" : "RDY") + "-" + (_dataService.Products.Count + 1).ToString("D3");
                     }
 
                     prod.Barcode = cleanBarcode;

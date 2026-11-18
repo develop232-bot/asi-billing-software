@@ -22,7 +22,26 @@ namespace AsiErp.ViewModels
         {
             AvailableItems.Clear();
 
-            // Sourcing items from past raw purchases
+            // 1. Primary: Catalog raw materials added in Products
+            if (_dataService.RawMaterials != null && _dataService.RawMaterials.Any())
+            {
+                foreach (var r in _dataService.RawMaterials.Where(x => !x.Id.StartsWith("pur_it_") && !x.Id.StartsWith("pur_")))
+                {
+                    if (string.IsNullOrWhiteSpace(r.Name)) continue;
+                    AvailableItems.Add(new SourcingItemOption
+                    {
+                        Id = r.Id,
+                        Name = r.Name,
+                        Sku = !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku : r.Id,
+                        Unit = !string.IsNullOrWhiteSpace(r.Unit) ? r.Unit : DefaultUnit,
+                        Rate = r.Rate,
+                        Gst = r.Gst > 0 ? r.Gst : 5,
+                        Stock = r.Stock
+                    });
+                }
+            }
+
+            // 2. Secondary: Items from past raw purchases (if not already present)
             var pastItems = _dataService.Purchases
                 .Where(p => p.Kind == "raw")
                 .SelectMany(p => p.Lines ?? new())
@@ -33,18 +52,21 @@ namespace AsiErp.ViewModels
 
             foreach (var l in pastItems)
             {
-                AvailableItems.Add(new SourcingItemOption
+                if (!AvailableItems.Any(x => x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase)))
                 {
-                    Id = l.ItemId,
-                    Name = l.Name,
-                    Sku = l.Sku,
-                    Unit = l.Unit,
-                    Rate = l.Rate,
-                    Gst = l.GstPercent
-                });
+                    AvailableItems.Add(new SourcingItemOption
+                    {
+                        Id = l.ItemId,
+                        Name = l.Name,
+                        Sku = l.Sku,
+                        Unit = l.Unit,
+                        Rate = l.Rate,
+                        Gst = l.GstPercent
+                    });
+                }
             }
 
-            // Standard baseline raw material options
+            // 3. Standard baseline raw material options (fallback defaults)
             var standardOptions = new[]
             {
                 new SourcingItemOption { Id = "raw_leather", Name = "Upper Leather (Black / Brown)", Sku = "ASI-RAW-001", Unit = "sq ft", Rate = 65, Gst = 5 },

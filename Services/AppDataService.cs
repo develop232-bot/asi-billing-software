@@ -175,6 +175,7 @@ namespace AsiErp.Services
                     CleanLegacyBarcodesAndHsn();
                     EnsureUniqueBarcodesAcrossCatalog();
                     EnsureShoeBomConnections();
+                    HarmonizeRawMaterialsAndWorkOrders();
 
                     return;
                 }
@@ -343,6 +344,7 @@ namespace AsiErp.Services
 
                 CleanLegacyBarcodesAndHsn();
                 EnsureUniqueBarcodesAcrossCatalog();
+                HarmonizeRawMaterialsAndWorkOrders();
 
                 IsSampleDataLoaded = false;
 
@@ -636,7 +638,7 @@ namespace AsiErp.Services
             return Task.CompletedTask;
         }
 
-        public Task<PurchaseDoc> RecordPurchaseAsync(PurchaseDoc purchase)
+        public async Task<PurchaseDoc> RecordPurchaseAsync(PurchaseDoc purchase)
         {
             Purchases.Insert(0, purchase);
 
@@ -646,8 +648,20 @@ namespace AsiErp.Services
 
                 if (purchase.Kind == "raw")
                 {
-                    // User requirement: Purchase (Raw Material) and Product (Raw Material) are completely decoupled
-                    // Purchases record inward sourcing bills and lines, but do NOT inject items into Product RawMaterials
+                    // If this raw material exists in the product catalog (by ItemId, Name or Sku), update its live stock
+                    var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                             x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
+                                                             (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
+                    if (rm != null)
+                    {
+                        rm.Stock = Math.Round(rm.Stock + line.Qty, 2);
+                        rm.Rate = line.Rate;
+                        if (!string.IsNullOrWhiteSpace(line.Unit)) rm.Unit = line.Unit;
+                        if (!string.IsNullOrWhiteSpace(line.Sku)) rm.Sku = line.Sku;
+                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                        if (Firebase != null) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
+                    }
+                    // Note: If raw material is NOT already in catalog, do not automatically create a new Product (respects request 4)
                 }
                 else if (purchase.Kind == "ready")
                 {
@@ -723,11 +737,49 @@ namespace AsiErp.Services
                 SyncQueue.EnqueueSet("meta", "sequences", Sequences);
             }
 
-            return Task.FromResult(purchase);
+            return purchase;
         }
 
         public Task DeletePurchaseAsync(string id)
         {
+            var p = Purchases.FirstOrDefault(x => x.Id == id);
+            if (p != null && p.Lines != null)
+            {
+                foreach (var line in p.Lines)
+                {
+                    if (p.Kind == "raw")
+                    {
+                        var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                                 x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
+                        if (rm != null)
+                        {
+                            rm.Stock = Math.Max(0, Math.Round(rm.Stock - line.Qty, 2));
+                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                        }
+                    }
+                    else if (p.Kind == "ready")
+                    {
+                        var prod = Products.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                               x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
+                        if (prod != null)
+                        {
+                            prod.Stock = Math.Max(0, Math.Round(prod.Stock - line.Qty, 2));
+                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", prod.Id, prod);
+                        }
+                    }
+                    else if (p.Kind == "gen")
+                    {
+                        var g = GeneralItems.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
+                                                                x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
+                        if (g != null)
+                        {
+                            g.Stock = Math.Max(0, Math.Round(g.Stock - line.Qty, 2));
+                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", g.Id, g);
+                        }
+                    }
+                }
+            }
+
             Purchases.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             SaveLocalState();
@@ -769,15 +821,64 @@ namespace AsiErp.Services
             return Task.CompletedTask;
         }
 
-        public Task SaveWorkOrderAsync(WorkOrderDoc wo, bool isNew)
+        public async Task SaveWorkOrderAsync(WorkOrderDoc wo, bool isNew)
         {
             if (isNew)
             {
                 WorkOrders.Insert(0, wo);
+                // Deduct consumed raw materials for new work order
+                if (wo.Materials != null)
+                {
+                    foreach (var m in wo.Materials)
+                    {
+                        if (m.Qty <= 0) continue;
+                        var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(m.ItemId) && x.Id == m.ItemId) ||
+                                                                 x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase) ||
+                                                                 (!string.IsNullOrWhiteSpace(m.Name) && x.Name.Contains(m.Name, StringComparison.OrdinalIgnoreCase)));
+                        if (rm != null)
+                        {
+                            rm.Stock = Math.Max(0, Math.Round(rm.Stock - m.Qty, 2));
+                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                            if (Firebase != null) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
+                        }
+                    }
+                }
             }
             else
             {
                 int idx = WorkOrders.FindIndex(x => x.Id == wo.Id);
+                var existing = idx >= 0 ? WorkOrders[idx] : null;
+
+                if (existing != null && existing.Materials != null && wo.Materials != null)
+                {
+                    // Refund old materials
+                    foreach (var oldM in existing.Materials)
+                    {
+                        var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(oldM.ItemId) && x.Id == oldM.ItemId) ||
+                                                                 x.Name.Equals(oldM.Name, StringComparison.OrdinalIgnoreCase));
+                        if (rm != null) rm.Stock = Math.Round(rm.Stock + oldM.Qty, 2);
+                    }
+                    // Apply new materials
+                    foreach (var newM in wo.Materials)
+                    {
+                        var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(newM.ItemId) && x.Id == newM.ItemId) ||
+                                                                 x.Name.Equals(newM.Name, StringComparison.OrdinalIgnoreCase));
+                        if (rm != null) rm.Stock = Math.Max(0, Math.Round(rm.Stock - newM.Qty, 2));
+                    }
+                    // Sync touched raw materials
+                    var touched = existing.Materials.Concat(wo.Materials).ToList();
+                    foreach (var m in touched)
+                    {
+                        var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(m.ItemId) && x.Id == m.ItemId) ||
+                                                                 x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase));
+                        if (rm != null)
+                        {
+                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                            if (Firebase != null) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
+                        }
+                    }
+                }
+
                 if (idx >= 0) WorkOrders[idx] = wo;
                 else WorkOrders.Insert(0, wo);
             }
@@ -787,35 +888,53 @@ namespace AsiErp.Services
                 wo.IsDone = true;
                 foreach (var it in wo.Items)
                 {
-                    var p = Products.FirstOrDefault(x => x.Id == it.ProductId);
+                    var p = Products.FirstOrDefault(x => x.Id == it.ProductId || x.Name.Equals(it.ProductName, StringComparison.OrdinalIgnoreCase));
                     if (p != null)
                     {
                         p.Stock += it.Qty;
                         if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", p.Id, p);
+                        if (Firebase != null) { try { await Firebase.SaveProductAsync(p); } catch { } }
                     }
                 }
             }
 
             NotifyDataChanged();
+            SaveLocalState();
 
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("work_orders", wo.Id, wo);
                 SyncQueue.EnqueueSet("meta", "sequences", Sequences);
+                if (Firebase != null) { try { await Firebase.SaveWorkOrderAsync(wo); } catch { } }
             }
-
-            return Task.CompletedTask;
         }
 
-        public Task DeleteWorkOrderAsync(string id)
+        public async Task DeleteWorkOrderAsync(string id)
         {
+            var wo = WorkOrders.FirstOrDefault(x => x.Id == id);
+            if (wo != null && wo.Materials != null)
+            {
+                foreach (var m in wo.Materials)
+                {
+                    var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(m.ItemId) && x.Id == m.ItemId) ||
+                                                             x.Name.Equals(m.Name, StringComparison.OrdinalIgnoreCase));
+                    if (rm != null)
+                    {
+                        rm.Stock = Math.Round(rm.Stock + m.Qty, 2);
+                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                        if (Firebase != null) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
+                    }
+                }
+            }
+
             WorkOrders.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
+            SaveLocalState();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("work_orders", id);
+                if (Firebase != null) { try { await Firebase.DeleteWorkOrderAsync(id); } catch { } }
             }
-            return Task.CompletedTask;
         }
 
         public Task AdjustStockAsync(string kind, string id, double change)
@@ -1154,6 +1273,67 @@ namespace AsiErp.Services
                         prod.IsManufactured = true;
                         modified = true;
                     }
+                }
+            }
+
+            if (modified)
+            {
+                SaveLocalState();
+            }
+        }
+
+        public void HarmonizeRawMaterialsAndWorkOrders()
+        {
+            if (RawMaterials == null || RawMaterials.Count == 0) return;
+
+            bool modified = false;
+
+            // 1. Consolidate duplicate raw materials by name (e.g. Leather ASI-RAW-001 vs Leather ASI-RAW-004)
+            var groups = RawMaterials
+                .Where(r => !string.IsNullOrWhiteSpace(r.Name) && !r.Id.StartsWith("pur_it_"))
+                .GroupBy(r => r.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Where(g => g.Count() > 1)
+                .ToList();
+
+            foreach (var g in groups)
+            {
+                // Prefer the item with the primary/earliest SKU (e.g. "001" or "ASI-RAW-001")
+                var primary = g.OrderBy(x => x.Sku ?? "").First();
+                var duplicates = g.Where(x => x.Id != primary.Id).ToList();
+
+                foreach (var dup in duplicates)
+                {
+                    // Reassign any Work Orders referencing duplicate ID
+                    foreach (var wo in WorkOrders)
+                    {
+                        if (wo.Materials == null) continue;
+                        foreach (var m in wo.Materials)
+                        {
+                            if (m.ItemId == dup.Id || (string.IsNullOrWhiteSpace(m.ItemId) && m.Name.Equals(dup.Name, StringComparison.OrdinalIgnoreCase)))
+                            {
+                                m.ItemId = primary.Id;
+                                m.Name = primary.Name;
+                            }
+                        }
+                    }
+
+                    // Reassign any Purchases referencing duplicate ID
+                    foreach (var pu in Purchases)
+                    {
+                        if (pu.Lines == null) continue;
+                        foreach (var l in pu.Lines)
+                        {
+                            if (l.ItemId == dup.Id)
+                            {
+                                l.ItemId = primary.Id;
+                                l.Name = primary.Name;
+                                if (!string.IsNullOrWhiteSpace(primary.Sku)) l.Sku = primary.Sku;
+                            }
+                        }
+                    }
+
+                    RawMaterials.Remove(dup);
+                    modified = true;
                 }
             }
 

@@ -292,6 +292,55 @@ namespace AsiErp.ViewModels
 
             foreach (var l in validLines)
             {
+                if (string.IsNullOrWhiteSpace(l.ItemId) || l.ItemId.StartsWith("pur_it_"))
+                {
+                    if (Kind == "raw" && _dataService.RawMaterials != null)
+                    {
+                        var rm = _dataService.RawMaterials.FirstOrDefault(x =>
+                            (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
+                            x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
+                            (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
+                        if (rm != null)
+                        {
+                            l.ItemId = rm.Id;
+                            if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(rm.Sku))
+                            {
+                                l.Sku = rm.Sku;
+                            }
+                        }
+                    }
+                    else if (Kind == "ready" && _dataService.Products != null)
+                    {
+                        var p = _dataService.Products.FirstOrDefault(x =>
+                            (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
+                            x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
+                            (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
+                        if (p != null)
+                        {
+                            l.ItemId = p.Id;
+                            if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(p.Sku))
+                            {
+                                l.Sku = p.Sku;
+                            }
+                        }
+                    }
+                    else if (Kind == "gen" && _dataService.GeneralItems != null)
+                    {
+                        var g = _dataService.GeneralItems.FirstOrDefault(x =>
+                            (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
+                            x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
+                            (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
+                        if (g != null)
+                        {
+                            l.ItemId = g.Id;
+                            if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(g.Sku))
+                            {
+                                l.Sku = g.Sku;
+                            }
+                        }
+                    }
+                }
+
                 if (string.IsNullOrWhiteSpace(l.ItemId))
                 {
                     l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
