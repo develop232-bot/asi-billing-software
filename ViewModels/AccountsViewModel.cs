@@ -26,11 +26,31 @@ namespace AsiErp.ViewModels
         public string Category { get; set; } = string.Empty;
         public double Amount { get; set; }
         public double Percentage { get; set; }
-        public string PercentageDisplay => $"{Percentage:F1}%";
-        public string AmountDisplay => $"₹{Amount:N0}";
+        public string PercentageDisplay => $"{Percentage:F0}%";
+        public string AmountDisplay => AccountsViewModel.FormatShortCurrencyStatic(Amount);
+        public string ValueAndPct => $"{AmountDisplay} · {Percentage:F0}%";
         public Brush FillBrush { get; set; } = Brushes.Gray;
         public Geometry SliceGeometry { get; set; } = Geometry.Empty;
         public string TooltipText => $"{Category}: ₹{Amount:N0} ({Percentage:F1}%)";
+        public string DisplayText => $"{Category}: ₹{Amount:N0} ({Percentage:F0}%)";
+    }
+
+    public class MonthlyBarChartItem : ViewModelBase
+    {
+        public string MonthLabel { get; set; } = string.Empty;
+        public double Income { get; set; }
+        public double Expenses { get; set; }
+        public double ProfitLoss => Income - Expenses;
+        public bool IsProfit => ProfitLoss >= 0;
+
+        public double IncomeBarHeight { get; set; }
+        public double ExpenseBarHeight { get; set; }
+        public double PlBarHeight { get; set; }
+        public Brush PlBarBrush { get; set; } = Brushes.Transparent;
+
+        public string IncomeTooltip => $"{MonthLabel} Income: ₹{Income:N0}";
+        public string ExpenseTooltip => $"{MonthLabel} Expenses: ₹{Expenses:N0}";
+        public string PlTooltip => $"{MonthLabel} {(IsProfit ? "Profit" : "Loss")}: ₹{Math.Abs(ProfitLoss):N0}";
     }
 
     public class PlExpenseCategoryRow
@@ -188,6 +208,8 @@ namespace AsiErp.ViewModels
         public double PlTotalExpense { get; private set; }
         public double PlNetProfit { get; private set; }
         public double PlLoanInterestAndDepreciation { get; private set; }
+        public double PlPeriodLoanInterest { get; private set; }
+        public double PlPeriodDepreciation { get; private set; }
         public double PlTotalSide => Math.Max(PlTotalIncome, PlTotalExpense);
         public bool PlIsProfit => PlNetProfit >= 0;
         public string PlPeriodLabel { get; private set; } = "This month";
@@ -228,6 +250,63 @@ namespace AsiErp.ViewModels
         public ObservableCollection<PieChartSlice> PieChartSlices { get; } = new();
         public bool HasExpenseSlices => PieChartSlices.Count > 0;
         public string TotalExpensesDisplay => $"₹{PlTotalExpense:N0}";
+
+        // --- 6-MONTH BAR CHARTS ---
+        public ObservableCollection<MonthlyBarChartItem> MonthlyBarChartItems { get; } = new();
+        public string IncExpYMaxLabel { get; private set; } = "15L";
+        public string IncExpY2Label { get; private set; } = "10L";
+        public string IncExpY1Label { get; private set; } = "5L";
+        public string IncExpY0Label => "0";
+
+        public string PlYMaxLabel { get; private set; } = "8L";
+        public string PlY3Label { get; private set; } = "6L";
+        public string PlY2Label { get; private set; } = "4L";
+        public string PlY1Label { get; private set; } = "2L";
+        public string PlY0Label => "0";
+
+        // --- DASHBOARD DONUT CHARTS ---
+        public ObservableCollection<PieChartSlice> IncomeBySalesTypeSlices { get; } = new();
+        private string _incomeBySalesTypeTotalDisplay = "₹0";
+        public string IncomeBySalesTypeTotalDisplay
+        {
+            get => _incomeBySalesTypeTotalDisplay;
+            private set => SetField(ref _incomeBySalesTypeTotalDisplay, value);
+        }
+
+        public ObservableCollection<PieChartSlice> ExpensesByTypeSlices { get; } = new();
+        private string _expensesByTypeTotalDisplay = "₹0";
+        public string ExpensesByTypeTotalDisplay
+        {
+            get => _expensesByTypeTotalDisplay;
+            private set => SetField(ref _expensesByTypeTotalDisplay, value);
+        }
+
+        public ObservableCollection<PieChartSlice> LoanByLenderSlices { get; } = new();
+        private string _loanByLenderTotalDisplay = "₹0";
+        public string LoanByLenderTotalDisplay
+        {
+            get => _loanByLenderTotalDisplay;
+            private set => SetField(ref _loanByLenderTotalDisplay, value);
+        }
+
+        public ObservableCollection<PieChartSlice> InvestmentByPersonSlices { get; } = new();
+        private string _investmentByPersonTotalDisplay = "₹0";
+        public string InvestmentByPersonTotalDisplay
+        {
+            get => _investmentByPersonTotalDisplay;
+            private set => SetField(ref _investmentByPersonTotalDisplay, value);
+        }
+
+        public ObservableCollection<PieChartSlice> AssetByKindSlices { get; } = new();
+        private string _assetByKindTotalDisplay = "₹0";
+        public string AssetByKindTotalDisplay
+        {
+            get => _assetByKindTotalDisplay;
+            private set => SetField(ref _assetByKindTotalDisplay, value);
+        }
+
+        public string PlExplanationText =>
+            $"Profit & Loss = Income - Expenses for this month. After loan interest ₹{PlPeriodLoanInterest:N0} and depreciation ₹{PlPeriodDepreciation:N0}, the Net Profit is ₹{PlNetProfit:N0}. Loan Outstanding, Investment and Asset Value are balances as on today.";
 
         // --- BALANCE SHEET STATS ---
         public double BsCap { get; private set; }
@@ -738,6 +817,8 @@ namespace AsiErp.ViewModels
             PlTotalExpense = totals.totalExpense + fxInterest + fxDepr;
             PlNetProfit = PlTotalIncome - PlTotalExpense;
             PlLoanInterestAndDepreciation = fxInterest + fxDepr;
+            PlPeriodLoanInterest = fxInterest;
+            PlPeriodDepreciation = fxDepr;
 
             OnPropertyChanged(nameof(PlTotalIncome));
             OnPropertyChanged(nameof(PlTotalExpense));
@@ -789,8 +870,11 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(PlCardBrush));
             OnPropertyChanged(nameof(PlCardLabel));
             OnPropertyChanged(nameof(PlValueDisplay));
+            OnPropertyChanged(nameof(PlExplanationText));
             UpdateLineChart();
             UpdatePieChart();
+            UpdateMonthlyBarCharts();
+            UpdateDashboardDonuts();
         }
 
         private void UpdateLineChart()
@@ -864,12 +948,232 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(ExpenseAreaPoints));
         }
 
+        public static string FormatShortCurrencyStatic(double val)
+        {
+            if (val >= 10000000) return $"₹{(val / 10000000):F2} Cr";
+            if (val >= 100000) return $"₹{(val / 100000):F2} L";
+            return $"₹{val:N0}";
+        }
+
         private static string FormatShortCurrency(double val)
         {
             if (val >= 10000000) return $"₹{(val / 10000000):F1} Cr";
-            if (val >= 100000) return $"₹{(val / 100000):F1} L";
-            if (val >= 1000) return $"₹{(val / 1000):F1} k";
-            return $"₹{val:F0}";
+            if (val >= 100000) return $"₹{(val / 100000):F2} L";
+            if (val >= 1000) return $"₹{(val / 1000):F0} k";
+            return $"₹{val:N0}";
+        }
+
+        private static double GetNiceCeiling(double val)
+        {
+            if (val <= 0) return 1000;
+            double magnitude = Math.Pow(10, Math.Floor(Math.Log10(val)));
+            double norm = val / magnitude;
+            double step = norm <= 1.5 ? 1.5 : norm <= 2.0 ? 2.0 : norm <= 3.0 ? 3.0 : norm <= 5.0 ? 5.0 : norm <= 8.0 ? 8.0 : 10.0;
+            return step * magnitude;
+        }
+
+        private static string FormatAxisLabel(double val)
+        {
+            if (val >= 10000000) return $"{(val / 10000000):G}Cr";
+            if (val >= 100000) return $"{(val / 100000):G}L";
+            if (val >= 1000) return $"{(val / 1000):G}k";
+            return $"{val:0}";
+        }
+
+        private void UpdateMonthlyBarCharts()
+        {
+            MonthlyBarChartItems.Clear();
+            if (PlMonthBreakdowns.Count == 0) return;
+
+            double maxIncExp = Math.Max(1000, PlMonthBreakdowns.Max(m => Math.Max(m.Income, m.Expenses)));
+            double incExpCeiling = GetNiceCeiling(maxIncExp);
+            IncExpYMaxLabel = FormatAxisLabel(incExpCeiling);
+            IncExpY2Label = FormatAxisLabel(incExpCeiling * 2.0 / 3.0);
+            IncExpY1Label = FormatAxisLabel(incExpCeiling * 1.0 / 3.0);
+            OnPropertyChanged(nameof(IncExpYMaxLabel));
+            OnPropertyChanged(nameof(IncExpY2Label));
+            OnPropertyChanged(nameof(IncExpY1Label));
+            OnPropertyChanged(nameof(IncExpY0Label));
+
+            double maxPl = Math.Max(1000, PlMonthBreakdowns.Max(m => Math.Abs(m.Income - m.Expenses)));
+            double plCeiling = GetNiceCeiling(maxPl);
+            PlYMaxLabel = FormatAxisLabel(plCeiling);
+            PlY3Label = FormatAxisLabel(plCeiling * 0.75);
+            PlY2Label = FormatAxisLabel(plCeiling * 0.5);
+            PlY1Label = FormatAxisLabel(plCeiling * 0.25);
+            OnPropertyChanged(nameof(PlYMaxLabel));
+            OnPropertyChanged(nameof(PlY3Label));
+            OnPropertyChanged(nameof(PlY2Label));
+            OnPropertyChanged(nameof(PlY1Label));
+            OnPropertyChanged(nameof(PlY0Label));
+
+            double maxBarHeight = 115.0; // Max visual bar height
+
+            var greenBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#10B981"));
+            var redBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#EF4444"));
+            greenBrush.Freeze();
+            redBrush.Freeze();
+
+            foreach (var m in PlMonthBreakdowns)
+            {
+                double incH = Math.Clamp((m.Income / incExpCeiling) * maxBarHeight, 3.0, maxBarHeight);
+                double expH = Math.Clamp((m.Expenses / incExpCeiling) * maxBarHeight, 3.0, maxBarHeight);
+                double plH = Math.Clamp((Math.Abs(m.ProfitLoss) / plCeiling) * maxBarHeight, 3.0, maxBarHeight);
+
+                MonthlyBarChartItems.Add(new MonthlyBarChartItem
+                {
+                    MonthLabel = m.MonthLabel.Split(' ')[0], // "Jun", "Jul", etc.
+                    Income = m.Income,
+                    Expenses = m.Expenses,
+                    IncomeBarHeight = incH,
+                    ExpenseBarHeight = expH,
+                    PlBarHeight = plH,
+                    PlBarBrush = m.IsProfit ? greenBrush : redBrush
+                });
+            }
+        }
+
+        private void PopulateDonut(
+            ObservableCollection<PieChartSlice> targetSlices,
+            IEnumerable<(string label, double amount)> items,
+            string[] palette,
+            out string totalDisplay)
+        {
+            targetSlices.Clear();
+            var valid = items.Where(x => x.amount > 0.01).ToList();
+            double totalAmount = valid.Sum(x => x.amount);
+            totalDisplay = FormatShortCurrencyStatic(totalAmount);
+
+            Point center = new Point(80, 80);
+            double outerR = 68;
+            double innerR = 46;
+
+            if (totalAmount <= 0.01)
+            {
+                var grayBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#CBD5E1"));
+                grayBrush.Freeze();
+                var outer = new EllipseGeometry(center, outerR, outerR);
+                var inner = new EllipseGeometry(center, innerR, innerR);
+                var emptyDonut = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                emptyDonut.Freeze();
+
+                targetSlices.Add(new PieChartSlice
+                {
+                    Category = "None",
+                    Amount = 0,
+                    Percentage = 100,
+                    FillBrush = grayBrush,
+                    SliceGeometry = emptyDonut
+                });
+                return;
+            }
+
+            double currentAngle = -90.0;
+            for (int i = 0; i < valid.Count; i++)
+            {
+                var (lbl, amt) = valid[i];
+                double fraction = amt / totalAmount;
+                double sweepAngle = fraction * 360.0;
+                double pct = fraction * 100.0;
+
+                var color = (Color)ColorConverter.ConvertFromString(palette[i % palette.Length]);
+                var brush = new SolidColorBrush(color);
+                brush.Freeze();
+
+                Geometry geom;
+                if (valid.Count == 1 || sweepAngle >= 359.99)
+                {
+                    var outer = new EllipseGeometry(center, outerR, outerR);
+                    var inner = new EllipseGeometry(center, innerR, innerR);
+                    geom = new CombinedGeometry(GeometryCombineMode.Exclude, outer, inner);
+                }
+                else
+                {
+                    double startRad = currentAngle * Math.PI / 180.0;
+                    double endRad = (currentAngle + sweepAngle) * Math.PI / 180.0;
+
+                    Point p1 = new Point(center.X + outerR * Math.Cos(startRad), center.Y + outerR * Math.Sin(startRad));
+                    Point p2 = new Point(center.X + outerR * Math.Cos(endRad), center.Y + outerR * Math.Sin(endRad));
+                    Point p3 = new Point(center.X + innerR * Math.Cos(endRad), center.Y + innerR * Math.Sin(endRad));
+                    Point p4 = new Point(center.X + innerR * Math.Cos(startRad), center.Y + innerR * Math.Sin(startRad));
+
+                    bool isLarge = sweepAngle > 180.0;
+
+                    var figure = new PathFigure { StartPoint = p1, IsClosed = true, IsFilled = true };
+                    figure.Segments.Add(new ArcSegment(p2, new Size(outerR, outerR), 0, isLarge, SweepDirection.Clockwise, true));
+                    figure.Segments.Add(new LineSegment(p3, true));
+                    figure.Segments.Add(new ArcSegment(p4, new Size(innerR, innerR), 0, isLarge, SweepDirection.Counterclockwise, true));
+
+                    var pg = new PathGeometry();
+                    pg.Figures.Add(figure);
+                    geom = pg;
+                }
+
+                geom.Freeze();
+                targetSlices.Add(new PieChartSlice
+                {
+                    Category = lbl,
+                    Amount = amt,
+                    Percentage = pct,
+                    FillBrush = brush,
+                    SliceGeometry = geom
+                });
+
+                currentAngle += sweepAngle;
+            }
+        }
+
+        private void UpdateDashboardDonuts()
+        {
+            // 1. Income by sales type
+            var incomePalette = new[] { "#3B82F6", "#10B981", "#F59E0B" };
+            var incomeItems = new List<(string label, double amount)>
+            {
+                ("Retail", RetailIncome),
+                ("Domestic", DomesticIncome),
+                ("Export", ExportIncome)
+            };
+            PopulateDonut(IncomeBySalesTypeSlices, incomeItems, incomePalette, out string incDisp);
+            IncomeBySalesTypeTotalDisplay = incDisp;
+
+            // 2. Expenses by type
+            var expPalette = new[] { "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4" };
+            var expItems = PlExpenseCategories.Select(c => (c.Category, c.Amount)).ToList();
+            PopulateDonut(ExpensesByTypeSlices, expItems, expPalette, out string expDisp);
+            ExpensesByTypeTotalDisplay = expDisp;
+
+            // 3. Loan outstanding by lender
+            var loanPalette = new[] { "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899" };
+            var loanItems = _dataService.Loans
+                .GroupBy(l => string.IsNullOrWhiteSpace(l.Lender) ? "Other Lender" : l.Lender.Trim())
+                .Select(g => (label: g.Key, amount: g.Sum(l => l.BalanceRemaining)))
+                .Where(x => x.amount > 0.01)
+                .OrderByDescending(x => x.amount)
+                .ToList();
+            PopulateDonut(LoanByLenderSlices, loanItems, loanPalette, out string loanDisp);
+            LoanByLenderTotalDisplay = loanDisp;
+
+            // 4. Investment by person
+            var invPalette = new[] { "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899" };
+            var invItems = _dataService.Investments
+                .GroupBy(i => string.IsNullOrWhiteSpace(i.InvestedBy) ? "Other Investor" : i.InvestedBy.Trim())
+                .Select(g => (label: g.Key, amount: g.Sum(i => i.Amount)))
+                .Where(x => x.amount > 0.01)
+                .OrderByDescending(x => x.amount)
+                .ToList();
+            PopulateDonut(InvestmentByPersonSlices, invItems, invPalette, out string invDisp);
+            InvestmentByPersonTotalDisplay = invDisp;
+
+            // 5. Asset value by kind
+            var assetPalette = new[] { "#3B82F6", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899" };
+            var assetItems = _dataService.Assets
+                .GroupBy(a => string.IsNullOrWhiteSpace(a.Kind) ? "Other" : a.Kind.Trim())
+                .Select(g => (label: g.Key, amount: g.Sum(a => a.BookValue)))
+                .Where(x => x.amount > 0.01)
+                .OrderByDescending(x => x.amount)
+                .ToList();
+            PopulateDonut(AssetByKindSlices, assetItems, assetPalette, out string assetDisp);
+            AssetByKindTotalDisplay = assetDisp;
         }
 
         private void UpdatePieChart()

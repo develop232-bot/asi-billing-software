@@ -26,6 +26,7 @@
                 <StackPanel Grid.Column="0" VerticalAlignment="Center"
                             Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}">
                     <TextBlock Text="Finance and Accounts" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}"/>
+                    <TextBlock Text="Income, expenses, profit and the money tied up in loans, investment and assets." FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" Margin="0,3,0,0"/>
                 </StackPanel>
 
                 <!-- Period Dropdown -->
@@ -46,271 +47,576 @@
 
             <!-- TAB 0: FINANCE & ACCOUNTS DASHBOARD -->
             <StackPanel Visibility="{Binding ActiveTab, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=dashboard}">
-                <!-- 7 KPI Tiles -->
-                <!-- Row 1: Income, Expenses, Profit and Loss, Net P&L -->
-                <UniformGrid Columns="4" Margin="0,0,0,14">
-                    <!-- (1) INCOME -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="INCOME" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlTotalIncome, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- (2) EXPENSES -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="EXPENSES" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- (3) PROFIT AND LOSS (RED IN LOSS GREEN IN PROFIT) -->
-                    <Border Background="{Binding PlCardBrush}" Padding="16,14" Margin="0,0,14,0" CornerRadius="12">
+                <!-- 6 Colorful KPI Cards (3x2 Grid) -->
+                <UniformGrid Columns="3" Margin="0,0,0,12">
+                    <!-- (1) Total Income (Purple #8B5CF6) -->
+                    <Border Tag="PreserveTheme" Background="#8B5CF6" CornerRadius="12" Padding="18,16" Margin="0,0,12,12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
                         </Border.Effect>
-                        <Grid VerticalAlignment="Center">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- Profit Icon (Coin with ₹) -->
-                            <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,12,0"
-                                  Visibility="{Binding PlIsProfit, Converter={StaticResource BoolToVis}}">
-                                <Ellipse Fill="White" Opacity="0.22"/>
-                                <Ellipse Stroke="White" StrokeThickness="2"/>
-                                <TextBlock Text="₹" Foreground="White" FontSize="18" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,-1,0,0"/>
-                            </Grid>
-
-                            <!-- Loss Icon (Warning Triangle with !) -->
-                            <Grid Grid.Column="0" Width="36" Height="36" VerticalAlignment="Center" Margin="0,0,12,0"
-                                  Visibility="{Binding PlIsProfit, Converter={StaticResource InverseBoolToVis}}">
-                                <Path Data="M 18,3 L 34,31 H 2 Z" Fill="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                <TextBlock Text="!" Foreground="#DC2626" FontSize="17" FontWeight="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,6,0,0"/>
-                            </Grid>
-
-                            <!-- Label and Value -->
-                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                <TextBlock Text="{Binding PlCardLabel}" FontSize="12.5" Foreground="White" FontWeight="SemiBold" Opacity="0.95"/>
-                                <TextBlock Text="{Binding PlValueDisplay}" FontSize="21" FontWeight="Bold" Foreground="White" Margin="0,3,0,0"/>
-                            </StackPanel>
-                        </Grid>
+                        <StackPanel>
+                            <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <Path Data="M 6,18 L 12,12 L 16,16 L 22,8 M 17,8 L 22,8 L 22,13" Stroke="White" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Total Income" FontSize="11.5" FontWeight="SemiBold" Foreground="#DDD6FE"/>
+                            <TextBlock Text="{Binding PlTotalIncome, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        </StackPanel>
                     </Border>
 
-                    <!-- (4) NET P&L -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <!-- (2) Total Expenses (Amber #D97706) -->
+                    <Border Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="18,16" Margin="0,0,12,12">
                         <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
                         </Border.Effect>
                         <StackPanel>
-                            <TextBlock Text="NET P&amp;L" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding PlNetProfitDisplay}" FontSize="22" FontWeight="Bold" Foreground="{Binding PlProfitLossColor}" Margin="0,5,0,0"/>
+                            <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <TextBlock Text="₹" Foreground="White" FontWeight="Bold" FontSize="15" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Total Expenses" FontSize="11.5" FontWeight="SemiBold" Foreground="#FEF3C7"/>
+                            <TextBlock Text="{Binding PlTotalExpense, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- (3) Profit & Loss (Green #10B981) -->
+                    <Border Tag="PreserveTheme" Background="#10B981" CornerRadius="12" Padding="18,16" Margin="0,0,0,12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <Path Data="M 6,18 L 12,12 L 16,16 L 22,8 M 17,8 L 22,8 L 22,13" Stroke="White" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Profit &amp; Loss" FontSize="11.5" FontWeight="SemiBold" Foreground="#D1FAE5"/>
+                            <TextBlock Text="{Binding PlNetProfitDisplay}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- (4) Loan Outstanding (Red #DC2626) -->
+                    <Border Tag="PreserveTheme" Background="#DC2626" CornerRadius="12" Padding="18,16" Margin="0,0,12,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <Path Data="M 4,7 C 4,5.9 4.9,5 6,5 L 18,5 C 19.1,5 20,5.9 20,7 L 20,17 C 20,18.1 19.1,19 18,19 L 6,19 C 4.9,19 4,18.1 4,17 Z M 4,9 L 20,9 M 15,14 L 17,14" Stroke="White" StrokeThickness="1.5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Loan Outstanding" FontSize="11.5" FontWeight="SemiBold" Foreground="#FEE2E2"/>
+                            <TextBlock Text="{Binding TotalLoansOutstanding, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- (5) Investment (Teal #0D9488) -->
+                    <Border Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="18,16" Margin="0,0,12,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <Path Data="M 4,6 C 4,4.9 4.9,4 6,4 L 10,4 L 12,6 L 18,6 C 19.1,6 20,6.9 20,8 L 20,18 C 20,19.1 19.1,20 18,20 L 6,20 C 4.9,20 4,19.1 4,18 Z" Stroke="White" StrokeThickness="1.5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Investment" FontSize="11.5" FontWeight="SemiBold" Foreground="#CCFBF1"/>
+                            <TextBlock Text="{Binding TotalInvested, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- (6) Asset Value (Blue #2563EB) -->
+                    <Border Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="18,16" Margin="0,0,0,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <Border Width="28" Height="28" CornerRadius="7" Background="#33FFFFFF" HorizontalAlignment="Left" Margin="0,0,0,10">
+                                <Path Data="M 12,3 L 20,7.5 L 20,16.5 L 12,21 L 4,16.5 L 4,7.5 Z M 12,3 L 12,21 M 20,7.5 L 12,12 L 4,7.5" Stroke="White" StrokeThickness="1.5" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            </Border>
+                            <TextBlock Text="Asset Value" FontSize="11.5" FontWeight="SemiBold" Foreground="#DBEAFE"/>
+                            <TextBlock Text="{Binding TotalAssetsBookValue, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Border>
                 </UniformGrid>
 
-                <!-- Row 2: Loan Outstanding, Investment, Asset Value -->
-                <UniformGrid Columns="3" Margin="0,0,0,20">
-                    <!-- (5) LOAN OUTSTANDING -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="LOAN OUTSTANDING" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashTotalLoans, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
+                <!-- Explanatory Text Note -->
+                <TextBlock Text="{Binding PlExplanationText}" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" Margin="0,10,0,16" TextWrapping="Wrap"/>
 
-                    <!-- (6) INVESTMENT -->
-                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="INVESTMENT" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashCapital, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#4F46E5" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- (7) ASSET VALUE -->
-                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <StackPanel>
-                            <TextBlock Text="ASSET VALUE" FontSize="11.5" Foreground="{DynamicResource AppTextSecondary}" FontWeight="SemiBold"/>
-                            <TextBlock Text="{Binding DashFixedAssets, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,0"/>
-                        </StackPanel>
-                    </Border>
-                </UniformGrid>
-
-                <!-- CHARTS: LINE CHART & PIE CHART -->
-                <Grid Margin="0,0,0,20">
+                <!-- ROW 1 CHARTS: Grouped Bar Chart (Income vs Expenses) & Donut (Income by sales type) -->
+                <Grid Margin="0,0,0,16">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.5*"/>
+                        <ColumnDefinition Width="2*"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- LINE CHART (Income vs Expenses Trend) -->
-                    <Border Grid.Column="0" Background="White" Padding="20" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <!-- (A) Income vs Expenses · last 6 months -->
+                    <Border Grid.Column="0" Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,14,0">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                         </Border.Effect>
                         <DockPanel>
-                            <!-- Line Chart Header -->
+                            <!-- Header -->
                             <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
-                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                    <!-- Legend: Income -->
-                                    <Border Width="10" Height="10" CornerRadius="5" Background="#2563EB" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Income" FontSize="11" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,14,0" VerticalAlignment="Center"/>
-                                    <!-- Legend: Expenses -->
-                                    <Border Width="10" Height="10" CornerRadius="5" Background="#DC2626" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Expenses" FontSize="11" FontWeight="SemiBold" Foreground="#334155" VerticalAlignment="Center"/>
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="9" Height="9" CornerRadius="2" Background="#3B82F6" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Income" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                                    <Border Width="9" Height="9" CornerRadius="2" Background="#F59E0B" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Expenses" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" VerticalAlignment="Center"/>
                                 </StackPanel>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Income &amp; Expenses Trend" FontWeight="Bold" FontSize="15" Foreground="{DynamicResource AppTextPrimary}"/>
-                                    <TextBlock Text="6-month financial performance curve" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" Margin="0,2,0,0"/>
-                                </StackPanel>
+                                <TextBlock Text="Income vs Expenses · last 6 months" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
                             </DockPanel>
 
-                            <!-- Line Chart Viewbox -->
-                            <Viewbox Stretch="Uniform" Height="210">
-                                <Canvas Width="500" Height="200" ClipToBounds="True">
-                                    <!-- Grid lines and Y-axis labels -->
-                                    <Line X1="50" Y1="20" X2="480" Y2="20" Stroke="#F1F5F9" StrokeThickness="1"/>
-                                    <TextBlock Text="{Binding ChartYMaxLabel}" Canvas.Left="4" Canvas.Top="12" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
+                            <!-- Plot Area with Y-Axis and Grouped Bars -->
+                            <Grid Height="165">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="38"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
 
-                                    <Line X1="50" Y1="90" X2="480" Y2="90" Stroke="#F1F5F9" StrokeThickness="1"/>
-                                    <TextBlock Text="{Binding ChartYMidLabel}" Canvas.Left="4" Canvas.Top="82" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
+                                <!-- Y-Axis Labels -->
+                                <Grid Grid.Column="0" Margin="0,0,6,20">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="{Binding IncExpYMaxLabel}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="2" Text="{Binding IncExpY2Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="4" Text="{Binding IncExpY1Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="6" Text="{Binding IncExpY0Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                </Grid>
 
-                                    <Line X1="50" Y1="160" X2="480" Y2="160" Stroke="#E2E8F0" StrokeThickness="1.5"/>
-                                    <TextBlock Text="{Binding ChartYZeroLabel}" Canvas.Left="4" Canvas.Top="152" FontSize="9.5" Foreground="#94A3B8" Width="42" TextAlignment="Right"/>
+                                <!-- Plot area -->
+                                <Grid Grid.Column="1">
+                                    <!-- Horizontal Gridlines -->
+                                    <Grid Margin="0,6,0,26">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Line Grid.Row="0" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="2" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="4" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="6" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" Opacity="0.7"/>
+                                    </Grid>
 
-                                    <!-- Shaded Area Fills -->
-                                    <Polygon Points="{Binding IncomeAreaPoints}" Fill="#2563EB" Opacity="0.08"/>
-                                    <Polygon Points="{Binding ExpenseAreaPoints}" Fill="#DC2626" Opacity="0.06"/>
-
-                                    <!-- Main Polylines -->
-                                    <Polyline Points="{Binding IncomeLinePoints}" Stroke="#2563EB" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-                                    <Polyline Points="{Binding ExpenseLinePoints}" Stroke="#DC2626" StrokeThickness="3" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-
-                                    <!-- Data Points & Tooltips -->
-                                    <ItemsControl ItemsSource="{Binding LineChartPoints}">
+                                    <!-- Monthly Grouped Bars -->
+                                    <ItemsControl ItemsSource="{Binding MonthlyBarChartItems}">
                                         <ItemsControl.ItemsPanel>
                                             <ItemsPanelTemplate>
-                                                <Canvas Width="500" Height="200"/>
+                                                <UniformGrid Rows="1"/>
                                             </ItemsPanelTemplate>
                                         </ItemsControl.ItemsPanel>
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
-                                                <Canvas Width="500" Height="200">
-                                                    <!-- Vertical Guide Line -->
-                                                    <Line X1="{Binding X}" Y1="20" X2="{Binding X}" Y2="160" Stroke="#F8FAFC" StrokeThickness="1" StrokeDashArray="2 2"/>
-
-                                                    <!-- Month Label on X Axis -->
-                                                    <TextBlock Text="{Binding MonthLabel}" Canvas.Left="{Binding X}" Canvas.Top="168"
-                                                               FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource AppTextSecondary}"
-                                                               HorizontalAlignment="Center" Margin="-16,0,0,0" Width="32" TextAlignment="Center"/>
-
-                                                    <!-- Income Point (Blue Dot) -->
-                                                    <Ellipse Canvas.Left="{Binding X}" Canvas.Top="{Binding IncomeY}"
-                                                             Width="8" Height="8" Margin="-4,-4,0,0"
-                                                             Fill="#2563EB" Stroke="White" StrokeThickness="2"
-                                                             ToolTip="{Binding TooltipText}" Cursor="Hand"/>
-
-                                                    <!-- Expense Point (Red Dot) -->
-                                                    <Ellipse Canvas.Left="{Binding X}" Canvas.Top="{Binding ExpenseY}"
-                                                             Width="8" Height="8" Margin="-4,-4,0,0"
-                                                             Fill="#DC2626" Stroke="White" StrokeThickness="2"
-                                                             ToolTip="{Binding TooltipText}" Cursor="Hand"/>
-                                                </Canvas>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </Canvas>
-                            </Viewbox>
-                        </DockPanel>
-                    </Border>
-
-                    <!-- PIE / DONUT CHART (Expense Breakdown) -->
-                    <Border Grid.Column="1" Background="White" Padding="20" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                        </Border.Effect>
-                        <DockPanel>
-                            <!-- Pie Chart Header -->
-                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
-                                <TextBlock DockPanel.Dock="Right" Text="{Binding TotalExpensesDisplay}" FontWeight="Bold" FontSize="12.5" Foreground="#DC2626" VerticalAlignment="Center"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock Text="Expense Breakdown" FontWeight="Bold" FontSize="15" Foreground="{DynamicResource AppTextPrimary}"/>
-                                    <TextBlock Text="Category distribution" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" Margin="0,2,0,0"/>
-                                </StackPanel>
-                            </DockPanel>
-
-                            <!-- Donut and Legend -->
-                            <Grid Margin="0,4,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="150"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-
-                                <!-- Donut Viewbox -->
-                                <Viewbox Grid.Column="0" Stretch="Uniform" Width="145" Height="145" VerticalAlignment="Center" HorizontalAlignment="Center">
-                                    <Grid Width="200" Height="200">
-                                        <!-- Donut Slices -->
-                                        <ItemsControl ItemsSource="{Binding PieChartSlices}">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <Grid/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}" Cursor="Hand"/>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-
-                                        <!-- Center text for Donut hole -->
-                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                                            <TextBlock Text="TOTAL" FontSize="9" FontWeight="Bold" Foreground="#94A3B8" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="{Binding TotalExpensesDisplay}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Viewbox>
-
-                                <!-- Legend List -->
-                                <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto" Margin="10,0,0,0" MaxHeight="190">
-                                    <ItemsControl ItemsSource="{Binding PieChartSlices}">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Grid Margin="0,3">
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                        <ColumnDefinition Width="*"/>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Border Grid.Column="0" Width="8" Height="8" CornerRadius="4" Background="{Binding FillBrush}" Margin="0,0,6,0" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="1" Text="{Binding Category}" FontSize="11" Foreground="#334155" TextTrimming="CharacterEllipsis" ToolTip="{Binding Category}" VerticalAlignment="Center"/>
-                                                    <TextBlock Grid.Column="2" Text="{Binding PercentageDisplay}" FontSize="10.5" FontWeight="Bold" Foreground="{DynamicResource AppTextSecondary}" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                                                <Grid Margin="2,0,2,0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5">
+                                                        <Border Width="16" Height="{Binding IncomeBarHeight}" Background="#3B82F6" CornerRadius="3,3,0,0" ToolTip="{Binding IncomeTooltip}" Margin="0,0,2.5,0" VerticalAlignment="Bottom"/>
+                                                        <Border Width="16" Height="{Binding ExpenseBarHeight}" Background="#F59E0B" CornerRadius="3,3,0,0" ToolTip="{Binding ExpenseTooltip}" Margin="2.5,0,0,0" VerticalAlignment="Bottom"/>
+                                                    </StackPanel>
+                                                    <TextBlock Grid.Row="1" Text="{Binding MonthLabel}" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </ItemsControl.ItemTemplate>
                                     </ItemsControl>
-                                </ScrollViewer>
+                                </Grid>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- (B) Income by sales type (Donut Chart) -->
+                    <Border Grid.Column="1" Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <!-- Header -->
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <Button Content="View" Command="{Binding SetTabCommand}" CommandParameter="income"
+                                        DockPanel.Dock="Right" Background="Transparent" Foreground="#3B82F6" BorderThickness="0"
+                                        FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Padding="4,2"/>
+                                <TextBlock Text="Income by sales type" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <!-- Donut + Legend -->
+                            <Grid VerticalAlignment="Center" Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Donut Left -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0">
+                                    <Grid Width="110" Height="110">
+                                        <Viewbox Width="110" Height="110">
+                                            <ItemsControl ItemsSource="{Binding IncomeBySalesTypeSlices}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas Width="160" Height="160"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Viewbox>
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="Total" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding IncomeBySalesTypeTotalDisplay}" FontSize="12.5" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock Text="this month" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                </StackPanel>
+
+                                <!-- Legend Right -->
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding IncomeBySalesTypeSlices}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="0,4" LastChildFill="True">
+                                                <Border Width="8" Height="8" CornerRadius="2" Background="{Binding FillBrush}" DockPanel.Dock="Left" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding ValueAndPct}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
                             </Grid>
                         </DockPanel>
                     </Border>
                 </Grid>
+
+                <!-- ROW 2 CHARTS: Single Bar Chart (Profit & Loss) & Donut (Expenses by type) -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- (A) Profit & Loss · last 6 months -->
+                    <Border Grid.Column="0" Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,14,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <!-- Header -->
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
+                                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Border Width="9" Height="9" CornerRadius="2" Background="#10B981" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Profit" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                                    <Border Width="9" Height="9" CornerRadius="2" Background="#EF4444" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Loss" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                                <TextBlock Text="Profit &amp; Loss · last 6 months" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <!-- Plot Area with Y-Axis and Single Bars -->
+                            <Grid Height="165">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="38"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Y-Axis Labels -->
+                                <Grid Grid.Column="0" Margin="0,0,6,20">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Grid.Row="0" Text="{Binding PlYMaxLabel}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="2" Text="{Binding PlY3Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="4" Text="{Binding PlY2Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="6" Text="{Binding PlY1Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                    <TextBlock Grid.Row="8" Text="{Binding PlY0Label}" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Right"/>
+                                </Grid>
+
+                                <!-- Plot area -->
+                                <Grid Grid.Column="1">
+                                    <!-- Horizontal Gridlines -->
+                                    <Grid Margin="0,6,0,26">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="*"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <Line Grid.Row="0" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="2" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="4" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="6" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" StrokeDashArray="3 3" Opacity="0.5"/>
+                                        <Line Grid.Row="8" X1="0" X2="1" Stretch="Fill" Stroke="{DynamicResource AppBorderBrush}" StrokeThickness="1" Opacity="0.7"/>
+                                    </Grid>
+
+                                    <!-- Monthly Profit/Loss Bars -->
+                                    <ItemsControl ItemsSource="{Binding MonthlyBarChartItems}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <UniformGrid Rows="1"/>
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Grid Margin="2,0,2,0">
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="*"/>
+                                                        <RowDefinition Height="Auto"/>
+                                                    </Grid.RowDefinitions>
+                                                    <Border Grid.Row="0" Width="22" Height="{Binding PlBarHeight}" Background="{Binding PlBarBrush}" CornerRadius="3,3,0,0" ToolTip="{Binding PlTooltip}" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,5"/>
+                                                    <TextBlock Grid.Row="1" Text="{Binding MonthLabel}" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </Grid>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- (B) Expenses by type (Donut Chart) -->
+                    <Border Grid.Column="1" Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <!-- Header -->
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <Button Content="View" Command="{Binding SetTabCommand}" CommandParameter="exp"
+                                        DockPanel.Dock="Right" Background="Transparent" Foreground="#3B82F6" BorderThickness="0"
+                                        FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Padding="4,2"/>
+                                <TextBlock Text="Expenses by type" FontWeight="Bold" FontSize="14" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <!-- Donut + Legend -->
+                            <Grid VerticalAlignment="Center" Margin="0,8,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Donut Left -->
+                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,10,0">
+                                    <Grid Width="110" Height="110">
+                                        <Viewbox Width="110" Height="110">
+                                            <ItemsControl ItemsSource="{Binding ExpensesByTypeSlices}">
+                                                <ItemsControl.ItemsPanel>
+                                                    <ItemsPanelTemplate>
+                                                        <Canvas Width="160" Height="160"/>
+                                                    </ItemsPanelTemplate>
+                                                </ItemsControl.ItemsPanel>
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}"/>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </Viewbox>
+                                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <TextBlock Text="Total" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="{Binding ExpensesByTypeTotalDisplay}" FontSize="12.5" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    <TextBlock Text="this month" FontSize="9.5" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                </StackPanel>
+
+                                <!-- Legend Right -->
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding ExpensesByTypeSlices}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="0,4" LastChildFill="True">
+                                                <Border Width="8" Height="8" CornerRadius="2" Background="{Binding FillBrush}" DockPanel.Dock="Left" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding ValueAndPct}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Category}" FontSize="11" Foreground="{DynamicResource AppTextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,0,6,0" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+
+                <!-- ROW 3 CHARTS: 3 Donut Cards side-by-side -->
+                <UniformGrid Columns="3" Margin="0,0,0,24">
+                    <!-- Donut Card 1: Loan outstanding by lender -->
+                    <Border Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,12,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <Button Content="View" Command="{Binding SetTabCommand}" CommandParameter="loans"
+                                        DockPanel.Dock="Right" Background="Transparent" Foreground="#3B82F6" BorderThickness="0"
+                                        FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Padding="4,2"/>
+                                <TextBlock Text="Loan outstanding by lender" FontWeight="Bold" FontSize="13.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <Grid VerticalAlignment="Center" Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Width="100" Height="100" Margin="0,0,8,0">
+                                    <Viewbox Width="100" Height="100">
+                                        <ItemsControl ItemsSource="{Binding LoanByLenderSlices}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Canvas Width="160" Height="160"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Viewbox>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Total" FontSize="9" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding LoanByLenderTotalDisplay}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding LoanByLenderSlices}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="0,3.5" LastChildFill="True">
+                                                <Border Width="7" Height="7" CornerRadius="2" Background="{Binding FillBrush}" DockPanel.Dock="Left" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding ValueAndPct}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Category}" FontSize="10.5" Foreground="{DynamicResource AppTextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Donut Card 2: Investment by person -->
+                    <Border Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,12,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <Button Content="View" Command="{Binding SetTabCommand}" CommandParameter="inv"
+                                        DockPanel.Dock="Right" Background="Transparent" Foreground="#3B82F6" BorderThickness="0"
+                                        FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Padding="4,2"/>
+                                <TextBlock Text="Investment by person" FontWeight="Bold" FontSize="13.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <Grid VerticalAlignment="Center" Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Width="100" Height="100" Margin="0,0,8,0">
+                                    <Viewbox Width="100" Height="100">
+                                        <ItemsControl ItemsSource="{Binding InvestmentByPersonSlices}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Canvas Width="160" Height="160"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Viewbox>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Total" FontSize="9" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding InvestmentByPersonTotalDisplay}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding InvestmentByPersonSlices}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="0,3.5" LastChildFill="True">
+                                                <Border Width="7" Height="7" CornerRadius="2" Background="{Binding FillBrush}" DockPanel.Dock="Left" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding ValueAndPct}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Category}" FontSize="10.5" Foreground="{DynamicResource AppTextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Donut Card 3: Asset value by kind -->
+                    <Border Background="{DynamicResource AppCardBackground}" BorderBrush="{DynamicResource AppBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="18" Margin="0,0,0,0">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
+                                <Button Content="View" Command="{Binding SetTabCommand}" CommandParameter="assets"
+                                        DockPanel.Dock="Right" Background="Transparent" Foreground="#3B82F6" BorderThickness="0"
+                                        FontWeight="SemiBold" FontSize="11.5" Cursor="Hand" Padding="4,2"/>
+                                <TextBlock Text="Asset value by kind" FontWeight="Bold" FontSize="13.5" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                            </DockPanel>
+
+                            <Grid VerticalAlignment="Center" Margin="0,6,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid Grid.Column="0" Width="100" Height="100" Margin="0,0,8,0">
+                                    <Viewbox Width="100" Height="100">
+                                        <ItemsControl ItemsSource="{Binding AssetByKindSlices}">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <Canvas Width="160" Height="160"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Path Data="{Binding SliceGeometry}" Fill="{Binding FillBrush}" ToolTip="{Binding TooltipText}"/>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </Viewbox>
+                                    <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                        <TextBlock Text="Total" FontSize="9" Foreground="{DynamicResource AppTextSecondary}" HorizontalAlignment="Center"/>
+                                        <TextBlock Text="{Binding AssetByKindTotalDisplay}" FontSize="12" FontWeight="Bold" Foreground="{DynamicResource AppTextPrimary}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                                <ItemsControl Grid.Column="1" ItemsSource="{Binding AssetByKindSlices}" VerticalAlignment="Center">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <DockPanel Margin="0,3.5" LastChildFill="True">
+                                                <Border Width="7" Height="7" CornerRadius="2" Background="{Binding FillBrush}" DockPanel.Dock="Left" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding ValueAndPct}" DockPanel.Dock="Right" HorizontalAlignment="Right" FontSize="10.5" FontWeight="SemiBold" Foreground="{DynamicResource AppTextPrimary}" VerticalAlignment="Center"/>
+                                                <TextBlock Text="{Binding Category}" FontSize="10.5" Foreground="{DynamicResource AppTextSecondary}" TextTrimming="CharacterEllipsis" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                            </DockPanel>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </DockPanel>
+                    </Border>
+                </UniformGrid>
             </StackPanel>
 
             <!-- TAB 1: INCOME -->
