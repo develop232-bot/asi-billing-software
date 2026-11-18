@@ -77,8 +77,8 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- (3) Profit & Loss (Green #10B981) -->
-                    <Border Tag="PreserveTheme" Background="#10B981" CornerRadius="12" Padding="18,16" Margin="0,0,0,12">
+                    <!-- (3) Profit & Loss (Green #10B981 / Red #DC2626) -->
+                    <Border Tag="PreserveTheme" Background="{Binding PlProfitLossColor}" CornerRadius="12" Padding="18,16" Margin="0,0,0,12">
                         <Border.Effect>
                             <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.08"/>
                         </Border.Effect>
@@ -87,7 +87,7 @@
                                 <Path Data="M 6,18 L 12,12 L 16,16 L 22,8 M 17,8 L 22,8 L 22,13" Stroke="White" StrokeThickness="2" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
                             <TextBlock Text="Profit &amp; Loss" FontSize="11.5" FontWeight="SemiBold" Foreground="#D1FAE5"/>
-                            <TextBlock Text="{Binding PlNetProfitDisplay}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
+                            <TextBlock Text="{Binding PlNetProfit, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="White" Margin="0,4,0,0"/>
                         </StackPanel>
                     </Border>
 

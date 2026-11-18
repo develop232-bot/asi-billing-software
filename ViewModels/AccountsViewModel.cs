@@ -306,7 +306,7 @@ namespace AsiErp.ViewModels
         }
 
         public string PlExplanationText =>
-            $"Profit & Loss = Income - Expenses for this month. After loan interest ₹{PlPeriodLoanInterest:N0} and depreciation ₹{PlPeriodDepreciation:N0}, the Net Profit is ₹{PlNetProfit:N0}. Loan Outstanding, Investment and Asset Value are balances as on today.";
+            $"Profit & Loss = Income − Expenses for {PlPeriodLabel.ToLowerInvariant()}. includes loan interest and depreciation. Loan Outstanding, Investment and Asset Value are balances as on today.";
 
         // --- BALANCE SHEET STATS ---
         public double BsCap { get; private set; }
