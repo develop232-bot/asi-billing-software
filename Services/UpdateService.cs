@@ -64,7 +64,9 @@ namespace AsiErp.Services
             catch { }
         }
 
-        public async Task<bool> CheckForUpdatesAsync(bool isManualCheck = false)
+        private UpdateManager? _currentMgr;
+
+        public async Task<UpdateInfo?> CheckOnlyForUpdatesAsync(bool isManualCheck = false)
         {
             if (IsChecking || IsDownloading)
             {
@@ -74,16 +76,16 @@ namespace AsiErp.Services
                         IsDownloading ? $"An update is currently downloading ({DownloadPercent}%). Please wait a moment..." : "Checking GitHub for updates, please wait a moment...",
                         "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                 }
-                return false;
+                return null;
             }
             IsChecking = true;
 
             try
             {
                 var source = new GithubSource(Config.GithubRepoUrl, Config.GithubToken, Config.IncludePrerelease);
-                var mgr = new UpdateManager(source);
+                _currentMgr = new UpdateManager(source);
 
-                if (!mgr.IsInstalled)
+                if (!_currentMgr.IsInstalled)
                 {
                     StatusChanged?.Invoke("Running in portable/dev mode");
                     if (isManualCheck)
@@ -92,31 +94,28 @@ namespace AsiErp.Services
                             "The app is currently running in portable/development mode.\n\nTo enable automated online updates, run the setup installer (AsiErp-win-Setup.exe) located on your Desktop.",
                             "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                     }
-                    return false;
+                    return null;
                 }
 
                 StatusChanged?.Invoke("Checking GitHub for updates...");
-                var updateInfo = await mgr.CheckForUpdatesAsync();
+                var updateInfo = await _currentMgr.CheckForUpdatesAsync();
                 if (updateInfo == null)
                 {
                     StatusChanged?.Invoke("Software is up to date");
                     if (isManualCheck)
                     {
-                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.6.7";
+                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.7.0";
                         System.Windows.MessageBox.Show(
                             $"Your software is currently up to date!\n\nInstalled Version: ASI ERP v{currentVer}\nLatest Release: v{currentVer}\n\nAll requested features and updates are active.",
                             "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                     }
-                    return false;
+                    return null;
                 }
 
                 PendingUpdate = updateInfo;
                 string newVer = updateInfo.TargetFullRelease?.Version.ToString() ?? "latest";
-                StatusChanged?.Invoke($"🚀 New version found (v{newVer})! Updating automatically...");
-
-                // 100% Fully automatic: download and restart without any prompts
-                await DownloadAndApplyAsync(mgr, updateInfo);
-                return true;
+                StatusChanged?.Invoke($"New version found (v{newVer})! Updating automatically...");
+                return updateInfo;
             }
             catch (Exception ex)
             {
@@ -125,16 +124,26 @@ namespace AsiErp.Services
                 {
                     System.Windows.MessageBox.Show($"Could not check for online updates:\n{ex.Message}", "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Warning);
                 }
+                return null;
             }
             finally
             {
                 IsChecking = false;
             }
+        }
 
+        public async Task<bool> CheckForUpdatesAsync(bool isManualCheck = false)
+        {
+            var updateInfo = await CheckOnlyForUpdatesAsync(isManualCheck);
+            if (updateInfo != null)
+            {
+                await DownloadAndApplyAsync(updateInfo);
+                return true;
+            }
             return false;
         }
 
-        public async Task DownloadAndApplyAsync(UpdateManager mgr, UpdateInfo updateInfo)
+        public async Task DownloadAndApplyAsync(UpdateInfo updateInfo)
         {
             if (IsDownloading) return;
             IsDownloading = true;
@@ -142,7 +151,13 @@ namespace AsiErp.Services
 
             try
             {
-                await mgr.DownloadUpdatesAsync(updateInfo, progress =>
+                if (_currentMgr == null)
+                {
+                    var source = new GithubSource(Config.GithubRepoUrl, Config.GithubToken, Config.IncludePrerelease);
+                    _currentMgr = new UpdateManager(source);
+                }
+
+                await _currentMgr.DownloadUpdatesAsync(updateInfo, progress =>
                 {
                     DownloadPercent = progress;
                     DownloadProgressChanged?.Invoke(progress);
@@ -153,7 +168,7 @@ namespace AsiErp.Services
                 await Task.Delay(1000);
 
                 // Automatically restart into the new version
-                mgr.ApplyUpdatesAndRestart(updateInfo.TargetFullRelease);
+                _currentMgr.ApplyUpdatesAndRestart(updateInfo.TargetFullRelease);
             }
             catch (Exception ex)
             {

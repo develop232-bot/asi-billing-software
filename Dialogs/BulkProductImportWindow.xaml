@@ -106,10 +106,10 @@
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Import Target Category *" FontSize="11.5" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,5"/>
                             <ComboBox x:Name="CbTargetType" Height="36" Style="{StaticResource LightComboBoxStyle}" ItemContainerStyle="{StaticResource LightComboBoxItemStyle}" SelectedIndex="0" SelectionChanged="TargetType_Changed">
-                                <ComboBoxItem Content="👞 Finished Footwear (Mfg)" Tag="mfg"/>
-                                <ComboBoxItem Content="👕 Readymade Goods (Resale)" Tag="ready"/>
-                                <ComboBoxItem Content="🧵 Raw Materials (Leather/Sole)" Tag="raw"/>
-                                <ComboBoxItem Content="📦 General Packaging &amp; Boxes" Tag="gen"/>
+                                <ComboBoxItem Content="Finished Footwear (Mfg)" Tag="mfg"/>
+                                <ComboBoxItem Content="Readymade Goods (Resale)" Tag="ready"/>
+                                <ComboBoxItem Content="Raw Materials (Leather/Sole)" Tag="raw"/>
+                                <ComboBoxItem Content="General Packaging &amp; Boxes" Tag="gen"/>
                             </ComboBox>
                         </StackPanel>
 

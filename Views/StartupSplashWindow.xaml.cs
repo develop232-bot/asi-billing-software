@@ -56,19 +56,22 @@ namespace AsiErp.Views
 
             try
             {
-                // Scan GitHub for updates with a strict 3.5-second timeout so offline users are never blocked
-                var checkTask = UpdateService.Instance.CheckForUpdatesAsync(isManualCheck: false);
+                // Quick 3.5-second scan to see if an update exists on GitHub
+                var checkTask = UpdateService.Instance.CheckOnlyForUpdatesAsync(isManualCheck: false);
                 var timeoutTask = Task.Delay(3500);
 
                 var completed = await Task.WhenAny(checkTask, timeoutTask);
                 if (completed == checkTask)
                 {
-                    bool updateApplied = await checkTask;
-                    if (updateApplied)
+                    var updateInfo = await checkTask;
+                    if (updateInfo != null)
                     {
-                        // Update downloaded and Velopack is restarting into the new version
+                        // An update IS available! Keep the splash open and download it with live progress!
+                        string ver = updateInfo.TargetFullRelease?.Version.ToString() ?? "latest";
+                        TxtStatus.Text = $"Downloading update v{ver}...";
+                        await UpdateService.Instance.DownloadAndApplyAsync(updateInfo);
                         TxtStatus.Text = "Restarting into new version...";
-                        await Task.Delay(1000);
+                        await Task.Delay(1200);
                         return;
                     }
                 }
