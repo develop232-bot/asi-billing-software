@@ -218,14 +218,14 @@
                                     Command="{Binding NavigateCommand}" CommandParameter="production"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=production}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=production}"
-                                    Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=production}"
-                                    FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=production}"
+                                    Foreground="#F59E0B"
+                                    FontWeight="Bold"
                                     ToolTip="Production Work Orders &amp; Factory Jobs">
                                 <DockPanel LastChildFill="True">
-                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
+                                    <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#F59E0B" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=production}"/>
                                     <Path DockPanel.Dock="Left" Data="M 1,15 L 1,9 L 5,12 L 5,9 L 9,12 L 9,4 L 14,4 L 14,15 Z"
-                                          Stroke="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=production}"
+                                          Stroke="#F59E0B"
                                           StrokeThickness="1.5" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                           Width="15" Height="15" Margin="0,0,10,0" VerticalAlignment="Center"/>
                                     <TextBlock Text="Production" FontWeight="Bold" Foreground="#F59E0B" VerticalAlignment="Center"/>

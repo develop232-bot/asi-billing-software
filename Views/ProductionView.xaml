@@ -11,11 +11,23 @@
         <converters:TabActiveBackgroundConverter x:Key="TabActiveBgConv"/>
         <converters:TabActiveForegroundConverter x:Key="TabActiveFgConv"/>
         <converters:TabActiveBorderConverter x:Key="TabActiveBorderConv"/>
+
+        <Style x:Key="ReportSectionHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Foreground" Value="#0F172A"/>
+        </Style>
+
+        <Style x:Key="ReportSectionSubHeaderStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Foreground" Value="#64748B"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+        </Style>
     </UserControl.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="18,16">
         <StackPanel>
-            <!-- Title & Subtitle (Responsive DockPanel) -->
+            <!-- Title & Subtitle + Top Action Button -->
             <DockPanel Margin="0,0,0,14">
                 <Button DockPanel.Dock="Right" Content="+ New Work Order" Command="{Binding NewWorkOrderCommand}"
                         VerticalAlignment="Center" Padding="13,7" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5">
@@ -28,198 +40,556 @@
             </DockPanel>
 
             <!-- Yellow Dotted Line Separator -->
-            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,16" Tag="PreserveTheme"/>
+            <Line X1="0" X2="1" Stroke="#EAB308" StrokeThickness="1.2" StrokeDashArray="3 3" Stretch="Fill" Margin="0,4,0,14" Tag="PreserveTheme"/>
 
-            <!-- 5 Stats Tiles -->
-            <UniformGrid Columns="5" Margin="0,0,0,20">
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Pending" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding PendingCount}" FontSize="22" FontWeight="Bold" Foreground="#64748B" Margin="0,5,0,0"/>
-                        <TextBlock Text="not started" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                    </StackPanel>
-                </Border>
+            <!-- Main Mode Tabs: Work orders vs Production report -->
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                <Button Content="Work orders" Command="{Binding SelectTabCommand}" CommandParameter="orders"
+                        Margin="0,0,6,0" Style="{StaticResource TabFilterButtonStyle}" Padding="16,7" FontSize="12" FontWeight="SemiBold"
+                        Background="{Binding SelectedTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=orders}"
+                        Foreground="{Binding SelectedTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=orders}"
+                        BorderBrush="{Binding SelectedTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=orders}"/>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Started" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding StartedCount}" FontSize="22" FontWeight="Bold" Foreground="#4F46E5" Margin="0,5,0,0"/>
-                        <TextBlock Text="work initiated" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                    </StackPanel>
-                </Border>
+                <Button Content="Production report" Command="{Binding SelectTabCommand}" CommandParameter="report"
+                        Style="{StaticResource TabFilterButtonStyle}" Padding="16,7" FontSize="12" FontWeight="SemiBold"
+                        Background="{Binding SelectedTab, Converter={StaticResource TabActiveBgConv}, ConverterParameter=report}"
+                        Foreground="{Binding SelectedTab, Converter={StaticResource TabActiveFgConv}, ConverterParameter=report}"
+                        BorderBrush="{Binding SelectedTab, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=report}"/>
+            </StackPanel>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="In Progress" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding InProgressCount}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
-                        <TextBlock Text="active factory stages" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                    </StackPanel>
-                </Border>
+            <!-- ========================================== -->
+            <!-- TAB 1: WORK ORDERS                         -->
+            <!-- ========================================== -->
+            <StackPanel Visibility="{Binding IsOrdersTabSelected, Converter={StaticResource BoolToVis}}">
+                <!-- 5 Stats Tiles -->
+                <UniformGrid Columns="5" Margin="0,0,0,20">
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Pending" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding PendingCount}" FontSize="22" FontWeight="Bold" Foreground="#64748B" Margin="0,5,0,0"/>
+                            <TextBlock Text="not started" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
 
-                <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Completed This Month" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding CompletedThisMonthCount}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
-                        <TextBlock Text="finished goods made" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                    </StackPanel>
-                </Border>
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Started" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding StartedCount}" FontSize="22" FontWeight="Bold" Foreground="#4F46E5" Margin="0,5,0,0"/>
+                            <TextBlock Text="work initiated" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
 
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="In Progress" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding InProgressCount}" FontSize="22" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,0"/>
+                            <TextBlock Text="active factory stages" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Completed This Month" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding CompletedThisMonthCount}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
+                            <TextBlock Text="finished goods made" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Overdue" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding OverdueCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
+                            <TextBlock Text="past due date" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Table Container -->
                 <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
-                    <StackPanel>
-                        <TextBlock Text="Overdue" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
-                        <TextBlock Text="{Binding OverdueCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
-                        <TextBlock Text="past due date" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
-                    </StackPanel>
+                    <DockPanel>
+                        <!-- Filter Tools with Dynamic Active Color Chips -->
+                        <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
+                            <!-- Search Box with Hint & Clean Focus -->
+                            <Border Style="{StaticResource SearchContainerBorderStyle}" Width="260" Margin="0,0,16,0" VerticalAlignment="Center">
+                                <Grid Margin="10,0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
+                                    <TextBlock Grid.Column="1" Text="Search orders, products..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=TxtWoSearch}" Value="">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Text, ElementName=TxtWoSearch}" Value="{x:Null}">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+                                    <TextBox x:Name="TxtWoSearch" Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+                                             Style="{StaticResource CleanSearchTextBoxStyle}"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Type Chips -->
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <Button Content="All Orders" Command="{Binding SetTypeFilterCommand}" CommandParameter="all" Margin="0,0,4,0"
+                                        Style="{StaticResource TabFilterButtonStyle}"
+                                        Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
+                                        Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
+                                        BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"/>
+
+                                <Button Content="General / Stock" Command="{Binding SetTypeFilterCommand}" CommandParameter="general" Margin="0,0,4,0"
+                                        Style="{StaticResource TabFilterButtonStyle}"
+                                        Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=general}"
+                                        Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=general}"
+                                        BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=general}"/>
+
+                                <Button Content="Domestic" Command="{Binding SetTypeFilterCommand}" CommandParameter="domestic" Margin="0,0,4,0"
+                                        Style="{StaticResource TabFilterButtonStyle}"
+                                        Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
+                                        Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
+                                        BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"/>
+
+                                <Button Content="Export" Command="{Binding SetTypeFilterCommand}" CommandParameter="export"
+                                        Style="{StaticResource TabFilterButtonStyle}"
+                                        Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
+                                        Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
+                                        BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"/>
+                            </StackPanel>
+                        </DockPanel>
+
+                        <!-- Work Orders Table (Responsive, No Horizontal Scroll) -->
+                        <DataGrid ItemsSource="{Binding FilteredOrders}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Order No" Binding="{Binding OrderNo}" Width="95" FontWeight="Bold"/>
+                                <DataGridTemplateColumn Header="Customer" Width="*" MinWidth="110">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Customer}" ToolTip="{Binding Customer}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Type" Width="85">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#F1F5F9">
+                                                <TextBlock Text="{Binding OrderTypeLabel}" Foreground="#475569" FontSize="10" FontWeight="SemiBold"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTextColumn Header="Product(s) &amp; Quantity" Binding="{Binding ProductsSummary}" Width="1.3*" MinWidth="120"/>
+                                <DataGridTextColumn Header="Order Date" Binding="{Binding OrderDate, Converter={StaticResource DateConv}}" Width="85"/>
+
+                                <DataGridTemplateColumn Header="Due Date" Width="100">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding DueDate, Converter={StaticResource DateConv}}" VerticalAlignment="Center" FontSize="11"/>
+                                                <TextBlock Text=" OVERDUE" Visibility="{Binding IsOverdue, Converter={StaticResource BoolToVis}}" Foreground="#DC2626" FontWeight="Bold" FontSize="9" Margin="3,0,0,0" VerticalAlignment="Center"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Header="Status" Width="95">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
+                                                <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusBrushConv}}" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+
+                                <DataGridTemplateColumn Width="105">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                <Button Content="Edit" Command="{Binding DataContext.EditWorkOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Padding="9,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
+                                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                </Button>
+                                                <Button Content="Delete" Command="{Binding DataContext.DeleteWorkOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                        Padding="7,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                                    <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                </Button>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
                 </Border>
-            </UniformGrid>
+            </StackPanel>
 
-            <!-- Table Container -->
-            <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                </Border.Effect>
-                <DockPanel>
-                    <!-- Filter Tools with Dynamic Active Color Chips -->
-                    <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
-                        <!-- Search Box with Hint & Clean Focus -->
-                        <Border Style="{StaticResource SearchContainerBorderStyle}" Width="260" Margin="0,0,16,0" VerticalAlignment="Center">
-                            <Grid Margin="10,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="20"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
-                                <TextBlock Grid.Column="1" Text="Search orders, products..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
-                                    <TextBlock.Style>
-                                        <Style TargetType="TextBlock">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                            <Style.Triggers>
-                                                <DataTrigger Binding="{Binding Text, ElementName=TxtWoSearch}" Value="">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                                <DataTrigger Binding="{Binding Text, ElementName=TxtWoSearch}" Value="{x:Null}">
-                                                    <Setter Property="Visibility" Value="Visible"/>
-                                                </DataTrigger>
-                                            </Style.Triggers>
-                                        </Style>
-                                    </TextBlock.Style>
-                                </TextBlock>
-                                <TextBox x:Name="TxtWoSearch" Grid.Column="1" Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
-                                         Style="{StaticResource CleanSearchTextBoxStyle}"/>
-                            </Grid>
-                        </Border>
+            <!-- ========================================== -->
+            <!-- TAB 2: PRODUCTION REPORT                   -->
+            <!-- ========================================== -->
+            <StackPanel Visibility="{Binding IsReportTabSelected, Converter={StaticResource BoolToVis}}">
+                <!-- Report Subheader & CSV Download Actions -->
+                <DockPanel Margin="0,0,0,12">
+                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Content="Download month-wise report" Command="{Binding DownloadMonthReportCommand}"
+                                Padding="12,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,8,0">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                        </Button>
+                        <Button Content="Download orders list" Command="{Binding DownloadOrdersListCommand}"
+                                Padding="12,6" Background="#F8FAFC" Foreground="#1E293B" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11">
+                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                        </Button>
+                    </StackPanel>
+                    <TextBlock VerticalAlignment="Center" FontSize="16" FontWeight="Bold" Foreground="#0F172A">
+                        <Run Text="Production report · "/>
+                        <Run Text="{Binding ReportPeriodLabel, Mode=OneWay}" Foreground="#2563EB"/>
+                    </TextBlock>
+                </DockPanel>
 
-                        <!-- Type Chips -->
+                <!-- Month Navigation Chips Bar -->
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                    <Button Content="‹ Prev Month" Command="{Binding PrevMonthCommand}"
+                            Padding="12,6" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="Medium" Margin="0,0,6,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button Content="{Binding ReportPeriodLabel}" Command="{Binding CurrentMonthCommand}"
+                            Padding="14,6" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="11" FontWeight="SemiBold" Margin="0,0,6,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button Content="Next Month ›" Command="{Binding NextMonthCommand}"
+                            Padding="12,6" Background="#F8FAFC" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="Medium" Margin="0,0,6,0">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                    <Button Content="Back to current month" Command="{Binding CurrentMonthCommand}"
+                            Visibility="{Binding IsNotCurrentMonth, Converter={StaticResource BoolToVis}}"
+                            Padding="12,6" Background="#EFF6FF" Foreground="#2563EB" BorderBrush="#BFDBFE" BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold">
+                        <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
+                    </Button>
+                </StackPanel>
+
+                <!-- 8 KPI Tiles in 2 Rows (4 tiles per row) -->
+                <!-- Row 1 -->
+                <UniformGrid Columns="4" Margin="0,0,0,14">
+                    <!-- Orders Received (Blue) -->
+                    <Border Background="White" Padding="16" Margin="0,0,12,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Orders Received" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiOrdersReceived}" FontSize="24" FontWeight="Bold" Foreground="#3B82F6" Margin="0,4,0,0"/>
+                            <TextBlock Text="orders placed in period" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Orders Started (Emerald) -->
+                    <Border Background="White" Padding="16" Margin="0,0,12,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Orders Started" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiOrdersStarted}" FontSize="24" FontWeight="Bold" Foreground="#10B981" Margin="0,4,0,0"/>
+                            <TextBlock Text="work initiated" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Orders Completed (Teal) -->
+                    <Border Background="White" Padding="16" Margin="0,0,12,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Orders Completed" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiOrdersCompleted}" FontSize="24" FontWeight="Bold" Foreground="#0D9488" Margin="0,4,0,0"/>
+                            <TextBlock Text="finished in period" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Units Produced (Purple) -->
+                    <Border Background="White" Padding="16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Units Produced" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiUnitsProduced}" FontSize="24" FontWeight="Bold" Foreground="#8B5CF6" Margin="0,4,0,0"/>
+                            <TextBlock Text="pairs / units made" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Row 2 -->
+                <UniformGrid Columns="4" Margin="0,0,0,16">
+                    <!-- Completed On Time (Green) -->
+                    <Border Background="White" Padding="16" Margin="0,0,12,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Completed On Time" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiCompletedOnTime}" FontSize="24" FontWeight="Bold" Foreground="#10B981" Margin="0,4,0,0"/>
+                            <TextBlock Text="delivered on or before due date" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Completed Late (Red) -->
+                    <Border Background="White" Padding="16" Margin="0,0,12,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Completed Late" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiCompletedLate}" FontSize="24" FontWeight="Bold" Foreground="#EF4444" Margin="0,4,0,0"/>
+                            <TextBlock Text="finished past due date" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Avg Days to Complete (Orange) -->
+                    <Border Background="White" Padding="16" Margin="0,0,12,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Avg Days to Complete" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiAvgDays}" FontSize="24" FontWeight="Bold" Foreground="#F59E0B" Margin="0,4,0,0"/>
+                            <TextBlock Text="days from start to finish" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Material Used · Cost (Indigo/Blue) -->
+                    <Border Background="White" Padding="16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <TextBlock Text="Material Used · Cost" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding KpiMaterialCost}" FontSize="24" FontWeight="Bold" Foreground="#2563EB" Margin="0,4,0,0"/>
+                            <TextBlock Text="total raw material value consumed" FontSize="10.5" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </UniformGrid>
+
+                <!-- Custom Report Date Picker Tools -->
+                <Border Background="White" Padding="14,12" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0,0,0,16">
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Bottom" Text="Orders are counted as received on the order date, started on the start date, and completed on the finished date."
+                                   FontSize="11" Foreground="#94A3B8" Margin="0,8,0,0"/>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Button Content="All Orders" Command="{Binding SetTypeFilterCommand}" CommandParameter="all" Margin="0,0,4,0"
-                                    Style="{StaticResource TabFilterButtonStyle}"
-                                    Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=all}"
-                                    Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
-                                    BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"/>
-
-                            <Button Content="General / Stock" Command="{Binding SetTypeFilterCommand}" CommandParameter="general" Margin="0,0,4,0"
-                                    Style="{StaticResource TabFilterButtonStyle}"
-                                    Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=general}"
-                                    Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=general}"
-                                    BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=general}"/>
-
-                            <Button Content="Domestic" Command="{Binding SetTypeFilterCommand}" CommandParameter="domestic" Margin="0,0,4,0"
-                                    Style="{StaticResource TabFilterButtonStyle}"
-                                    Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=domestic}"
-                                    Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=domestic}"
-                                    BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=domestic}"/>
-
-                            <Button Content="Export" Command="{Binding SetTypeFilterCommand}" CommandParameter="export"
-                                    Style="{StaticResource TabFilterButtonStyle}"
-                                    Background="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=export}"
-                                    Foreground="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=export}"
-                                    BorderBrush="{Binding SelectedTypeFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=export}"/>
+                            <TextBlock Text="Custom report" FontWeight="Bold" FontSize="12.5" Foreground="#1E293B" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                            <TextBlock Text="From" FontSize="12" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <DatePicker SelectedDate="{Binding ReportFromDate, Mode=TwoWay}" Width="135" Height="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <TextBlock Text="To" FontSize="12" Foreground="#64748B" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                            <DatePicker SelectedDate="{Binding ReportToDate, Mode=TwoWay}" Width="135" Height="28" Margin="0,0,12,0" VerticalAlignment="Center"/>
+                            <Button Content="Clear" Command="{Binding ClearCustomRangeCommand}" Visibility="{Binding IsCustomDateRange, Converter={StaticResource BoolToVis}}"
+                                    Padding="10,4" Background="#F1F5F9" Foreground="#475569" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontSize="11" FontWeight="SemiBold" VerticalAlignment="Center">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                            </Button>
                         </StackPanel>
                     </DockPanel>
+                </Border>
 
-                    <!-- Work Orders Table (Responsive, No Horizontal Scroll) -->
-                    <DataGrid ItemsSource="{Binding FilteredOrders}" AutoGenerateColumns="False" CanUserAddRows="False"
-                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
-                        <DataGrid.Columns>
-                            <DataGridTextColumn Header="Order No" Binding="{Binding OrderNo}" Width="95" FontWeight="Bold"/>
-                            <DataGridTemplateColumn Header="Customer" Width="*" MinWidth="110">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="{Binding Customer}" ToolTip="{Binding Customer}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                <!-- SECTION 1: Month-wise Production Report (Last 12 Months) -->
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0,0,0,16">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,12">
+                            <TextBlock Text="last 12 months" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" DockPanel.Dock="Right"/>
+                            <TextBlock Text="Month-wise production report" Style="{StaticResource ReportSectionHeaderStyle}"/>
+                        </DockPanel>
 
-                            <DataGridTemplateColumn Header="Type" Width="85">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#F1F5F9">
-                                            <TextBlock Text="{Binding OrderTypeLabel}" Foreground="#475569" FontSize="10" FontWeight="SemiBold"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                        <DataGrid ItemsSource="{Binding MonthWiseRows}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                            <DataGrid.RowStyle>
+                                <Style TargetType="DataGridRow">
+                                    <Setter Property="FontWeight" Value="{Binding RowFontWeight}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsTotalRow}" Value="True">
+                                            <Setter Property="Background" Value="#F8FAFC"/>
+                                            <Setter Property="BorderBrush" Value="#CBD5E1"/>
+                                            <Setter Property="BorderThickness" Value="0,1.5,0,0"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.RowStyle>
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Month" Binding="{Binding MonthLabel}" Width="120"/>
+                                <DataGridTextColumn Header="Orders received" Binding="{Binding OrdersReceived}" Width="*"/>
+                                <DataGridTextColumn Header="Orders completed" Binding="{Binding OrdersCompleted}" Width="*"/>
+                                <DataGridTextColumn Header="Units produced" Binding="{Binding UnitsProducedFormatted}" Width="*"/>
+                                <DataGridTextColumn Header="On time" Binding="{Binding OnTime}" Width="90"/>
+                                <DataGridTextColumn Header="Late" Binding="{Binding Late}" Width="80"/>
+                                <DataGridTextColumn Header="Avg days to complete" Binding="{Binding AvgDays}" Width="140"/>
+                                <DataGridTextColumn Header="Material cost used" Binding="{Binding MaterialCostFormatted}" Width="130"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
 
-                            <DataGridTextColumn Header="Product(s) &amp; Quantity" Binding="{Binding ProductsSummary}" Width="1.3*" MinWidth="120"/>
-                            <DataGridTextColumn Header="Order Date" Binding="{Binding OrderDate, Converter={StaticResource DateConv}}" Width="85"/>
+                <!-- SECTION 2: Side-by-side Tables: Completed by order type & Material used -->
+                <Grid Margin="0,0,0,16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="14"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-                            <DataGridTemplateColumn Header="Due Date" Width="100">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding DueDate, Converter={StaticResource DateConv}}" VerticalAlignment="Center" FontSize="11"/>
-                                            <TextBlock Text=" OVERDUE" Visibility="{Binding IsOverdue, Converter={StaticResource BoolToVis}}" Foreground="#DC2626" FontWeight="Bold" FontSize="9" Margin="3,0,0,0" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                    <!-- Completed by order type -->
+                    <Border Grid.Column="0" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,12">
+                                <TextBlock Text="{Binding ReportPeriodLabel}" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" DockPanel.Dock="Right"/>
+                                <TextBlock Text="Completed by order type" Style="{StaticResource ReportSectionHeaderStyle}"/>
+                            </DockPanel>
 
-                            <DataGridTemplateColumn Header="Status" Width="95">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">
-                                            <TextBlock Text="{Binding Status}" Foreground="{Binding Status, Converter={StaticResource StatusBrushConv}}" FontSize="10" FontWeight="Bold"/>
-                                        </Border>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                            <DataGrid ItemsSource="{Binding CompletedByTypeRows}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                                <DataGrid.Columns>
+                                    <DataGridTemplateColumn Header="Type" Width="*">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Border Padding="8,3" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding BadgeBackground}">
+                                                    <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding BadgeForeground}" FontSize="10.5" FontWeight="SemiBold"/>
+                                                </Border>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <DataGridTextColumn Header="Orders" Binding="{Binding OrdersCount}" Width="90"/>
+                                    <DataGridTextColumn Header="Units" Binding="{Binding UnitsFormatted}" Width="90"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
 
-                            <DataGridTemplateColumn Width="105">
-                                <DataGridTemplateColumn.CellTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <Button Content="Edit" Command="{Binding DataContext.EditWorkOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="9,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Cursor="Hand" FontSize="10.5" Margin="0,0,4,0">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
-                                            </Button>
-                                            <Button Content="Delete" Command="{Binding DataContext.DeleteWorkOrderCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                    Padding="7,3" Background="#FEE2E2" Foreground="#DC2626" BorderBrush="#FECACA" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
-                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
-                                            </Button>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
-                        </DataGrid.Columns>
-                    </DataGrid>
-                </DockPanel>
-            </Border>
+                    <!-- Material used -->
+                    <Border Grid.Column="2" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                        <Border.Effect>
+                            <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                        </Border.Effect>
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,12">
+                                <TextBlock Text="{Binding ReportPeriodLabel}" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" DockPanel.Dock="Right"/>
+                                <TextBlock Text="Material used" Style="{StaticResource ReportSectionHeaderStyle}"/>
+                            </DockPanel>
+
+                            <DataGrid ItemsSource="{Binding MaterialUsedRows}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                      HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Material" Binding="{Binding MaterialName}" Width="*" FontWeight="Medium"/>
+                                    <DataGridTextColumn Header="Quantity" Binding="{Binding QuantityFormatted}" Width="100"/>
+                                    <DataGridTextColumn Header="Cost" Binding="{Binding CostFormatted}" Width="100"/>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <!-- SECTION 3: Products made -->
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0,0,0,16">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,12">
+                            <TextBlock Text="{Binding ReportPeriodLabel}" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" DockPanel.Dock="Right"/>
+                            <TextBlock Text="Products made" Style="{StaticResource ReportSectionHeaderStyle}"/>
+                        </DockPanel>
+
+                        <DataGrid ItemsSource="{Binding ProductsMadeRows}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="36">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Product" Binding="{Binding ProductName}" Width="*" FontWeight="Medium"/>
+                                <DataGridTextColumn Header="Units made" Binding="{Binding UnitsFormatted}" Width="140"/>
+                                <DataGridTextColumn Header="Orders" Binding="{Binding OrdersCount}" Width="100"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+
+                <!-- SECTION 4: Work orders in this report -->
+                <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12" Margin="0,0,0,24">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
+                    </Border.Effect>
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,12">
+                            <TextBlock Text="{Binding ReportPeriodLabel}" FontSize="11" Foreground="#94A3B8" VerticalAlignment="Center" DockPanel.Dock="Right"/>
+                            <TextBlock Text="Work orders in this report" Style="{StaticResource ReportSectionHeaderStyle}"/>
+                        </DockPanel>
+
+                        <DataGrid ItemsSource="{Binding ReportWorkOrders}" AutoGenerateColumns="False" CanUserAddRows="False"
+                                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Order" Binding="{Binding OrderNo}" Width="85" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="Customer" Binding="{Binding Customer}" Width="1.1*"/>
+                                <DataGridTemplateColumn Header="Type" Width="80">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding TypeBadgeBg}">
+                                                <TextBlock Text="{Binding OrderTypeLabel}" Foreground="{Binding TypeBadgeFg}" FontSize="9.5" FontWeight="SemiBold"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTextColumn Header="Product(s)" Binding="{Binding ProductsSummary}" Width="1.3*"/>
+                                <DataGridTextColumn Header="Ordered" Binding="{Binding OrderDate}" Width="85"/>
+                                <DataGridTextColumn Header="Due" Binding="{Binding DueDate}" Width="85"/>
+                                <DataGridTextColumn Header="Started" Binding="{Binding StartDate}" Width="85"/>
+                                <DataGridTextColumn Header="Finished" Binding="{Binding EndDate}" Width="85"/>
+                                <DataGridTextColumn Header="Time taken" Binding="{Binding TimeTaken}" Width="85"/>
+                                <DataGridTemplateColumn Header="Result" Width="85">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="{Binding ResultBg}">
+                                                <TextBlock Text="{Binding Result}" Foreground="{Binding ResultFg}" FontSize="10" FontWeight="Bold"/>
+                                            </Border>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
         </StackPanel>
     </ScrollViewer>
 </UserControl>
