@@ -40,11 +40,11 @@
                 <!-- Brand Header -->
                 <Border DockPanel.Dock="Top" Padding="14,12" BorderBrush="#1E293B" BorderThickness="0,0,0,1" Background="#070D1F">
                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                        <Border Width="44" Height="44" CornerRadius="10" Margin="0,0,12,0" Background="#0A1128" BorderBrush="#D4AF37" BorderThickness="1.5" ClipToBounds="True">
+                        <Border Width="42" Height="42" CornerRadius="10" Margin="0,0,12,0" Background="Transparent" ClipToBounds="True">
                             <Border.Effect>
-                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="#D4AF37" Opacity="0.4"/>
+                                <DropShadowEffect BlurRadius="10" ShadowDepth="1" Direction="270" Color="#0284C7" Opacity="0.45"/>
                             </Border.Effect>
-                            <Image Source="pack://application:,,,/Assets/logo.png" Stretch="Uniform" Margin="2" RenderOptions.BitmapScalingMode="HighQuality"/>
+                            <Image Source="pack://application:,,,/Assets/gtrack_icon.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
                         </Border>
                         <StackPanel VerticalAlignment="Center">
                             <TextBlock Text="G-Track ERP" FontWeight="Bold" FontSize="15" Foreground="White"/>
@@ -575,11 +575,14 @@
                             </Button.Template>
                         </Button>
 
-                        <!-- User Avatar & Profile Button -->
-                        <Button Command="{Binding ToggleUserMenuCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="2">
+                        <!-- User Avatar & Profile Button (ASI Logo on Right Side) -->
+                        <Button Command="{Binding ToggleUserMenuCommand}" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="2" ToolTip="Afrah Samiya Industries · User Profile">
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <Border Width="32" Height="32" CornerRadius="16" Background="{Binding LoggedInRoleColor}" Margin="0,0,7,0">
-                                    <TextBlock Text="{Binding LoggedInUserInitials}" Foreground="White" FontWeight="Bold" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <Border Width="34" Height="34" CornerRadius="8" Background="#0A1128" BorderBrush="#D4AF37" BorderThickness="1.5" Margin="0,0,8,0" ClipToBounds="True">
+                                    <Border.Effect>
+                                        <DropShadowEffect BlurRadius="6" ShadowDepth="1" Direction="270" Color="#D4AF37" Opacity="0.3"/>
+                                    </Border.Effect>
+                                    <Image Source="pack://application:,,,/Assets/logo.png" Stretch="Uniform" Margin="2" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 </Border>
                                 <StackPanel VerticalAlignment="Center">
                                     <TextBlock Text="{Binding LoggedInUserName}" FontWeight="SemiBold" FontSize="12" Foreground="#1E293B"/>
