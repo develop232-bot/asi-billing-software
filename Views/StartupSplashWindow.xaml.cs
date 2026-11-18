@@ -56,9 +56,12 @@ namespace AsiErp.Views
 
             try
             {
-                // Quick 3.5-second scan to see if an update exists on GitHub
+                TxtStatus.Text = "Checking for online updates...";
+                PbProgress.IsIndeterminate = true;
+
+                // 12-second scan to see if an update exists on GitHub
                 var checkTask = UpdateService.Instance.CheckOnlyForUpdatesAsync(isManualCheck: false);
-                var timeoutTask = Task.Delay(3500);
+                var timeoutTask = Task.Delay(12000);
 
                 var completed = await Task.WhenAny(checkTask, timeoutTask);
                 if (completed == checkTask)

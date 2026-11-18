@@ -1,5 +1,7 @@
 using System;
+using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Velopack;
@@ -87,11 +89,13 @@ namespace AsiErp.Services
 
                 if (!_currentMgr.IsInstalled)
                 {
-                    StatusChanged?.Invoke("Running in portable/dev mode");
+                    StatusChanged?.Invoke("Portable mode: Checking for latest installer...");
+                    bool handled = await TryHandlePortableUpdateAsync(isManualCheck);
+                    if (handled) return null;
                     if (isManualCheck)
                     {
                         System.Windows.MessageBox.Show(
-                            "The app is currently running in portable/development mode.\n\nTo enable automated online updates, run the setup installer (AsiErp-win-Setup.exe) located on your Desktop.",
+                            "The app is currently running in portable mode and no newer installer could be found.",
                             "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
                     }
                     return null;
@@ -104,7 +108,7 @@ namespace AsiErp.Services
                     StatusChanged?.Invoke("Software is up to date");
                     if (isManualCheck)
                     {
-                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.7.2";
+                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.7.3";
                         System.Windows.MessageBox.Show(
                             $"Your software is currently up to date!\n\nInstalled Version: ASI ERP v{currentVer}\nLatest Release: v{currentVer}\n\nAll requested features and updates are active.",
                             "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
@@ -129,6 +133,70 @@ namespace AsiErp.Services
             finally
             {
                 IsChecking = false;
+            }
+        }
+
+        private async Task<bool> TryHandlePortableUpdateAsync(bool isManualCheck)
+        {
+            try
+            {
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("AsiErp-Updater");
+                if (!string.IsNullOrWhiteSpace(Config.GithubToken))
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", Config.GithubToken);
+                }
+
+                string apiUrl = "https://api.github.com/repos/develop232-bot/asi-billing-software/releases/latest";
+                string json = await client.GetStringAsync(apiUrl);
+                using var doc = JsonDocument.Parse(json);
+                var root = doc.RootElement;
+                string? tag = root.GetProperty("tag_name").GetString();
+                if (string.IsNullOrEmpty(tag)) return false;
+
+                var curVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+                if (Version.TryParse(tag, out var remoteVer) && curVer != null && remoteVer <= curVer)
+                {
+                    return false;
+                }
+
+                string? setupUrl = null;
+                if (root.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
+                {
+                    foreach (var a in assets.EnumerateArray())
+                    {
+                        string? name = a.GetProperty("name").GetString();
+                        if (name != null && name.Equals("AsiErp-win-Setup.exe", StringComparison.OrdinalIgnoreCase))
+                        {
+                            setupUrl = a.GetProperty("browser_download_url").GetString();
+                            break;
+                        }
+                    }
+                }
+
+                if (string.IsNullOrEmpty(setupUrl)) return false;
+
+                if (isManualCheck)
+                {
+                    var ask = System.Windows.MessageBox.Show(
+                        $"A new update (v{tag}) is available on GitHub!\n\nWould you like to download and install this update now?",
+                        "Update Available", System.Windows.MessageBoxButton.YesNo, System.Windows.MessageBoxImage.Question);
+                    if (ask != System.Windows.MessageBoxResult.Yes) return true;
+                }
+
+                StatusChanged?.Invoke($"Downloading installer v{tag}...");
+                string tempSetup = Path.Combine(Path.GetTempPath(), "AsiErp-win-Setup.exe");
+                var bytes = await client.GetByteArrayAsync(setupUrl);
+                await File.WriteAllBytesAsync(tempSetup, bytes);
+
+                StatusChanged?.Invoke("Starting installer...");
+                Process.Start(new ProcessStartInfo(tempSetup) { UseShellExecute = true });
+                System.Windows.Application.Current?.Dispatcher.Invoke(() => System.Windows.Application.Current.Shutdown());
+                return true;
+            }
+            catch
+            {
+                return false;
             }
         }
 
