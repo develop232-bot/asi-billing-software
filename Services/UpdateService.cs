@@ -108,7 +108,7 @@ namespace AsiErp.Services
                     StatusChanged?.Invoke("Software is up to date");
                     if (isManualCheck)
                     {
-                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.7.3";
+                        var currentVer = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.7.4";
                         System.Windows.MessageBox.Show(
                             $"Your software is currently up to date!\n\nInstalled Version: ASI ERP v{currentVer}\nLatest Release: v{currentVer}\n\nAll requested features and updates are active.",
                             "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
@@ -119,6 +119,12 @@ namespace AsiErp.Services
                 PendingUpdate = updateInfo;
                 string newVer = updateInfo.TargetFullRelease?.Version.ToString() ?? "latest";
                 StatusChanged?.Invoke($"New version found (v{newVer})! Updating automatically...");
+                if (isManualCheck)
+                {
+                    System.Windows.MessageBox.Show(
+                        $"New version v{newVer} found!\n\nDownloading the update now. ASI ERP will restart automatically when complete.",
+                        "Online Update", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
+                }
                 return updateInfo;
             }
             catch (Exception ex)
