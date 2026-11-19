@@ -170,7 +170,7 @@ namespace AsiErp.ViewModels
         private double _originalQuantity;
         private string _originalDate = "";
 
-        public bool IsInwardNoticeVisible => _isEditMode && Quantity > _originalQuantity && _originalDate != DateTime.Now.ToString("yyyy-MM-dd");
+        public bool IsInwardNoticeVisible => _isEditMode && Quantity > _originalQuantity;
 
         public string InwardNoticeText => $"📅 Adding +{(Quantity - _originalQuantity):N0} stock creates a new entry for today ({DateTime.Now:yyyy-MM-dd}) in Products, while Inventory consolidates total stock ({Quantity:N0}) under SKU {Sku}.";
 
@@ -381,9 +381,16 @@ namespace AsiErp.ViewModels
                     BulkPrice = p.BulkPrice;
                     DomesticPrice = p.DomesticPrice;
                     ExportPrice = p.ExportPrice;
-                    Stock = p.Stock;
-                    Quantity = p.RegisteredQty > 0 ? p.RegisteredQty : p.Stock;
-                    _originalQuantity = Quantity;
+
+                    double totalStock = _dataService.Products
+                        .Where(x => (!string.IsNullOrWhiteSpace(p.Sku) && x.Sku == p.Sku) ||
+                                    (string.IsNullOrWhiteSpace(p.Sku) && x.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase)))
+                        .Sum(x => x.Stock);
+                    if (totalStock <= 0) totalStock = p.Stock;
+
+                    Stock = totalStock;
+                    Quantity = totalStock;
+                    _originalQuantity = totalStock;
                     ReorderLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
@@ -399,9 +406,16 @@ namespace AsiErp.ViewModels
                     CostPrice = r.Rate;
                     SellingPrice = 0;
                     GstPercent = r.Gst;
-                    Stock = r.Stock;
-                    Quantity = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock;
-                    _originalQuantity = Quantity;
+
+                    double totalStock = _dataService.RawMaterials
+                        .Where(x => (!string.IsNullOrWhiteSpace(r.Sku) && x.Sku == r.Sku) ||
+                                    (string.IsNullOrWhiteSpace(r.Sku) && x.Name.Equals(r.Name, StringComparison.OrdinalIgnoreCase)))
+                        .Sum(x => x.Stock);
+                    if (totalStock <= 0) totalStock = r.Stock;
+
+                    Stock = totalStock;
+                    Quantity = totalStock;
+                    _originalQuantity = totalStock;
                     ReorderLevel = r.ReorderLevel;
                     LowAlertLevel = r.ReorderLevel;
                     MediumAlertLevel = r.ReorderLevel * 2;
@@ -420,9 +434,16 @@ namespace AsiErp.ViewModels
                     CostPrice = g.Rate;
                     SellingPrice = 0;
                     GstPercent = g.Gst;
-                    Stock = g.Stock;
-                    Quantity = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock;
-                    _originalQuantity = Quantity;
+
+                    double totalStock = _dataService.GeneralItems
+                        .Where(x => (!string.IsNullOrWhiteSpace(g.Sku) && x.Sku == g.Sku) ||
+                                    (string.IsNullOrWhiteSpace(g.Sku) && x.Name.Equals(g.Name, StringComparison.OrdinalIgnoreCase)))
+                        .Sum(x => x.Stock);
+                    if (totalStock <= 0) totalStock = g.Stock;
+
+                    Stock = totalStock;
+                    Quantity = totalStock;
+                    _originalQuantity = totalStock;
                     ReorderLevel = g.ReorderLevel;
                     LowAlertLevel = g.ReorderLevel;
                     MediumAlertLevel = g.ReorderLevel * 2;
@@ -550,8 +571,8 @@ namespace AsiErp.ViewModels
                 }
 
                 string today = DateTime.Now.ToString("yyyy-MM-dd");
-                bool isStockAdditionOnNewDate = _isEditMode && Quantity > _originalQuantity && !string.IsNullOrWhiteSpace(_originalDate) && _originalDate != today;
-                double addedQty = isStockAdditionOnNewDate ? (Quantity - _originalQuantity) : 0;
+                bool isStockAddition = _isEditMode && Quantity > _originalQuantity;
+                double addedQty = isStockAddition ? Math.Round(Quantity - _originalQuantity, 2) : 0;
 
                 if (ItemType == "raw")
                 {
@@ -569,11 +590,24 @@ namespace AsiErp.ViewModels
                     rm.Hsn = cleanHsn;
                     rm.Barcode = cleanBarcode;
 
-                    if (isStockAdditionOnNewDate)
+                    if (isStockAddition)
                     {
-                        rm.Stock = _originalQuantity;
-                        rm.RegisteredQty = _originalQuantity;
                         await _dataService.SaveRawMaterialAsync(rm);
+
+                        var otherEntries = _dataService.RawMaterials
+                            .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+                        foreach (var other in otherEntries)
+                        {
+                            other.Name = trimmedName;
+                            other.Unit = rm.Unit;
+                            other.Rate = rm.Rate;
+                            other.Gst = rm.Gst;
+                            other.ReorderLevel = rm.ReorderLevel;
+                            other.Hsn = cleanHsn;
+                            other.Barcode = cleanBarcode;
+                            await _dataService.SaveRawMaterialAsync(other);
+                        }
 
                         var newRm = new RawMaterialItem
                         {
@@ -616,11 +650,24 @@ namespace AsiErp.ViewModels
                     gi.Hsn = cleanHsn;
                     gi.Barcode = cleanBarcode;
 
-                    if (isStockAdditionOnNewDate)
+                    if (isStockAddition)
                     {
-                        gi.Stock = _originalQuantity;
-                        gi.RegisteredQty = _originalQuantity;
                         await _dataService.SaveGeneralItemAsync(gi);
+
+                        var otherEntries = _dataService.GeneralItems
+                            .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+                        foreach (var other in otherEntries)
+                        {
+                            other.Name = trimmedName;
+                            other.Unit = gi.Unit;
+                            other.Rate = gi.Rate;
+                            other.Gst = gi.Gst;
+                            other.ReorderLevel = gi.ReorderLevel;
+                            other.Hsn = cleanHsn;
+                            other.Barcode = cleanBarcode;
+                            await _dataService.SaveGeneralItemAsync(other);
+                        }
 
                         var newGen = new GeneralItem
                         {
@@ -671,11 +718,31 @@ namespace AsiErp.ViewModels
                     prod.Gst = SellingPrice <= 2500 ? 5 : 18;
                     prod.Bom ??= new();
 
-                    if (isStockAdditionOnNewDate)
+                    if (isStockAddition)
                     {
-                        prod.Stock = _originalQuantity;
-                        prod.RegisteredQty = _originalQuantity;
                         await _dataService.SaveProductAsync(prod);
+
+                        var otherEntries = _dataService.Products
+                            .Where(x => x.Id != prod.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase))
+                            .ToList();
+                        foreach (var other in otherEntries)
+                        {
+                            other.Name = trimmedName;
+                            other.Category = prod.Category;
+                            other.SourceType = prod.SourceType;
+                            other.Unit = prod.Unit;
+                            other.Sizes = new List<string>(prod.Sizes ?? new List<string>());
+                            other.Cost = CostPrice;
+                            other.RetailPrice = SellingPrice;
+                            other.BulkPrice = BulkPrice;
+                            other.DomesticPrice = DomesticPrice;
+                            other.ExportPrice = ExportPrice;
+                            other.ReorderLevel = prod.ReorderLevel;
+                            other.Gst = prod.Gst;
+                            other.Hsn = cleanHsn;
+                            other.Barcode = cleanBarcode;
+                            await _dataService.SaveProductAsync(other);
+                        }
 
                         var newProd = new ProductItem
                         {

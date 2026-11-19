@@ -301,7 +301,7 @@ namespace AsiErp.ViewModels
                     return new StockDisplayItem
                     {
                         Id = primary.Id,
-                        Kind = "prod",
+                        Kind = "mfg",
                         Name = primary.Name,
                         Sku = primary.Sku,
                         Subtitle = $"{primary.Category} · Sizes: {primary.SizesDisplay}",
@@ -326,7 +326,7 @@ namespace AsiErp.ViewModels
                     return new StockDisplayItem
                     {
                         Id = primary.Id,
-                        Kind = "prod",
+                        Kind = "ready",
                         Name = primary.Name,
                         Sku = primary.Sku,
                         Subtitle = $"{primary.Category} · Sizes: {primary.SizesDisplay}",
