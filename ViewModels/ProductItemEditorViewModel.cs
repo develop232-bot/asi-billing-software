@@ -167,6 +167,13 @@ namespace AsiErp.ViewModels
             set => SetField(ref _barcode, value);
         }
 
+        private double _originalQuantity;
+        private string _originalDate = "";
+
+        public bool IsInwardNoticeVisible => _isEditMode && Quantity > _originalQuantity && _originalDate != DateTime.Now.ToString("yyyy-MM-dd");
+
+        public string InwardNoticeText => $"📅 Adding +{(Quantity - _originalQuantity):N0} stock creates a new entry for today ({DateTime.Now:yyyy-MM-dd}) in Products, while Inventory consolidates total stock ({Quantity:N0}) under SKU {Sku}.";
+
         public double Quantity
         {
             get => _stock;
@@ -175,6 +182,8 @@ namespace AsiErp.ViewModels
                 if (SetField(ref _stock, value))
                 {
                     OnPropertyChanged(nameof(Stock));
+                    OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                    OnPropertyChanged(nameof(InwardNoticeText));
                 }
             }
         }
@@ -358,6 +367,7 @@ namespace AsiErp.ViewModels
             {
                 if (_existingItem is ProductItem p)
                 {
+                    _originalDate = p.CreatedAt;
                     _itemType = p.SourceType == "R" ? "ready" : "mfg";
                     Title = $"Edit Product: {p.Name}";
                     Name = p.Name;
@@ -373,12 +383,14 @@ namespace AsiErp.ViewModels
                     ExportPrice = p.ExportPrice;
                     Stock = p.Stock;
                     Quantity = p.RegisteredQty > 0 ? p.RegisteredQty : p.Stock;
+                    _originalQuantity = Quantity;
                     ReorderLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                 }
                 else if (_existingItem is RawMaterialItem r)
                 {
+                    _originalDate = r.CreatedAt;
                     _itemType = "raw";
                     Title = $"Edit Product: {r.Name}";
                     Name = r.Name;
@@ -389,6 +401,7 @@ namespace AsiErp.ViewModels
                     GstPercent = r.Gst;
                     Stock = r.Stock;
                     Quantity = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock;
+                    _originalQuantity = Quantity;
                     ReorderLevel = r.ReorderLevel;
                     LowAlertLevel = r.ReorderLevel;
                     MediumAlertLevel = r.ReorderLevel * 2;
@@ -398,6 +411,7 @@ namespace AsiErp.ViewModels
                 }
                 else if (_existingItem is GeneralItem g)
                 {
+                    _originalDate = g.CreatedAt;
                     _itemType = "gen";
                     Title = $"Edit Product: {g.Name}";
                     Name = g.Name;
@@ -408,6 +422,7 @@ namespace AsiErp.ViewModels
                     GstPercent = g.Gst;
                     Stock = g.Stock;
                     Quantity = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock;
+                    _originalQuantity = Quantity;
                     ReorderLevel = g.ReorderLevel;
                     LowAlertLevel = g.ReorderLevel;
                     MediumAlertLevel = g.ReorderLevel * 2;
@@ -415,6 +430,10 @@ namespace AsiErp.ViewModels
                     HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
                 }
+
+                if (string.IsNullOrWhiteSpace(_originalDate)) _originalDate = DateTime.Now.ToString("yyyy-MM-dd");
+                OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                OnPropertyChanged(nameof(InwardNoticeText));
 
                 OnPropertyChanged(nameof(ItemType));
                 OnPropertyChanged(nameof(IsProductType));
@@ -452,21 +471,7 @@ namespace AsiErp.ViewModels
 
         private void AutoSku()
         {
-            if (_itemType == "raw")
-            {
-                int count = _dataService.RawMaterials.Count + 1;
-                Sku = "ASI-RAW-" + count.ToString("D3");
-            }
-            else if (_itemType == "gen")
-            {
-                int count = _dataService.GeneralItems.Count + 1;
-                Sku = "ASI-GEN-" + count.ToString("D3");
-            }
-            else
-            {
-                int nextNum = _dataService.Products.Count + 1;
-                Sku = "ASI-" + (_itemType == "mfg" ? "MFG" : "RDY") + "-" + nextNum.ToString("D3");
-            }
+            Sku = _dataService.GetNextSku(_itemType);
         }
 
         private void AutoBarcode()
@@ -544,57 +549,103 @@ namespace AsiErp.ViewModels
                     }
                 }
 
+                string today = DateTime.Now.ToString("yyyy-MM-dd");
+                bool isStockAdditionOnNewDate = _isEditMode && Quantity > _originalQuantity && !string.IsNullOrWhiteSpace(_originalDate) && _originalDate != today;
+                double addedQty = isStockAdditionOnNewDate ? (Quantity - _originalQuantity) : 0;
+
                 if (ItemType == "raw")
                 {
                     var rm = (!string.IsNullOrEmpty(currentId) ? _dataService.RawMaterials.FirstOrDefault(x => x.Id == currentId) : null)
                         ?? (_existingItem as RawMaterialItem)
                         ?? new RawMaterialItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "r_" + Guid.NewGuid().ToString("N")[..8] };
 
+                    string cleanSku = !string.IsNullOrWhiteSpace(Sku) ? Sku.Trim() : (!string.IsNullOrWhiteSpace(rm.Sku) ? rm.Sku.Trim() : _dataService.GetNextSku("raw"));
+                    rm.Sku = cleanSku;
                     rm.Name = trimmedName;
                     rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
                     rm.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     rm.Gst = GstPercent;
-                    rm.Stock = Quantity;
-                    rm.RegisteredQty = Quantity;
                     rm.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
                     rm.Hsn = cleanHsn;
                     rm.Barcode = cleanBarcode;
-                    if (!string.IsNullOrWhiteSpace(Sku))
-                    {
-                        rm.Sku = Sku.Trim();
-                    }
-                    else if (string.IsNullOrWhiteSpace(rm.Sku))
-                    {
-                        rm.Sku = "ASI-RAW-" + (_dataService.RawMaterials.Count + 1).ToString("D3");
-                    }
 
-                    await _dataService.SaveRawMaterialAsync(rm);
+                    if (isStockAdditionOnNewDate)
+                    {
+                        rm.Stock = _originalQuantity;
+                        rm.RegisteredQty = _originalQuantity;
+                        await _dataService.SaveRawMaterialAsync(rm);
+
+                        var newRm = new RawMaterialItem
+                        {
+                            Id = "r_" + Guid.NewGuid().ToString("N")[..8],
+                            CreatedAt = today,
+                            Name = trimmedName,
+                            Unit = rm.Unit,
+                            Rate = rm.Rate,
+                            Gst = rm.Gst,
+                            Stock = addedQty,
+                            RegisteredQty = addedQty,
+                            ReorderLevel = rm.ReorderLevel,
+                            Hsn = cleanHsn,
+                            Barcode = cleanBarcode,
+                            Sku = cleanSku
+                        };
+                        await _dataService.SaveRawMaterialAsync(newRm);
+                    }
+                    else
+                    {
+                        rm.Stock = Quantity;
+                        rm.RegisteredQty = Quantity;
+                        if (!_isEditMode) rm.CreatedAt = today;
+                        await _dataService.SaveRawMaterialAsync(rm);
+                    }
                 }
                 else if (ItemType == "gen")
                 {
                     var gi = (!string.IsNullOrEmpty(currentId) ? _dataService.GeneralItems.FirstOrDefault(x => x.Id == currentId) : null)
                         ?? (_existingItem as GeneralItem)
-                        ?? new GeneralItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "g_" + Guid.NewGuid().ToString("N")[..8] };
+                        ?? new GeneralItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "gen_" + Guid.NewGuid().ToString("N")[..8] };
 
+                    string cleanSku = !string.IsNullOrWhiteSpace(Sku) ? Sku.Trim() : (!string.IsNullOrWhiteSpace(gi.Sku) ? gi.Sku.Trim() : _dataService.GetNextSku("gen"));
+                    gi.Sku = cleanSku;
                     gi.Name = trimmedName;
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
                     gi.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     gi.Gst = GstPercent;
-                    gi.Stock = Quantity;
-                    gi.RegisteredQty = Quantity;
                     gi.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
                     gi.Hsn = cleanHsn;
                     gi.Barcode = cleanBarcode;
-                    if (!string.IsNullOrWhiteSpace(Sku))
-                    {
-                        gi.Sku = Sku.Trim();
-                    }
-                    else if (string.IsNullOrWhiteSpace(gi.Sku))
-                    {
-                        gi.Sku = "ASI-PKG-" + (_dataService.GeneralItems.Count + 1).ToString("D3");
-                    }
 
-                    await _dataService.SaveGeneralItemAsync(gi);
+                    if (isStockAdditionOnNewDate)
+                    {
+                        gi.Stock = _originalQuantity;
+                        gi.RegisteredQty = _originalQuantity;
+                        await _dataService.SaveGeneralItemAsync(gi);
+
+                        var newGen = new GeneralItem
+                        {
+                            Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                            CreatedAt = today,
+                            Name = trimmedName,
+                            Unit = gi.Unit,
+                            Rate = gi.Rate,
+                            Gst = gi.Gst,
+                            Stock = addedQty,
+                            RegisteredQty = addedQty,
+                            ReorderLevel = gi.ReorderLevel,
+                            Hsn = cleanHsn,
+                            Barcode = cleanBarcode,
+                            Sku = cleanSku
+                        };
+                        await _dataService.SaveGeneralItemAsync(newGen);
+                    }
+                    else
+                    {
+                        gi.Stock = Quantity;
+                        gi.RegisteredQty = Quantity;
+                        if (!_isEditMode) gi.CreatedAt = today;
+                        await _dataService.SaveGeneralItemAsync(gi);
+                    }
                 }
                 else
                 {
@@ -602,15 +653,8 @@ namespace AsiErp.ViewModels
                         ?? (_existingItem as ProductItem)
                         ?? new ProductItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "p_" + Guid.NewGuid().ToString("N")[..8] };
 
-                    if (!string.IsNullOrWhiteSpace(Sku))
-                    {
-                        prod.Sku = Sku.Trim();
-                    }
-                    else if (string.IsNullOrWhiteSpace(prod.Sku))
-                    {
-                        prod.Sku = "ASI-" + (ItemType == "mfg" ? "MFG" : "RDY") + "-" + (_dataService.Products.Count + 1).ToString("D3");
-                    }
-
+                    string cleanSku = !string.IsNullOrWhiteSpace(Sku) ? Sku.Trim() : (!string.IsNullOrWhiteSpace(prod.Sku) ? prod.Sku.Trim() : _dataService.GetNextSku(ItemType == "mfg" ? "mfg" : "ready"));
+                    prod.Sku = cleanSku;
                     prod.Barcode = cleanBarcode;
                     prod.Hsn = cleanHsn;
                     prod.Name = trimmedName;
@@ -623,13 +667,48 @@ namespace AsiErp.ViewModels
                     prod.BulkPrice = BulkPrice;
                     prod.DomesticPrice = DomesticPrice;
                     prod.ExportPrice = ExportPrice;
-                    prod.Stock = Quantity;
-                    prod.RegisteredQty = Quantity;
                     prod.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
                     prod.Gst = SellingPrice <= 2500 ? 5 : 18;
                     prod.Bom ??= new();
 
-                    await _dataService.SaveProductAsync(prod);
+                    if (isStockAdditionOnNewDate)
+                    {
+                        prod.Stock = _originalQuantity;
+                        prod.RegisteredQty = _originalQuantity;
+                        await _dataService.SaveProductAsync(prod);
+
+                        var newProd = new ProductItem
+                        {
+                            Id = "p_" + Guid.NewGuid().ToString("N")[..8],
+                            CreatedAt = today,
+                            Name = trimmedName,
+                            Category = prod.Category,
+                            SourceType = prod.SourceType,
+                            Unit = prod.Unit,
+                            Sizes = new List<string>(prod.Sizes ?? new List<string>()),
+                            Cost = CostPrice,
+                            RetailPrice = SellingPrice,
+                            BulkPrice = BulkPrice,
+                            DomesticPrice = DomesticPrice,
+                            ExportPrice = ExportPrice,
+                            Stock = addedQty,
+                            RegisteredQty = addedQty,
+                            ReorderLevel = prod.ReorderLevel,
+                            Gst = prod.Gst,
+                            Hsn = cleanHsn,
+                            Barcode = cleanBarcode,
+                            Sku = cleanSku,
+                            Bom = prod.Bom ?? new()
+                        };
+                        await _dataService.SaveProductAsync(newProd);
+                    }
+                    else
+                    {
+                        prod.Stock = Quantity;
+                        prod.RegisteredQty = Quantity;
+                        if (!_isEditMode) prod.CreatedAt = today;
+                        await _dataService.SaveProductAsync(prod);
+                    }
                 }
 
                 NavigateBack();

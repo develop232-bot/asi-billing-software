@@ -281,6 +281,7 @@ namespace AsiErp.Services
                 CleanLegacyBarcodesAndHsn();
                 EnsureUniqueBarcodesAcrossCatalog();
                 HarmonizeRawMaterialsAndWorkOrders();
+                await CleanAndFixCorruptedSkusAsync();
 
                 IsSampleDataLoaded = false;
 
@@ -440,18 +441,38 @@ namespace AsiErp.Services
 
             foreach (var line in sale.Lines)
             {
-                var p = Products.FirstOrDefault(x => x.Id == line.Pid);
-                if (p != null)
+                var target = Products.FirstOrDefault(x => x.Id == line.Pid);
+                string targetSku = target?.Sku ?? "";
+                string targetName = target?.Name ?? line.Name ?? "";
+
+                var matching = Products
+                    .Where(x => x.Id == line.Pid ||
+                                (!string.IsNullOrWhiteSpace(targetSku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(targetSku, StringComparison.OrdinalIgnoreCase)) ||
+                                (!string.IsNullOrWhiteSpace(targetName) && x.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase)))
+                    .OrderBy(x => x.CreatedAt)
+                    .ToList();
+
+                double remaining = line.Qty;
+                foreach (var p in matching)
                 {
-                    if (p.RegisteredQty <= 0 && p.Stock > 0)
-                    {
-                        p.RegisteredQty = p.Stock;
-                    }
-                    p.Stock = Math.Max(0, p.Stock - line.Qty);
-                    SyncQueue.EnqueueSet("products", p.Id, p);
+                    if (remaining <= 0) break;
+                    if (p.Stock <= 0) continue;
+
+                    double deduct = Math.Min(p.Stock, remaining);
+                    p.Stock = Math.Round(p.Stock - deduct, 2);
+                    remaining -= deduct;
                     if (Firebase != null && Firebase.IsConnected)
                     {
                         try { await Firebase.SaveProductAsync(p); } catch { }
+                    }
+                }
+
+                if (remaining > 0 && target != null)
+                {
+                    target.Stock = Math.Max(0, Math.Round(target.Stock - remaining, 2));
+                    if (Firebase != null && Firebase.IsConnected)
+                    {
+                        try { await Firebase.SaveProductAsync(target); } catch { }
                     }
                 }
             }
@@ -510,11 +531,32 @@ namespace AsiErp.Services
                         SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
                         if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
                     }
+                    else
+                    {
+                        var newRm = new RawMaterialItem
+                        {
+                            Id = "r_" + Guid.NewGuid().ToString("N")[..8],
+                            CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
+                            Name = line.Name,
+                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "sq ft" : line.Unit,
+                            Rate = line.Rate,
+                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
+                            Stock = line.Qty,
+                            RegisteredQty = line.Qty,
+                            Sku = (!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("raw")
+                        };
+                        line.ItemId = newRm.Id;
+                        line.Sku = newRm.Sku;
+                        RawMaterials.Add(newRm);
+                        SyncQueue.EnqueueSet("raw_materials", newRm.Id, newRm);
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(newRm); } catch { } }
+                    }
                 }
                 else if (purchase.Kind == "ready")
                 {
                     var p = Products.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
-                                                         x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
+                                                         x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
+                                                         (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
                     if (p != null)
                     {
                         p.Stock += line.Qty;
@@ -530,21 +572,25 @@ namespace AsiErp.Services
                     {
                         var newProd = new ProductItem
                         {
-                            Id = !string.IsNullOrWhiteSpace(line.ItemId) ? line.ItemId : "prod_" + Guid.NewGuid().ToString("N")[..8],
+                            Id = "p_" + Guid.NewGuid().ToString("N")[..8],
+                            CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                             Name = line.Name,
                             Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pair" : line.Unit,
                             Cost = line.Rate,
                             RetailPrice = line.SellingPrice > 0 ? line.SellingPrice : Math.Round(line.Rate * 1.5, 0),
                             Gst = line.GstPercent > 0 ? line.GstPercent : 5,
                             Stock = line.Qty,
-                            Sku = !string.IsNullOrWhiteSpace(line.Sku) ? line.Sku : $"ASI-RDY-{Products.Count + 1:D3}",
-                            Category = "Ready Made Products"
+                            RegisteredQty = line.Qty,
+                            Sku = (!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("ready"),
+                            Category = "Ready Made Products",
+                            SourceType = "R"
                         };
                         if (!string.IsNullOrWhiteSpace(line.Size))
                         {
                             newProd.Sizes = line.Size.Split(new[] { ',', ' ', '/' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
                         }
                         line.ItemId = newProd.Id;
+                        line.Sku = newProd.Sku;
                         Products.Add(newProd);
                         SyncQueue.EnqueueSet("products", newProd.Id, newProd);
                         if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(newProd); } catch { } }
@@ -553,7 +599,8 @@ namespace AsiErp.Services
                 else if (purchase.Kind == "gen")
                 {
                     var g = GeneralItems.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
-                                                             x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
+                                                             x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
+                                                             (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
                     if (g != null)
                     {
                         g.Stock += line.Qty;
@@ -568,15 +615,18 @@ namespace AsiErp.Services
                     {
                         var newGen = new GeneralItem
                         {
-                            Id = !string.IsNullOrWhiteSpace(line.ItemId) ? line.ItemId : "gen_" + Guid.NewGuid().ToString("N")[..8],
+                            Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                            CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                             Name = line.Name,
                             Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pcs" : line.Unit,
                             Rate = line.Rate,
                             Gst = line.GstPercent > 0 ? line.GstPercent : 5,
                             Stock = line.Qty,
-                            Sku = !string.IsNullOrWhiteSpace(line.Sku) ? line.Sku : ""
+                            RegisteredQty = line.Qty,
+                            Sku = (!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("gen")
                         };
                         line.ItemId = newGen.Id;
+                        line.Sku = newGen.Sku;
                         GeneralItems.Add(newGen);
                         SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
                         if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(newGen); } catch { } }
@@ -809,7 +859,7 @@ namespace AsiErp.Services
             }
         }
 
-        public Task AdjustStockAsync(string kind, string id, double change)
+        public async Task AdjustStockAsync(string kind, string id, double change)
         {
             if (kind == "raw")
             {
@@ -817,7 +867,7 @@ namespace AsiErp.Services
                 if (r != null)
                 {
                     r.Stock = Math.Max(0, r.Stock + change);
-                    if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", r.Id, r);
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(r); } catch { } }
                 }
             }
             else if (kind == "gen")
@@ -826,7 +876,7 @@ namespace AsiErp.Services
                 if (g != null)
                 {
                     g.Stock = Math.Max(0, g.Stock + change);
-                    if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", g.Id, g);
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
                 }
             }
             else
@@ -835,12 +885,162 @@ namespace AsiErp.Services
                 if (p != null)
                 {
                     p.Stock = Math.Max(0, p.Stock + change);
-                    if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", p.Id, p);
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(p); } catch { } }
                 }
             }
 
             NotifyDataChanged();
-            return Task.CompletedTask;
+        }
+
+        public string GetNextSku(string type)
+        {
+            string prefix = type switch
+            {
+                "raw" => "ASI-RAW-",
+                "gen" => "ASI-GEN-",
+                "mfg" => "ASI-MFG-",
+                "ready" => "ASI-RDY-",
+                _ => "ASI-PROD-"
+            };
+
+            var allSkus = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            foreach (var p in Products) if (!string.IsNullOrWhiteSpace(p.Sku)) allSkus.Add(p.Sku.Trim());
+            foreach (var r in RawMaterials) if (!string.IsNullOrWhiteSpace(r.Sku)) allSkus.Add(r.Sku.Trim());
+            foreach (var g in GeneralItems) if (!string.IsNullOrWhiteSpace(g.Sku)) allSkus.Add(g.Sku.Trim());
+
+            int maxNum = 0;
+            foreach (var sku in allSkus)
+            {
+                string pfx = prefix;
+                if (sku.StartsWith(pfx, StringComparison.OrdinalIgnoreCase))
+                {
+                    string numPart = sku.Substring(pfx.Length);
+                    if (int.TryParse(numPart, out int n) && n > maxNum)
+                    {
+                        maxNum = n;
+                    }
+                }
+                else if (type == "gen" && sku.StartsWith("ASI-PKG-", StringComparison.OrdinalIgnoreCase))
+                {
+                    string numPart = sku.Substring("ASI-PKG-".Length);
+                    if (int.TryParse(numPart, out int n) && n > maxNum)
+                    {
+                        maxNum = n;
+                    }
+                }
+            }
+
+            int next = maxNum + 1;
+            string candidate = $"{prefix}{next:D3}";
+            while (allSkus.Contains(candidate))
+            {
+                next++;
+                candidate = $"{prefix}{next:D3}";
+            }
+            return candidate;
+        }
+
+        public async Task CleanAndFixCorruptedSkusAsync()
+        {
+            bool changed = false;
+
+            // 1. Fix General Items with pur_it_ in SKU or empty SKU
+            foreach (var g in GeneralItems)
+            {
+                if (string.IsNullOrWhiteSpace(g.Sku) || g.Sku.Contains("pur_it_") || g.Sku.Contains("pur_"))
+                {
+                    g.Sku = GetNextSku("gen");
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
+                    changed = true;
+                }
+            }
+
+            // 2. Fix duplicate SKUs in GeneralItems where names are different
+            var genSkuGroups = GeneralItems
+                .Where(g => !string.IsNullOrWhiteSpace(g.Sku))
+                .GroupBy(g => g.Sku.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Where(grp => grp.Count() > 1)
+                .ToList();
+
+            foreach (var grp in genSkuGroups)
+            {
+                var list = grp.ToList();
+                string primaryName = list[0].Name?.Trim() ?? "";
+                for (int i = 1; i < list.Count; i++)
+                {
+                    var item = list[i];
+                    string curName = item.Name?.Trim() ?? "";
+                    if (!curName.Equals(primaryName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        item.Sku = GetNextSku("gen");
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(item); } catch { } }
+                        changed = true;
+                    }
+                }
+            }
+
+            // 3. Fix RawMaterials with pur_it_ in SKU or duplicate SKUs
+            foreach (var r in RawMaterials)
+            {
+                if (string.IsNullOrWhiteSpace(r.Sku) || r.Sku.Contains("pur_it_") || r.Sku.Contains("pur_"))
+                {
+                    r.Sku = GetNextSku("raw");
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(r); } catch { } }
+                    changed = true;
+                }
+            }
+
+            var rawSkuGroups = RawMaterials
+                .Where(r => !string.IsNullOrWhiteSpace(r.Sku))
+                .GroupBy(r => r.Sku.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Where(grp => grp.Count() > 1)
+                .ToList();
+
+            foreach (var grp in rawSkuGroups)
+            {
+                var list = grp.ToList();
+                string primaryName = list[0].Name?.Trim() ?? "";
+                for (int i = 1; i < list.Count; i++)
+                {
+                    var item = list[i];
+                    string curName = item.Name?.Trim() ?? "";
+                    if (!curName.Equals(primaryName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        item.Sku = GetNextSku("raw");
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(item); } catch { } }
+                        changed = true;
+                    }
+                }
+            }
+
+            // 4. Fix Products duplicate SKUs
+            var prodSkuGroups = Products
+                .Where(p => !string.IsNullOrWhiteSpace(p.Sku))
+                .GroupBy(p => p.Sku.Trim(), StringComparer.OrdinalIgnoreCase)
+                .Where(grp => grp.Count() > 1)
+                .ToList();
+
+            foreach (var grp in prodSkuGroups)
+            {
+                var list = grp.ToList();
+                string primaryName = list[0].Name?.Trim() ?? "";
+                for (int i = 1; i < list.Count; i++)
+                {
+                    var item = list[i];
+                    string curName = item.Name?.Trim() ?? "";
+                    if (!curName.Equals(primaryName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        item.Sku = GetNextSku(item.IsManufactured ? "mfg" : "ready");
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(item); } catch { } }
+                        changed = true;
+                    }
+                }
+            }
+
+            if (changed)
+            {
+                NotifyDataChanged();
+            }
         }
 
         public async Task AddExpenseAsync(ExpenseItem exp)

@@ -39,11 +39,11 @@ namespace AsiErp.ViewModels
             }
             else
             {
-                AvailableItems.Add(new SourcingItemOption { Id = "gen_shoe_box", Name = "Branded Footwear Shoe Box", Sku = "ASI-PKG-001", Unit = "pcs", Rate = 14, Gst = 18 });
-                AvailableItems.Add(new SourcingItemOption { Id = "gen_poly_bag", Name = "Uniform Garment Poly Cover", Sku = "ASI-PKG-002", Unit = "pcs", Rate = 3, Gst = 18 });
-                AvailableItems.Add(new SourcingItemOption { Id = "gen_tape", Name = "Packaging Brown BOPP Tape", Sku = "ASI-PKG-003", Unit = "roll", Rate = 65, Gst = 18 });
-                AvailableItems.Add(new SourcingItemOption { Id = "gen_carton", Name = "Corrugated Master Carton (24 prs)", Sku = "ASI-PKG-004", Unit = "pcs", Rate = 85, Gst = 18 });
-                AvailableItems.Add(new SourcingItemOption { Id = "gen_hang_tag", Name = "Product Price / Brand Hang Tag", Sku = "ASI-PKG-005", Unit = "pcs", Rate = 2, Gst = 18 });
+                AvailableItems.Add(new SourcingItemOption { Id = "gen_shoe_box", Name = "Branded Footwear Shoe Box", Sku = "ASI-GEN-001", Unit = "pcs", Rate = 14, Gst = 18 });
+                AvailableItems.Add(new SourcingItemOption { Id = "gen_poly_bag", Name = "Uniform Garment Poly Cover", Sku = "ASI-GEN-002", Unit = "pcs", Rate = 3, Gst = 18 });
+                AvailableItems.Add(new SourcingItemOption { Id = "gen_tape", Name = "Packaging Brown BOPP Tape", Sku = "ASI-GEN-003", Unit = "roll", Rate = 65, Gst = 18 });
+                AvailableItems.Add(new SourcingItemOption { Id = "gen_carton", Name = "Corrugated Master Carton (24 prs)", Sku = "ASI-GEN-004", Unit = "pcs", Rate = 85, Gst = 18 });
+                AvailableItems.Add(new SourcingItemOption { Id = "gen_hang_tag", Name = "Product Price / Brand Hang Tag", Sku = "ASI-GEN-005", Unit = "pcs", Rate = 2, Gst = 18 });
             }
         }
     }

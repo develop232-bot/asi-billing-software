@@ -345,6 +345,10 @@ namespace AsiErp.ViewModels
                 {
                     l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
                 }
+                if (string.IsNullOrWhiteSpace(l.Sku) || l.Sku.Contains("pur_it_"))
+                {
+                    l.Sku = _dataService.GetNextSku(Kind);
+                }
                 l.RecalculateLine();
             }
 

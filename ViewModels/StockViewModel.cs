@@ -241,66 +241,101 @@ namespace AsiErp.ViewModels
 
             if (ActiveTab == "raw")
             {
-                list = _dataService.RawMaterials.Select(r => new StockDisplayItem
+                var grouped = _dataService.RawMaterials
+                    .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_"))
+                    .GroupBy(r => !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+
+                list = grouped.Select(grp =>
                 {
-                    Id = r.Id,
-                    Kind = "raw",
-                    Name = r.Name,
-                    Sku = !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku : $"ASI-RAW-{r.Id.Replace("r", "").PadLeft(3, '0')}",
-                    Subtitle = $"Rate: ₹{r.Rate:N0} / {r.Unit} · GST {r.Gst}%",
-                    Unit = r.Unit,
-                    Stock = r.Stock,
-                    ReorderLevel = r.ReorderLevel,
-                    RateOrCost = r.Rate,
-                    RawItem = r
+                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    return new StockDisplayItem
+                    {
+                        Id = primary.Id,
+                        Kind = "raw",
+                        Name = primary.Name,
+                        Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
+                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · GST {primary.Gst}%",
+                        Unit = primary.Unit,
+                        Stock = totalStock,
+                        ReorderLevel = primary.ReorderLevel,
+                        RateOrCost = primary.Rate,
+                        RawItem = primary
+                    };
                 }).ToList();
             }
             else if (ActiveTab == "gen")
             {
-                list = _dataService.GeneralItems.Select(g => new StockDisplayItem
+                var grouped = _dataService.GeneralItems
+                    .GroupBy(g => !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+
+                list = grouped.Select(grp =>
                 {
-                    Id = g.Id,
-                    Kind = "gen",
-                    Name = g.Name,
-                    Sku = !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku : $"ASI-PKG-{g.Id.Replace("g", "").PadLeft(3, '0')}",
-                    Subtitle = $"Rate: ₹{g.Rate:N0} / {g.Unit} · GST {g.Gst}%",
-                    Unit = g.Unit,
-                    Stock = g.Stock,
-                    ReorderLevel = g.ReorderLevel,
-                    RateOrCost = g.Rate,
-                    RawItem = g
+                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    return new StockDisplayItem
+                    {
+                        Id = primary.Id,
+                        Kind = "gen",
+                        Name = primary.Name,
+                        Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
+                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · GST {primary.Gst}%",
+                        Unit = primary.Unit,
+                        Stock = totalStock,
+                        ReorderLevel = primary.ReorderLevel,
+                        RateOrCost = primary.Rate,
+                        RawItem = primary
+                    };
                 }).ToList();
             }
             else if (ActiveTab == "fg")
             {
-                list = _dataService.Products.Where(p => p.IsManufactured).Select(p => new StockDisplayItem
+                var grouped = _dataService.Products
+                    .Where(p => p.IsManufactured)
+                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+
+                list = grouped.Select(grp =>
                 {
-                    Id = p.Id,
-                    Kind = "prod",
-                    Name = p.Name,
-                    Sku = p.Sku,
-                    Subtitle = $"{p.Category} · Sizes: {p.SizesDisplay}",
-                    Unit = p.Unit,
-                    Stock = p.Stock,
-                    ReorderLevel = p.ReorderLevel,
-                    RateOrCost = p.EffectiveCost,
-                    RawItem = p
+                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    return new StockDisplayItem
+                    {
+                        Id = primary.Id,
+                        Kind = "prod",
+                        Name = primary.Name,
+                        Sku = primary.Sku,
+                        Subtitle = $"{primary.Category} · Sizes: {primary.SizesDisplay}",
+                        Unit = primary.Unit,
+                        Stock = totalStock,
+                        ReorderLevel = primary.ReorderLevel,
+                        RateOrCost = primary.EffectiveCost,
+                        RawItem = primary
+                    };
                 }).ToList();
             }
             else if (ActiveTab == "ready")
             {
-                list = _dataService.Products.Where(p => p.IsReadymade).Select(p => new StockDisplayItem
+                var grouped = _dataService.Products
+                    .Where(p => p.IsReadymade)
+                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+
+                list = grouped.Select(grp =>
                 {
-                    Id = p.Id,
-                    Kind = "prod",
-                    Name = p.Name,
-                    Sku = p.Sku,
-                    Subtitle = $"{p.Category} · Sizes: {p.SizesDisplay}",
-                    Unit = p.Unit,
-                    Stock = p.Stock,
-                    ReorderLevel = p.ReorderLevel,
-                    RateOrCost = p.Cost,
-                    RawItem = p
+                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    return new StockDisplayItem
+                    {
+                        Id = primary.Id,
+                        Kind = "prod",
+                        Name = primary.Name,
+                        Sku = primary.Sku,
+                        Subtitle = $"{primary.Category} · Sizes: {primary.SizesDisplay}",
+                        Unit = primary.Unit,
+                        Stock = totalStock,
+                        ReorderLevel = primary.ReorderLevel,
+                        RateOrCost = primary.Cost,
+                        RawItem = primary
+                    };
                 }).ToList();
             }
 

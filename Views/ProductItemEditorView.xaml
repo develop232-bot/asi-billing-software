@@ -131,6 +131,8 @@
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding InwardNoticeText}" Visibility="{Binding IsInwardNoticeVisible, Converter={StaticResource BoolToVis}}"
+                                           FontSize="11" Foreground="#0284C7" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,0"/>
                             </StackPanel>
                         </Grid>
 
@@ -229,6 +231,8 @@
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding InwardNoticeText}" Visibility="{Binding IsInwardNoticeVisible, Converter={StaticResource BoolToVis}}"
+                                           FontSize="11" Foreground="#0284C7" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,0"/>
                             </StackPanel>
                         </Grid>
 
