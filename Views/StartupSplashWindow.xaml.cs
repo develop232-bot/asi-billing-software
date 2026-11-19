@@ -89,18 +89,17 @@ namespace AsiErp.Views
                 UpdateService.Instance.DownloadProgressChanged -= OnProgressChanged;
             }
 
-            // Auto-sync directly with Cloud Firestore on startup
-            TxtStatus.Text = "Syncing with cloud database...";
+            // Connect to Cloud Firestore on startup in real-time
+            TxtStatus.Text = "Connecting to live cloud database...";
             PbProgress.IsIndeterminate = true;
             try
             {
                 var cloudSyncTask = AppDataService.Instance.LoadFromCloudDatabaseAsync();
-                var syncTimeout = Task.Delay(4000);
+                var syncTimeout = Task.Delay(8000);
                 await Task.WhenAny(cloudSyncTask, syncTimeout);
             }
             catch
             {
-                // Fallback gracefully to local cached state if offline
             }
 
             // Launch main software window

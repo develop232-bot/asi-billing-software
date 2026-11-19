@@ -45,7 +45,107 @@ namespace AsiErp.Services
             Directory.CreateDirectory(folder);
             _localStateFile = Path.Combine(folder, "asi_erp_state.json");
 
-            LoadState();
+            // Purge any stale local state file so it can never resurrect deleted records
+            try
+            {
+                if (File.Exists(_localStateFile))
+                {
+                    File.Delete(_localStateFile);
+                }
+            }
+            catch { }
+
+            HookRealtimeEvents();
+
+            if (Firebase.IsConnected)
+            {
+                Firebase.StartRealtimeListeners();
+            }
+            else
+            {
+                Firebase.ConnectionChanged += () =>
+                {
+                    if (Firebase.IsConnected)
+                    {
+                        Firebase.StartRealtimeListeners();
+                    }
+                };
+            }
+        }
+
+        private void HookRealtimeEvents()
+        {
+            Firebase.ProductsRealtimeReceived += list =>
+            {
+                Products = list.OrderBy(p => p.Name).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.RawMaterialsRealtimeReceived += list =>
+            {
+                RawMaterials = list.Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.GeneralItemsRealtimeReceived += list =>
+            {
+                GeneralItems = list.OrderBy(g => g.Name).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.SalesRealtimeReceived += list =>
+            {
+                Sales = list.OrderByDescending(s => s.Date).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.PurchasesRealtimeReceived += list =>
+            {
+                Purchases = list.OrderByDescending(p => p.Date).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.WorkOrdersRealtimeReceived += list =>
+            {
+                WorkOrders = list.OrderByDescending(w => w.OrderDate).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.ExpensesRealtimeReceived += list =>
+            {
+                Expenses = list.OrderByDescending(e => e.Date).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.InvestmentsRealtimeReceived += list =>
+            {
+                Investments = list.OrderByDescending(i => i.Date).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.LoansRealtimeReceived += list =>
+            {
+                Loans = list.OrderByDescending(l => l.Date).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.AssetsRealtimeReceived += list =>
+            {
+                Assets = list.OrderByDescending(a => a.Date).ToList();
+                NotifyDataChanged();
+            };
+
+            Firebase.UsersRealtimeReceived += list =>
+            {
+                Auth.MergeCloudUsers(list);
+                NotifyDataChanged();
+            };
+
+            Firebase.SequencesRealtimeReceived += dict =>
+            {
+                Sequences = dict;
+                NotifyDataChanged();
+            };
         }
 
         public string GetFinancialYear()
@@ -61,10 +161,13 @@ namespace AsiErp.Services
             if (increment)
             {
                 Sequences[type] = next;
-                SaveLocalState();
                 if (!IsSampleDataLoaded)
                 {
                     SyncQueue.EnqueueSet("meta", "sequences", Sequences);
+                    if (Firebase != null && Firebase.IsConnected)
+                    {
+                        try { _ = Firebase.SaveSequencesAsync(Sequences); } catch { }
+                    }
                 }
             }
 
@@ -84,105 +187,27 @@ namespace AsiErp.Services
 
         public void NotifyDataChanged()
         {
-            SaveLocalState();
-            DataChanged?.Invoke();
+            if (System.Windows.Application.Current != null && System.Windows.Application.Current.Dispatcher != null && !System.Windows.Application.Current.Dispatcher.CheckAccess())
+            {
+                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    DataChanged?.Invoke();
+                }));
+            }
+            else
+            {
+                DataChanged?.Invoke();
+            }
         }
 
         public void SaveLocalState()
         {
-            try
-            {
-                var payload = new
-                {
-                    Products,
-                    RawMaterials,
-                    GeneralItems,
-                    Sales,
-                    Purchases,
-                    WorkOrders,
-                    Expenses,
-                    Investments,
-                    Loans,
-                    Assets,
-                    Sequences,
-                    IsSampleDataLoaded
-                };
-                string json = JsonSerializer.Serialize(payload, new JsonSerializerOptions { WriteIndented = true });
-                string tempFile = _localStateFile + ".tmp";
-                File.WriteAllText(tempFile, json);
-                File.Move(tempFile, _localStateFile, overwrite: true);
-            }
-            catch { }
+            // Local JSON caching removed: database is strictly live realtime Firestore
         }
 
         public void LoadState()
         {
-            try
-            {
-                if (File.Exists(_localStateFile))
-                {
-                    string json = File.ReadAllText(_localStateFile);
-                    using var doc = JsonDocument.Parse(json);
-                    var root = doc.RootElement;
-
-                    if (root.TryGetProperty("Products", out var pElem))
-                        Products = JsonSerializer.Deserialize<List<ProductItem>>(pElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("RawMaterials", out var rmElem))
-                        RawMaterials = JsonSerializer.Deserialize<List<RawMaterialItem>>(rmElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("GeneralItems", out var gElem))
-                        GeneralItems = JsonSerializer.Deserialize<List<GeneralItem>>(gElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Sales", out var sElem))
-                        Sales = JsonSerializer.Deserialize<List<SaleDoc>>(sElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Purchases", out var puElem))
-                        Purchases = JsonSerializer.Deserialize<List<PurchaseDoc>>(puElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("WorkOrders", out var wElem))
-                        WorkOrders = JsonSerializer.Deserialize<List<WorkOrderDoc>>(wElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Expenses", out var eElem))
-                        Expenses = JsonSerializer.Deserialize<List<ExpenseItem>>(eElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Investments", out var iElem))
-                        Investments = JsonSerializer.Deserialize<List<InvestmentItem>>(iElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Loans", out var lElem))
-                        Loans = JsonSerializer.Deserialize<List<LoanItem>>(lElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Assets", out var aElem))
-                        Assets = JsonSerializer.Deserialize<List<AssetItem>>(aElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("Sequences", out var sqElem))
-                        Sequences = JsonSerializer.Deserialize<Dictionary<string, int>>(sqElem.GetRawText()) ?? new();
-                    if (root.TryGetProperty("IsSampleDataLoaded", out var smElem))
-                        IsSampleDataLoaded = false;
-
-                    // Purge any legacy sample data
-                    Loans.RemoveAll(l => l.Id == "l0" || l.Id == "sampleLoan" || l.Id.StartsWith("l_sample"));
-                    Assets.RemoveAll(a => a.Id == "a0" || a.Id == "a1" || a.Id.StartsWith("a_sample"));
-                    Products.RemoveAll(p => p.Id.StartsWith("p") && int.TryParse(p.Id.Substring(1), out _));
-                    RawMaterials.RemoveAll(r => r.Id.StartsWith("r") && int.TryParse(r.Id.Substring(1), out _));
-                    RawMaterials.RemoveAll(r => r.Id.StartsWith("pur_it_") || r.Id.StartsWith("pur_"));
-                    GeneralItems.RemoveAll(g => g.Id.StartsWith("g") && int.TryParse(g.Id.Substring(1), out _));
-                    Sales.RemoveAll(s => s.Id.StartsWith("s") && int.TryParse(s.Id.Substring(1), out _));
-                    Purchases.RemoveAll(pu => pu.Id.StartsWith("b") && int.TryParse(pu.Id.Substring(1), out _));
-                    WorkOrders.RemoveAll(w => w.Id.StartsWith("wo") && int.TryParse(w.Id.Substring(2), out _));
-                    Expenses.RemoveAll(e => e.Id.StartsWith("e_sal_") || e.Id.StartsWith("e_eb_") || e.Id.StartsWith("e_wtr_") || e.Id.StartsWith("e_rent_") || e.Id.StartsWith("e_esipf_") || e.Id.StartsWith("e_tea_") || e.Id.StartsWith("e_tr_") || e.Id.StartsWith("e_rep_"));
-
-                    for (int i = 0; i < Products.Count; i++)
-                    {
-                        if (Products[i].RegisteredQty <= 0 && Products[i].Stock > 0)
-                        {
-                            Products[i].RegisteredQty = Products[i].Stock;
-                        }
-                    }
-                    foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
-                    foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
-
-                    CleanLegacyBarcodesAndHsn();
-                    EnsureUniqueBarcodesAcrossCatalog();
-                    EnsureShoeBomConnections();
-                    HarmonizeRawMaterialsAndWorkOrders();
-
-                    return;
-                }
-            }
-            catch { }
-
-            // Default startup: Keep fresh empty data (demo data removed)
+            // Local JSON caching removed: database is strictly live realtime Firestore
             IsSampleDataLoaded = false;
         }
 
@@ -234,113 +259,24 @@ namespace AsiErp.Services
 
                 var bundle = await Firebase.LoadAllFromCloudAsync();
 
-                // 2. SMART BIDIRECTIONAL MERGE:
-                // NEVER blindly wipe local collections when cloud has fewer items or is empty!
-                // Merge by document Id to preserve all locally-saved entries.
-
-                // Products
-                var prodDict = Products.Where(p => !string.IsNullOrEmpty(p.Id)).ToDictionary(p => p.Id, p => p);
-                foreach (var cp in bundle.Products)
+                // PURE LIVE CLOUD REPLACEMENT: Cloud Firestore is the single source of truth.
+                // Any record deleted in the database is removed everywhere.
+                Products = bundle.Products.OrderBy(p => p.Name).ToList();
+                RawMaterials = bundle.RawMaterials.Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
+                GeneralItems = bundle.GeneralItems.OrderBy(g => g.Name).ToList();
+                Sales = bundle.Sales.OrderByDescending(s => s.Date).ToList();
+                Purchases = bundle.Purchases.OrderByDescending(p => p.Date).ToList();
+                WorkOrders = bundle.WorkOrders.OrderByDescending(w => w.OrderDate).ToList();
+                Expenses = bundle.Expenses.OrderByDescending(e => e.Date).ToList();
+                Investments = bundle.Investments.OrderByDescending(i => i.Date).ToList();
+                Loans = bundle.Loans.OrderByDescending(l => l.Date).ToList();
+                Assets = bundle.Assets.OrderByDescending(a => a.Date).ToList();
+                if (bundle.Sequences != null && bundle.Sequences.Count > 0)
                 {
-                    if (!string.IsNullOrEmpty(cp.Id))
-                    {
-                        prodDict[cp.Id] = cp;
-                    }
-                }
-                Products = prodDict.Values.OrderBy(p => p.Name).ToList();
-
-                // RawMaterials (exclude items from purchase bills)
-                var rmDict = RawMaterials.Where(r => !string.IsNullOrEmpty(r.Id) && !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).ToDictionary(r => r.Id, r => r);
-                foreach (var crm in bundle.RawMaterials)
-                {
-                    if (!string.IsNullOrEmpty(crm.Id) && !crm.Id.StartsWith("pur_it_") && !crm.Id.StartsWith("pur_")) rmDict[crm.Id] = crm;
-                }
-                RawMaterials = rmDict.Values.OrderBy(r => r.Name).ToList();
-
-                // GeneralItems
-                var genDict = GeneralItems.Where(g => !string.IsNullOrEmpty(g.Id)).ToDictionary(g => g.Id, g => g);
-                foreach (var cg in bundle.GeneralItems)
-                {
-                    if (!string.IsNullOrEmpty(cg.Id)) genDict[cg.Id] = cg;
-                }
-                GeneralItems = genDict.Values.OrderBy(g => g.Name).ToList();
-
-                // Sales
-                var salesDict = Sales.Where(s => !string.IsNullOrEmpty(s.Id)).ToDictionary(s => s.Id, s => s);
-                foreach (var cs in bundle.Sales)
-                {
-                    if (!string.IsNullOrEmpty(cs.Id)) salesDict[cs.Id] = cs;
-                }
-                Sales = salesDict.Values.OrderByDescending(s => s.Date).ToList();
-
-                // Purchases
-                var purchDict = Purchases.Where(pu => !string.IsNullOrEmpty(pu.Id)).ToDictionary(pu => pu.Id, pu => pu);
-                foreach (var cpu in bundle.Purchases)
-                {
-                    if (!string.IsNullOrEmpty(cpu.Id)) purchDict[cpu.Id] = cpu;
-                }
-                Purchases = purchDict.Values.OrderByDescending(pu => pu.Date).ToList();
-
-                // WorkOrders
-                var woDict = WorkOrders.Where(w => !string.IsNullOrEmpty(w.Id)).ToDictionary(w => w.Id, w => w);
-                foreach (var cwo in bundle.WorkOrders)
-                {
-                    if (!string.IsNullOrEmpty(cwo.Id)) woDict[cwo.Id] = cwo;
-                }
-                WorkOrders = woDict.Values.OrderByDescending(w => w.OrderDate).ToList();
-
-                // Expenses
-                var expDict = Expenses.Where(e => !string.IsNullOrEmpty(e.Id)).ToDictionary(e => e.Id, e => e);
-                foreach (var ce in bundle.Expenses)
-                {
-                    if (!string.IsNullOrEmpty(ce.Id)) expDict[ce.Id] = ce;
-                }
-                Expenses = expDict.Values.OrderByDescending(e => e.Date).ToList();
-
-                // Investments
-                var invDict = Investments.Where(i => !string.IsNullOrEmpty(i.Id)).ToDictionary(i => i.Id, i => i);
-                foreach (var ci in bundle.Investments)
-                {
-                    if (!string.IsNullOrEmpty(ci.Id)) invDict[ci.Id] = ci;
-                }
-                Investments = invDict.Values.OrderByDescending(i => i.Date).ToList();
-
-                // Loans
-                var loanDict = Loans.Where(l => !string.IsNullOrEmpty(l.Id)).ToDictionary(l => l.Id, l => l);
-                foreach (var cl in bundle.Loans)
-                {
-                    if (!string.IsNullOrEmpty(cl.Id)) loanDict[cl.Id] = cl;
-                }
-                Loans = loanDict.Values.OrderByDescending(l => l.Date).ToList();
-
-                // Assets
-                var assetDict = Assets.Where(a => !string.IsNullOrEmpty(a.Id)).ToDictionary(a => a.Id, a => a);
-                foreach (var ca in bundle.Assets)
-                {
-                    if (!string.IsNullOrEmpty(ca.Id)) assetDict[ca.Id] = ca;
-                }
-                Assets = assetDict.Values.OrderByDescending(a => a.Date).ToList();
-
-                // Sequences - keep highest sequence number
-                foreach (var kvp in bundle.Sequences)
-                {
-                    if (!Sequences.TryGetValue(kvp.Key, out int localVal) || kvp.Value > localVal)
-                    {
-                        Sequences[kvp.Key] = kvp.Value;
-                    }
+                    Sequences = bundle.Sequences;
                 }
 
                 Auth.MergeCloudUsers(bundle.Users);
-
-                for (int i = 0; i < Products.Count; i++)
-                {
-                    if (Products[i].RegisteredQty <= 0 && Products[i].Stock > 0)
-                    {
-                        Products[i].RegisteredQty = Products[i].Stock;
-                    }
-                }
-                foreach (var r in RawMaterials) if (r.RegisteredQty <= 0 && r.Stock > 0) r.RegisteredQty = r.Stock;
-                foreach (var g in GeneralItems) if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
 
                 CleanLegacyBarcodesAndHsn();
                 EnsureUniqueBarcodesAcrossCatalog();
@@ -348,100 +284,11 @@ namespace AsiErp.Services
 
                 IsSampleDataLoaded = false;
 
-                // 3. Ensure any local items NOT yet present in cloud are queued to push!
-                int pushedLocalCount = 0;
-                foreach (var p in Products)
-                {
-                    if (!bundle.Products.Any(cp => cp.Id == p.Id))
-                    {
-                        SyncQueue.EnqueueSet("products", p.Id, p);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var r in RawMaterials)
-                {
-                    if (!bundle.RawMaterials.Any(cr => cr.Id == r.Id))
-                    {
-                        SyncQueue.EnqueueSet("raw_materials", r.Id, r);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var g in GeneralItems)
-                {
-                    if (!bundle.GeneralItems.Any(cg => cg.Id == g.Id))
-                    {
-                        SyncQueue.EnqueueSet("general_items", g.Id, g);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var s in Sales)
-                {
-                    if (!bundle.Sales.Any(cs => cs.Id == s.Id))
-                    {
-                        SyncQueue.EnqueueSet("sales", s.Id, s);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var pu in Purchases)
-                {
-                    if (!bundle.Purchases.Any(cpu => cpu.Id == pu.Id))
-                    {
-                        SyncQueue.EnqueueSet("purchases", pu.Id, pu);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var w in WorkOrders)
-                {
-                    if (!bundle.WorkOrders.Any(cw => cw.Id == w.Id))
-                    {
-                        SyncQueue.EnqueueSet("work_orders", w.Id, w);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var e in Expenses)
-                {
-                    if (!bundle.Expenses.Any(ce => ce.Id == e.Id))
-                    {
-                        SyncQueue.EnqueueSet("expenses", e.Id, e);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var i in Investments)
-                {
-                    if (!bundle.Investments.Any(ci => ci.Id == i.Id))
-                    {
-                        SyncQueue.EnqueueSet("investments", i.Id, i);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var l in Loans)
-                {
-                    if (!bundle.Loans.Any(cl => cl.Id == l.Id))
-                    {
-                        SyncQueue.EnqueueSet("loans", l.Id, l);
-                        pushedLocalCount++;
-                    }
-                }
-                foreach (var a in Assets)
-                {
-                    if (!bundle.Assets.Any(ca => ca.Id == a.Id))
-                    {
-                        SyncQueue.EnqueueSet("assets", a.Id, a);
-                        pushedLocalCount++;
-                    }
-                }
-
-                // Save merged state to local disk and notify UI
+                Firebase.StartRealtimeListeners();
                 NotifyDataChanged();
 
-                if (pushedLocalCount > 0)
-                {
-                    _ = SyncQueue.ProcessQueueAsync();
-                }
-
                 int totalCount = Products.Count + RawMaterials.Count + GeneralItems.Count + Sales.Count + Purchases.Count + WorkOrders.Count + Expenses.Count + Investments.Count + Loans.Count + Assets.Count;
-                string summary = $"Synced with Cloud Firestore: {totalCount} total active records ({Products.Count} products, {Sales.Count} sales, {Purchases.Count} purchases).";
-
+                string summary = $"Live Realtime DB: {totalCount} active records synced from Firestore ({Firebase.ProjectId}).";
                 return (true, summary, totalCount);
             }
             catch (Exception ex)
@@ -452,18 +299,7 @@ namespace AsiErp.Services
 
         public Task PushAllToCloudAsync()
         {
-            foreach (var p in Products) SyncQueue.EnqueueSet("products", p.Id, p);
-            foreach (var r in RawMaterials) SyncQueue.EnqueueSet("raw_materials", r.Id, r);
-            foreach (var g in GeneralItems) SyncQueue.EnqueueSet("general_items", g.Id, g);
-            foreach (var s in Sales) SyncQueue.EnqueueSet("sales", s.Id, s);
-            foreach (var pu in Purchases) SyncQueue.EnqueueSet("purchases", pu.Id, pu);
-            foreach (var w in WorkOrders) SyncQueue.EnqueueSet("work_orders", w.Id, w);
-            foreach (var e in Expenses) SyncQueue.EnqueueSet("expenses", e.Id, e);
-            foreach (var i in Investments) SyncQueue.EnqueueSet("investments", i.Id, i);
-            foreach (var l in Loans) SyncQueue.EnqueueSet("loans", l.Id, l);
-            foreach (var a in Assets) SyncQueue.EnqueueSet("assets", a.Id, a);
-            foreach (var u in Auth.Users) SyncQueue.EnqueueSet("users", u.Id, u);
-            SyncQueue.EnqueueSet("meta", "sequences", Sequences);
+            // Manual full-database push removed: database is strictly live realtime Firestore
             return Task.CompletedTask;
         }
 
@@ -598,7 +434,7 @@ namespace AsiErp.Services
 
         // --- BUSINESS ACTIONS (OFFLINE-FIRST LOCAL STORAGE + BACKGROUND SYNC QUEUE) ---
 
-        public Task<SaleDoc> RecordSaleAsync(SaleDoc sale)
+        public async Task<SaleDoc> RecordSaleAsync(SaleDoc sale)
         {
             Sales.Insert(0, sale);
 
@@ -612,7 +448,11 @@ namespace AsiErp.Services
                         p.RegisteredQty = p.Stock;
                     }
                     p.Stock = Math.Max(0, p.Stock - line.Qty);
-                    if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", p.Id, p);
+                    SyncQueue.EnqueueSet("products", p.Id, p);
+                    if (Firebase != null && Firebase.IsConnected)
+                    {
+                        try { await Firebase.SaveProductAsync(p); } catch { }
+                    }
                 }
             }
 
@@ -622,20 +462,28 @@ namespace AsiErp.Services
             {
                 SyncQueue.EnqueueSet("sales", sale.Id, sale);
                 SyncQueue.EnqueueSet("meta", "sequences", Sequences);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SaveSaleAsync(sale); } catch { }
+                    try { await Firebase.SaveSequencesAsync(Sequences); } catch { }
+                }
             }
 
-            return Task.FromResult(sale);
+            return sale;
         }
 
-        public Task DeleteSaleAsync(string id)
+        public async Task DeleteSaleAsync(string id)
         {
             Sales.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("sales", id);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.DeleteSaleAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
         public async Task<PurchaseDoc> RecordPurchaseAsync(PurchaseDoc purchase)
@@ -648,7 +496,7 @@ namespace AsiErp.Services
 
                 if (purchase.Kind == "raw")
                 {
-                    // If this raw material exists in the product catalog (by ItemId, Name or Sku), update its live stock
+                    // If this raw material exists in the catalog (by ItemId, Name or Sku), update its live stock
                     var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
                                                              x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
                                                              (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
@@ -657,11 +505,11 @@ namespace AsiErp.Services
                         rm.Stock = Math.Round(rm.Stock + line.Qty, 2);
                         rm.Rate = line.Rate;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) rm.Unit = line.Unit;
-                        if (!string.IsNullOrWhiteSpace(line.Sku)) rm.Sku = line.Sku;
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
-                        if (Firebase != null) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
+                        if (!string.IsNullOrWhiteSpace(rm.Sku)) line.Sku = rm.Sku;
+                        else if (!string.IsNullOrWhiteSpace(line.Sku)) rm.Sku = line.Sku;
+                        SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
                     }
-                    // Note: If raw material is NOT already in catalog, do not automatically create a new Product (respects request 4)
                 }
                 else if (purchase.Kind == "ready")
                 {
@@ -673,7 +521,10 @@ namespace AsiErp.Services
                         p.Cost = line.Rate;
                         if (line.SellingPrice > 0) p.RetailPrice = line.SellingPrice;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) p.Unit = line.Unit;
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", p.Id, p);
+                        if (!string.IsNullOrWhiteSpace(p.Sku)) line.Sku = p.Sku;
+                        else if (!string.IsNullOrWhiteSpace(line.Sku)) p.Sku = line.Sku;
+                        SyncQueue.EnqueueSet("products", p.Id, p);
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(p); } catch { } }
                     }
                     else
                     {
@@ -695,7 +546,8 @@ namespace AsiErp.Services
                         }
                         line.ItemId = newProd.Id;
                         Products.Add(newProd);
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", newProd.Id, newProd);
+                        SyncQueue.EnqueueSet("products", newProd.Id, newProd);
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(newProd); } catch { } }
                     }
                 }
                 else if (purchase.Kind == "gen")
@@ -707,7 +559,10 @@ namespace AsiErp.Services
                         g.Stock += line.Qty;
                         g.Rate = line.Rate;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) g.Unit = line.Unit;
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", g.Id, g);
+                        if (!string.IsNullOrWhiteSpace(g.Sku)) line.Sku = g.Sku;
+                        else if (!string.IsNullOrWhiteSpace(line.Sku)) g.Sku = line.Sku;
+                        SyncQueue.EnqueueSet("general_items", g.Id, g);
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
                     }
                     else
                     {
@@ -723,24 +578,29 @@ namespace AsiErp.Services
                         };
                         line.ItemId = newGen.Id;
                         GeneralItems.Add(newGen);
-                        if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
+                        SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
+                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(newGen); } catch { } }
                     }
                 }
             }
 
             NotifyDataChanged();
-            SaveLocalState();
 
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("purchases", purchase.Id, purchase);
                 SyncQueue.EnqueueSet("meta", "sequences", Sequences);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SavePurchaseAsync(purchase); } catch { }
+                    try { await Firebase.SaveSequencesAsync(Sequences); } catch { }
+                }
             }
 
             return purchase;
         }
 
-        public Task DeletePurchaseAsync(string id)
+        public async Task DeletePurchaseAsync(string id)
         {
             var p = Purchases.FirstOrDefault(x => x.Id == id);
             if (p != null && p.Lines != null)
@@ -754,7 +614,8 @@ namespace AsiErp.Services
                         if (rm != null)
                         {
                             rm.Stock = Math.Max(0, Math.Round(rm.Stock - line.Qty, 2));
-                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                            SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
                         }
                     }
                     else if (p.Kind == "ready")
@@ -764,7 +625,8 @@ namespace AsiErp.Services
                         if (prod != null)
                         {
                             prod.Stock = Math.Max(0, Math.Round(prod.Stock - line.Qty, 2));
-                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("products", prod.Id, prod);
+                            SyncQueue.EnqueueSet("products", prod.Id, prod);
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(prod); } catch { } }
                         }
                     }
                     else if (p.Kind == "gen")
@@ -774,7 +636,8 @@ namespace AsiErp.Services
                         if (g != null)
                         {
                             g.Stock = Math.Max(0, Math.Round(g.Stock - line.Qty, 2));
-                            if (!IsSampleDataLoaded) SyncQueue.EnqueueSet("general_items", g.Id, g);
+                            SyncQueue.EnqueueSet("general_items", g.Id, g);
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
                         }
                     }
                 }
@@ -782,15 +645,17 @@ namespace AsiErp.Services
 
             Purchases.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
-            SaveLocalState();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("purchases", id);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.DeletePurchaseAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task RecordPaymentAsync(string collection, string id, double amount)
+        public async Task RecordPaymentAsync(string collection, string id, double amount)
         {
             if (collection == "sales")
             {
@@ -802,6 +667,10 @@ namespace AsiErp.Services
                     if (!IsSampleDataLoaded)
                     {
                         SyncQueue.EnqueueSet("sales", s.Id, s);
+                        if (Firebase != null && Firebase.IsConnected)
+                        {
+                            try { await Firebase.SaveSaleAsync(s); } catch { }
+                        }
                     }
                 }
             }
@@ -815,10 +684,13 @@ namespace AsiErp.Services
                     if (!IsSampleDataLoaded)
                     {
                         SyncQueue.EnqueueSet("purchases", p.Id, p);
+                        if (Firebase != null && Firebase.IsConnected)
+                        {
+                            try { await Firebase.SavePurchaseAsync(p); } catch { }
+                        }
                     }
                 }
             }
-            return Task.CompletedTask;
         }
 
         public async Task SaveWorkOrderAsync(WorkOrderDoc wo, bool isNew)
@@ -971,62 +843,77 @@ namespace AsiErp.Services
             return Task.CompletedTask;
         }
 
-        public Task AddExpenseAsync(ExpenseItem exp)
+        public async Task AddExpenseAsync(ExpenseItem exp)
         {
             Expenses.Insert(0, exp);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("expenses", exp.Id, exp);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SaveExpenseAsync(exp); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteExpenseAsync(string id)
+        public async Task DeleteExpenseAsync(string id)
         {
             Expenses.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("expenses", id);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.DeleteExpenseAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task AddInvestmentAsync(InvestmentItem inv)
+        public async Task AddInvestmentAsync(InvestmentItem inv)
         {
             Investments.Insert(0, inv);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("investments", inv.Id, inv);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SaveInvestmentAsync(inv); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteInvestmentAsync(string id)
+        public async Task DeleteInvestmentAsync(string id)
         {
             Investments.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("investments", id);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.DeleteInvestmentAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task AddLoanAsync(LoanItem loan)
+        public async Task AddLoanAsync(LoanItem loan)
         {
             Loans.Insert(0, loan);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("loans", loan.Id, loan);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SaveLoanAsync(loan); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task UpdateLoanAsync(LoanItem loan)
+        public async Task UpdateLoanAsync(LoanItem loan)
         {
             int idx = Loans.FindIndex(x => x.Id == loan.Id);
             if (idx >= 0) Loans[idx] = loan;
@@ -1036,22 +923,28 @@ namespace AsiErp.Services
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("loans", loan.Id, loan);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SaveLoanAsync(loan); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteLoanAsync(string id)
+        public async Task DeleteLoanAsync(string id)
         {
             Loans.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("loans", id);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.DeleteLoanAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task AddLoanRepaymentAsync(string loanId, LoanRepayment rep)
+        public async Task AddLoanRepaymentAsync(string loanId, LoanRepayment rep)
         {
             var loan = Loans.FirstOrDefault(l => l.Id == loanId);
             if (loan != null)
@@ -1061,31 +954,40 @@ namespace AsiErp.Services
                 if (!IsSampleDataLoaded)
                 {
                     SyncQueue.EnqueueSet("loans", loan.Id, loan);
+                    if (Firebase != null && Firebase.IsConnected)
+                    {
+                        try { await Firebase.SaveLoanAsync(loan); } catch { }
+                    }
                 }
             }
-            return Task.CompletedTask;
         }
 
-        public Task AddAssetAsync(AssetItem asset)
+        public async Task AddAssetAsync(AssetItem asset)
         {
             Assets.Insert(0, asset);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueSet("assets", asset.Id, asset);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.SaveAssetAsync(asset); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
-        public Task DeleteAssetAsync(string id)
+        public async Task DeleteAssetAsync(string id)
         {
             Assets.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             if (!IsSampleDataLoaded)
             {
                 SyncQueue.EnqueueDelete("assets", id);
+                if (Firebase != null && Firebase.IsConnected)
+                {
+                    try { await Firebase.DeleteAssetAsync(id); } catch { }
+                }
             }
-            return Task.CompletedTask;
         }
 
         public HashSet<string> GetAllUsedBarcodes(string? excludeId = null)

@@ -19,7 +19,6 @@ namespace AsiErp
         {
             try
             {
-                Services.AppDataService.Instance.SaveLocalState();
                 Services.AppDataService.Instance.SyncQueue.SaveQueue();
             }
             catch { }

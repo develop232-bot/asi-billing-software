@@ -58,7 +58,6 @@
                     <StackPanel>
                         <TextBlock Text="{Binding AppVersion, StringFormat='ASI ERP {0} · Firebase Live'}" FontSize="10" Foreground="#64748B" Margin="2,0,0,6"/>
                         <WrapPanel>
-                            <Button Content="Sync to DB" Command="{Binding SyncToCloudCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Upload all current software data to Firebase"/>
                             <Button Content="Light / Dark" Command="{Binding ToggleThemeCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#CBD4EA" FontSize="10" Margin="0,0,4,4" ToolTip="Toggle Light / Dark theme"/>
                             <Button Content="🔄 Online Update" Command="{Binding CheckForUpdatesCommand}" Style="{StaticResource SidebarNavButton}" Padding="7,3" Background="#1E293B" Foreground="#86EFAC" FontSize="10" Margin="0,0,4,4" ToolTip="Check GitHub for Online Software Updates"/>
                         </WrapPanel>

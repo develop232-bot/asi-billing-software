@@ -45,6 +45,23 @@ namespace AsiErp.Services
 
         public event Action? ConnectionChanged;
 
+        private readonly List<FirestoreChangeListener> _activeListeners = new();
+        private readonly object _listenerLock = new();
+        private bool _listenersStarted = false;
+
+        public event Action<List<ProductItem>>? ProductsRealtimeReceived;
+        public event Action<List<RawMaterialItem>>? RawMaterialsRealtimeReceived;
+        public event Action<List<GeneralItem>>? GeneralItemsRealtimeReceived;
+        public event Action<List<SaleDoc>>? SalesRealtimeReceived;
+        public event Action<List<PurchaseDoc>>? PurchasesRealtimeReceived;
+        public event Action<List<WorkOrderDoc>>? WorkOrdersRealtimeReceived;
+        public event Action<List<ExpenseItem>>? ExpensesRealtimeReceived;
+        public event Action<List<InvestmentItem>>? InvestmentsRealtimeReceived;
+        public event Action<List<LoanItem>>? LoansRealtimeReceived;
+        public event Action<List<AssetItem>>? AssetsRealtimeReceived;
+        public event Action<List<AppUser>>? UsersRealtimeReceived;
+        public event Action<Dictionary<string, int>>? SequencesRealtimeReceived;
+
         public FirebaseService()
         {
             TryInitialize();
@@ -797,6 +814,308 @@ namespace AsiErp.Services
                 await _db.Collection("investments").Document(id).DeleteAsync();
             }
             catch { }
+        }
+
+        public async Task SaveLoanAsync(LoanItem loan)
+        {
+            if (_db == null || !_isConnected || string.IsNullOrEmpty(loan.Id)) return;
+            try
+            {
+                var doc = _db.Collection("loans").Document(loan.Id);
+                await doc.SetAsync(loan);
+            }
+            catch { }
+        }
+
+        public async Task DeleteLoanAsync(string id)
+        {
+            if (_db == null || !_isConnected || string.IsNullOrEmpty(id)) return;
+            try
+            {
+                await _db.Collection("loans").Document(id).DeleteAsync();
+            }
+            catch { }
+        }
+
+        public async Task SaveAssetAsync(AssetItem asset)
+        {
+            if (_db == null || !_isConnected || string.IsNullOrEmpty(asset.Id)) return;
+            try
+            {
+                var doc = _db.Collection("assets").Document(asset.Id);
+                await doc.SetAsync(asset);
+            }
+            catch { }
+        }
+
+        public async Task DeleteAssetAsync(string id)
+        {
+            if (_db == null || !_isConnected || string.IsNullOrEmpty(id)) return;
+            try
+            {
+                await _db.Collection("assets").Document(id).DeleteAsync();
+            }
+            catch { }
+        }
+
+        public void StartRealtimeListeners()
+        {
+            if (_db == null || !_isConnected) return;
+
+            lock (_listenerLock)
+            {
+                if (_listenersStarted) return;
+                _listenersStarted = true;
+            }
+
+            try
+            {
+                // 1. Products
+                _activeListeners.Add(_db.Collection("products").Listen(snap =>
+                {
+                    var list = new List<ProductItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<ProductItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    ProductsRealtimeReceived?.Invoke(list);
+                }));
+
+                // 2. Raw Materials
+                _activeListeners.Add(_db.Collection("raw_materials").Listen(snap =>
+                {
+                    var list = new List<RawMaterialItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists && !doc.Id.StartsWith("pur_it_") && !doc.Id.StartsWith("pur_"))
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<RawMaterialItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    RawMaterialsRealtimeReceived?.Invoke(list);
+                }));
+
+                // 3. General Items
+                _activeListeners.Add(_db.Collection("general_items").Listen(snap =>
+                {
+                    var list = new List<GeneralItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<GeneralItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    GeneralItemsRealtimeReceived?.Invoke(list);
+                }));
+
+                // 4. Sales
+                _activeListeners.Add(_db.Collection("sales").Listen(snap =>
+                {
+                    var list = new List<SaleDoc>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<SaleDoc>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    SalesRealtimeReceived?.Invoke(list);
+                }));
+
+                // 5. Purchases
+                _activeListeners.Add(_db.Collection("purchases").Listen(snap =>
+                {
+                    var list = new List<PurchaseDoc>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<PurchaseDoc>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    PurchasesRealtimeReceived?.Invoke(list);
+                }));
+
+                // 6. Work Orders
+                _activeListeners.Add(_db.Collection("work_orders").Listen(snap =>
+                {
+                    var list = new List<WorkOrderDoc>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<WorkOrderDoc>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    WorkOrdersRealtimeReceived?.Invoke(list);
+                }));
+
+                // 7. Expenses
+                _activeListeners.Add(_db.Collection("expenses").Listen(snap =>
+                {
+                    var list = new List<ExpenseItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<ExpenseItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    ExpensesRealtimeReceived?.Invoke(list);
+                }));
+
+                // 8. Investments
+                _activeListeners.Add(_db.Collection("investments").Listen(snap =>
+                {
+                    var list = new List<InvestmentItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<InvestmentItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    InvestmentsRealtimeReceived?.Invoke(list);
+                }));
+
+                // 9. Loans
+                _activeListeners.Add(_db.Collection("loans").Listen(snap =>
+                {
+                    var list = new List<LoanItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<LoanItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    LoansRealtimeReceived?.Invoke(list);
+                }));
+
+                // 10. Assets
+                _activeListeners.Add(_db.Collection("assets").Listen(snap =>
+                {
+                    var list = new List<AssetItem>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<AssetItem>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    AssetsRealtimeReceived?.Invoke(list);
+                }));
+
+                // 11. Users
+                _activeListeners.Add(_db.Collection("users").Listen(snap =>
+                {
+                    var list = new List<AppUser>();
+                    foreach (var doc in snap.Documents)
+                    {
+                        if (doc.Exists)
+                        {
+                            try
+                            {
+                                var item = doc.ConvertTo<AppUser>();
+                                if (string.IsNullOrEmpty(item.Id)) item.Id = doc.Id;
+                                list.Add(item);
+                            }
+                            catch { }
+                        }
+                    }
+                    UsersRealtimeReceived?.Invoke(list);
+                }));
+
+                // 12. Sequences (in meta/sequences)
+                _activeListeners.Add(_db.Collection("meta").Document("sequences").Listen(docSnap =>
+                {
+                    if (docSnap.Exists)
+                    {
+                        var dict = new Dictionary<string, int>();
+                        try
+                        {
+                            var raw = docSnap.ToDictionary();
+                            foreach (var kvp in raw)
+                            {
+                                if (int.TryParse(kvp.Value?.ToString(), out int val))
+                                {
+                                    dict[kvp.Key] = val;
+                                }
+                            }
+                        }
+                        catch { }
+                        SequencesRealtimeReceived?.Invoke(dict);
+                    }
+                }));
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error starting realtime listeners: {ex.Message}");
+            }
         }
 
         // --- BATCH HELPERS FOR BULK SYNC ---
