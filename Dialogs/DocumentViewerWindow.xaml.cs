@@ -57,15 +57,27 @@ namespace AsiErp.Dialogs
                     TxtShippingInfo.Text = $"Sold At: {sale.Event} · Paid by {sale.PaymentMode}";
                 }
 
-                var lines = sale.Lines.Select(l => new DocViewerLineItem
+                var lines = sale.Lines.Select(l =>
                 {
-                    Name = l.Name,
-                    Hsn = l.Hsn,
-                    Size = l.Size,
-                    Qty = l.Qty,
-                    Rate = l.Rate,
-                    GstPercent = l.GstPercent,
-                    GrossAmount = l.GrossAmount
+                    string displayName = !string.IsNullOrWhiteSpace(l.Name) ? l.Name.Trim() : "";
+                    if (string.IsNullOrWhiteSpace(displayName) && !string.IsNullOrWhiteSpace(l.Pid))
+                    {
+                        var p = Services.AppDataService.Instance?.Products.FirstOrDefault(x => x.Id == l.Pid || (!string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Pid, StringComparison.OrdinalIgnoreCase)));
+                        if (p != null) displayName = p.FullDisplayName;
+                        else displayName = l.Pid;
+                    }
+                    if (string.IsNullOrWhiteSpace(displayName)) displayName = "Item";
+
+                    return new DocViewerLineItem
+                    {
+                        Name = displayName,
+                        Hsn = !string.IsNullOrWhiteSpace(l.Hsn) ? l.Hsn : "—",
+                        Size = !string.IsNullOrWhiteSpace(l.Size) ? l.Size : "—",
+                        Qty = l.Qty,
+                        Rate = l.Rate,
+                        GstPercent = l.GstPercent,
+                        GrossAmount = l.GrossAmount
+                    };
                 }).ToList();
                 DgInvoiceLines.ItemsSource = lines;
 
@@ -91,15 +103,42 @@ namespace AsiErp.Dialogs
                 TxtPaymentDueDate.Text = purchase.SaleType == "Credit" ? $"Due Date: {purchase.PaymentDueDate}" : "";
                 TxtShippingInfo.Text = "Recorded in Material Purchase Register";
 
-                var lines = purchase.Lines.Select(l => new DocViewerLineItem
+                var lines = purchase.Lines.Select(l =>
                 {
-                    Name = l.Name,
-                    Hsn = "—",
-                    Size = "—",
-                    Qty = l.Qty,
-                    Rate = l.Rate,
-                    GstPercent = l.GstPercent,
-                    GrossAmount = l.GrossAmount
+                    string displayName = !string.IsNullOrWhiteSpace(l.Name) ? l.Name.Trim() : "";
+                    if (string.IsNullOrWhiteSpace(displayName) && !string.IsNullOrWhiteSpace(l.ItemId))
+                    {
+                        var match = Services.AppDataService.Instance?.RawMaterials.FirstOrDefault(x => x.Id == l.ItemId)
+                                    ?? (object?)Services.AppDataService.Instance?.Products.FirstOrDefault(x => x.Id == l.ItemId)
+                                    ?? Services.AppDataService.Instance?.GeneralItems.FirstOrDefault(x => x.Id == l.ItemId);
+                        if (match is RawMaterialItem rm) displayName = rm.Name;
+                        else if (match is ProductItem p) displayName = p.Name;
+                        else if (match is GeneralItem g) displayName = g.Name;
+                    }
+                    if (string.IsNullOrWhiteSpace(displayName) && !string.IsNullOrWhiteSpace(l.Sku))
+                    {
+                        var match = Services.AppDataService.Instance?.RawMaterials.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase))
+                                    ?? (object?)Services.AppDataService.Instance?.Products.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase))
+                                    ?? Services.AppDataService.Instance?.GeneralItems.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase));
+                        if (match is RawMaterialItem rm) displayName = rm.Name;
+                        else if (match is ProductItem p) displayName = p.Name;
+                        else if (match is GeneralItem g) displayName = g.Name;
+                    }
+                    if (string.IsNullOrWhiteSpace(displayName))
+                    {
+                        displayName = !string.IsNullOrWhiteSpace(l.Sku) ? l.Sku : (!string.IsNullOrWhiteSpace(l.ItemId) ? l.ItemId : "Material Item");
+                    }
+
+                    return new DocViewerLineItem
+                    {
+                        Name = displayName,
+                        Hsn = "—",
+                        Size = !string.IsNullOrWhiteSpace(l.Size) ? l.Size : "—",
+                        Qty = l.Qty,
+                        Rate = l.Rate,
+                        GstPercent = l.GstPercent,
+                        GrossAmount = l.GrossAmount
+                    };
                 }).ToList();
                 DgInvoiceLines.ItemsSource = lines;
 

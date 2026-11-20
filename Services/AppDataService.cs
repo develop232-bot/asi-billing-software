@@ -73,78 +73,127 @@ namespace AsiErp.Services
             }
         }
 
+        private void SafeRunOnUI(Action action)
+        {
+            var app = System.Windows.Application.Current;
+            if (app != null && app.Dispatcher != null && !app.Dispatcher.CheckAccess())
+            {
+                app.Dispatcher.BeginInvoke(action);
+            }
+            else
+            {
+                action();
+            }
+        }
+
         private void HookRealtimeEvents()
         {
             Firebase.ProductsRealtimeReceived += list =>
             {
-                Products = list.OrderBy(p => p.Name).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Products = list.OrderBy(p => p.Name).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.RawMaterialsRealtimeReceived += list =>
             {
-                RawMaterials = list.Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    RawMaterials = list.Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.GeneralItemsRealtimeReceived += list =>
             {
-                GeneralItems = list.OrderBy(g => g.Name).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    GeneralItems = list.OrderBy(g => g.Name).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.SalesRealtimeReceived += list =>
             {
-                Sales = list.OrderByDescending(s => s.Date).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Sales = list.OrderByDescending(s => s.Date).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.PurchasesRealtimeReceived += list =>
             {
-                Purchases = list.OrderByDescending(p => p.Date).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Purchases = list.OrderByDescending(p => p.Date).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.WorkOrdersRealtimeReceived += list =>
             {
-                WorkOrders = list.OrderByDescending(w => w.OrderDate).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    WorkOrders = list.OrderByDescending(w => w.OrderDate).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.ExpensesRealtimeReceived += list =>
             {
-                Expenses = list.OrderByDescending(e => e.Date).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Expenses = list.OrderByDescending(e => e.Date).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.InvestmentsRealtimeReceived += list =>
             {
-                Investments = list.OrderByDescending(i => i.Date).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Investments = list.OrderByDescending(i => i.Date).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.LoansRealtimeReceived += list =>
             {
-                Loans = list.OrderByDescending(l => l.Date).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Loans = list.OrderByDescending(l => l.Date).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.AssetsRealtimeReceived += list =>
             {
-                Assets = list.OrderByDescending(a => a.Date).ToList();
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Assets = list.OrderByDescending(a => a.Date).ToList();
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.UsersRealtimeReceived += list =>
             {
-                Auth.MergeCloudUsers(list);
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Auth.MergeCloudUsers(list);
+                    DataChanged?.Invoke();
+                });
             };
 
             Firebase.SequencesRealtimeReceived += dict =>
             {
-                Sequences = dict;
-                NotifyDataChanged();
+                SafeRunOnUI(() =>
+                {
+                    Sequences = dict;
+                    DataChanged?.Invoke();
+                });
             };
         }
 
@@ -968,9 +1017,150 @@ namespace AsiErp.Services
             return candidate;
         }
 
+        public async Task ReorganizeAndSequenceAllSkusAsync(string? specificType = null)
+        {
+            bool changed = false;
+
+            int ParseSkuNum(string? sku, string prefix)
+            {
+                if (string.IsNullOrWhiteSpace(sku)) return int.MaxValue;
+                if (sku.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    string part = sku.Substring(prefix.Length);
+                    if (int.TryParse(part, out int n)) return n;
+                }
+                var m = System.Text.RegularExpressions.Regex.Match(sku, @"\d+");
+                return m.Success && int.TryParse(m.Value, out int num) ? num : int.MaxValue;
+            }
+
+            // 1. Ready-Made Products ("ready" -> ASI-RDY-xxx)
+            if (specificType == null || specificType == "ready")
+            {
+                var readyGroups = Products
+                    .Where(p => !p.IsManufactured)
+                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(grp =>
+                    {
+                        var first = grp.First();
+                        return ParseSkuNum(first.Sku, "ASI-RDY-");
+                    })
+                    .ThenBy(grp => grp.First().Name)
+                    .ToList();
+
+                for (int i = 0; i < readyGroups.Count; i++)
+                {
+                    string expectedSku = $"ASI-RDY-{(i + 1):D3}";
+                    foreach (var item in readyGroups[i])
+                    {
+                        if (item.Sku != expectedSku)
+                        {
+                            item.Sku = expectedSku;
+                            changed = true;
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(item); } catch { } }
+                        }
+                    }
+                }
+            }
+
+            // 2. Manufactured Products ("mfg" -> ASI-MFG-xxx)
+            if (specificType == null || specificType == "mfg")
+            {
+                var mfgGroups = Products
+                    .Where(p => p.IsManufactured)
+                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(grp =>
+                    {
+                        var first = grp.First();
+                        return ParseSkuNum(first.Sku, "ASI-MFG-");
+                    })
+                    .ThenBy(grp => grp.First().Name)
+                    .ToList();
+
+                for (int i = 0; i < mfgGroups.Count; i++)
+                {
+                    string expectedSku = $"ASI-MFG-{(i + 1):D3}";
+                    foreach (var item in mfgGroups[i])
+                    {
+                        if (item.Sku != expectedSku)
+                        {
+                            item.Sku = expectedSku;
+                            changed = true;
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(item); } catch { } }
+                        }
+                    }
+                }
+            }
+
+            // 3. Raw Materials ("raw" -> ASI-RAW-xxx)
+            if (specificType == null || specificType == "raw")
+            {
+                var rawGroups = RawMaterials
+                    .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_"))
+                    .GroupBy(r => !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(grp =>
+                    {
+                        var first = grp.First();
+                        return ParseSkuNum(first.Sku, "ASI-RAW-");
+                    })
+                    .ThenBy(grp => grp.First().Name)
+                    .ToList();
+
+                for (int i = 0; i < rawGroups.Count; i++)
+                {
+                    string expectedSku = $"ASI-RAW-{(i + 1):D3}";
+                    foreach (var item in rawGroups[i])
+                    {
+                        if (item.Sku != expectedSku)
+                        {
+                            item.Sku = expectedSku;
+                            changed = true;
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(item); } catch { } }
+                        }
+                    }
+                }
+            }
+
+            // 4. General Packaging ("gen" -> ASI-GEN-xxx)
+            if (specificType == null || specificType == "gen")
+            {
+                var genGroups = GeneralItems
+                    .GroupBy(g => !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .OrderBy(grp =>
+                    {
+                        var first = grp.First();
+                        return ParseSkuNum(first.Sku, "ASI-GEN-");
+                    })
+                    .ThenBy(grp => grp.First().Name)
+                    .ToList();
+
+                for (int i = 0; i < genGroups.Count; i++)
+                {
+                    string expectedSku = $"ASI-GEN-{(i + 1):D3}";
+                    foreach (var item in genGroups[i])
+                    {
+                        if (item.Sku != expectedSku)
+                        {
+                            item.Sku = expectedSku;
+                            changed = true;
+                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(item); } catch { } }
+                        }
+                    }
+                }
+            }
+
+            if (changed)
+            {
+                NotifyDataChanged();
+                SaveLocalState();
+            }
+        }
+
         public async Task CleanAndFixCorruptedSkusAsync()
         {
             bool changed = false;
+
+            // First run full re-sequencing and compaction
+            await ReorganizeAndSequenceAllSkusAsync();
 
             // 1. Fix General Items with pur_it_ in SKU or empty SKU
             foreach (var g in GeneralItems)
@@ -1498,6 +1688,8 @@ namespace AsiErp.Services
 
         public async Task DeleteProductAsync(string id)
         {
+            var p = Products.FirstOrDefault(x => x.Id == id);
+            bool isMfg = p?.IsManufactured ?? false;
             Products.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
             SaveLocalState();
@@ -1510,6 +1702,8 @@ namespace AsiErp.Services
                     try { await Firebase.DeleteProductAsync(id); } catch { }
                 }
             }
+
+            await ReorganizeAndSequenceAllSkusAsync(isMfg ? "mfg" : "ready");
         }
 
         public async Task SaveRawMaterialAsync(RawMaterialItem r)
@@ -1549,6 +1743,8 @@ namespace AsiErp.Services
                     try { await Firebase.DeleteRawMaterialAsync(id); } catch { }
                 }
             }
+
+            await ReorganizeAndSequenceAllSkusAsync("raw");
         }
 
         public async Task SaveGeneralItemAsync(GeneralItem g)
@@ -1588,6 +1784,8 @@ namespace AsiErp.Services
                     try { await Firebase.DeleteGeneralItemAsync(id); } catch { }
                 }
             }
+
+            await ReorganizeAndSequenceAllSkusAsync("gen");
         }
     }
 }

@@ -138,12 +138,23 @@
                         <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="85" MinWidth="65" FontWeight="SemiBold"/>
                         <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="90" MinWidth="70" FontWeight="Bold" Foreground="#0F172A"/>
 
-                        <DataGridTemplateColumn Header="Level Meter" Width="80" MinWidth="60">
+                        <DataGridTemplateColumn Header="Level Meter" Width="*" MinWidth="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Border Height="6" Background="#F1F5F9" CornerRadius="3" VerticalAlignment="Center">
-                                        <Border HorizontalAlignment="Left" Width="{Binding LevelMeterWidth}" Background="{Binding StatusLevel, Converter={StaticResource StatusBrushConv}}" CornerRadius="3"/>
-                                    </Border>
+                                    <ProgressBar Value="{Binding LevelPercent}" Minimum="0" Maximum="100"
+                                                 Height="6" VerticalAlignment="Center" Margin="2,0"
+                                                 Background="#E2E8F0" BorderThickness="0">
+                                        <ProgressBar.Template>
+                                            <ControlTemplate TargetType="ProgressBar">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="3" ClipToBounds="True">
+                                                    <Grid x:Name="PART_Track">
+                                                        <Border x:Name="PART_Indicator" HorizontalAlignment="Left"
+                                                                Background="{Binding StatusLevel, Converter={StaticResource StatusBrushConv}}" CornerRadius="3"/>
+                                                    </Grid>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </ProgressBar.Template>
+                                    </ProgressBar>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

@@ -65,15 +65,36 @@
                     </Grid>
 
                     <!-- Items Table -->
-                    <DataGrid x:Name="DgInvoiceLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="1" BorderBrush="#E1E5EC" Background="White" RowHeight="32" Margin="0,0,0,20">
+                    <DataGrid x:Name="DgInvoiceLines" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="1" BorderBrush="#E1E5EC" Background="White" RowHeight="34" Margin="0,0,0,20">
+                        <DataGrid.Resources>
+                            <Style TargetType="DataGridCell">
+                                <Setter Property="Foreground" Value="#0F172A"/>
+                                <Setter Property="Padding" Value="8,4"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="DataGridCell">
+                                            <Border Padding="{TemplateBinding Padding}" Background="Transparent">
+                                                <ContentPresenter VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </DataGrid.Resources>
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Item Description" Binding="{Binding Name}" Width="*"/>
-                            <DataGridTextColumn Header="HSN" Binding="{Binding Hsn}" Width="70"/>
-                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="65"/>
-                            <DataGridTextColumn Header="Qty" Binding="{Binding Qty}" Width="55"/>
-                            <DataGridTextColumn Header="Rate / Amt" Binding="{Binding Rate, StringFormat={}{0:N2}}" Width="95"/>
-                            <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, StringFormat={}{0}%}" Width="60"/>
-                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="100"/>
+                            <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="140">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" Foreground="#0F172A" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                            <DataGridTextColumn Header="HSN" Binding="{Binding Hsn}" Width="70" Foreground="#475569"/>
+                            <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="65" Foreground="#475569"/>
+                            <DataGridTextColumn Header="Qty" Binding="{Binding Qty}" Width="55" Foreground="#0F172A" FontWeight="Bold"/>
+                            <DataGridTextColumn Header="Rate / Amt" Binding="{Binding Rate, StringFormat={}{0:N2}}" Width="95" Foreground="#0F172A"/>
+                            <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, StringFormat={}{0}%}" Width="60" Foreground="#475569"/>
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="100" Foreground="#0F172A" FontWeight="Bold"/>
                         </DataGrid.Columns>
                     </DataGrid>
 

@@ -248,7 +248,7 @@ namespace AsiErp.ViewModels
                     var opt = AvailableItems.FirstOrDefault(x => x.Id == line.ItemId);
                     if (opt != null)
                     {
-                        if (string.IsNullOrWhiteSpace(line.Name)) line.Name = opt.Name;
+                        line.Name = opt.Name;
                         if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = !string.IsNullOrWhiteSpace(opt.Unit) ? opt.Unit : DefaultUnit;
                         if (string.IsNullOrWhiteSpace(line.Sku)) line.Sku = opt.Sku;
                         if (opt.SellingPrice > 0 && line.SellingPrice <= 0) line.SellingPrice = opt.SellingPrice;
@@ -302,6 +302,39 @@ namespace AsiErp.ViewModels
             {
                 MessageBox.Show("Please enter the vendor / supplier name.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
+            }
+
+            // Auto-heal any line where Name was temporarily blanked by ComboBox binding but ItemId or Sku is set
+            foreach (var l in Lines)
+            {
+                if (string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.ItemId))
+                {
+                    var opt = AvailableItems.FirstOrDefault(x => x.Id == l.ItemId);
+                    if (opt != null)
+                    {
+                        l.Name = opt.Name;
+                        if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = opt.Unit;
+                        if (string.IsNullOrWhiteSpace(l.Sku)) l.Sku = opt.Sku;
+                    }
+                    else
+                    {
+                        if (Kind == "raw" && _dataService.RawMaterials != null)
+                        {
+                            var rm = _dataService.RawMaterials.FirstOrDefault(x => x.Id == l.ItemId);
+                            if (rm != null) { l.Name = rm.Name; l.Sku = rm.Sku; l.Unit = rm.Unit; }
+                        }
+                        else if (Kind == "ready" && _dataService.Products != null)
+                        {
+                            var p = _dataService.Products.FirstOrDefault(x => x.Id == l.ItemId);
+                            if (p != null) { l.Name = p.Name; l.Sku = p.Sku; l.Unit = p.Unit; }
+                        }
+                        else if (Kind == "gen" && _dataService.GeneralItems != null)
+                        {
+                            var g = _dataService.GeneralItems.FirstOrDefault(x => x.Id == l.ItemId);
+                            if (g != null) { l.Name = g.Name; l.Sku = g.Sku; l.Unit = g.Unit; }
+                        }
+                    }
+                }
             }
 
             var validLines = Lines.Where(l => !string.IsNullOrWhiteSpace(l.Name) && l.Qty > 0).ToList();

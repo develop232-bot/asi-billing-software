@@ -260,9 +260,10 @@ namespace AsiErp.ViewModels
             RefreshData();
         }
 
-        public void RefreshData()
+        public async void RefreshData()
         {
             _dataService.EnsureUniqueBarcodesAcrossCatalog();
+            await _dataService.CleanAndFixCorruptedSkusAsync();
             ApplyFilter();
         }
 
@@ -397,8 +398,21 @@ namespace AsiErp.ViewModels
                 TotalSkusCount = genCount;
             }
 
+            int ParseSkuNum(string? sku)
+            {
+                if (string.IsNullOrWhiteSpace(sku)) return int.MaxValue;
+                var match = System.Text.RegularExpressions.Regex.Match(sku, @"\d+");
+                return match.Success && int.TryParse(match.Value, out int n) ? n : int.MaxValue;
+            }
+
+            var sortedCandidates = dateFiltered
+                .OrderBy(r => r.TypeKey switch { "raw" => 1, "mfg" => 2, "ready" => 3, "gen" => 4, _ => 5 })
+                .ThenBy(r => ParseSkuNum(r.Sku))
+                .ThenBy(r => r.Name)
+                .ToList();
+
             // Populate FilteredRows by ActiveFilter and SearchQuery
-            foreach (var row in dateFiltered)
+            foreach (var row in sortedCandidates)
             {
                 bool matchType = ActiveFilter == "all" || row.TypeKey == ActiveFilter;
                 bool matchQ = string.IsNullOrEmpty(q) ||
