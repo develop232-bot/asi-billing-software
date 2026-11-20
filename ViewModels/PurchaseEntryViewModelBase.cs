@@ -216,7 +216,7 @@ namespace AsiErp.ViewModels
                 Unit = DefaultUnit,
                 Qty = 1,
                 Rate = 0,
-                GstPercent = 5,
+                GstPercent = 0,
                 Size = Kind == "ready" ? "Free" : "",
                 SellingPrice = 0
             };
@@ -227,12 +227,10 @@ namespace AsiErp.ViewModels
                     var opt = AvailableItems.FirstOrDefault(x => x.Id == line.ItemId);
                     if (opt != null)
                     {
-                        line.Name = opt.Name;
-                        line.Unit = !string.IsNullOrWhiteSpace(opt.Unit) ? opt.Unit : DefaultUnit;
-                        line.Rate = opt.Rate;
-                        line.GstPercent = opt.Gst > 0 ? opt.Gst : 5;
-                        line.Sku = opt.Sku;
-                        if (opt.SellingPrice > 0) line.SellingPrice = opt.SellingPrice;
+                        if (string.IsNullOrWhiteSpace(line.Name)) line.Name = opt.Name;
+                        if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = !string.IsNullOrWhiteSpace(opt.Unit) ? opt.Unit : DefaultUnit;
+                        if (string.IsNullOrWhiteSpace(line.Sku)) line.Sku = opt.Sku;
+                        if (opt.SellingPrice > 0 && line.SellingPrice <= 0) line.SellingPrice = opt.SellingPrice;
                     }
                 }
                 Recalculate();

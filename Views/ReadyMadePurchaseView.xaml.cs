@@ -24,8 +24,6 @@ namespace AsiErp.Views
                     line.Name = opt.Name;
                     cb.Text = opt.Name;
                     if (!string.IsNullOrWhiteSpace(opt.Unit)) line.Unit = opt.Unit;
-                    if (opt.Rate > 0) line.Rate = opt.Rate;
-                    if (opt.Gst > 0) line.GstPercent = opt.Gst;
                     line.Sku = opt.Sku;
                     if (opt.SellingPrice > 0) line.SellingPrice = opt.SellingPrice;
                 }
@@ -52,8 +50,6 @@ namespace AsiErp.Views
                             cb.Text = match.Name;
                             cb.SelectedValue = match.Id;
                             if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
-                            if (line.Rate <= 0 && match.Rate > 0) line.Rate = match.Rate;
-                            if (match.Gst > 0) line.GstPercent = match.Gst;
                             line.Sku = match.Sku;
                             if (match.SellingPrice > 0) line.SellingPrice = match.SellingPrice;
                         }

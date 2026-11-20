@@ -517,120 +517,148 @@ namespace AsiErp.Services
 
                 if (purchase.Kind == "raw")
                 {
-                    // If this raw material exists in the catalog (by ItemId, Name or Sku), update its live stock
                     var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
                                                              x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
                                                              (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
+
+                    string cleanSku = rm != null && !string.IsNullOrWhiteSpace(rm.Sku) && !rm.Sku.Contains("pur_it_")
+                        ? rm.Sku
+                        : ((!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("raw"));
+
+                    string unit = !string.IsNullOrWhiteSpace(line.Unit) ? line.Unit : (rm?.Unit ?? "sq ft");
+                    string hsn = rm?.Hsn ?? "";
+                    string barcode = rm?.Barcode ?? "";
+                    double reorder = rm?.ReorderLevel ?? 50;
+
                     if (rm != null)
                     {
-                        rm.Stock = Math.Round(rm.Stock + line.Qty, 2);
                         rm.Rate = line.UnitRate;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) rm.Unit = line.Unit;
-                        if (!string.IsNullOrWhiteSpace(rm.Sku)) line.Sku = rm.Sku;
-                        else if (!string.IsNullOrWhiteSpace(line.Sku)) rm.Sku = line.Sku;
-                        SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
                         if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
                     }
-                    else
+
+                    var newRm = new RawMaterialItem
                     {
-                        var newRm = new RawMaterialItem
-                        {
-                            Id = "r_" + Guid.NewGuid().ToString("N")[..8],
-                            CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
-                            Name = line.Name,
-                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "sq ft" : line.Unit,
-                            Rate = line.UnitRate,
-                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
-                            Stock = line.Qty,
-                            RegisteredQty = line.Qty,
-                            Sku = (!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("raw")
-                        };
-                        line.ItemId = newRm.Id;
-                        line.Sku = newRm.Sku;
-                        RawMaterials.Add(newRm);
-                        SyncQueue.EnqueueSet("raw_materials", newRm.Id, newRm);
-                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(newRm); } catch { } }
-                    }
+                        Id = "r_" + Guid.NewGuid().ToString("N")[..8],
+                        CreatedAt = purchase.Date,
+                        Name = line.Name,
+                        Unit = unit,
+                        Rate = line.UnitRate,
+                        Gst = line.GstPercent,
+                        Stock = line.Qty,
+                        RegisteredQty = line.Qty,
+                        Sku = cleanSku,
+                        Hsn = hsn,
+                        Barcode = barcode,
+                        ReorderLevel = reorder
+                    };
+                    line.ItemId = newRm.Id;
+                    line.Sku = newRm.Sku;
+                    RawMaterials.Add(newRm);
+                    SyncQueue.EnqueueSet("raw_materials", newRm.Id, newRm);
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(newRm); } catch { } }
                 }
                 else if (purchase.Kind == "ready")
                 {
                     var p = Products.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
                                                          x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
                                                          (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
+
+                    string cleanSku = p != null && !string.IsNullOrWhiteSpace(p.Sku) && !p.Sku.Contains("pur_it_")
+                        ? p.Sku
+                        : ((!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("ready"));
+
+                    string category = p != null && !string.IsNullOrWhiteSpace(p.Category) ? p.Category : "Ready Made Products";
+                    string unit = !string.IsNullOrWhiteSpace(line.Unit) ? line.Unit : (p?.Unit ?? "pair");
+                    string hsn = p?.Hsn ?? "";
+                    string barcode = p?.Barcode ?? "";
+                    double reorder = p?.ReorderLevel ?? 50;
+                    double retail = line.SellingPrice > 0 ? line.SellingPrice : (p != null && p.RetailPrice > 0 ? p.RetailPrice : Math.Round(line.UnitRate * 1.5, 0));
+
+                    List<string> sizes = new();
+                    if (!string.IsNullOrWhiteSpace(line.Size))
+                    {
+                        sizes = line.Size.Split(new[] { ',', ' ', '/' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+                    }
+                    else if (p?.Sizes != null && p.Sizes.Any())
+                    {
+                        sizes = new List<string>(p.Sizes);
+                    }
+
                     if (p != null)
                     {
-                        p.Stock += line.Qty;
                         p.Cost = line.UnitRate;
                         if (line.SellingPrice > 0) p.RetailPrice = line.SellingPrice;
-                        if (!string.IsNullOrWhiteSpace(line.Unit)) p.Unit = line.Unit;
-                        if (!string.IsNullOrWhiteSpace(p.Sku)) line.Sku = p.Sku;
-                        else if (!string.IsNullOrWhiteSpace(line.Sku)) p.Sku = line.Sku;
-                        SyncQueue.EnqueueSet("products", p.Id, p);
                         if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(p); } catch { } }
                     }
-                    else
+
+                    var newProd = new ProductItem
                     {
-                        var newProd = new ProductItem
-                        {
-                            Id = "p_" + Guid.NewGuid().ToString("N")[..8],
-                            CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
-                            Name = line.Name,
-                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pair" : line.Unit,
-                            Cost = line.UnitRate,
-                            RetailPrice = line.SellingPrice > 0 ? line.SellingPrice : Math.Round(line.UnitRate * 1.5, 0),
-                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
-                            Stock = line.Qty,
-                            RegisteredQty = line.Qty,
-                            Sku = (!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("ready"),
-                            Category = "Ready Made Products",
-                            SourceType = "R"
-                        };
-                        if (!string.IsNullOrWhiteSpace(line.Size))
-                        {
-                            newProd.Sizes = line.Size.Split(new[] { ',', ' ', '/' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-                        }
-                        line.ItemId = newProd.Id;
-                        line.Sku = newProd.Sku;
-                        Products.Add(newProd);
-                        SyncQueue.EnqueueSet("products", newProd.Id, newProd);
-                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(newProd); } catch { } }
-                    }
+                        Id = "p_" + Guid.NewGuid().ToString("N")[..8],
+                        CreatedAt = purchase.Date,
+                        Name = line.Name,
+                        Category = category,
+                        SourceType = "R",
+                        Unit = unit,
+                        Sizes = sizes,
+                        Cost = line.UnitRate,
+                        RetailPrice = retail,
+                        Gst = line.GstPercent,
+                        Stock = line.Qty,
+                        RegisteredQty = line.Qty,
+                        Sku = cleanSku,
+                        Hsn = hsn,
+                        Barcode = barcode,
+                        ReorderLevel = reorder
+                    };
+                    line.ItemId = newProd.Id;
+                    line.Sku = newProd.Sku;
+                    Products.Add(newProd);
+                    SyncQueue.EnqueueSet("products", newProd.Id, newProd);
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(newProd); } catch { } }
                 }
                 else if (purchase.Kind == "gen")
                 {
                     var g = GeneralItems.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
                                                              x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase) ||
                                                              (!string.IsNullOrWhiteSpace(line.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(line.Sku, StringComparison.OrdinalIgnoreCase)));
+
+                    string cleanSku = g != null && !string.IsNullOrWhiteSpace(g.Sku) && !g.Sku.Contains("pur_it_")
+                        ? g.Sku
+                        : ((!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("gen"));
+
+                    string unit = !string.IsNullOrWhiteSpace(line.Unit) ? line.Unit : (g?.Unit ?? "pcs");
+                    string hsn = g?.Hsn ?? "";
+                    string barcode = g?.Barcode ?? "";
+                    double reorder = g?.ReorderLevel ?? 50;
+
                     if (g != null)
                     {
-                        g.Stock += line.Qty;
                         g.Rate = line.UnitRate;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) g.Unit = line.Unit;
-                        if (!string.IsNullOrWhiteSpace(g.Sku)) line.Sku = g.Sku;
-                        else if (!string.IsNullOrWhiteSpace(line.Sku)) g.Sku = line.Sku;
-                        SyncQueue.EnqueueSet("general_items", g.Id, g);
                         if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
                     }
-                    else
+
+                    var newGen = new GeneralItem
                     {
-                        var newGen = new GeneralItem
-                        {
-                            Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
-                            CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
-                            Name = line.Name,
-                            Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pcs" : line.Unit,
-                            Rate = line.UnitRate,
-                            Gst = line.GstPercent > 0 ? line.GstPercent : 5,
-                            Stock = line.Qty,
-                            RegisteredQty = line.Qty,
-                            Sku = (!string.IsNullOrWhiteSpace(line.Sku) && !line.Sku.Contains("pur_it_")) ? line.Sku : GetNextSku("gen")
-                        };
-                        line.ItemId = newGen.Id;
-                        line.Sku = newGen.Sku;
-                        GeneralItems.Add(newGen);
-                        SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
-                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(newGen); } catch { } }
-                    }
+                        Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                        CreatedAt = purchase.Date,
+                        Name = line.Name,
+                        Unit = unit,
+                        Rate = line.UnitRate,
+                        Gst = line.GstPercent,
+                        Stock = line.Qty,
+                        RegisteredQty = line.Qty,
+                        Sku = cleanSku,
+                        Hsn = hsn,
+                        Barcode = barcode,
+                        ReorderLevel = reorder
+                    };
+                    line.ItemId = newGen.Id;
+                    line.Sku = newGen.Sku;
+                    GeneralItems.Add(newGen);
+                    SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
+                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(newGen); } catch { } }
                 }
             }
 

@@ -173,7 +173,7 @@ namespace AsiErp.Dialogs
                 Unit = defaultUnit,
                 Qty = 1,
                 Rate = 0,
-                GstPercent = 5
+                GstPercent = 0
             };
             line.RecalculateLine();
             line.PropertyChanged += Line_PropertyChanged;
@@ -231,8 +231,6 @@ namespace AsiErp.Dialogs
                         line.ItemId = selectedOpt.Id;
                         line.Name = selectedOpt.Name;
                         if (!string.IsNullOrWhiteSpace(selectedOpt.Unit)) line.Unit = selectedOpt.Unit;
-                        if (selectedOpt.Rate > 0) line.Rate = selectedOpt.Rate;
-                        line.GstPercent = selectedOpt.Gst;
                         line.RecalculateLine();
                         Recalculate();
                         return;
@@ -262,8 +260,6 @@ namespace AsiErp.Dialogs
                     {
                         line.ItemId = match.Id;
                         if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
-                        if (line.Rate <= 0 && match.Rate > 0) line.Rate = match.Rate;
-                        if (line.GstPercent <= 0) line.GstPercent = match.Gst;
                     }
                     else if (string.IsNullOrEmpty(line.ItemId) || line.ItemId.StartsWith("pur_item_"))
                     {
