@@ -1037,7 +1037,7 @@ namespace AsiErp.Services
             if (specificType == null || specificType == "ready")
             {
                 var readyGroups = Products
-                    .Where(p => !p.IsManufactured)
+                    .Where(p => !p.IsManufactured && !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
                     .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase)
                     .OrderBy(grp =>
                     {
@@ -1066,7 +1066,7 @@ namespace AsiErp.Services
             if (specificType == null || specificType == "mfg")
             {
                 var mfgGroups = Products
-                    .Where(p => p.IsManufactured)
+                    .Where(p => p.IsManufactured && !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
                     .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase)
                     .OrderBy(grp =>
                     {
@@ -1095,7 +1095,7 @@ namespace AsiErp.Services
             if (specificType == null || specificType == "raw")
             {
                 var rawGroups = RawMaterials
-                    .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_"))
+                    .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_") && !string.IsNullOrWhiteSpace(r.Name) && r.Name.Trim() != "—" && r.Name.Trim() != "-")
                     .GroupBy(r => !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim(), StringComparer.OrdinalIgnoreCase)
                     .OrderBy(grp =>
                     {
@@ -1124,6 +1124,7 @@ namespace AsiErp.Services
             if (specificType == null || specificType == "gen")
             {
                 var genGroups = GeneralItems
+                    .Where(g => !string.IsNullOrWhiteSpace(g.Name) && g.Name.Trim() != "—" && g.Name.Trim() != "-")
                     .GroupBy(g => !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim(), StringComparer.OrdinalIgnoreCase)
                     .OrderBy(grp =>
                     {
@@ -1158,6 +1159,31 @@ namespace AsiErp.Services
         public async Task CleanAndFixCorruptedSkusAsync()
         {
             bool changed = false;
+
+            // 0. Purge ghost items with empty/blank/hyphen names from database & memory
+            var blankProds = Products.Where(p => string.IsNullOrWhiteSpace(p.Name) || p.Name.Trim() == "—" || p.Name.Trim() == "-").ToList();
+            foreach (var bp in blankProds)
+            {
+                Products.Remove(bp);
+                if (Firebase != null && Firebase.IsConnected && !string.IsNullOrEmpty(bp.Id)) { try { await Firebase.DeleteProductAsync(bp.Id); } catch { } }
+                changed = true;
+            }
+
+            var blankRaws = RawMaterials.Where(r => string.IsNullOrWhiteSpace(r.Name) || r.Name.Trim() == "—" || r.Name.Trim() == "-").ToList();
+            foreach (var br in blankRaws)
+            {
+                RawMaterials.Remove(br);
+                if (Firebase != null && Firebase.IsConnected && !string.IsNullOrEmpty(br.Id)) { try { await Firebase.DeleteRawMaterialAsync(br.Id); } catch { } }
+                changed = true;
+            }
+
+            var blankGens = GeneralItems.Where(g => string.IsNullOrWhiteSpace(g.Name) || g.Name.Trim() == "—" || g.Name.Trim() == "-").ToList();
+            foreach (var bg in blankGens)
+            {
+                GeneralItems.Remove(bg);
+                if (Firebase != null && Firebase.IsConnected && !string.IsNullOrEmpty(bg.Id)) { try { await Firebase.DeleteGeneralItemAsync(bg.Id); } catch { } }
+                changed = true;
+            }
 
             // First run full re-sequencing and compaction
             await ReorganizeAndSequenceAllSkusAsync();

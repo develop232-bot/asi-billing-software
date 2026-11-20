@@ -54,6 +54,10 @@ namespace AsiErp.ViewModels
             }
         }
 
+        public double RemainingPercent => Math.Max(0, 100.0 - LevelPercent);
+        public System.Windows.GridLength LevelStarLength => new System.Windows.GridLength(Math.Max(0.001, LevelPercent), System.Windows.GridUnitType.Star);
+        public System.Windows.GridLength RemainingStarLength => new System.Windows.GridLength(Math.Max(0.001, RemainingPercent), System.Windows.GridUnitType.Star);
+
         public double LevelMeterWidth
         {
             get
@@ -242,12 +246,13 @@ namespace AsiErp.ViewModels
             if (ActiveTab == "raw")
             {
                 var grouped = _dataService.RawMaterials
-                    .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_"))
+                    .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_") && !string.IsNullOrWhiteSpace(r.Name) && r.Name.Trim() != "—" && r.Name.Trim() != "-")
                     .GroupBy(r => !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim(), StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
-                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
+                    if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
                     return new StockDisplayItem
                     {
@@ -262,16 +267,18 @@ namespace AsiErp.ViewModels
                         RateOrCost = primary.Rate,
                         RawItem = primary
                     };
-                }).ToList();
+                }).Where(it => it != null).Select(it => it!).ToList();
             }
             else if (ActiveTab == "gen")
             {
                 var grouped = _dataService.GeneralItems
+                    .Where(g => !string.IsNullOrWhiteSpace(g.Name) && g.Name.Trim() != "—" && g.Name.Trim() != "-")
                     .GroupBy(g => !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim(), StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
-                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
+                    if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
                     return new StockDisplayItem
                     {
@@ -286,17 +293,18 @@ namespace AsiErp.ViewModels
                         RateOrCost = primary.Rate,
                         RawItem = primary
                     };
-                }).ToList();
+                }).Where(it => it != null).Select(it => it!).ToList();
             }
             else if (ActiveTab == "fg")
             {
                 var grouped = _dataService.Products
-                    .Where(p => p.IsManufactured)
+                    .Where(p => p.IsManufactured && !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
                     .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
-                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
+                    if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
                     return new StockDisplayItem
                     {
@@ -311,17 +319,18 @@ namespace AsiErp.ViewModels
                         RateOrCost = primary.EffectiveCost,
                         RawItem = primary
                     };
-                }).ToList();
+                }).Where(it => it != null).Select(it => it!).ToList();
             }
             else if (ActiveTab == "ready")
             {
                 var grouped = _dataService.Products
-                    .Where(p => p.IsReadymade)
+                    .Where(p => p.IsReadymade && !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
                     .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
-                    var primary = grp.OrderByDescending(x => x.CreatedAt).First();
+                    var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
+                    if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
                     return new StockDisplayItem
                     {
@@ -336,8 +345,17 @@ namespace AsiErp.ViewModels
                         RateOrCost = primary.Cost,
                         RawItem = primary
                     };
-                }).ToList();
+                }).Where(it => it != null).Select(it => it!).ToList();
             }
+
+            int ParseSkuNum(string? sku)
+            {
+                if (string.IsNullOrWhiteSpace(sku)) return int.MaxValue;
+                var match = System.Text.RegularExpressions.Regex.Match(sku, @"\d+");
+                return match.Success && int.TryParse(match.Value, out int n) ? n : int.MaxValue;
+            }
+
+            list = list.OrderBy(x => ParseSkuNum(x.Sku)).ThenBy(x => x.Name).ToList();
 
             foreach (var it in list)
             {
