@@ -700,6 +700,27 @@
         </Grid>
 
         <!-- ============================================== -->
+        <!-- GLOBAL LOADING OVERLAY (SYNCING / SAVING) -->
+        <!-- ============================================== -->
+        <Grid x:Name="GlobalLoadingOverlay"
+              Visibility="{Binding IsGlobalLoading, Converter={StaticResource BoolToVis}}"
+              Panel.ZIndex="998"
+              Background="#80090E1A"
+              Grid.ColumnSpan="2">
+            <Border Width="380" VerticalAlignment="Center" HorizontalAlignment="Center"
+                    Background="#111827" BorderBrush="#374151" BorderThickness="1" CornerRadius="16" Padding="28,24">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="40" ShadowDepth="10" Direction="270" Color="#000000" Opacity="0.6"/>
+                </Border.Effect>
+                <StackPanel HorizontalAlignment="Center">
+                    <ProgressBar IsIndeterminate="True" Width="220" Height="5" Background="#1F2937" Foreground="#38BDF8" Margin="0,0,0,16"/>
+                    <TextBlock Text="{Binding GlobalLoadingTitle}" FontSize="15" FontWeight="Bold" Foreground="#FFFFFF" HorizontalAlignment="Center" Margin="0,0,0,6"/>
+                    <TextBlock Text="{Binding GlobalLoadingSubtitle}" FontSize="12" Foreground="#94A3B8" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ============================================== -->
         <!-- MULTI-ROLE LOGIN SCREEN OVERLAY (AUTO-LOGIN CAPABLE) -->
         <!-- ============================================== -->
         <Grid x:Name="LoginOverlay" Visibility="{Binding IsLoggedIn, Converter={StaticResource InverseBoolToVis}}"

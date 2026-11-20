@@ -56,7 +56,7 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
-        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.1"}";
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.2"}";
 
         public bool IsSidebarExpanded
         {
@@ -85,6 +85,39 @@ namespace AsiErp.ViewModels
             {
                 if (SetField(ref _isDarkMode, value)) ApplyTheme();
             }
+        }
+
+        private bool _isGlobalLoading;
+        public bool IsGlobalLoading
+        {
+            get => _isGlobalLoading;
+            set => SetField(ref _isGlobalLoading, value);
+        }
+
+        private string _globalLoadingTitle = "Saving Changes...";
+        public string GlobalLoadingTitle
+        {
+            get => _globalLoadingTitle;
+            set => SetField(ref _globalLoadingTitle, value);
+        }
+
+        private string _globalLoadingSubtitle = "Syncing with live database, please wait...";
+        public string GlobalLoadingSubtitle
+        {
+            get => _globalLoadingSubtitle;
+            set => SetField(ref _globalLoadingSubtitle, value);
+        }
+
+        public void ShowLoader(string title = "Saving Changes...", string subtitle = "Syncing with live database, please wait...")
+        {
+            GlobalLoadingTitle = title;
+            GlobalLoadingSubtitle = subtitle;
+            IsGlobalLoading = true;
+        }
+
+        public void HideLoader()
+        {
+            IsGlobalLoading = false;
         }
 
         public bool IsNotificationPopupOpen
@@ -232,6 +265,15 @@ namespace AsiErp.ViewModels
             StockVM = new StockViewModel(_dataService, OpenDialog, "raw");
             ProductsVM = new ProductsViewModel(_dataService, OpenDialog);
             AccountsVM = new AccountsViewModel(_dataService, OpenDialog, "income");
+
+            RawMaterialPurchaseVM.ShowLoaderAction = ShowLoader;
+            RawMaterialPurchaseVM.HideLoaderAction = HideLoader;
+            ReadyMadePurchaseVM.ShowLoaderAction = ShowLoader;
+            ReadyMadePurchaseVM.HideLoaderAction = HideLoader;
+            PackagingPurchaseVM.ShowLoaderAction = ShowLoader;
+            PackagingPurchaseVM.HideLoaderAction = HideLoader;
+            ProductItemEditorVM.ShowLoaderAction = ShowLoader;
+            ProductItemEditorVM.HideLoaderAction = HideLoader;
 
             // Sync subtabs when clicked inside the views back to ActiveRoute and Breadcrumb
             PurchaseVM.PropertyChanged += (s, e) =>

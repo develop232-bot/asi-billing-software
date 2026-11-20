@@ -285,11 +285,25 @@ namespace AsiErp.ViewModels
             set => SetField(ref _hsnCode, value);
         }
 
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public bool IsSaving
         {
             get => _isSaving;
-            set => SetField(ref _isSaving, value);
+            set
+            {
+                if (SetField(ref _isSaving, value))
+                {
+                    OnPropertyChanged(nameof(CanSave));
+                    OnPropertyChanged(nameof(SaveButtonText));
+                    OnPropertyChanged(nameof(TopSaveButtonText));
+                }
+            }
         }
+        public bool CanSave => !_isSaving;
+        public string SaveButtonText => _isSaving ? "⏳ Saving..." : (_isEditMode ? "Update Product" : "Save Product");
+        public string TopSaveButtonText => _isSaving ? "⏳ Saving..." : (_isEditMode ? "Update" : "Save");
 
         public ObservableCollection<string> Categories { get; } = new()
         {
@@ -546,6 +560,7 @@ namespace AsiErp.ViewModels
             }
 
             IsSaving = true;
+            ShowLoaderAction?.Invoke(_isEditMode ? "Updating Product..." : "Saving Product...", $"Saving '{trimmedName}' to live database...");
 
             try
             {
@@ -786,6 +801,7 @@ namespace AsiErp.ViewModels
             }
             finally
             {
+                HideLoaderAction?.Invoke();
                 IsSaving = false;
             }
         }

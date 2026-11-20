@@ -34,7 +34,7 @@
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>
 
-                    <Button Content="Save Bill" Command="{Binding SaveBillCommand}"
+                    <Button Content="{Binding TopSaveButtonText}" Command="{Binding SaveBillCommand}" IsEnabled="{Binding CanSave}"
                             Padding="16,8" Background="#0891B2" Foreground="#FFFFFF" BorderThickness="0"
                             Cursor="Hand" FontWeight="Bold" FontSize="12">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
@@ -302,7 +302,7 @@
                             <TextBlock Text="{Binding BalancePayable, Converter={StaticResource InrConv}}" HorizontalAlignment="Right" FontWeight="Bold" Foreground="#DC2626"/>
                         </DockPanel>
 
-                        <Button Content="Save Purchase Bill" Command="{Binding SaveBillCommand}"
+                        <Button Content="{Binding SaveButtonText}" Command="{Binding SaveBillCommand}" IsEnabled="{Binding CanSave}"
                                 Height="42" Background="#0891B2" Foreground="White" BorderThickness="0" Cursor="Hand" FontWeight="Bold" FontSize="13">
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="8"/></Style></Button.Resources>
                         </Button>

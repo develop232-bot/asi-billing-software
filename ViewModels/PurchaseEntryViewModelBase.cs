@@ -57,6 +57,27 @@ namespace AsiErp.ViewModels
         public ObservableCollection<PurchaseLine> Lines { get; } = new();
         public ObservableCollection<PurchaseDoc> RecentBills { get; } = new();
 
+        private bool _isSaving;
+        public bool IsSaving
+        {
+            get => _isSaving;
+            set
+            {
+                if (SetField(ref _isSaving, value))
+                {
+                    OnPropertyChanged(nameof(CanSave));
+                    OnPropertyChanged(nameof(SaveButtonText));
+                    OnPropertyChanged(nameof(TopSaveButtonText));
+                }
+            }
+        }
+        public bool CanSave => !_isSaving;
+        public string SaveButtonText => _isSaving ? "⏳ Saving..." : "Save Purchase Bill";
+        public string TopSaveButtonText => _isSaving ? "⏳ Saving..." : "Save Bill";
+
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public string VendorName { get => _vendorName; set => SetField(ref _vendorName, value); }
         public string ContactPerson { get => _contactPerson; set => SetField(ref _contactPerson, value); }
         public string VendorPhone { get => _vendorPhone; set => SetField(ref _vendorPhone, value); }
@@ -274,6 +295,8 @@ namespace AsiErp.ViewModels
 
         public virtual async Task SaveBillAsync()
         {
+            if (IsSaving) return;
+
             string party = VendorName.Trim();
             if (string.IsNullOrWhiteSpace(party))
             {
@@ -288,110 +311,127 @@ namespace AsiErp.ViewModels
                 return;
             }
 
-            foreach (var l in validLines)
+            IsSaving = true;
+            ShowLoaderAction?.Invoke("Saving Purchase Bill...", $"Recording inward bill for {party} & updating inventory...");
+
+            try
             {
-                if (string.IsNullOrWhiteSpace(l.ItemId) || l.ItemId.StartsWith("pur_it_"))
+                foreach (var l in validLines)
                 {
-                    if (Kind == "raw" && _dataService.RawMaterials != null)
+                    if (string.IsNullOrWhiteSpace(l.ItemId) || l.ItemId.StartsWith("pur_it_"))
                     {
-                        var rm = _dataService.RawMaterials.FirstOrDefault(x =>
-                            (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
-                            x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
-                            (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
-                        if (rm != null)
+                        if (Kind == "raw" && _dataService.RawMaterials != null)
                         {
-                            l.ItemId = rm.Id;
-                            if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(rm.Sku))
+                            var rm = _dataService.RawMaterials.FirstOrDefault(x =>
+                                (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
+                                x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
+                                (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
+                            if (rm != null)
                             {
-                                l.Sku = rm.Sku;
+                                l.ItemId = rm.Id;
+                                if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(rm.Sku))
+                                {
+                                    l.Sku = rm.Sku;
+                                }
+                            }
+                        }
+                        else if (Kind == "ready" && _dataService.Products != null)
+                        {
+                            var p = _dataService.Products.FirstOrDefault(x =>
+                                (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
+                                x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
+                                (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
+                            if (p != null)
+                            {
+                                l.ItemId = p.Id;
+                                if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(p.Sku))
+                                {
+                                    l.Sku = p.Sku;
+                                }
+                            }
+                        }
+                        else if (Kind == "gen" && _dataService.GeneralItems != null)
+                        {
+                            var g = _dataService.GeneralItems.FirstOrDefault(x =>
+                                (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
+                                x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
+                                (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
+                            if (g != null)
+                            {
+                                l.ItemId = g.Id;
+                                if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(g.Sku))
+                                {
+                                    l.Sku = g.Sku;
+                                }
                             }
                         }
                     }
-                    else if (Kind == "ready" && _dataService.Products != null)
+
+                    if (string.IsNullOrWhiteSpace(l.ItemId))
                     {
-                        var p = _dataService.Products.FirstOrDefault(x =>
-                            (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
-                            x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
-                            (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
-                        if (p != null)
-                        {
-                            l.ItemId = p.Id;
-                            if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(p.Sku))
-                            {
-                                l.Sku = p.Sku;
-                            }
-                        }
+                        l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
                     }
-                    else if (Kind == "gen" && _dataService.GeneralItems != null)
+                    if (string.IsNullOrWhiteSpace(l.Sku) || l.Sku.Contains("pur_it_"))
                     {
-                        var g = _dataService.GeneralItems.FirstOrDefault(x =>
-                            (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
-                            x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
-                            (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
-                        if (g != null)
-                        {
-                            l.ItemId = g.Id;
-                            if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(g.Sku))
-                            {
-                                l.Sku = g.Sku;
-                            }
-                        }
+                        l.Sku = _dataService.GetNextSku(Kind);
                     }
+                    l.RecalculateLine();
                 }
 
-                if (string.IsNullOrWhiteSpace(l.ItemId))
+                double subtotal = validLines.Sum(l => l.NetAmount);
+                double tax = validLines.Sum(l => l.TaxAmount);
+                double gross = subtotal + tax;
+
+                bool isCredit = IsCredit;
+                int creditDays = isCredit ? CreditDays : 0;
+                double paidNow = Math.Min(gross, Math.Max(0, PaidNow));
+
+                var purchase = new PurchaseDoc
                 {
-                    l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
-                }
-                if (string.IsNullOrWhiteSpace(l.Sku) || l.Sku.Contains("pur_it_"))
+                    Id = "b_" + Guid.NewGuid().ToString("N")[..8],
+                    Kind = Kind,
+                    BillNo = _dataService.NextDocNo(Kind, increment: true),
+                    VendorBillRef = VendorInvoiceRef.Trim(),
+                    Date = BillDate.ToString("yyyy-MM-dd"),
+                    Party = party,
+                    ContactPerson = ContactPerson.Trim(),
+                    Phone = VendorPhone.Trim(),
+                    SaleType = isCredit ? "Credit" : "Cash",
+                    CreditDays = creditDays,
+                    PaymentDueDate = isCredit ? BillDate.AddDays(creditDays).ToString("yyyy-MM-dd") : BillDate.ToString("yyyy-MM-dd"),
+                    NetAmount = Math.Round(subtotal, 2),
+                    TaxAmount = Math.Round(tax, 2),
+                    GrossAmount = Math.Round(gross, 2),
+                    PaidAmount = Math.Round(paidNow, 2),
+                    Lines = validLines
+                };
+
+                await _dataService.RecordPurchaseAsync(purchase);
+
+                HideLoaderAction?.Invoke();
+
+                var askPrint = MessageBox.Show(
+                    $"Purchase Bill '{purchase.BillNo}' recorded successfully!\n\nVendor: {purchase.Party}\nGross: ₹{purchase.GrossAmount:N2}\nStatus: {purchase.Status}\n\nWould you like to print / preview the inward bill voucher now?",
+                    "Inward Bill Saved",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Information);
+
+                if (askPrint == MessageBoxResult.Yes)
                 {
-                    l.Sku = _dataService.GetNextSku(Kind);
+                    _openDialogAction("view_purchase_doc", purchase);
                 }
-                l.RecalculateLine();
+
+                ResetForm();
             }
-
-            double subtotal = validLines.Sum(l => l.NetAmount);
-            double tax = validLines.Sum(l => l.TaxAmount);
-            double gross = subtotal + tax;
-
-            bool isCredit = IsCredit;
-            int creditDays = isCredit ? CreditDays : 0;
-            double paidNow = Math.Min(gross, Math.Max(0, PaidNow));
-
-            var purchase = new PurchaseDoc
+            catch (Exception ex)
             {
-                Id = "b_" + Guid.NewGuid().ToString("N")[..8],
-                Kind = Kind,
-                BillNo = _dataService.NextDocNo(Kind, increment: true),
-                VendorBillRef = VendorInvoiceRef.Trim(),
-                Date = BillDate.ToString("yyyy-MM-dd"),
-                Party = party,
-                ContactPerson = ContactPerson.Trim(),
-                Phone = VendorPhone.Trim(),
-                SaleType = isCredit ? "Credit" : "Cash",
-                CreditDays = creditDays,
-                PaymentDueDate = isCredit ? BillDate.AddDays(creditDays).ToString("yyyy-MM-dd") : BillDate.ToString("yyyy-MM-dd"),
-                NetAmount = Math.Round(subtotal, 2),
-                TaxAmount = Math.Round(tax, 2),
-                GrossAmount = Math.Round(gross, 2),
-                PaidAmount = Math.Round(paidNow, 2),
-                Lines = validLines
-            };
-
-            await _dataService.RecordPurchaseAsync(purchase);
-
-            var askPrint = MessageBox.Show(
-                $"Purchase Bill '{purchase.BillNo}' recorded successfully!\n\nVendor: {purchase.Party}\nGross: ₹{purchase.GrossAmount:N2}\nStatus: {purchase.Status}\n\nWould you like to print / preview the inward bill voucher now?",
-                "Inward Bill Saved",
-                MessageBoxButton.YesNo,
-                MessageBoxImage.Information);
-
-            if (askPrint == MessageBoxResult.Yes)
-            {
-                _openDialogAction("view_purchase_doc", purchase);
+                MessageBox.Show($"Failed to save purchase bill: {ex.Message}", "Save Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-
-            ResetForm();
+            finally
+            {
+                HideLoaderAction?.Invoke();
+                IsSaving = false;
+            }
         }
     }
 }
