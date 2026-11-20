@@ -204,8 +204,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
 
-                                <!-- Purchase Rate (₹) -->
-                                <DataGridTemplateColumn Header="Rate (₹)" Width="110">
+                                <!-- Purchase Amount (₹) -->
+                                <DataGridTemplateColumn Header="Amount (₹)" Width="110">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

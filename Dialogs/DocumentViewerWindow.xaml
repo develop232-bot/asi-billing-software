@@ -71,7 +71,7 @@
                             <DataGridTextColumn Header="HSN" Binding="{Binding Hsn}" Width="70"/>
                             <DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="65"/>
                             <DataGridTextColumn Header="Qty" Binding="{Binding Qty}" Width="55"/>
-                            <DataGridTextColumn Header="Rate" Binding="{Binding Rate, StringFormat={}{0:N2}}" Width="80"/>
+                            <DataGridTextColumn Header="Rate / Amt" Binding="{Binding Rate, StringFormat={}{0:N2}}" Width="95"/>
                             <DataGridTextColumn Header="GST %" Binding="{Binding GstPercent, StringFormat={}{0}%}" Width="60"/>
                             <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, StringFormat={}{0:N2}}" Width="100"/>
                         </DataGrid.Columns>

@@ -131,8 +131,8 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <!-- Rate (Direct Editable TextBox) -->
-                            <DataGridTemplateColumn Header="Rate (₹)" Width="100">
+                            <!-- Amount (Direct Editable TextBox) -->
+                            <DataGridTemplateColumn Header="Amount (₹)" Width="100">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding Rate, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"

@@ -524,7 +524,7 @@ namespace AsiErp.Services
                     if (rm != null)
                     {
                         rm.Stock = Math.Round(rm.Stock + line.Qty, 2);
-                        rm.Rate = line.Rate;
+                        rm.Rate = line.UnitRate;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) rm.Unit = line.Unit;
                         if (!string.IsNullOrWhiteSpace(rm.Sku)) line.Sku = rm.Sku;
                         else if (!string.IsNullOrWhiteSpace(line.Sku)) rm.Sku = line.Sku;
@@ -539,7 +539,7 @@ namespace AsiErp.Services
                             CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                             Name = line.Name,
                             Unit = string.IsNullOrWhiteSpace(line.Unit) ? "sq ft" : line.Unit,
-                            Rate = line.Rate,
+                            Rate = line.UnitRate,
                             Gst = line.GstPercent > 0 ? line.GstPercent : 5,
                             Stock = line.Qty,
                             RegisteredQty = line.Qty,
@@ -560,7 +560,7 @@ namespace AsiErp.Services
                     if (p != null)
                     {
                         p.Stock += line.Qty;
-                        p.Cost = line.Rate;
+                        p.Cost = line.UnitRate;
                         if (line.SellingPrice > 0) p.RetailPrice = line.SellingPrice;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) p.Unit = line.Unit;
                         if (!string.IsNullOrWhiteSpace(p.Sku)) line.Sku = p.Sku;
@@ -576,8 +576,8 @@ namespace AsiErp.Services
                             CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                             Name = line.Name,
                             Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pair" : line.Unit,
-                            Cost = line.Rate,
-                            RetailPrice = line.SellingPrice > 0 ? line.SellingPrice : Math.Round(line.Rate * 1.5, 0),
+                            Cost = line.UnitRate,
+                            RetailPrice = line.SellingPrice > 0 ? line.SellingPrice : Math.Round(line.UnitRate * 1.5, 0),
                             Gst = line.GstPercent > 0 ? line.GstPercent : 5,
                             Stock = line.Qty,
                             RegisteredQty = line.Qty,
@@ -604,7 +604,7 @@ namespace AsiErp.Services
                     if (g != null)
                     {
                         g.Stock += line.Qty;
-                        g.Rate = line.Rate;
+                        g.Rate = line.UnitRate;
                         if (!string.IsNullOrWhiteSpace(line.Unit)) g.Unit = line.Unit;
                         if (!string.IsNullOrWhiteSpace(g.Sku)) line.Sku = g.Sku;
                         else if (!string.IsNullOrWhiteSpace(line.Sku)) g.Sku = line.Sku;
@@ -619,7 +619,7 @@ namespace AsiErp.Services
                             CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                             Name = line.Name,
                             Unit = string.IsNullOrWhiteSpace(line.Unit) ? "pcs" : line.Unit,
-                            Rate = line.Rate,
+                            Rate = line.UnitRate,
                             Gst = line.GstPercent > 0 ? line.GstPercent : 5,
                             Stock = line.Qty,
                             RegisteredQty = line.Qty,

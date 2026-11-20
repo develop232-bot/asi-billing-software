@@ -46,6 +46,7 @@ namespace AsiErp.Models
                     _qty = value;
                     RecalculateLine();
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(UnitRate));
                 }
             }
         }
@@ -89,6 +90,7 @@ namespace AsiErp.Models
                     _rate = value;
                     RecalculateLine();
                     OnPropertyChanged();
+                    OnPropertyChanged(nameof(UnitRate));
                 }
             }
         }
@@ -131,9 +133,11 @@ namespace AsiErp.Models
 
         public double LineTotal { get => NetAmount; set { } }
 
+        public double UnitRate => _qty > 0 ? Math.Round(_rate / _qty, 2) : _rate;
+
         public void RecalculateLine()
         {
-            double net = Math.Round(_qty * _rate, 2);
+            double net = Math.Round(_rate, 2);
             double tax = Math.Round(net * (_gstPercent / 100.0), 2);
             double gross = Math.Round(net + tax, 2);
 
@@ -145,6 +149,7 @@ namespace AsiErp.Models
             OnPropertyChanged(nameof(TaxAmount));
             OnPropertyChanged(nameof(GrossAmount));
             OnPropertyChanged(nameof(LineTotal));
+            OnPropertyChanged(nameof(UnitRate));
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
