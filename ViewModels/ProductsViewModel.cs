@@ -287,9 +287,26 @@ namespace AsiErp.ViewModels
 
             var all = new List<UnifiedProductRow>();
 
+            // Strictly filter out any purchase records: purchases belong ONLY to Main and Purchase Dashboards
+            var purchaseItemIds = new HashSet<string>(
+                _dataService.Purchases.SelectMany(p => p.Lines ?? new())
+                                      .Select(l => l.ItemId)
+                                      .Where(id => !string.IsNullOrWhiteSpace(id)),
+                StringComparer.OrdinalIgnoreCase);
+
+            bool IsPurchaseItem(string? id, string? sku)
+            {
+                if (string.IsNullOrWhiteSpace(id)) return false;
+                if (id.StartsWith("pur_", StringComparison.OrdinalIgnoreCase) || id.StartsWith("pur_it_", StringComparison.OrdinalIgnoreCase)) return true;
+                if (purchaseItemIds.Contains(id)) return true;
+                if (!string.IsNullOrWhiteSpace(sku) && (sku.StartsWith("pur_", StringComparison.OrdinalIgnoreCase) || sku.Contains("pur_it_"))) return true;
+                return false;
+            }
+
             // Products (Finished and Readymade)
             foreach (var p in _dataService.Products)
             {
+                if (IsPurchaseItem(p.Id, p.Sku)) continue;
                 bool isMfg = p.IsManufactured;
                 all.Add(new UnifiedProductRow
                 {
@@ -309,8 +326,9 @@ namespace AsiErp.ViewModels
             }
 
             // Raw Materials (pure product catalog only, excluding purchase entries)
-            foreach (var r in _dataService.RawMaterials.Where(x => !x.Id.StartsWith("pur_it_") && !x.Id.StartsWith("pur_")))
+            foreach (var r in _dataService.RawMaterials)
             {
+                if (IsPurchaseItem(r.Id, r.Sku)) continue;
                 all.Add(new UnifiedProductRow
                 {
                     Id = r.Id,
@@ -328,9 +346,10 @@ namespace AsiErp.ViewModels
                 });
             }
 
-            // General Items
+            // General Items (pure product catalog only, excluding purchase entries)
             foreach (var g in _dataService.GeneralItems)
             {
+                if (IsPurchaseItem(g.Id, g.Sku)) continue;
                 all.Add(new UnifiedProductRow
                 {
                     Id = g.Id,

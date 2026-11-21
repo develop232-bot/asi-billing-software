@@ -92,7 +92,8 @@ namespace AsiErp.Services
             {
                 SafeRunOnUI(() =>
                 {
-                    Products = list.OrderBy(p => p.Name).ToList();
+                    var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
+                    Products = list.Where(p => !pIds.Contains(p.Id) && !p.Id.StartsWith("pur_it_") && !p.Id.StartsWith("pur_")).OrderBy(p => p.Name).ToList();
                     DataChanged?.Invoke();
                 });
             };
@@ -101,7 +102,8 @@ namespace AsiErp.Services
             {
                 SafeRunOnUI(() =>
                 {
-                    RawMaterials = list.Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
+                    var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
+                    RawMaterials = list.Where(r => !pIds.Contains(r.Id) && !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
                     DataChanged?.Invoke();
                 });
             };
@@ -110,7 +112,8 @@ namespace AsiErp.Services
             {
                 SafeRunOnUI(() =>
                 {
-                    GeneralItems = list.OrderBy(g => g.Name).ToList();
+                    var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
+                    GeneralItems = list.Where(g => !pIds.Contains(g.Id) && !g.Id.StartsWith("pur_it_") && !g.Id.StartsWith("pur_")).OrderBy(g => g.Name).ToList();
                     DataChanged?.Invoke();
                 });
             };
@@ -328,11 +331,24 @@ namespace AsiErp.Services
 
                 // PURE LIVE CLOUD REPLACEMENT: Cloud Firestore is the single source of truth.
                 // Any record deleted in the database is removed everywhere.
-                Products = bundle.Products.OrderBy(p => p.Name).ToList();
-                RawMaterials = bundle.RawMaterials.Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
-                GeneralItems = bundle.GeneralItems.OrderBy(g => g.Name).ToList();
-                Sales = bundle.Sales.OrderByDescending(s => s.Date).ToList();
                 Purchases = bundle.Purchases.OrderByDescending(p => p.Date).ToList();
+
+                var purchaseLineItemIds = new HashSet<string>(
+                    Purchases.SelectMany(p => p.Lines ?? new())
+                             .Select(l => l.ItemId)
+                             .Where(id => !string.IsNullOrWhiteSpace(id)),
+                    StringComparer.OrdinalIgnoreCase);
+
+                Products = bundle.Products
+                    .Where(p => !purchaseLineItemIds.Contains(p.Id) && !p.Id.StartsWith("pur_it_") && !p.Id.StartsWith("pur_"))
+                    .OrderBy(p => p.Name).ToList();
+                RawMaterials = bundle.RawMaterials
+                    .Where(r => !purchaseLineItemIds.Contains(r.Id) && !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_"))
+                    .OrderBy(r => r.Name).ToList();
+                GeneralItems = bundle.GeneralItems
+                    .Where(g => !purchaseLineItemIds.Contains(g.Id) && !g.Id.StartsWith("pur_it_") && !g.Id.StartsWith("pur_"))
+                    .OrderBy(g => g.Name).ToList();
+                Sales = bundle.Sales.OrderByDescending(s => s.Date).ToList();
                 WorkOrders = bundle.WorkOrders.OrderByDescending(w => w.OrderDate).ToList();
                 Expenses = bundle.Expenses.OrderByDescending(e => e.Date).ToList();
                 Investments = bundle.Investments.OrderByDescending(i => i.Date).ToList();
@@ -578,157 +594,6 @@ namespace AsiErp.Services
         {
             Purchases.Insert(0, purchase);
 
-            foreach (var line in purchase.Lines)
-            {
-                if (string.IsNullOrWhiteSpace(line.Name)) continue;
-
-                if (purchase.Kind == "raw")
-                {
-                    string trimmedName = line.Name.Trim();
-                    var rm = RawMaterials.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-
-                    string cleanSku = rm != null && !string.IsNullOrWhiteSpace(rm.Sku) && !rm.Sku.Contains("pur_it_")
-                        ? rm.Sku
-                        : GetNextSku("raw");
-
-                    string unit = !string.IsNullOrWhiteSpace(line.Unit) ? line.Unit : (rm?.Unit ?? "sq ft");
-                    string hsn = rm?.Hsn ?? "";
-                    string barcode = rm?.Barcode ?? "";
-                    double reorder = rm?.ReorderLevel ?? 50;
-
-                    if (rm != null)
-                    {
-                        rm.Rate = line.UnitRate;
-                        if (!string.IsNullOrWhiteSpace(line.Unit)) rm.Unit = line.Unit;
-                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
-                    }
-
-                    var newRm = new RawMaterialItem
-                    {
-                        Id = "r_" + Guid.NewGuid().ToString("N")[..8],
-                        CreatedAt = purchase.Date,
-                        Name = trimmedName,
-                        Unit = unit,
-                        Rate = line.UnitRate,
-                        Gst = line.GstPercent,
-                        Stock = line.Qty,
-                        RegisteredQty = line.Qty,
-                        Sku = cleanSku,
-                        Hsn = hsn,
-                        Barcode = barcode,
-                        ReorderLevel = reorder
-                    };
-                    line.ItemId = newRm.Id;
-                    line.Sku = newRm.Sku;
-                    line.Name = trimmedName;
-                    RawMaterials.Add(newRm);
-                    SyncQueue.EnqueueSet("raw_materials", newRm.Id, newRm);
-                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(newRm); } catch { } }
-                }
-                else if (purchase.Kind == "ready")
-                {
-                    string trimmedName = line.Name.Trim();
-                    var p = Products.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-
-                    string cleanSku = p != null && !string.IsNullOrWhiteSpace(p.Sku) && !p.Sku.Contains("pur_it_")
-                        ? p.Sku
-                        : GetNextSku("ready");
-
-                    string category = p != null && !string.IsNullOrWhiteSpace(p.Category) ? p.Category : "Ready Made Products";
-                    string unit = !string.IsNullOrWhiteSpace(line.Unit) ? line.Unit : (p?.Unit ?? "pair");
-                    string hsn = p?.Hsn ?? "";
-                    string barcode = p?.Barcode ?? "";
-                    double reorder = p?.ReorderLevel ?? 50;
-                    double retail = line.SellingPrice > 0 ? line.SellingPrice : (p != null && p.RetailPrice > 0 ? p.RetailPrice : Math.Round(line.UnitRate * 1.5, 0));
-
-                    List<string> sizes = new();
-                    if (!string.IsNullOrWhiteSpace(line.Size))
-                    {
-                        sizes = line.Size.Split(new[] { ',', ' ', '/' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
-                    }
-                    else if (p?.Sizes != null && p.Sizes.Any())
-                    {
-                        sizes = new List<string>(p.Sizes);
-                    }
-
-                    if (p != null)
-                    {
-                        p.Cost = line.UnitRate;
-                        if (line.SellingPrice > 0) p.RetailPrice = line.SellingPrice;
-                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(p); } catch { } }
-                    }
-
-                    var newProd = new ProductItem
-                    {
-                        Id = "p_" + Guid.NewGuid().ToString("N")[..8],
-                        CreatedAt = purchase.Date,
-                        Name = trimmedName,
-                        Category = category,
-                        SourceType = "R",
-                        Unit = unit,
-                        Sizes = sizes,
-                        Cost = line.UnitRate,
-                        RetailPrice = retail,
-                        Gst = line.GstPercent,
-                        Stock = line.Qty,
-                        RegisteredQty = line.Qty,
-                        Sku = cleanSku,
-                        Hsn = hsn,
-                        Barcode = barcode,
-                        ReorderLevel = reorder
-                    };
-                    line.ItemId = newProd.Id;
-                    line.Sku = newProd.Sku;
-                    line.Name = trimmedName;
-                    Products.Add(newProd);
-                    SyncQueue.EnqueueSet("products", newProd.Id, newProd);
-                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(newProd); } catch { } }
-                }
-                else if (purchase.Kind == "gen")
-                {
-                    string trimmedName = line.Name.Trim();
-                    var g = GeneralItems.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-
-                    string cleanSku = g != null && !string.IsNullOrWhiteSpace(g.Sku) && !g.Sku.Contains("pur_it_")
-                        ? g.Sku
-                        : GetNextSku("gen");
-
-                    string unit = !string.IsNullOrWhiteSpace(line.Unit) ? line.Unit : (g?.Unit ?? "pcs");
-                    string hsn = g?.Hsn ?? "";
-                    string barcode = g?.Barcode ?? "";
-                    double reorder = g?.ReorderLevel ?? 50;
-
-                    if (g != null)
-                    {
-                        g.Rate = line.UnitRate;
-                        if (!string.IsNullOrWhiteSpace(line.Unit)) g.Unit = line.Unit;
-                        if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
-                    }
-
-                    var newGen = new GeneralItem
-                    {
-                        Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
-                        CreatedAt = purchase.Date,
-                        Name = trimmedName,
-                        Unit = unit,
-                        Rate = line.UnitRate,
-                        Gst = line.GstPercent,
-                        Stock = line.Qty,
-                        RegisteredQty = line.Qty,
-                        Sku = cleanSku,
-                        Hsn = hsn,
-                        Barcode = barcode,
-                        ReorderLevel = reorder
-                    };
-                    line.ItemId = newGen.Id;
-                    line.Sku = newGen.Sku;
-                    line.Name = trimmedName;
-                    GeneralItems.Add(newGen);
-                    SyncQueue.EnqueueSet("general_items", newGen.Id, newGen);
-                    if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(newGen); } catch { } }
-                }
-            }
-
             NotifyDataChanged();
 
             if (!IsSampleDataLoaded)
@@ -749,45 +614,6 @@ namespace AsiErp.Services
         {
             var p = Purchases.FirstOrDefault(x => x.Id == id);
             string kind = p?.Kind ?? "";
-            if (p != null && p.Lines != null)
-            {
-                foreach (var line in p.Lines)
-                {
-                    if (p.Kind == "raw")
-                    {
-                        var rm = RawMaterials.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
-                                                                 x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
-                        if (rm != null)
-                        {
-                            rm.Stock = Math.Max(0, Math.Round(rm.Stock - line.Qty, 2));
-                            SyncQueue.EnqueueSet("raw_materials", rm.Id, rm);
-                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveRawMaterialAsync(rm); } catch { } }
-                        }
-                    }
-                    else if (p.Kind == "ready")
-                    {
-                        var prod = Products.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
-                                                               x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
-                        if (prod != null)
-                        {
-                            prod.Stock = Math.Max(0, Math.Round(prod.Stock - line.Qty, 2));
-                            SyncQueue.EnqueueSet("products", prod.Id, prod);
-                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveProductAsync(prod); } catch { } }
-                        }
-                    }
-                    else if (p.Kind == "gen")
-                    {
-                        var g = GeneralItems.FirstOrDefault(x => (!string.IsNullOrEmpty(line.ItemId) && x.Id == line.ItemId) ||
-                                                                x.Name.Equals(line.Name, StringComparison.OrdinalIgnoreCase));
-                        if (g != null)
-                        {
-                            g.Stock = Math.Max(0, Math.Round(g.Stock - line.Qty, 2));
-                            SyncQueue.EnqueueSet("general_items", g.Id, g);
-                            if (Firebase != null && Firebase.IsConnected) { try { await Firebase.SaveGeneralItemAsync(g); } catch { } }
-                        }
-                    }
-                }
-            }
 
             Purchases.RemoveAll(x => x.Id == id);
             NotifyDataChanged();
@@ -1295,6 +1121,46 @@ namespace AsiErp.Services
                         changed = true;
                     }
                 }
+            }
+
+            // 0. Purge any Products, RawMaterials, and GeneralItems that were created from purchases
+            var purchaseLineItemIds = new HashSet<string>(
+                Purchases.SelectMany(p => p.Lines ?? new())
+                         .Select(l => l.ItemId)
+                         .Where(id => !string.IsNullOrWhiteSpace(id)),
+                StringComparer.OrdinalIgnoreCase);
+
+            var prodsToRemove = Products.Where(p => purchaseLineItemIds.Contains(p.Id) || p.Id.StartsWith("pur_") || p.Id.StartsWith("pur_it_")).ToList();
+            foreach (var p in prodsToRemove)
+            {
+                Products.Remove(p);
+                if (Firebase != null && Firebase.IsConnected && !string.IsNullOrEmpty(p.Id))
+                {
+                    try { await Firebase.DeleteProductAsync(p.Id); } catch { }
+                }
+                changed = true;
+            }
+
+            var rmsToRemove = RawMaterials.Where(r => purchaseLineItemIds.Contains(r.Id) || r.Id.StartsWith("pur_") || r.Id.StartsWith("pur_it_")).ToList();
+            foreach (var r in rmsToRemove)
+            {
+                RawMaterials.Remove(r);
+                if (Firebase != null && Firebase.IsConnected && !string.IsNullOrEmpty(r.Id))
+                {
+                    try { await Firebase.DeleteRawMaterialAsync(r.Id); } catch { }
+                }
+                changed = true;
+            }
+
+            var gensToRemove = GeneralItems.Where(g => purchaseLineItemIds.Contains(g.Id) || g.Id.StartsWith("pur_") || g.Id.StartsWith("pur_it_")).ToList();
+            foreach (var g in gensToRemove)
+            {
+                GeneralItems.Remove(g);
+                if (Firebase != null && Firebase.IsConnected && !string.IsNullOrEmpty(g.Id))
+                {
+                    try { await Firebase.DeleteGeneralItemAsync(g.Id); } catch { }
+                }
+                changed = true;
             }
 
             // First run full re-sequencing and compaction for both SKUs and Purchases

@@ -324,50 +324,18 @@ namespace AsiErp.ViewModels
                     string trimmedName = l.Name.Trim();
                     l.Name = trimmedName;
 
-                    if (Kind == "raw" && _dataService.RawMaterials != null)
+                    if (string.IsNullOrWhiteSpace(l.ItemId))
                     {
-                        var rm = _dataService.RawMaterials.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-                        if (rm != null)
-                        {
-                            l.ItemId = rm.Id;
-                            l.Sku = rm.Sku;
-                            if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = rm.Unit;
-                        }
-                        else
-                        {
-                            l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
-                            l.Sku = _dataService.GetNextSku("raw");
-                        }
+                        l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
                     }
-                    else if (Kind == "ready" && _dataService.Products != null)
+                    if (string.IsNullOrWhiteSpace(l.Unit))
                     {
-                        var p = _dataService.Products.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-                        if (p != null)
+                        l.Unit = Kind switch
                         {
-                            l.ItemId = p.Id;
-                            l.Sku = p.Sku;
-                            if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = p.Unit;
-                        }
-                        else
-                        {
-                            l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
-                            l.Sku = _dataService.GetNextSku("ready");
-                        }
-                    }
-                    else if (Kind == "gen" && _dataService.GeneralItems != null)
-                    {
-                        var g = _dataService.GeneralItems.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
-                        if (g != null)
-                        {
-                            l.ItemId = g.Id;
-                            l.Sku = g.Sku;
-                            if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = g.Unit;
-                        }
-                        else
-                        {
-                            l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
-                            l.Sku = _dataService.GetNextSku("gen");
-                        }
+                            "raw" => "sq ft",
+                            "ready" => "pair",
+                            _ => "pcs"
+                        };
                     }
                     l.RecalculateLine();
                 }
