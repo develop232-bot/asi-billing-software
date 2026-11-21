@@ -264,7 +264,7 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
                                         <TextBlock Grid.Column="0" Text="🔍" FontSize="11" Foreground="#94A3B8" HorizontalAlignment="Left" VerticalAlignment="Center" IsHitTestVisible="False"/>
-                                        <TextBlock Grid.Column="1" Text="Search vendor, bill no..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
+                                        <TextBlock Grid.Column="1" Text="Search vendor, invoice no..." Foreground="#94A3B8" FontSize="12" VerticalAlignment="Center" Margin="2,0,0,0" IsHitTestVisible="False">
                                             <TextBlock.Style>
                                                 <Style TargetType="TextBlock">
                                                     <Setter Property="Visibility" Value="Collapsed"/>
@@ -341,8 +341,8 @@
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
                         <DataGrid.Columns>
-                            <!-- 1. Bill -->
-                            <DataGridTextColumn Header="Bill" Binding="{Binding BillNo}" Width="100" FontWeight="Bold"/>
+                            <!-- 1. Invoice No -->
+                            <DataGridTextColumn Header="Invoice No" Binding="{Binding BillNo}" Width="110" FontWeight="Bold"/>
 
                             <!-- 2. Type -->
                             <DataGridTemplateColumn Header="Type" Width="85">

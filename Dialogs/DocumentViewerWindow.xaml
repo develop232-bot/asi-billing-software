@@ -50,6 +50,7 @@
                                 <TextBlock x:Name="TxtPartyName" Text="Customer Name" FontWeight="Bold" FontSize="14" Foreground="#152039" Margin="0,2,0,0"/>
                                 <TextBlock x:Name="TxtContactPerson" Text="Contact: —" FontSize="12" Foreground="#48546F"/>
                                 <TextBlock x:Name="TxtPhone" Text="Ph: —" FontSize="12" Foreground="#48546F"/>
+                                <TextBlock x:Name="TxtPartyInvoiceNo" Text="Invoice No: —" FontSize="12" Foreground="#48546F" Visibility="Collapsed"/>
                                 <TextBlock x:Name="TxtGstin" Text="GSTIN: —" FontSize="12" Foreground="#48546F"/>
                             </StackPanel>
                         </Border>

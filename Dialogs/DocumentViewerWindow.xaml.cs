@@ -36,6 +36,8 @@ namespace AsiErp.Dialogs
                     _ => "RETAIL CASH MEMO"
                 };
                 TxtDocNumber.Text = sale.InvoiceNo;
+                TxtDocNumber.Visibility = Visibility.Visible;
+                TxtPartyInvoiceNo.Visibility = Visibility.Collapsed;
                 TxtDocDate.Text = $"Date: {sale.Date}";
 
                 TxtPartyName.Text = sale.Party;
@@ -102,12 +104,15 @@ namespace AsiErp.Dialogs
                 TxtTermsHeader.Text = "TERMS:";
 
                 TxtDocTypeHeader.Text = $"PURCHASE BILL ({purchase.KindLabel.ToUpper()})";
-                TxtDocNumber.Text = purchase.BillNo;
+                TxtDocNumber.Text = "";
+                TxtDocNumber.Visibility = Visibility.Collapsed;
                 TxtDocDate.Text = $"Date: {purchase.Date}";
 
                 TxtPartyName.Text = purchase.Party;
                 TxtContactPerson.Text = !string.IsNullOrEmpty(purchase.ContactPerson) ? $"Contact Person: {purchase.ContactPerson}" : "";
                 TxtPhone.Text = !string.IsNullOrEmpty(purchase.Phone) ? $"Phone: {purchase.Phone}" : "";
+                TxtPartyInvoiceNo.Text = !string.IsNullOrEmpty(purchase.BillNo) ? $"Invoice No: {purchase.BillNo}" : "";
+                TxtPartyInvoiceNo.Visibility = !string.IsNullOrEmpty(purchase.BillNo) ? Visibility.Visible : Visibility.Collapsed;
                 TxtGstin.Text = "";
 
                 TxtPaymentTerms.Text = $"Terms: {purchase.SaleType} {(purchase.SaleType == "Credit" ? $"({purchase.CreditDays} days)" : "")}";
