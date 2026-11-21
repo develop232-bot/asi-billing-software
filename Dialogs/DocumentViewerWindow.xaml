@@ -46,7 +46,7 @@
 
                         <Border Background="#F6F7FA" Padding="12" Margin="0,0,8,0">
                             <StackPanel>
-                                <TextBlock Text="BILLED TO:" FontSize="11" FontWeight="Bold" Foreground="#78839A"/>
+                                <TextBlock x:Name="TxtBilledHeader" Text="BILLED TO:" FontSize="11" FontWeight="Bold" Foreground="#78839A"/>
                                 <TextBlock x:Name="TxtPartyName" Text="Customer Name" FontWeight="Bold" FontSize="14" Foreground="#152039" Margin="0,2,0,0"/>
                                 <TextBlock x:Name="TxtContactPerson" Text="Contact: —" FontSize="12" Foreground="#48546F"/>
                                 <TextBlock x:Name="TxtPhone" Text="Ph: —" FontSize="12" Foreground="#48546F"/>
@@ -56,7 +56,7 @@
 
                         <Border Grid.Column="1" Background="#F6F7FA" Padding="12" Margin="8,0,0,0">
                             <StackPanel>
-                                <TextBlock Text="TERMS &amp; SHIPMENT:" FontSize="11" FontWeight="Bold" Foreground="#78839A"/>
+                                <TextBlock x:Name="TxtTermsHeader" Text="TERMS &amp; SHIPMENT:" FontSize="11" FontWeight="Bold" Foreground="#78839A"/>
                                 <TextBlock x:Name="TxtPaymentTerms" Text="Terms: Cash" FontWeight="SemiBold" FontSize="13" Foreground="#152039" Margin="0,2,0,0"/>
                                 <TextBlock x:Name="TxtPaymentDueDate" Text="Due Date: —" FontSize="12" Foreground="#48546F"/>
                                 <TextBlock x:Name="TxtShippingInfo" Text="—" FontSize="12" Foreground="#48546F"/>

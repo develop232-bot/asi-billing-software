@@ -25,6 +25,10 @@ namespace AsiErp.Dialogs
 
             if (doc is SaleDoc sale)
             {
+                TxtBilledHeader.Text = "BILLED TO:";
+                TxtTermsHeader.Text = sale.Type == "export" ? "TERMS & SHIPMENT:" : "TERMS & PAYMENT:";
+                TxtShippingInfo.Visibility = Visibility.Visible;
+
                 TxtDocTypeHeader.Text = sale.Type switch
                 {
                     "export" => "EXPORT INVOICE",
@@ -55,6 +59,10 @@ namespace AsiErp.Dialogs
                 else if (sale.Type == "retail")
                 {
                     TxtShippingInfo.Text = $"Sold At: {sale.Event} · Paid by {sale.PaymentMode}";
+                }
+                else
+                {
+                    TxtShippingInfo.Visibility = Visibility.Collapsed;
                 }
 
                 var lines = sale.Lines.Select(l =>
@@ -90,18 +98,22 @@ namespace AsiErp.Dialogs
             }
             else if (doc is PurchaseDoc purchase)
             {
+                TxtBilledHeader.Text = "BILLED FROM:";
+                TxtTermsHeader.Text = "TERMS:";
+
                 TxtDocTypeHeader.Text = $"PURCHASE BILL ({purchase.KindLabel.ToUpper()})";
                 TxtDocNumber.Text = purchase.BillNo;
                 TxtDocDate.Text = $"Date: {purchase.Date}";
 
                 TxtPartyName.Text = purchase.Party;
-                TxtContactPerson.Text = !string.IsNullOrEmpty(purchase.VendorBillRef) ? $"Vendor Ref: {purchase.VendorBillRef}" : "";
+                TxtContactPerson.Text = !string.IsNullOrEmpty(purchase.ContactPerson) ? $"Contact Person: {purchase.ContactPerson}" : "";
                 TxtPhone.Text = !string.IsNullOrEmpty(purchase.Phone) ? $"Phone: {purchase.Phone}" : "";
                 TxtGstin.Text = "";
 
                 TxtPaymentTerms.Text = $"Terms: {purchase.SaleType} {(purchase.SaleType == "Credit" ? $"({purchase.CreditDays} days)" : "")}";
                 TxtPaymentDueDate.Text = purchase.SaleType == "Credit" ? $"Due Date: {purchase.PaymentDueDate}" : "";
-                TxtShippingInfo.Text = "Recorded in Material Purchase Register";
+                TxtShippingInfo.Text = "";
+                TxtShippingInfo.Visibility = Visibility.Collapsed;
 
                 var lines = purchase.Lines.Select(l =>
                 {
