@@ -186,9 +186,21 @@ namespace AsiErp.ViewModels
 
             _dataService.DataChanged += () =>
             {
+                if (!IsActive) { IsStale = true; return; }
                 ReloadAvailableItems();
                 RefreshRecentBills();
             };
+        }
+
+        public override void OnActivated()
+        {
+            base.OnActivated();
+            if (IsStale)
+            {
+                IsStale = false;
+                ReloadAvailableItems();
+                RefreshRecentBills();
+            }
         }
 
         public abstract void ReloadAvailableItems();

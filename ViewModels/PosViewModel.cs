@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
@@ -75,12 +76,16 @@ namespace AsiErp.ViewModels
         public ObservableCollection<PosCartItem> CartItems { get; } = new();
         public ObservableCollection<SaleDoc> RecentBills { get; } = new();
 
+        private DispatcherTimer? _searchDebounceTimer;
         public string SearchQuery
         {
             get => _searchQuery;
             set
             {
-                if (SetField(ref _searchQuery, value)) ApplyProductFilter();
+                if (SetField(ref _searchQuery, value))
+                {
+                    DebounceAction(ref _searchDebounceTimer, ApplyProductFilter, 200);
+                }
             }
         }
 
@@ -364,8 +369,22 @@ namespace AsiErp.ViewModels
                 if (p is SaleDoc sale) _openDialogAction("view_doc", sale);
             });
 
-            _dataService.DataChanged += LoadData;
+            _dataService.DataChanged += () =>
+            {
+                if (!IsActive) { IsStale = true; return; }
+                LoadData();
+            };
             LoadData();
+        }
+
+        public override void OnActivated()
+        {
+            base.OnActivated();
+            if (IsStale)
+            {
+                IsStale = false;
+                LoadData();
+            }
         }
 
         public void LoadData()

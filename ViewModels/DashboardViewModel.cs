@@ -276,7 +276,11 @@ namespace AsiErp.ViewModels
             });
 
             InitializeTopSellersPeriods();
-            _dataService.DataChanged += RefreshData;
+            _dataService.DataChanged += () =>
+            {
+                if (!IsActive) { IsStale = true; return; }
+                RefreshData();
+            };
             RefreshData();
         }
 
@@ -355,7 +359,7 @@ namespace AsiErp.ViewModels
             return (firstOfMonth, null);
         }
 
-        public void RefreshData()
+        public override void RefreshData()
         {
             var (start, end) = GetPeriodDateRange(_topSellersPeriod);
 

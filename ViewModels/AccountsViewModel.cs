@@ -613,7 +613,11 @@ namespace AsiErp.ViewModels
                 NewAssetDate = DateTime.Now;
             });
 
-            _dataService.DataChanged += RefreshData;
+            _dataService.DataChanged += () =>
+            {
+                if (!IsActive) { IsStale = true; return; }
+                RefreshData();
+            };
             RefreshData();
         }
 
@@ -656,7 +660,7 @@ namespace AsiErp.ViewModels
             return ("0000-00-00", "9999-12-31", "all time");
         }
 
-        public void RefreshData()
+        public override void RefreshData()
         {
             var range = GetDateRange(SelectedPeriod);
             PlPeriodLabel = range.label;

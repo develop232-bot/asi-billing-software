@@ -700,7 +700,8 @@
                         </DockPanel>
 
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <DataGrid ItemsSource="{Binding IncomeRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38">
+                            <DataGrid ItemsSource="{Binding IncomeRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38"
+                                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True" MaxHeight="600">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
                                     <DataGridTemplateColumn Header="Document" Width="145">
@@ -871,7 +872,8 @@
 
                         <!-- DataGrid with Columns: Date, Category, Type, Details, Amount, Delete -->
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="44">
+                            <DataGrid ItemsSource="{Binding ExpenseRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="44"
+                                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True" MaxHeight="600">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="110"/>
 
@@ -1223,7 +1225,8 @@
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="Loan Register &amp; Active Borrowings" FontWeight="Bold" FontSize="14.5" Foreground="{DynamicResource AppTextPrimary}" Margin="0,0,0,14"/>
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <DataGrid ItemsSource="{Binding LoanRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" MinRowHeight="46" RowDetailsVisibilityMode="Visible">
+                            <DataGrid ItemsSource="{Binding LoanRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" MinRowHeight="46" RowDetailsVisibilityMode="Visible"
+                                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True" MaxHeight="550">
                                 <DataGrid.RowDetailsTemplate>
                                     <DataTemplate>
                                         <Border Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="16,8,16,10">
@@ -1430,7 +1433,8 @@
                     <DockPanel>
                         <TextBlock DockPanel.Dock="Top" Text="Fixed Assets Register" FontWeight="Bold" FontSize="14.5" Foreground="{DynamicResource AppTextPrimary}" Margin="0,0,0,14"/>
                         <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                            <DataGrid ItemsSource="{Binding AssetRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
+                            <DataGrid ItemsSource="{Binding AssetRows}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42"
+                                      VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True" MaxHeight="600">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Asset" Binding="{Binding Name}" Width="2*" FontWeight="Bold"/>
                                     <DataGridTemplateColumn Header="Kind" Width="120">

@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using System.Windows.Threading;
 using AsiErp.Commands;
 using AsiErp.Models;
 using AsiErp.Services;
@@ -162,12 +163,16 @@ namespace AsiErp.ViewModels
             }
         }
 
+        private DispatcherTimer? _searchDebounceTimer;
         public string SearchQuery
         {
             get => _searchQuery;
             set
             {
-                if (SetField(ref _searchQuery, value)) ApplyFilter();
+                if (SetField(ref _searchQuery, value))
+                {
+                    DebounceAction(ref _searchDebounceTimer, ApplyFilter, 200);
+                }
             }
         }
 
@@ -332,11 +337,15 @@ namespace AsiErp.ViewModels
             DownloadMonthReportCommand = new RelayCommand(_ => ExportMonthWiseReport());
             DownloadOrdersListCommand = new RelayCommand(_ => ExportOrdersList());
 
-            _dataService.DataChanged += RefreshData;
+            _dataService.DataChanged += () =>
+            {
+                if (!IsActive) { IsStale = true; return; }
+                RefreshData();
+            };
             RefreshData();
         }
 
-        public void RefreshData()
+        public override void RefreshData()
         {
             ApplyFilter();
             OnPropertyChanged(nameof(PendingCount));

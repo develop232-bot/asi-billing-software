@@ -279,7 +279,7 @@ namespace AsiErp.Services
                 {
                     _debounceTimer = new System.Windows.Threading.DispatcherTimer
                     {
-                        Interval = TimeSpan.FromMilliseconds(80)
+                        Interval = TimeSpan.FromMilliseconds(150)
                     };
                     _debounceTimer.Tick += (s, e) =>
                     {

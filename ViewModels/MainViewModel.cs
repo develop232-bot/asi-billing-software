@@ -41,7 +41,15 @@ namespace AsiErp.ViewModels
         public ViewModelBase CurrentView
         {
             get => _currentView;
-            set => SetField(ref _currentView, value);
+            set
+            {
+                if (!ReferenceEquals(_currentView, value))
+                {
+                    _currentView?.OnDeactivated();
+                    SetField(ref _currentView, value);
+                    _currentView?.OnActivated();
+                }
+            }
         }
 
         public string ActiveRoute
@@ -56,7 +64,7 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
-        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.14"}";
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.15"}";
 
         public bool IsSidebarExpanded
         {
@@ -327,6 +335,7 @@ namespace AsiErp.ViewModels
             };
 
             _currentView = DashboardVM;
+            DashboardVM.OnActivated();
 
             NavigateCommand = new RelayCommand(p =>
             {

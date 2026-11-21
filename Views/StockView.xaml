@@ -116,9 +116,14 @@
                         </Border>
                     </DockPanel>
 
-                    <!-- Stock Table (Responsive, No Horizontal Scroll) -->
+                    <!-- Stock Table (Virtualized & Fast) -->
                     <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              VirtualizingPanel.ScrollUnit="Pixel"
+                              ScrollViewer.CanContentScroll="True"
+                              MaxHeight="680"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                         <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="130">

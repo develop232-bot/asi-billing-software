@@ -183,9 +183,14 @@
                             </StackPanel>
                         </DockPanel>
 
-                        <!-- Work Orders Table (Responsive, No Horizontal Scroll) -->
+                        <!-- Work Orders Table (Virtualized & Fast) -->
                         <DataGrid ItemsSource="{Binding FilteredOrders}" AutoGenerateColumns="False" CanUserAddRows="False"
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                  VirtualizingPanel.IsVirtualizing="True"
+                                  VirtualizingPanel.VirtualizationMode="Recycling"
+                                  VirtualizingPanel.ScrollUnit="Pixel"
+                                  ScrollViewer.CanContentScroll="True"
+                                  MaxHeight="680"
                                   HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Order No" Binding="{Binding OrderNo}" Width="95" FontWeight="Bold"/>

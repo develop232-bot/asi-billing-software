@@ -325,6 +325,11 @@
                     <!-- Data Table Columns in exact order: Invoice | Type | Customer | Date | Amount | Received | Balance | Terms | Status | Actions -->
                     <DataGrid ItemsSource="{Binding FilteredSales}" AutoGenerateColumns="False" CanUserAddRows="False"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              VirtualizingPanel.ScrollUnit="Pixel"
+                              ScrollViewer.CanContentScroll="True"
+                              MaxHeight="680"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                         <DataGrid.Columns>
                         <!-- 1. Invoice -->

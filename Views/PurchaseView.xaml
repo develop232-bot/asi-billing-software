@@ -339,6 +339,11 @@
                     <!-- Date | Invoice no | Type | Vendor | Contact | Amount | Paid | Balance | Terms | Status | Actions -->
                     <DataGrid ItemsSource="{Binding FilteredPurchases}" AutoGenerateColumns="False" CanUserAddRows="False"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40"
+                              VirtualizingPanel.IsVirtualizing="True"
+                              VirtualizingPanel.VirtualizationMode="Recycling"
+                              VirtualizingPanel.ScrollUnit="Pixel"
+                              ScrollViewer.CanContentScroll="True"
+                              MaxHeight="680"
                               ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
                             <!-- 1. Date -->

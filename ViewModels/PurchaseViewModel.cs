@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -59,12 +60,16 @@ namespace AsiErp.ViewModels
             }
         }
 
+        private DispatcherTimer? _searchDebounceTimer;
         public string SearchQuery
         {
             get => _searchQuery;
             set
             {
-                if (SetField(ref _searchQuery, value)) ApplyFilter();
+                if (SetField(ref _searchQuery, value))
+                {
+                    DebounceAction(ref _searchDebounceTimer, ApplyFilter, 200);
+                }
             }
         }
 
@@ -386,11 +391,15 @@ namespace AsiErp.ViewModels
                 ReportToDate = null;
             });
 
-            _dataService.DataChanged += RefreshData;
+            _dataService.DataChanged += () =>
+            {
+                if (!IsActive) { IsStale = true; return; }
+                RefreshData();
+            };
             RefreshData();
         }
 
-        public void RefreshData()
+        public override void RefreshData()
         {
             ApplyFilter();
             OnPropertyChanged(nameof(MonthRawTotal));
