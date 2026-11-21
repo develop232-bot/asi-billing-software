@@ -245,13 +245,16 @@ namespace AsiErp.ViewModels
             {
                 if (e.PropertyName == nameof(PurchaseLine.ItemId))
                 {
-                    var opt = AvailableItems.FirstOrDefault(x => x.Id == line.ItemId);
-                    if (opt != null)
+                    if (!string.IsNullOrWhiteSpace(line.ItemId) && string.IsNullOrWhiteSpace(line.Name))
                     {
-                        line.Name = opt.Name;
-                        if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = !string.IsNullOrWhiteSpace(opt.Unit) ? opt.Unit : DefaultUnit;
-                        if (string.IsNullOrWhiteSpace(line.Sku)) line.Sku = opt.Sku;
-                        if (opt.SellingPrice > 0 && line.SellingPrice <= 0) line.SellingPrice = opt.SellingPrice;
+                        var opt = AvailableItems.FirstOrDefault(x => x.Id == line.ItemId);
+                        if (opt != null)
+                        {
+                            line.Name = opt.Name;
+                            if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = !string.IsNullOrWhiteSpace(opt.Unit) ? opt.Unit : DefaultUnit;
+                            if (string.IsNullOrWhiteSpace(line.Sku)) line.Sku = opt.Sku;
+                            if (opt.SellingPrice > 0 && line.SellingPrice <= 0) line.SellingPrice = opt.SellingPrice;
+                        }
                     }
                 }
                 Recalculate();
@@ -304,39 +307,6 @@ namespace AsiErp.ViewModels
                 return;
             }
 
-            // Auto-heal any line where Name was temporarily blanked by ComboBox binding but ItemId or Sku is set
-            foreach (var l in Lines)
-            {
-                if (string.IsNullOrWhiteSpace(l.Name) && !string.IsNullOrWhiteSpace(l.ItemId))
-                {
-                    var opt = AvailableItems.FirstOrDefault(x => x.Id == l.ItemId);
-                    if (opt != null)
-                    {
-                        l.Name = opt.Name;
-                        if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = opt.Unit;
-                        if (string.IsNullOrWhiteSpace(l.Sku)) l.Sku = opt.Sku;
-                    }
-                    else
-                    {
-                        if (Kind == "raw" && _dataService.RawMaterials != null)
-                        {
-                            var rm = _dataService.RawMaterials.FirstOrDefault(x => x.Id == l.ItemId);
-                            if (rm != null) { l.Name = rm.Name; l.Sku = rm.Sku; l.Unit = rm.Unit; }
-                        }
-                        else if (Kind == "ready" && _dataService.Products != null)
-                        {
-                            var p = _dataService.Products.FirstOrDefault(x => x.Id == l.ItemId);
-                            if (p != null) { l.Name = p.Name; l.Sku = p.Sku; l.Unit = p.Unit; }
-                        }
-                        else if (Kind == "gen" && _dataService.GeneralItems != null)
-                        {
-                            var g = _dataService.GeneralItems.FirstOrDefault(x => x.Id == l.ItemId);
-                            if (g != null) { l.Name = g.Name; l.Sku = g.Sku; l.Unit = g.Unit; }
-                        }
-                    }
-                }
-            }
-
             var validLines = Lines.Where(l => !string.IsNullOrWhiteSpace(l.Name) && l.Qty > 0).ToList();
             if (!validLines.Any())
             {
@@ -351,62 +321,53 @@ namespace AsiErp.ViewModels
             {
                 foreach (var l in validLines)
                 {
-                    if (string.IsNullOrWhiteSpace(l.ItemId) || l.ItemId.StartsWith("pur_it_"))
-                    {
-                        if (Kind == "raw" && _dataService.RawMaterials != null)
-                        {
-                            var rm = _dataService.RawMaterials.FirstOrDefault(x =>
-                                (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
-                                x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
-                                (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
-                            if (rm != null)
-                            {
-                                l.ItemId = rm.Id;
-                                if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(rm.Sku))
-                                {
-                                    l.Sku = rm.Sku;
-                                }
-                            }
-                        }
-                        else if (Kind == "ready" && _dataService.Products != null)
-                        {
-                            var p = _dataService.Products.FirstOrDefault(x =>
-                                (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
-                                x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
-                                (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
-                            if (p != null)
-                            {
-                                l.ItemId = p.Id;
-                                if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(p.Sku))
-                                {
-                                    l.Sku = p.Sku;
-                                }
-                            }
-                        }
-                        else if (Kind == "gen" && _dataService.GeneralItems != null)
-                        {
-                            var g = _dataService.GeneralItems.FirstOrDefault(x =>
-                                (!string.IsNullOrEmpty(l.ItemId) && x.Id == l.ItemId) ||
-                                x.Name.Equals(l.Name, StringComparison.OrdinalIgnoreCase) ||
-                                (!string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(l.Sku, StringComparison.OrdinalIgnoreCase)));
-                            if (g != null)
-                            {
-                                l.ItemId = g.Id;
-                                if (string.IsNullOrWhiteSpace(l.Sku) && !string.IsNullOrWhiteSpace(g.Sku))
-                                {
-                                    l.Sku = g.Sku;
-                                }
-                            }
-                        }
-                    }
+                    string trimmedName = l.Name.Trim();
+                    l.Name = trimmedName;
 
-                    if (string.IsNullOrWhiteSpace(l.ItemId))
+                    if (Kind == "raw" && _dataService.RawMaterials != null)
                     {
-                        l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
+                        var rm = _dataService.RawMaterials.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
+                        if (rm != null)
+                        {
+                            l.ItemId = rm.Id;
+                            l.Sku = rm.Sku;
+                            if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = rm.Unit;
+                        }
+                        else
+                        {
+                            l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
+                            l.Sku = _dataService.GetNextSku("raw");
+                        }
                     }
-                    if (string.IsNullOrWhiteSpace(l.Sku) || l.Sku.Contains("pur_it_"))
+                    else if (Kind == "ready" && _dataService.Products != null)
                     {
-                        l.Sku = _dataService.GetNextSku(Kind);
+                        var p = _dataService.Products.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
+                        if (p != null)
+                        {
+                            l.ItemId = p.Id;
+                            l.Sku = p.Sku;
+                            if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = p.Unit;
+                        }
+                        else
+                        {
+                            l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
+                            l.Sku = _dataService.GetNextSku("ready");
+                        }
+                    }
+                    else if (Kind == "gen" && _dataService.GeneralItems != null)
+                    {
+                        var g = _dataService.GeneralItems.FirstOrDefault(x => x.Name.Trim().Equals(trimmedName, StringComparison.OrdinalIgnoreCase));
+                        if (g != null)
+                        {
+                            l.ItemId = g.Id;
+                            l.Sku = g.Sku;
+                            if (string.IsNullOrWhiteSpace(l.Unit)) l.Unit = g.Unit;
+                        }
+                        else
+                        {
+                            l.ItemId = "pur_it_" + Guid.NewGuid().ToString("N")[..8];
+                            l.Sku = _dataService.GetNextSku("gen");
+                        }
                     }
                     l.RecalculateLine();
                 }

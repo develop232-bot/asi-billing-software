@@ -19,26 +19,23 @@ namespace AsiErp.Views
             if (sender is TextBox tb && tb.DataContext is PurchaseLine line)
             {
                 string typed = tb.Text?.Trim() ?? string.Empty;
-                if (!string.IsNullOrEmpty(typed))
+                line.Name = typed;
+                if (!string.IsNullOrEmpty(typed) && DataContext is PurchaseEntryViewModelBase vm)
                 {
-                    line.Name = typed;
-                    if (DataContext is PurchaseEntryViewModelBase vm)
+                    var match = vm.AvailableItems.FirstOrDefault(x => string.Equals(x.Name.Trim(), typed, StringComparison.OrdinalIgnoreCase));
+                    if (match != null)
                     {
-                        var match = vm.AvailableItems.FirstOrDefault(x =>
-                            string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
-                            (!string.IsNullOrWhiteSpace(x.Sku) && string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase)))
-                            ?? vm.AvailableItems.FirstOrDefault(x =>
-                                (!string.IsNullOrWhiteSpace(x.Name) && x.Name.StartsWith(typed, StringComparison.OrdinalIgnoreCase)) ||
-                                (!string.IsNullOrWhiteSpace(x.Name) && typed.Contains(x.Name, StringComparison.OrdinalIgnoreCase)));
-                        if (match != null)
-                        {
-                            line.ItemId = match.Id;
-                            line.Name = match.Name;
-                            tb.Text = match.Name;
-                            if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
-                            line.Sku = match.Sku;
-                            if (match.SellingPrice > 0) line.SellingPrice = match.SellingPrice;
-                        }
+                        line.ItemId = match.Id;
+                        line.Name = match.Name;
+                        tb.Text = match.Name;
+                        if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
+                        line.Sku = match.Sku;
+                        if (match.SellingPrice > 0) line.SellingPrice = match.SellingPrice;
+                    }
+                    else
+                    {
+                        line.ItemId = string.Empty;
+                        line.Sku = string.Empty;
                     }
                 }
             }
