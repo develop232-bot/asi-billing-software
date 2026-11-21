@@ -65,7 +65,7 @@
                         <ComboBoxItem Content="Raw Material" Tag="raw"/>
                         <ComboBoxItem Content="Finished Product" Tag="mfg"/>
                         <ComboBoxItem Content="Readymade Product" Tag="ready"/>
-                        <ComboBoxItem Content="General Packaging" Tag="gen"/>
+                        <ComboBoxItem Content="General Supplies" Tag="gen"/>
                     </ComboBox>
                 </StackPanel>
             </Border>
@@ -279,7 +279,7 @@
                             <!-- Selling Price -->
                             <StackPanel Grid.Column="1">
                                 <TextBlock Text="Selling Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="—" IsReadOnly="True" Background="#F8FAFC" Foreground="#64748B" FontWeight="Bold" ToolTip="Raw Material and General Packaging do not have a selling price."/>
+                                <TextBox Text="—" IsReadOnly="True" Background="#F8FAFC" Foreground="#64748B" FontWeight="Bold" ToolTip="Raw Material and General Supplies do not have a selling price."/>
                             </StackPanel>
                         </Grid>
 

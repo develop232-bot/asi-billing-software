@@ -57,7 +57,7 @@
                     <ComboBox x:Name="CbKind" IsEditable="True" IsTextSearchEnabled="True" SelectionChanged="Kind_SelectionChanged" Height="36" Padding="10,0" VerticalContentAlignment="Center">
                         <ComboBoxItem Content="Raw Material" Tag="raw" IsSelected="True"/>
                         <ComboBoxItem Content="Readymade Product" Tag="ready"/>
-                        <ComboBoxItem Content="General Packaging" Tag="gen"/>
+                        <ComboBoxItem Content="General Supplies" Tag="gen"/>
                     </ComboBox>
                 </StackPanel>
 

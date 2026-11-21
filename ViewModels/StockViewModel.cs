@@ -111,7 +111,7 @@ namespace AsiErp.ViewModels
             "raw" => "Raw Material Stock",
             "fg" => "Finished Products",
             "ready" => "Readymade Stock",
-            "gen" => "General Package",
+            "gen" => "General Supplies",
             _ => "Stock"
         };
 

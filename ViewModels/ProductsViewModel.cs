@@ -46,7 +46,7 @@ namespace AsiErp.ViewModels
             "raw" => "Raw Material",
             "mfg" => "Item",
             "ready" => "Readymade Product",
-            "gen" => "General Packaging",
+            "gen" => "General Supplies",
             _ => TypeKey
         };
 

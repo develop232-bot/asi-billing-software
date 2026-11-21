@@ -289,11 +289,11 @@
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=stock:gen}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=stock:gen}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=stock:gen}"
-                                    ToolTip="General Package Stock">
+                                    ToolTip="General Supplies Stock">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=stock:gen}"/>
-                                    <TextBlock Text="General Package" VerticalAlignment="Center"/>
+                                    <TextBlock Text="General Supplies" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
                         </StackPanel>

@@ -84,13 +84,13 @@
                     </StackPanel>
                 </Border>
 
-                <!-- 5. General Packaging -->
+                <!-- 5. General Supplies -->
                 <Border Background="White" Padding="16,14" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
                     <Border.Effect>
                         <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
                     </Border.Effect>
                     <StackPanel>
-                        <TextBlock Text="General Packaging" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
+                        <TextBlock Text="General Supplies" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding GeneralItemsCount}" FontSize="24" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
                     </StackPanel>
                 </Border>
@@ -174,7 +174,7 @@
                                     BorderThickness="1" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                             </Button>
-                            <Button Content="General Packaging" Command="{Binding SetFilterCommand}" CommandParameter="gen" Height="34" Padding="10,0"
+                            <Button Content="General Supplies" Command="{Binding SetFilterCommand}" CommandParameter="gen" Height="34" Padding="10,0"
                                     Background="{Binding ActiveFilter, Converter={StaticResource TabActiveBgConv}, ConverterParameter=gen}"
                                     Foreground="{Binding ActiveFilter, Converter={StaticResource TabActiveFgConv}, ConverterParameter=gen}"
                                     BorderBrush="{Binding ActiveFilter, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=gen}"

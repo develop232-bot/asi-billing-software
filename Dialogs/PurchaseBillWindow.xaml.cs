@@ -72,7 +72,7 @@ namespace AsiErp.Dialogs
             string displayKind = _kind switch
             {
                 "ready" => "Readymade Products",
-                "gen" => "General Packaging",
+                "gen" => "General Supplies",
                 _ => "Raw Material"
             };
             TxtTitle.Text = $"New Purchase Bill ({displayKind})";

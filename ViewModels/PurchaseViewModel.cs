@@ -219,7 +219,7 @@ namespace AsiErp.ViewModels
             "raw" => "Raw materials purchased from tanneries, fabric mills, sole manufacturers and trim vendors.",
             "ready" => "Finished shoes and uniforms sourced from suppliers for trading or resale.",
             "gen" => "Boxes, plastic covers, hang tags, packaging tape and general factory supplies.",
-            _ => "Vendor bills register across Raw Material, Ready Made Products & General Packaging."
+            _ => "Vendor bills register across Raw Material, Ready Made Products & General Supplies."
         };
 
         // ==========================================
