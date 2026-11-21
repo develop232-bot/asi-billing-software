@@ -157,32 +157,13 @@
                                 </Style>
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
-                                <!-- Packaging Item Selection / Custom Name -->
-                                <DataGridTemplateColumn Header="Item (Select or Type Name)" Width="*">
+                                <!-- Packaging Item Name (Direct Typing) -->
+                                <DataGridTemplateColumn Header="Item Description" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=UserControl}, Path=DataContext.AvailableItems}"
-                                                      SelectedValuePath="Id" SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                      IsEditable="True" Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"
-                                                      IsTextSearchEnabled="True" TextSearch.TextPath="Name"
-                                                      SelectionChanged="ItemSelectionChanged" LostFocus="ItemComboBox_LostFocus">
-                                                <ComboBox.ItemTemplate>
-                                                    <DataTemplate>
-                                                        <Border Padding="4,3">
-                                                            <DockPanel>
-                                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Foreground="#0F172A" VerticalAlignment="Center"/>
-                                                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                                                    <Border Background="#ECFEFF" CornerRadius="4" Padding="6,1" Margin="6,0,0,0">
-                                                                        <TextBlock Text="{Binding Sku}" FontSize="10" FontWeight="Bold" Foreground="#0891B2"/>
-                                                                    </Border>
-                                                                    <TextBlock Text="{Binding Stock, StringFormat='{}{0:N0} in stock'}" FontSize="10" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
-                                                                </StackPanel>
-                                                            </DockPanel>
-                                                        </Border>
-                                                    </DataTemplate>
-                                                </ComboBox.ItemTemplate>
-                                            </ComboBox>
+                                            <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"
+                                                     FontWeight="SemiBold" BorderBrush="#CBD5E1" LostFocus="ItemTextBox_LostFocus"/>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

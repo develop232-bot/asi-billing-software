@@ -14,26 +14,11 @@ namespace AsiErp.Views
             InitializeComponent();
         }
 
-        private void ItemSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
+            if (sender is TextBox tb && tb.DataContext is PurchaseLine line)
             {
-                if (cb.SelectedItem is SourcingItemOption opt)
-                {
-                    line.ItemId = opt.Id;
-                    line.Name = opt.Name;
-                    cb.Text = opt.Name;
-                    if (!string.IsNullOrWhiteSpace(opt.Unit)) line.Unit = opt.Unit;
-                    line.Sku = opt.Sku;
-                }
-            }
-        }
-
-        private void ItemComboBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
-            {
-                string typed = cb.Text?.Trim() ?? string.Empty;
+                string typed = tb.Text?.Trim() ?? string.Empty;
                 if (!string.IsNullOrEmpty(typed))
                 {
                     line.Name = typed;
@@ -49,8 +34,7 @@ namespace AsiErp.Views
                         {
                             line.ItemId = match.Id;
                             line.Name = match.Name;
-                            cb.Text = match.Name;
-                            cb.SelectedValue = match.Id;
+                            tb.Text = match.Name;
                             if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
                             line.Sku = match.Sku;
                         }

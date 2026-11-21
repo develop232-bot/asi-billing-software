@@ -93,18 +93,13 @@
                             </Style>
                         </DataGrid.CellStyle>
                         <DataGrid.Columns>
-                            <!-- Item (Select from Dropdown or Type Directly) -->
-                            <DataGridTemplateColumn Header="Item (Select or Type Name)" Width="*">
+                            <!-- Item (Direct Typing) -->
+                            <DataGridTemplateColumn Header="Item Description" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <ComboBox ItemsSource="{Binding RelativeSource={RelativeSource AncestorType=Window}, Path=AvailableItems}"
-                                                  DisplayMemberPath="Name"
-                                                  SelectedValuePath="Id"
-                                                  SelectedValue="{Binding ItemId, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                  Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=LostFocus}"
-                                                  SelectionChanged="ItemSelectionChanged"
-                                                  LostFocus="ItemComboBox_LostFocus"
-                                                  IsEditable="True" Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"/>
+                                        <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                 Height="34" Padding="8,0" VerticalContentAlignment="Center" Margin="2,0" FontSize="12.5"
+                                                 FontWeight="SemiBold" BorderBrush="#CBD5E1" LostFocus="ItemTextBox_LostFocus"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>

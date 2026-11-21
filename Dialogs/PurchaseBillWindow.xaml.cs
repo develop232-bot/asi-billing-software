@@ -210,58 +210,20 @@ namespace AsiErp.Dialogs
             }
         }
 
-        private void ItemSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            e.Handled = true;
-            if (_isUpdating) return;
-            _isUpdating = true;
-
-            try
+            if (sender is TextBox tb && tb.DataContext is PurchaseLine line)
             {
-                if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
+                if (!string.IsNullOrWhiteSpace(tb.Text))
                 {
-                    PurchaseItemOption? selectedOpt = cb.SelectedItem as PurchaseItemOption;
-                    if (selectedOpt == null && !string.IsNullOrEmpty(cb.SelectedValue as string))
-                    {
-                        selectedOpt = AvailableItems.FirstOrDefault(x => x.Id == cb.SelectedValue.ToString());
-                    }
-
-                    if (selectedOpt != null)
-                    {
-                        line.ItemId = selectedOpt.Id;
-                        line.Name = selectedOpt.Name;
-                        if (!string.IsNullOrWhiteSpace(selectedOpt.Unit)) line.Unit = selectedOpt.Unit;
-                        line.RecalculateLine();
-                        Recalculate();
-                        return;
-                    }
-
-                    if (!string.IsNullOrWhiteSpace(cb.Text))
-                    {
-                        line.Name = cb.Text.Trim();
-                    }
-                }
-            }
-            finally
-            {
-                _isUpdating = false;
-            }
-        }
-
-        private void ItemComboBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
-            {
-                if (!string.IsNullOrWhiteSpace(cb.Text))
-                {
-                    line.Name = cb.Text.Trim();
+                    line.Name = tb.Text.Trim();
                     var match = AvailableItems.FirstOrDefault(x => string.Equals(x.Name, line.Name, StringComparison.OrdinalIgnoreCase));
                     if (match != null)
                     {
                         line.ItemId = match.Id;
                         if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
                     }
-                    else if (string.IsNullOrEmpty(line.ItemId) || line.ItemId.StartsWith("pur_item_"))
+                    else if (string.IsNullOrEmpty(line.ItemId) || line.ItemId.StartsWith("pur_item_") || line.ItemId.StartsWith("pur_it_"))
                     {
                         line.ItemId = "custom_" + Guid.NewGuid().ToString("N")[..6];
                     }

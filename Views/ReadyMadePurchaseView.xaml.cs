@@ -14,27 +14,11 @@ namespace AsiErp.Views
             InitializeComponent();
         }
 
-        private void ItemSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
+            if (sender is TextBox tb && tb.DataContext is PurchaseLine line)
             {
-                if (cb.SelectedItem is SourcingItemOption opt)
-                {
-                    line.ItemId = opt.Id;
-                    line.Name = opt.Name;
-                    cb.Text = opt.Name;
-                    if (!string.IsNullOrWhiteSpace(opt.Unit)) line.Unit = opt.Unit;
-                    line.Sku = opt.Sku;
-                    if (opt.SellingPrice > 0) line.SellingPrice = opt.SellingPrice;
-                }
-            }
-        }
-
-        private void ItemComboBox_LostFocus(object sender, RoutedEventArgs e)
-        {
-            if (sender is ComboBox cb && cb.DataContext is PurchaseLine line)
-            {
-                string typed = cb.Text?.Trim() ?? string.Empty;
+                string typed = tb.Text?.Trim() ?? string.Empty;
                 if (!string.IsNullOrEmpty(typed))
                 {
                     line.Name = typed;
@@ -42,13 +26,15 @@ namespace AsiErp.Views
                     {
                         var match = vm.AvailableItems.FirstOrDefault(x =>
                             string.Equals(x.Name, typed, StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase));
+                            (!string.IsNullOrWhiteSpace(x.Sku) && string.Equals(x.Sku, typed, StringComparison.OrdinalIgnoreCase)))
+                            ?? vm.AvailableItems.FirstOrDefault(x =>
+                                (!string.IsNullOrWhiteSpace(x.Name) && x.Name.StartsWith(typed, StringComparison.OrdinalIgnoreCase)) ||
+                                (!string.IsNullOrWhiteSpace(x.Name) && typed.Contains(x.Name, StringComparison.OrdinalIgnoreCase)));
                         if (match != null)
                         {
                             line.ItemId = match.Id;
                             line.Name = match.Name;
-                            cb.Text = match.Name;
-                            cb.SelectedValue = match.Id;
+                            tb.Text = match.Name;
                             if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = match.Unit;
                             line.Sku = match.Sku;
                             if (match.SellingPrice > 0) line.SellingPrice = match.SellingPrice;
