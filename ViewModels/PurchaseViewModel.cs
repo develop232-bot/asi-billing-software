@@ -328,8 +328,8 @@ namespace AsiErp.ViewModels
                 if (p is PurchaseDoc doc)
                 {
                     var res = MessageBox.Show(
-                        $"Are you sure you want to permanently delete Bill '{doc.BillNo}'?",
-                        "Delete Purchase Bill",
+                        $"Are you sure you want to permanently delete Invoice '{doc.InvoiceNo}'?",
+                        "Delete Invoice",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)

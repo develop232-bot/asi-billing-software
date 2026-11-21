@@ -336,15 +336,18 @@
                     </DockPanel>
 
                     <!-- 4. Table Columns in exact requested order: -->
-                    <!-- Bill | Type | Vendor | Date | Amount | Paid | Balance | Terms | Status | Actions -->
+                    <!-- Date | Invoice no | Type | Vendor | Contact | Amount | Paid | Balance | Terms | Status | Actions -->
                     <DataGrid ItemsSource="{Binding FilteredPurchases}" AutoGenerateColumns="False" CanUserAddRows="False"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40"
-                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" HorizontalScrollBarVisibility="Disabled">
+                              ScrollViewer.HorizontalScrollBarVisibility="Auto">
                         <DataGrid.Columns>
-                            <!-- 1. Invoice No -->
-                            <DataGridTextColumn Header="Invoice No" Binding="{Binding BillNo}" Width="110" FontWeight="Bold"/>
+                            <!-- 1. Date -->
+                            <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="80"/>
 
-                            <!-- 2. Type -->
+                            <!-- 2. Invoice no -->
+                            <DataGridTextColumn Header="Invoice no" Binding="{Binding InvoiceNo}" Width="105" FontWeight="Bold"/>
+
+                            <!-- 3. Type -->
                             <DataGridTemplateColumn Header="Type" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -355,7 +358,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <!-- 3. Vendor -->
+                            <!-- 4. Vendor -->
                             <DataGridTemplateColumn Header="Vendor" Width="*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -364,17 +367,17 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <!-- 4. Date -->
-                            <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="80"/>
+                            <!-- 5. Contact -->
+                            <DataGridTextColumn Header="Contact" Binding="{Binding Phone}" Width="105"/>
 
-                            <!-- 5. Amount -->
-                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="90" FontWeight="Bold"/>
+                            <!-- 6. Amount -->
+                            <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="85" FontWeight="Bold"/>
 
-                            <!-- 6. Paid -->
-                            <DataGridTextColumn Header="Paid" Binding="{Binding PaidAmount, Converter={StaticResource InrConv}}" Width="85"/>
+                            <!-- 7. Paid -->
+                            <DataGridTextColumn Header="Paid" Binding="{Binding PaidAmount, Converter={StaticResource InrConv}}" Width="80"/>
 
-                            <!-- 7. Balance -->
-                            <DataGridTemplateColumn Header="Balance" Width="85">
+                            <!-- 8. Balance -->
+                            <DataGridTemplateColumn Header="Balance" Width="80">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding BalanceAmount, Converter={StaticResource InrConv}}" FontWeight="Bold" Foreground="#DC2626" VerticalAlignment="Center"/>
@@ -382,10 +385,10 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <!-- 8. Terms -->
-                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="60"/>
+                            <!-- 9. Terms -->
+                            <DataGridTextColumn Header="Terms" Binding="{Binding SaleType}" Width="65"/>
 
-                            <!-- 9. Status -->
+                            <!-- 10. Status -->
                             <DataGridTemplateColumn Header="Status" Width="70">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
@@ -396,7 +399,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <!-- 10. Actions -->
+                            <!-- 11. Actions (View | Pay | Delete) -->
                             <DataGridTemplateColumn Width="185" MinWidth="185">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>

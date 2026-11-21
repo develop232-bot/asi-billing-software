@@ -311,7 +311,7 @@
                                   BorderThickness="0" Background="White" RowHeight="42" MinWidth="850">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
-                                <DataGridTextColumn Header="Bill No." Binding="{Binding BillNo}" Width="135" FontWeight="Bold"/>
+                                <DataGridTextColumn Header="Invoice no" Binding="{Binding InvoiceNo}" Width="125" FontWeight="Bold"/>
                                 <DataGridTemplateColumn Header="Vendor" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
@@ -320,9 +320,8 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="Contact" Binding="{Binding Phone}" Width="120"/>
-                                <DataGridTextColumn Header="Invoice No." Binding="{Binding VendorBillRef}" Width="110"/>
                                 <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="120" FontWeight="Bold"/>
-                                <DataGridTemplateColumn Header="Payment" Width="95">
+                                <DataGridTemplateColumn Header="Status" Width="95">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <Border Padding="8,3" CornerRadius="10" HorizontalAlignment="Left" Background="{Binding Status, Converter={StaticResource StatusBgConv}}">

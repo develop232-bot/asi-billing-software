@@ -172,8 +172,8 @@ namespace AsiErp.ViewModels
                 if (p is PurchaseDoc doc)
                 {
                     var res = MessageBox.Show(
-                        $"Are you sure you want to delete Inward Bill '{doc.BillNo}' from '{doc.Party}'?",
-                        "Delete Inward Bill",
+                        $"Are you sure you want to delete Invoice '{doc.InvoiceNo}' from '{doc.Party}'?",
+                        "Delete Invoice",
                         MessageBoxButton.YesNo,
                         MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)

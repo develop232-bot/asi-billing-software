@@ -70,11 +70,13 @@ namespace AsiErp.Models
         public bool CanPay => Status != "Paid" && BalanceAmount > 0.5;
         public System.Windows.Visibility PayVisibility => CanPay ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
 
+        public string InvoiceNo => !string.IsNullOrWhiteSpace(VendorBillRef) ? VendorBillRef : BillNo;
+
         public string KindLabel => Kind switch
         {
             "raw" => "Raw Material",
             "ready" => "Ready Made Products",
-            "gen" => "General Packaging",
+            "gen" => "General Supplies",
             _ => Kind
         };
     }
