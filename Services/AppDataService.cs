@@ -432,7 +432,7 @@ namespace AsiErp.Services
                     Category = kindLbl,
                     Frequency = "Purchase",
                     Description = $"{b.BillNo} · {b.Party}",
-                    Amount = b.NetAmount,
+                    Amount = b.GrossAmount > 0 ? b.GrossAmount : b.NetAmount,
                     IsAuto = true
                 });
             }
