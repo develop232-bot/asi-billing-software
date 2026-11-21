@@ -431,6 +431,15 @@ namespace AsiErp.ViewModels
             string q = (SearchQuery ?? string.Empty).Trim().ToLowerInvariant();
             var tokens = string.IsNullOrEmpty(q) ? Array.Empty<string>() : q.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
+            int ParseBillNum(string? billNo)
+            {
+                if (string.IsNullOrWhiteSpace(billNo)) return int.MaxValue;
+                var m = System.Text.RegularExpressions.Regex.Match(billNo, @"\d+");
+                return m.Success && int.TryParse(m.Value, out int num) ? num : int.MaxValue;
+            }
+
+            var matching = new List<PurchaseDoc>();
+
             foreach (var b in _dataService.Purchases)
             {
                 bool matchKind = ActiveKind == "all" || b.Kind.Equals(ActiveKind, StringComparison.OrdinalIgnoreCase);
@@ -484,8 +493,13 @@ namespace AsiErp.ViewModels
 
                 if (matchKind && matchStat && matchQ && matchDate)
                 {
-                    FilteredPurchases.Add(b);
+                    matching.Add(b);
                 }
+            }
+
+            foreach (var b in matching.OrderBy(p => ParseBillNum(p.BillNo)))
+            {
+                FilteredPurchases.Add(b);
             }
 
             double totGross = 0;

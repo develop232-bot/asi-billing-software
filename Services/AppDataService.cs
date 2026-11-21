@@ -205,7 +205,25 @@ namespace AsiErp.Services
 
         public string NextDocNo(string type, bool increment = true)
         {
+            int existingCount = 0;
+            if (type == "raw" || type == "ready" || type == "gen")
+            {
+                existingCount = Purchases.Count(p => p.Kind.Equals(type, StringComparison.OrdinalIgnoreCase));
+            }
+            else if (type == "retail" || type == "domestic" || type == "export")
+            {
+                existingCount = Sales.Count(s => s.Type.Equals(type, StringComparison.OrdinalIgnoreCase));
+            }
+            else if (type == "wo")
+            {
+                existingCount = WorkOrders.Count;
+            }
+
             Sequences.TryGetValue(type, out int cur);
+            if (cur != existingCount)
+            {
+                cur = existingCount;
+            }
             int next = cur + 1;
             if (increment)
             {
@@ -730,6 +748,7 @@ namespace AsiErp.Services
         public async Task DeletePurchaseAsync(string id)
         {
             var p = Purchases.FirstOrDefault(x => x.Id == id);
+            string kind = p?.Kind ?? "";
             if (p != null && p.Lines != null)
             {
                 foreach (var line in p.Lines)
@@ -780,6 +799,8 @@ namespace AsiErp.Services
                     try { await Firebase.DeletePurchaseAsync(id); } catch { }
                 }
             }
+
+            await ReorganizeAndSequenceAllPurchasesAsync(kind);
         }
 
         public async Task RecordPaymentAsync(string collection, string id, double amount)
@@ -1156,6 +1177,82 @@ namespace AsiErp.Services
             }
         }
 
+        public async Task ReorganizeAndSequenceAllPurchasesAsync(string? specificKind = null)
+        {
+            bool changed = false;
+
+            int ParseBillNum(string? billNo, string prefix)
+            {
+                if (string.IsNullOrWhiteSpace(billNo)) return int.MaxValue;
+                if (billNo.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    string part = billNo.Substring(prefix.Length);
+                    if (int.TryParse(part, out int n)) return n;
+                }
+                var m = System.Text.RegularExpressions.Regex.Match(billNo, @"\d+");
+                return m.Success && int.TryParse(m.Value, out int num) ? num : int.MaxValue;
+            }
+
+            DateTime ParseDocDate(string? d)
+            {
+                if (DateTime.TryParse(d, out var dt)) return dt;
+                return DateTime.MinValue;
+            }
+
+            var kinds = new[]
+            {
+                (Kind: "ready", Prefix: "PR-RP-"),
+                (Kind: "raw", Prefix: "PR-RM-"),
+                (Kind: "gen", Prefix: "PR-GN-")
+            };
+
+            foreach (var (kind, prefix) in kinds)
+            {
+                if (specificKind != null && !string.IsNullOrEmpty(specificKind) && !specificKind.Equals(kind, StringComparison.OrdinalIgnoreCase)) continue;
+
+                var ordered = Purchases
+                    .Where(p => p.Kind.Equals(kind, StringComparison.OrdinalIgnoreCase))
+                    .OrderBy(p => ParseDocDate(p.Date))
+                    .ThenBy(p => ParseBillNum(p.BillNo, prefix))
+                    .ToList();
+
+                for (int i = 0; i < ordered.Count; i++)
+                {
+                    string expectedBillNo = $"{prefix}{(i + 1):D4}";
+                    var doc = ordered[i];
+                    if (doc.BillNo != expectedBillNo)
+                    {
+                        doc.BillNo = expectedBillNo;
+                        changed = true;
+                        if (!IsSampleDataLoaded)
+                        {
+                            SyncQueue.EnqueueSet("purchases", doc.Id, doc);
+                            if (Firebase != null && Firebase.IsConnected)
+                            {
+                                try { await Firebase.SavePurchaseAsync(doc); } catch { }
+                            }
+                        }
+                    }
+                }
+
+                Sequences[kind] = ordered.Count;
+                if (!IsSampleDataLoaded)
+                {
+                    SyncQueue.EnqueueSet("meta", "sequences", Sequences);
+                    if (Firebase != null && Firebase.IsConnected)
+                    {
+                        try { _ = Firebase.SaveSequencesAsync(Sequences); } catch { }
+                    }
+                }
+            }
+
+            if (changed)
+            {
+                NotifyDataChanged();
+                SaveLocalState();
+            }
+        }
+
         public async Task CleanAndFixCorruptedSkusAsync()
         {
             bool changed = false;
@@ -1186,7 +1283,7 @@ namespace AsiErp.Services
             }
 
             // Heal PR-RP-0019 where "Bag" was accidentally saved as "Black Formal shoe"
-            var bill19 = Purchases.FirstOrDefault(p => p.BillNo == "PR-RP-0019" && p.Party.Equals("jack", StringComparison.OrdinalIgnoreCase));
+            var bill19 = Purchases.FirstOrDefault(p => (p.BillNo == "PR-RP-0019" || p.BillNo == "PR-RP-0001") && p.Party.Equals("jack", StringComparison.OrdinalIgnoreCase));
             if (bill19 != null)
             {
                 foreach (var line in bill19.Lines)
@@ -1200,8 +1297,9 @@ namespace AsiErp.Services
                 }
             }
 
-            // First run full re-sequencing and compaction
+            // First run full re-sequencing and compaction for both SKUs and Purchases
             await ReorganizeAndSequenceAllSkusAsync();
+            await ReorganizeAndSequenceAllPurchasesAsync();
 
             // 1. Fix General Items with pur_it_ in SKU or empty SKU
             foreach (var g in GeneralItems)
