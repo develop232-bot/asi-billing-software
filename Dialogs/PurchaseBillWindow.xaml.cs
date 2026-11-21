@@ -286,6 +286,13 @@ namespace AsiErp.Dialogs
                 return;
             }
 
+            string invoiceNo = TxtRef.Text.Trim();
+            if (string.IsNullOrWhiteSpace(invoiceNo))
+            {
+                MessageBox.Show("Please enter the Vendor Invoice No. before saving.", "Vendor Invoice No. Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             foreach (var l in Lines)
             {
                 if (string.IsNullOrWhiteSpace(l.ItemId))

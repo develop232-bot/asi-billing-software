@@ -57,9 +57,9 @@
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
 
-                    <!-- Supplier Name -->
+                    <!-- Vendor Name -->
                     <StackPanel Grid.Row="0" Grid.Column="0" Margin="0,0,12,12">
-                        <TextBlock Text="Supplier name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Vendor name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorName, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
@@ -69,9 +69,9 @@
                         <TextBox Text="{Binding ContactPerson, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
-                    <!-- Supplier Phone -->
+                    <!-- Vendor Phone -->
                     <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,12,12">
-                        <TextBlock Text="Supplier Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Vendor Phone Number *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorPhone, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
@@ -81,15 +81,15 @@
                         <DatePicker SelectedDate="{Binding BillDate, Mode=TwoWay}" Height="36" Padding="4,0" VerticalContentAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- Supplier Bill No -->
+                    <!-- Vendor Invoice No. -->
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">
-                        <TextBlock Text="Bill No." FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Vendor Invoice No. *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorInvoiceRef, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
-                    <!-- Supplier GSTIN -->
+                    <!-- Vendor GSTIN -->
                     <StackPanel Grid.Row="1" Grid.Column="1" Margin="0,0,12,0">
-                        <TextBlock Text="Supplier GSTIN (Optional)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Vendor GSTIN (Optional)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorGstin, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
@@ -302,7 +302,7 @@
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
                                 <DataGridTextColumn Header="Bill No." Binding="{Binding BillNo}" Width="135" FontWeight="Bold"/>
-                                <DataGridTemplateColumn Header="Supplier" Width="*">
+                                <DataGridTemplateColumn Header="Vendor" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding Party}" ToolTip="{Binding Party}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" FontWeight="Medium" Foreground="#1E293B"/>
@@ -310,7 +310,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="Contact" Binding="{Binding Phone}" Width="120"/>
-                                <DataGridTextColumn Header="Supplier Ref" Binding="{Binding VendorBillRef}" Width="110"/>
+                                <DataGridTextColumn Header="Invoice No." Binding="{Binding VendorBillRef}" Width="110"/>
                                 <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="120" FontWeight="Bold"/>
                                 <DataGridTemplateColumn Header="Payment" Width="95">
                                     <DataGridTemplateColumn.CellTemplate>

@@ -43,8 +43,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,10">
-                    <TextBlock Text="Vendor Invoice / Bill No." FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
-                    <TextBox x:Name="TxtRef" Text="INV-1001" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC"/>
+                    <TextBlock Text="Vendor Invoice No. *" FontWeight="SemiBold" FontSize="12" Foreground="#48546F" Margin="0,0,0,4"/>
+                    <TextBox x:Name="TxtRef" Text="" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#E1E5EC"/>
                 </StackPanel>
 
                 <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,12,0">

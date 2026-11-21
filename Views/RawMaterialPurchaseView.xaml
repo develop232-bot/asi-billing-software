@@ -88,7 +88,7 @@
 
                     <!-- Vendor Invoice No. -->
                     <StackPanel Grid.Row="1" Grid.Column="0" Margin="0,0,14,0">
-                        <TextBlock Text="Vendor Invoice No." FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
+                        <TextBlock Text="Vendor Invoice No. *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,4"/>
                         <TextBox Text="{Binding VendorInvoiceRef, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" BorderBrush="#CBD5E1"/>
                     </StackPanel>
 
@@ -320,7 +320,7 @@
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>
                                 <DataGridTextColumn Header="Contact" Binding="{Binding Phone}" Width="120"/>
-                                <DataGridTextColumn Header="Vendor Ref" Binding="{Binding VendorBillRef}" Width="110"/>
+                                <DataGridTextColumn Header="Invoice No." Binding="{Binding VendorBillRef}" Width="110"/>
                                 <DataGridTextColumn Header="Amount" Binding="{Binding GrossAmount, Converter={StaticResource InrConv}}" Width="120" FontWeight="Bold"/>
                                 <DataGridTemplateColumn Header="Payment" Width="95">
                                     <DataGridTemplateColumn.CellTemplate>

@@ -49,7 +49,7 @@
 
             <!-- Version & Mode info -->
             <DockPanel Grid.Row="2" Margin="4,12,4,0">
-                <TextBlock x:Name="TxtVersion" Text="v2.8.12 · Live Database" FontSize="10" Foreground="#64748B"/>
+                <TextBlock x:Name="TxtVersion" Text="v2.8.13 · Live Database" FontSize="10" Foreground="#64748B"/>
                 <TextBlock Text="Automated Startup" FontSize="10" Foreground="#475569" HorizontalAlignment="Right"/>
             </DockPanel>
         </Grid>

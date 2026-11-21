@@ -94,7 +94,7 @@ namespace AsiErp.Services
                 {
                     var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
                     Products = list.Where(p => !pIds.Contains(p.Id) && !p.Id.StartsWith("pur_it_") && !p.Id.StartsWith("pur_")).OrderBy(p => p.Name).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -104,7 +104,7 @@ namespace AsiErp.Services
                 {
                     var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
                     RawMaterials = list.Where(r => !pIds.Contains(r.Id) && !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_")).OrderBy(r => r.Name).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -114,7 +114,7 @@ namespace AsiErp.Services
                 {
                     var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
                     GeneralItems = list.Where(g => !pIds.Contains(g.Id) && !g.Id.StartsWith("pur_it_") && !g.Id.StartsWith("pur_")).OrderBy(g => g.Name).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -123,7 +123,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Sales = list.OrderByDescending(s => s.Date).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -132,7 +132,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Purchases = list.OrderByDescending(p => p.Date).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -141,7 +141,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     WorkOrders = list.OrderByDescending(w => w.OrderDate).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -150,7 +150,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Expenses = list.OrderByDescending(e => e.Date).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -159,7 +159,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Investments = list.OrderByDescending(i => i.Date).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -168,7 +168,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Loans = list.OrderByDescending(l => l.Date).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -177,7 +177,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Assets = list.OrderByDescending(a => a.Date).ToList();
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -186,7 +186,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Auth.MergeCloudUsers(list);
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
 
@@ -195,7 +195,7 @@ namespace AsiErp.Services
                 SafeRunOnUI(() =>
                 {
                     Sequences = dict;
-                    DataChanged?.Invoke();
+                    NotifyDataChanged();
                 });
             };
         }
@@ -255,18 +255,40 @@ namespace AsiErp.Services
             };
         }
 
+        private System.Windows.Threading.DispatcherTimer? _debounceTimer;
+        private readonly object _debounceLock = new();
+
         public void NotifyDataChanged()
         {
-            if (System.Windows.Application.Current != null && System.Windows.Application.Current.Dispatcher != null && !System.Windows.Application.Current.Dispatcher.CheckAccess())
-            {
-                System.Windows.Application.Current.Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    DataChanged?.Invoke();
-                }));
-            }
-            else
+            var app = System.Windows.Application.Current;
+            if (app == null || app.Dispatcher == null)
             {
                 DataChanged?.Invoke();
+                return;
+            }
+
+            if (!app.Dispatcher.CheckAccess())
+            {
+                app.Dispatcher.BeginInvoke(new Action(NotifyDataChanged));
+                return;
+            }
+
+            lock (_debounceLock)
+            {
+                if (_debounceTimer == null)
+                {
+                    _debounceTimer = new System.Windows.Threading.DispatcherTimer
+                    {
+                        Interval = TimeSpan.FromMilliseconds(80)
+                    };
+                    _debounceTimer.Tick += (s, e) =>
+                    {
+                        _debounceTimer.Stop();
+                        DataChanged?.Invoke();
+                    };
+                }
+                _debounceTimer.Stop();
+                _debounceTimer.Start();
             }
         }
 

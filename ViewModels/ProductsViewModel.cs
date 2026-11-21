@@ -260,10 +260,8 @@ namespace AsiErp.ViewModels
             RefreshData();
         }
 
-        public async void RefreshData()
+        public void RefreshData()
         {
-            _dataService.EnsureUniqueBarcodesAcrossCatalog();
-            await _dataService.CleanAndFixCorruptedSkusAsync();
             ApplyFilter();
         }
 

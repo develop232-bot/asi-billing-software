@@ -34,7 +34,7 @@ namespace AsiErp.ViewModels
         private string _vendorName = string.Empty;
         private string _contactPerson = string.Empty;
         private string _vendorPhone = string.Empty;
-        private string _vendorInvoiceRef = "INV-1001";
+        private string _vendorInvoiceRef = string.Empty;
         private DateTime _billDate = DateTime.Now;
         private string _billNo = string.Empty;
         private string _vendorGstin = string.Empty;
@@ -198,7 +198,7 @@ namespace AsiErp.ViewModels
             VendorName = string.Empty;
             ContactPerson = string.Empty;
             VendorPhone = string.Empty;
-            VendorInvoiceRef = "INV-1001";
+            VendorInvoiceRef = string.Empty;
             BillDate = DateTime.Now;
             BillNo = _dataService.NextDocNo(Kind, increment: false);
             VendorGstin = string.Empty;
@@ -303,7 +303,14 @@ namespace AsiErp.ViewModels
             string party = VendorName.Trim();
             if (string.IsNullOrWhiteSpace(party))
             {
-                MessageBox.Show("Please enter the vendor / supplier name.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Please enter the vendor name.", "Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string invoiceNo = VendorInvoiceRef.Trim();
+            if (string.IsNullOrWhiteSpace(invoiceNo))
+            {
+                MessageBox.Show("Please enter the Vendor Invoice No. before saving.", "Vendor Invoice No. Required", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 

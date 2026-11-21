@@ -111,8 +111,9 @@ namespace AsiErp.Dialogs
                 TxtPartyName.Text = purchase.Party;
                 TxtContactPerson.Text = !string.IsNullOrEmpty(purchase.ContactPerson) ? $"Contact Person: {purchase.ContactPerson}" : "";
                 TxtPhone.Text = !string.IsNullOrEmpty(purchase.Phone) ? $"Phone: {purchase.Phone}" : "";
-                TxtPartyInvoiceNo.Text = !string.IsNullOrEmpty(purchase.BillNo) ? $"Invoice No: {purchase.BillNo}" : "";
-                TxtPartyInvoiceNo.Visibility = !string.IsNullOrEmpty(purchase.BillNo) ? Visibility.Visible : Visibility.Collapsed;
+                string invDisplay = !string.IsNullOrWhiteSpace(purchase.VendorBillRef) ? purchase.VendorBillRef : purchase.BillNo;
+                TxtPartyInvoiceNo.Text = !string.IsNullOrEmpty(invDisplay) ? $"Invoice No: {invDisplay}" : "";
+                TxtPartyInvoiceNo.Visibility = !string.IsNullOrEmpty(invDisplay) ? Visibility.Visible : Visibility.Collapsed;
                 TxtGstin.Text = "";
 
                 TxtPaymentTerms.Text = $"Terms: {purchase.SaleType} {(purchase.SaleType == "Credit" ? $"({purchase.CreditDays} days)" : "")}";
