@@ -32,7 +32,7 @@
                 </StackPanel>
 
                 <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="Purchase · Ready Made Products" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Purchase · Readymade Stock" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
             </DockPanel>
@@ -289,8 +289,8 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Recent Ready Made Bills" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                            <TextBlock Text="Audit log and invoices of all recent readymade products purchases" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                            <TextBlock Text="Recent Readymade Stock Bills" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
+                            <TextBlock Text="Audit log and invoices of all recent readymade stock purchases" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                         </StackPanel>
                     </DockPanel>
 

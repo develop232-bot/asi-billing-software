@@ -64,7 +64,7 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
-        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.15"}";
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.16"}";
 
         public bool IsSidebarExpanded
         {
@@ -581,14 +581,14 @@ namespace AsiErp.ViewModels
             else if (route == "pur:raw")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Purchase · Raw Material";
+                CurrentBreadcrumb = "Purchase · Raw Material Stock";
                 RawMaterialPurchaseVM.ResetForm();
                 CurrentView = RawMaterialPurchaseVM;
             }
             else if (route == "pur:ready")
             {
                 ActiveRoute = route;
-                CurrentBreadcrumb = "Purchase · Ready Made Products";
+                CurrentBreadcrumb = "Purchase · Readymade Stock";
                 ReadyMadePurchaseVM.ResetForm();
                 CurrentView = ReadyMadePurchaseVM;
             }

@@ -44,9 +44,9 @@ namespace AsiErp.ViewModels
 
         public string TypeLabel => TypeKey switch
         {
-            "raw" => "Raw Material",
+            "raw" => "Raw Material Stock",
             "mfg" => "Item",
-            "ready" => "Readymade Product",
+            "ready" => "Readymade Stock",
             "gen" => "General Supplies",
             _ => TypeKey
         };

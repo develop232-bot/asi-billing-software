@@ -165,33 +165,33 @@
                                 </DockPanel>
                             </Button>
 
-                            <!-- Sub-item 1: Raw Material -->
+                            <!-- Sub-item 1: Raw Material Stock -->
                             <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
                                     Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:raw}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:raw}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:raw}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:raw}"
-                                    ToolTip="Raw Material Purchase (Leather, Fabric, Hardware)">
+                                    ToolTip="Raw Material Stock Purchase (Leather, Fabric, Hardware)">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:raw}"/>
-                                    <TextBlock Text="Raw Material" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Raw Material Stock" VerticalAlignment="Center"/>
                                 </DockPanel>
                             </Button>
 
-                            <!-- Sub-item 2: Ready Made Products -->
+                            <!-- Sub-item 2: Readymade Stock -->
                             <Button Style="{StaticResource ModernSidebarButton}" Margin="14,1,0,1"
                                     Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
                                     Background="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBgConv}, ConverterParameter=pur:ready}"
                                     BorderBrush="{Binding ActiveRoute, Converter={StaticResource RouteToActiveBorderConv}, ConverterParameter=pur:ready}"
                                     Foreground="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFgConv}, ConverterParameter=pur:ready}"
                                     FontWeight="{Binding ActiveRoute, Converter={StaticResource RouteToActiveFontWeightConv}, ConverterParameter=pur:ready}"
-                                    ToolTip="Readymade Shoes &amp; Uniforms Sourcing">
+                                    ToolTip="Readymade Footwear &amp; Uniforms Sourcing">
                                 <DockPanel LastChildFill="True">
                                     <Border DockPanel.Dock="Left" Width="3" Height="14" CornerRadius="1.5" Background="#38BDF8" Margin="-3,0,8,0"
                                             Visibility="{Binding ActiveRoute, Converter={StaticResource RouteToActiveIndicatorConv}, ConverterParameter=pur:ready}"/>
-                                    <TextBlock Text="Ready Made Products" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="Readymade Stock" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
                                 </DockPanel>
                             </Button>
 
@@ -642,8 +642,8 @@
                     <Button Content="Domestic Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:domestic" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Button Content="Export Invoice" Command="{Binding NavigateCommand}" CommandParameter="sales:export" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
-                    <Button Content="Raw Material" Command="{Binding NavigateCommand}" CommandParameter="pur:raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
-                    <Button Content="Ready Made Products" Command="{Binding NavigateCommand}" CommandParameter="pur:ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Raw Material Stock" Command="{Binding NavigateCommand}" CommandParameter="pur:raw" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
+                    <Button Content="Readymade Stock" Command="{Binding NavigateCommand}" CommandParameter="pur:ready" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Button Content="General Supplies" Command="{Binding NavigateCommand}" CommandParameter="pur:gen" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>
                     <Separator Margin="0,4" Background="#F1F5F9"/>
                     <Button Content="New Work Order" Command="{Binding OpenDialogCommand}" CommandParameter="work_order" Padding="10,7" Background="Transparent" BorderThickness="0" HorizontalContentAlignment="Left" Cursor="Hand"/>

@@ -74,8 +74,8 @@ namespace AsiErp.Models
 
         public string KindLabel => Kind switch
         {
-            "raw" => "Raw Material",
-            "ready" => "Ready Made Products",
+            "raw" => "Raw Material Stock",
+            "ready" => "Readymade Stock",
             "gen" => "General Supplies",
             _ => Kind
         };

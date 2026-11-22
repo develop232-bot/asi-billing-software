@@ -7,9 +7,9 @@ namespace AsiErp.ViewModels
     public class RawMaterialPurchaseViewModel : PurchaseEntryViewModelBase
     {
         public override string Kind => "raw";
-        public override string Title => "Raw Material Sourcing";
+        public override string Title => "Raw Material Stock Sourcing";
         public override string Subtitle => "Leather, soles, fabrics, thread, glue and everything that goes into production";
-        public override string CategoryBadge => "RAW MATERIAL · TANNERIES & MILLS";
+        public override string CategoryBadge => "RAW MATERIAL STOCK · TANNERIES & MILLS";
         public override string DefaultUnit => "sq ft";
 
         public RawMaterialPurchaseViewModel(AppDataService dataService, Action<string> navigateAction, Action<string, object?> openDialogAction)

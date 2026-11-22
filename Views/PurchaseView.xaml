@@ -23,12 +23,12 @@
                 <DockPanel Margin="0,0,0,14">
                     <!-- Action Buttons on Right -->
                     <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
-                        <Button Content="+ Raw Material" Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
+                        <Button Content="+ Raw Material Stock" Command="{Binding NavigateCommand}" CommandParameter="pur:raw"
                                 Padding="14,7" Background="#EAB308" Foreground="#0F172A" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                         </Button>
 
-                        <Button Content="+ Ready Made Products" Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
+                        <Button Content="+ Readymade Stock" Command="{Binding NavigateCommand}" CommandParameter="pur:ready"
                                 Padding="14,7" Background="#6366F1" Foreground="#FFFFFF" BorderThickness="0" Cursor="Hand" FontWeight="SemiBold" FontSize="11.5" Margin="0,0,8,0">
                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                         </Button>
@@ -42,7 +42,7 @@
                     <!-- Heading and Subtitle on Left -->
                     <StackPanel VerticalAlignment="Center" Margin="0,0,16,0">
                         <TextBlock Text="Purchase" FontSize="24" FontWeight="Bold" Foreground="#0F172A"/>
-                        <TextBlock Text="Raw material, readymade and general purchases for the month you pick, with the amount still to pay vendors." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
+                        <TextBlock Text="Raw material stock, readymade stock and general purchases for the month you pick, with the amount still to pay vendors." FontSize="12.5" Foreground="#64748B" Margin="0,4,0,0"/>
                     </StackPanel>
                 </DockPanel>
 
@@ -94,7 +94,7 @@
                                       Stroke="#FFFFFF" StrokeThickness="1.5" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="Raw Material Purchase" FontSize="11.5" FontWeight="SemiBold" Foreground="#E0E7FF" Margin="0,10,0,0"/>
+                            <TextBlock Text="Raw Material Stock Purchase" FontSize="11.5" FontWeight="SemiBold" Foreground="#E0E7FF" Margin="0,10,0,0"/>
                             <TextBlock Text="{Binding MonthRawTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                             <TextBlock Text="incl. GST" FontSize="10" Foreground="#BFDBFE" Margin="0,8,0,0"/>
                         </StackPanel>
@@ -111,7 +111,7 @@
                                       Stroke="#FFFFFF" StrokeThickness="1.5" StrokeLineJoin="Round" StrokeStartLineCap="Round" StrokeEndLineCap="Round"
                                       VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="Readymade Purchase" FontSize="11.5" FontWeight="SemiBold" Foreground="#DCFCE7" Margin="0,10,0,0"/>
+                            <TextBlock Text="Readymade Stock Purchase" FontSize="11.5" FontWeight="SemiBold" Foreground="#DCFCE7" Margin="0,10,0,0"/>
                             <TextBlock Text="{Binding MonthReadyTotal, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                             <TextBlock Text="incl. GST" FontSize="10" Foreground="#BBF7D0" Margin="0,8,0,0"/>
                         </StackPanel>
@@ -160,7 +160,7 @@
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="Raw Material Outstanding to Pay" FontSize="11" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
+                            <TextBlock Text="Raw Material Stock Outstanding to Pay" FontSize="11" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
                             <TextBlock Text="{Binding MonthRawOutstanding, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                             <TextBlock Text="still to pay" FontSize="10" Foreground="#FDE68A" Margin="0,8,0,0"/>
                         </StackPanel>
@@ -175,7 +175,7 @@
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
-                            <TextBlock Text="Readymade Outstanding to Pay" FontSize="11" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
+                            <TextBlock Text="Readymade Stock Outstanding to Pay" FontSize="11" FontWeight="SemiBold" Foreground="#FEF3C7" Margin="0,10,0,0"/>
                             <TextBlock Text="{Binding MonthReadyOutstanding, Converter={StaticResource InrShortConv}}" FontSize="24" FontWeight="Bold" Foreground="#FFFFFF" Margin="0,4,0,0"/>
                             <TextBlock Text="still to pay" FontSize="10" Foreground="#FDE68A" Margin="0,8,0,0"/>
                         </StackPanel>
@@ -237,13 +237,13 @@
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=all}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=all}"/>
 
-                                    <Button Content="Raw Material" Command="{Binding SetKindCommand}" CommandParameter="raw" Margin="0,0,5,0"
+                                    <Button Content="Raw Material Stock" Command="{Binding SetKindCommand}" CommandParameter="raw" Margin="0,0,5,0"
                                             Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=raw}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=raw}"
                                             BorderBrush="{Binding ActiveKind, Converter={StaticResource TabActiveBorderConv}, ConverterParameter=raw}"/>
 
-                                    <Button Content="Ready Made Products" Command="{Binding SetKindCommand}" CommandParameter="ready" Margin="0,0,5,0"
+                                    <Button Content="Readymade Stock" Command="{Binding SetKindCommand}" CommandParameter="ready" Margin="0,0,5,0"
                                             Style="{StaticResource ChipButtonStyle}"
                                             Background="{Binding ActiveKind, Converter={StaticResource TabActiveBgConv}, ConverterParameter=ready}"
                                             Foreground="{Binding ActiveKind, Converter={StaticResource TabActiveFgConv}, ConverterParameter=ready}"
@@ -353,7 +353,7 @@
                             <DataGridTextColumn Header="Invoice no" Binding="{Binding InvoiceNo}" Width="105" FontWeight="Bold"/>
 
                             <!-- 3. Type -->
-                            <DataGridTemplateColumn Header="Type" Width="85">
+                            <DataGridTemplateColumn Header="Type" Width="125" MinWidth="105">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#EEF2FF">

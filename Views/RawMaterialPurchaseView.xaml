@@ -23,7 +23,7 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="Purchase · Raw Material" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
+                    <TextBlock Text="Purchase · Raw Material Stock" FontSize="20" FontWeight="Bold" Foreground="#0F172A"/>
                     <TextBlock Text="{Binding Subtitle}" FontSize="11.5" Foreground="#64748B" Margin="0,3,0,0" TextWrapping="Wrap"/>
                 </StackPanel>
 
@@ -136,7 +136,7 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,12">
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <TextBlock Text="Raw Material Sourcing Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
+                            <TextBlock Text="Raw Material Stock Sourcing Items" FontWeight="Bold" FontSize="14" Foreground="#0F172A" VerticalAlignment="Center"/>
                             <TextBlock Text=" (Leather, Soles, Fabric, Adhesive, Thread)" FontSize="11" Foreground="#64748B" Margin="6,0,0,0" VerticalAlignment="Center"/>
                         </StackPanel>
                         <Button Content="+ Add Material" Command="{Binding AddLineCommand}" HorizontalAlignment="Right"
@@ -158,7 +158,7 @@
                             </DataGrid.CellStyle>
                             <DataGrid.Columns>
                                 <!-- Material Name (Direct Typing) -->
-                                <DataGridTemplateColumn Header="Raw Material" Width="*">
+                                <DataGridTemplateColumn Header="Raw Material Stock" Width="*">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -299,8 +299,8 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,14">
                         <StackPanel VerticalAlignment="Center">
-                            <TextBlock Text="Recent Raw Material Bills" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
-                            <TextBlock Text="Audit log and invoices of all recent raw material purchases" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                            <TextBlock Text="Recent Raw Material Stock Bills" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
+                            <TextBlock Text="Audit log and invoices of all recent raw material stock purchases" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
                         </StackPanel>
                     </DockPanel>
 

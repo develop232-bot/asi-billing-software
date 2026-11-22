@@ -85,7 +85,7 @@ namespace AsiErp.Models
             set { }
         }
 
-        public string TypeLabel { get => IsManufactured ? "Finished Product" : "Readymade product"; set { } }
+        public string TypeLabel { get => IsManufactured ? "Finished Product" : "Readymade Stock"; set { } }
 
         public string SizesDisplay { get => (Sizes != null && Sizes.Count > 0) ? string.Join(", ", Sizes) : "Free size"; set { } }
 

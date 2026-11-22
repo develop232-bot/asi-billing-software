@@ -442,9 +442,9 @@ namespace AsiErp.Services
             {
                 string kindLbl = b.Kind switch
                 {
-                    "raw" => "Raw material",
-                    "ready" => "Readymade product",
-                    _ => "General"
+                    "raw" => "Raw Material Stock",
+                    "ready" => "Readymade Stock",
+                    _ => "General Supplies"
                 };
                 list.Add(new ExpenseItem
                 {

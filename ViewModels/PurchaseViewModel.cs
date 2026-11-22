@@ -213,8 +213,8 @@ namespace AsiErp.ViewModels
 
         public string Title => ActiveKind switch
         {
-            "raw" => "Purchase · Raw Material",
-            "ready" => "Purchase · Ready Made Products",
+            "raw" => "Purchase · Raw Material Stock",
+            "ready" => "Purchase · Readymade Stock",
             "gen" => "Purchase · General Supplies",
             _ => "Purchase"
         };
@@ -224,7 +224,7 @@ namespace AsiErp.ViewModels
             "raw" => "Raw materials purchased from tanneries, fabric mills, sole manufacturers and trim vendors.",
             "ready" => "Finished shoes and uniforms sourced from suppliers for trading or resale.",
             "gen" => "Boxes, plastic covers, hang tags, packaging tape and general factory supplies.",
-            _ => "Vendor bills register across Raw Material, Ready Made Products & General Supplies."
+            _ => "Vendor bills register across Raw Material Stock, Readymade Stock & General Supplies."
         };
 
         // ==========================================

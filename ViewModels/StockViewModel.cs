@@ -131,17 +131,17 @@ namespace AsiErp.ViewModels
 
         public string AddButtonText => ActiveTab switch
         {
-            "raw" => "+ Add Raw Material",
+            "raw" => "+ Add Raw Material Stock",
             "gen" => "+ Add General Item",
-            "ready" => "+ Add Readymade",
+            "ready" => "+ Add Readymade Stock",
             _ => "+ Add Product"
         };
 
         public string BuyButtonText => ActiveTab switch
         {
-            "raw" => "Buy Raw Material",
+            "raw" => "Buy Raw Material Stock",
             "gen" => "Buy General Items",
-            "ready" => "Buy Readymade Goods",
+            "ready" => "Buy Readymade Stock",
             _ => "New Work Order"
         };
 
