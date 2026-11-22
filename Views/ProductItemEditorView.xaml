@@ -76,6 +76,22 @@
                     <DropShadowEffect BlurRadius="10" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
                 <StackPanel>
+                    <!-- Edit Mode Notice & Reset to New Product Banner -->
+                    <Border Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
+                            Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,16">
+                        <DockPanel LastChildFill="True">
+                            <Button DockPanel.Dock="Right" Content="Clear / Add New Instead" Command="{Binding ResetToNewCommand}"
+                                    Padding="10,5" Background="White" BorderBrush="#93C5FD" Foreground="#1D4ED8" FontWeight="SemiBold" FontSize="11" Cursor="Hand">
+                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
+                            </Button>
+                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                <TextBlock Text="✏ " FontSize="12.5" Foreground="#2563EB"/>
+                                <TextBlock Text="Editing Existing Record: " FontWeight="Bold" Foreground="#1E40AF" FontSize="12"/>
+                                <TextBlock Text="{Binding ExistingRecordNotice}" Foreground="#1E3A8A" FontWeight="SemiBold" FontSize="12"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+
                     <!-- ============================================== -->
                     <!-- ITEM & READYMADE PRODUCT FORM                 -->
                     <!-- ============================================== -->
@@ -108,10 +124,61 @@
                             <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}"/>
                         </StackPanel>
 
-                        <!-- Item Name (Full remaining width) -->
+                        <!-- Item Name (Full remaining width with Autocomplete Suggestions) -->
                         <StackPanel Grid.Row="0" Grid.Column="2" Margin="0,0,0,16">
                             <TextBlock Text="Item Name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Grid>
+                                <TextBox x:Name="TxtProductName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                         PreviewKeyDown="ItemName_PreviewKeyDown" LostFocus="ItemName_LostFocus"/>
+                                <Popup x:Name="PopupProductSuggestions" PlacementTarget="{Binding ElementName=TxtProductName}"
+                                       Placement="Bottom" IsOpen="{Binding IsProductSuggestionsOpen, Mode=TwoWay}"
+                                       StaysOpen="False" AllowsTransparency="True" PopupAnimation="Slide">
+                                    <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8"
+                                            MaxHeight="260" MinWidth="340" Width="{Binding ActualWidth, ElementName=TxtProductName}">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="3" Color="#0F172A" Opacity="0.12"/>
+                                        </Border.Effect>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <ItemsControl ItemsSource="{Binding FilteredSuggestions}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Command="{Binding DataContext.SelectSuggestionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                HorizontalContentAlignment="Stretch"
+                                                                Padding="10,8" Margin="0" BorderThickness="0" Background="Transparent" Cursor="Hand">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border x:Name="bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="6" Margin="4,2">
+                                                                        <ContentPresenter/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter TargetName="bd" Property="Background" Value="#F1F5F9"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                                    <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                                                                </StackPanel>
+                                                                <Border Grid.Column="1" Background="{Binding BadgeBg}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                                    <TextBlock Text="{Binding BadgeText}" FontSize="10" FontWeight="Bold" Foreground="{Binding BadgeFg}"/>
+                                                                </Border>
+                                                            </Grid>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
                         </StackPanel>
 
                         <!-- ROW 1: Sizes and Quantity in row (same size) -->
@@ -208,10 +275,61 @@
                     <!-- RAW MATERIAL & GENERAL / PACKAGING FORM        -->
                     <!-- ============================================== -->
                     <StackPanel Visibility="{Binding RawOrGenVisibility}">
-                        <!-- ROW 0: Item Name (Long size / full width as Item Classification) -->
+                        <!-- ROW 0: Item Name (Long size / full width as Item Classification with Autocomplete Suggestions) -->
                         <StackPanel Margin="0,0,0,16">
                             <TextBlock Text="Item Name *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"/>
+                            <Grid>
+                                <TextBox x:Name="TxtRawName" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                         PreviewKeyDown="ItemName_PreviewKeyDown" LostFocus="ItemName_LostFocus"/>
+                                <Popup x:Name="PopupRawSuggestions" PlacementTarget="{Binding ElementName=TxtRawName}"
+                                       Placement="Bottom" IsOpen="{Binding IsRawSuggestionsOpen, Mode=TwoWay}"
+                                       StaysOpen="False" AllowsTransparency="True" PopupAnimation="Slide">
+                                    <Border Background="White" BorderBrush="#CBD5E1" BorderThickness="1" CornerRadius="8"
+                                            MaxHeight="260" MinWidth="340" Width="{Binding ActualWidth, ElementName=TxtRawName}">
+                                        <Border.Effect>
+                                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="3" Color="#0F172A" Opacity="0.12"/>
+                                        </Border.Effect>
+                                        <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                            <ItemsControl ItemsSource="{Binding FilteredSuggestions}">
+                                                <ItemsControl.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <Button Command="{Binding DataContext.SelectSuggestionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                CommandParameter="{Binding}"
+                                                                HorizontalContentAlignment="Stretch"
+                                                                Padding="10,8" Margin="0" BorderThickness="0" Background="Transparent" Cursor="Hand">
+                                                            <Button.Template>
+                                                                <ControlTemplate TargetType="Button">
+                                                                    <Border x:Name="bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" CornerRadius="6" Margin="4,2">
+                                                                        <ContentPresenter/>
+                                                                    </Border>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                                            <Setter TargetName="bd" Property="Background" Value="#F1F5F9"/>
+                                                                        </Trigger>
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Button.Template>
+                                                            <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="*"/>
+                                                                    <ColumnDefinition Width="Auto"/>
+                                                                </Grid.ColumnDefinitions>
+                                                                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                                    <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#64748B" Margin="0,2,0,0"/>
+                                                                </StackPanel>
+                                                                <Border Grid.Column="1" Background="{Binding BadgeBg}" CornerRadius="4" Padding="6,2" VerticalAlignment="Center" Margin="8,0,0,0">
+                                                                    <TextBlock Text="{Binding BadgeText}" FontSize="10" FontWeight="Bold" Foreground="{Binding BadgeFg}"/>
+                                                                </Border>
+                                                            </Grid>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </ItemsControl.ItemTemplate>
+                                            </ItemsControl>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                            </Grid>
                         </StackPanel>
 
                         <!-- ROW 1: Unit of Measurement & Quantity below Item Name (both same size) -->

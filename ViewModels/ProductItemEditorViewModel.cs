@@ -11,6 +11,21 @@ using AsiErp.Services;
 
 namespace AsiErp.ViewModels
 {
+    public class ItemSuggestionOption
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Sku { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public string Unit { get; set; } = string.Empty;
+        public string ItemType { get; set; } = string.Empty; // mfg, ready, raw, gen
+        public string Subtitle { get; set; } = string.Empty;
+        public string BadgeText { get; set; } = string.Empty;
+        public string BadgeBg { get; set; } = "#EEF2FF";
+        public string BadgeFg { get; set; } = "#4338CA";
+        public object OriginalItem { get; set; } = null!;
+    }
+
     public class ProductItemEditorViewModel : ViewModelBase
     {
         private readonly AppDataService _dataService;
@@ -116,10 +131,52 @@ namespace AsiErp.ViewModels
         public Visibility ProductVisibility => IsProductType ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RawOrGenVisibility => IsRawOrGenType ? Visibility.Visible : Visibility.Collapsed;
 
+        private bool _suppressSuggestions;
+        private bool _isSuggestionsOpen;
+
+        public ObservableCollection<ItemSuggestionOption> FilteredSuggestions { get; } = new();
+
+        public bool IsSuggestionsOpen
+        {
+            get => _isSuggestionsOpen;
+            set
+            {
+                if (SetField(ref _isSuggestionsOpen, value))
+                {
+                    OnPropertyChanged(nameof(IsProductSuggestionsOpen));
+                    OnPropertyChanged(nameof(IsRawSuggestionsOpen));
+                }
+            }
+        }
+
+        public bool IsProductSuggestionsOpen
+        {
+            get => _isSuggestionsOpen && IsProductType;
+            set => IsSuggestionsOpen = value;
+        }
+
+        public bool IsRawSuggestionsOpen
+        {
+            get => _isSuggestionsOpen && IsRawOrGenType;
+            set => IsSuggestionsOpen = value;
+        }
+
+        public string ExistingRecordNotice => (_existingItem != null) ? $"{Name} (SKU: {Sku})" : "";
+
         public string Name
         {
             get => _name;
-            set => SetField(ref _name, value);
+            set
+            {
+                if (SetField(ref _name, value))
+                {
+                    OnPropertyChanged(nameof(ExistingRecordNotice));
+                    if (!_suppressSuggestions && !_isEditMode)
+                    {
+                        UpdateSuggestions(value);
+                    }
+                }
+            }
         }
 
         public string Category
@@ -336,6 +393,8 @@ namespace AsiErp.ViewModels
         public RelayCommand PrintBarcodeCommand { get; }
         public RelayCommand SaveCommand { get; }
         public RelayCommand CancelCommand { get; }
+        public RelayCommand SelectSuggestionCommand { get; }
+        public RelayCommand ResetToNewCommand { get; }
 
         public ProductItemEditorViewModel(
             AppDataService dataService,
@@ -357,6 +416,11 @@ namespace AsiErp.ViewModels
             BulkUploadCommand = new RelayCommand(_ => BulkUpload());
             PrintBarcodeCommand = new RelayCommand(_ => PrintBarcodePreview());
             SaveCommand = new RelayCommand(async _ => await SaveItemAsync());
+            SelectSuggestionCommand = new RelayCommand(p =>
+            {
+                if (p is ItemSuggestionOption opt) SelectSuggestion(opt);
+            });
+            ResetToNewCommand = new RelayCommand(_ => ResetToNew());
         }
 
         public void LoadItem(string type = "mfg", object? existing = null, string returnRoute = "products")
@@ -391,6 +455,7 @@ namespace AsiErp.ViewModels
                     Sku = p.Sku ?? "";
                     Barcode = (string.IsNullOrWhiteSpace(p.Barcode) || p.Barcode == "—" || p.Barcode == "-") ? "" : p.Barcode;
                     RetailPrice = p.RetailPrice;
+                    SellingPrice = p.RetailPrice;
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
                     BulkPrice = p.BulkPrice;
                     DomesticPrice = p.DomesticPrice;
@@ -406,6 +471,7 @@ namespace AsiErp.ViewModels
                     Quantity = totalStock;
                     _originalQuantity = totalStock;
                     ReorderLevel = p.ReorderLevel;
+                    LowAlertLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                 }
@@ -501,6 +567,201 @@ namespace AsiErp.ViewModels
                 Barcode = "";
 
                 AutoSku();
+            }
+
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(SaveButtonText));
+            OnPropertyChanged(nameof(TopSaveButtonText));
+            OnPropertyChanged(nameof(ExistingRecordNotice));
+            OnPropertyChanged(nameof(CanChangeType));
+            OnPropertyChanged(nameof(IsSuggestionsOpen));
+            OnPropertyChanged(nameof(IsProductSuggestionsOpen));
+            OnPropertyChanged(nameof(IsRawSuggestionsOpen));
+        }
+
+        public void UpdateSuggestions(string? query)
+        {
+            FilteredSuggestions.Clear();
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                IsSuggestionsOpen = false;
+                return;
+            }
+
+            string q = query.Trim();
+            if (q.Length < 1)
+            {
+                IsSuggestionsOpen = false;
+                return;
+            }
+
+            var list = new List<ItemSuggestionOption>();
+
+            if (IsProductType)
+            {
+                var prods = _dataService.Products
+                    .Where(p => !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
+                    .Where(p => p.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                                (!string.IsNullOrWhiteSpace(p.Sku) && p.Sku.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                    .Select(g => g.First())
+                    .OrderByDescending(p => ItemType == "ready" ? (p.IsReadymade ? 1 : 0) : (!p.IsReadymade ? 1 : 0))
+                    .Take(8);
+
+                foreach (var p in prods)
+                {
+                    bool isReady = p.IsReadymade;
+                    list.Add(new ItemSuggestionOption
+                    {
+                        Id = p.Id,
+                        Name = p.Name,
+                        Sku = p.Sku ?? "",
+                        Category = p.Category ?? "",
+                        Unit = p.Unit ?? "pair",
+                        ItemType = isReady ? "ready" : "mfg",
+                        Subtitle = $"SKU: {p.Sku} · Stock: {p.Stock} {p.Unit} · Cost: ₹{p.Cost:N0} · Price: ₹{p.RetailPrice:N0}",
+                        BadgeText = isReady ? "Readymade Stock" : "Finished Product",
+                        BadgeBg = isReady ? "#ECFDF5" : "#EFF6FF",
+                        BadgeFg = isReady ? "#059669" : "#2563EB",
+                        OriginalItem = p
+                    });
+                }
+            }
+            else
+            {
+                if (ItemType == "raw")
+                {
+                    var rms = _dataService.RawMaterials
+                        .Where(r => !string.IsNullOrWhiteSpace(r.Name) && r.Name.Trim() != "—" && r.Name.Trim() != "-")
+                        .Where(r => r.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                                    (!string.IsNullOrWhiteSpace(r.Sku) && r.Sku.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                        .GroupBy(r => !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                        .Select(g => g.First())
+                        .Take(8);
+
+                    foreach (var r in rms)
+                    {
+                        list.Add(new ItemSuggestionOption
+                        {
+                            Id = r.Id,
+                            Name = r.Name,
+                            Sku = r.Sku ?? "",
+                            Category = "Raw Material",
+                            Unit = r.Unit ?? "sq ft",
+                            ItemType = "raw",
+                            Subtitle = $"SKU: {r.Sku} · Stock: {r.Stock} {r.Unit} · Rate: ₹{r.Rate:N0}",
+                            BadgeText = "Raw Material Stock",
+                            BadgeBg = "#F0FDFA",
+                            BadgeFg = "#0D9488",
+                            OriginalItem = r
+                        });
+                    }
+                }
+                else
+                {
+                    var gens = _dataService.GeneralItems
+                        .Where(g => !string.IsNullOrWhiteSpace(g.Name) && g.Name.Trim() != "—" && g.Name.Trim() != "-")
+                        .Where(g => g.Name.Contains(q, StringComparison.OrdinalIgnoreCase) ||
+                                    (!string.IsNullOrWhiteSpace(g.Sku) && g.Sku.Contains(q, StringComparison.OrdinalIgnoreCase)))
+                        .GroupBy(g => !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim(), StringComparer.OrdinalIgnoreCase)
+                        .Select(g => g.First())
+                        .Take(8);
+
+                    foreach (var g in gens)
+                    {
+                        list.Add(new ItemSuggestionOption
+                        {
+                            Id = g.Id,
+                            Name = g.Name,
+                            Sku = g.Sku ?? "",
+                            Category = "General Supplies",
+                            Unit = g.Unit ?? "pcs",
+                            ItemType = "gen",
+                            Subtitle = $"SKU: {g.Sku} · Stock: {g.Stock} {g.Unit} · Rate: ₹{g.Rate:N0}",
+                            BadgeText = "General Supplies",
+                            BadgeBg = "#FFFBEB",
+                            BadgeFg = "#D97706",
+                            OriginalItem = g
+                        });
+                    }
+                }
+            }
+
+            foreach (var item in list)
+            {
+                FilteredSuggestions.Add(item);
+            }
+
+            IsSuggestionsOpen = FilteredSuggestions.Count > 0;
+        }
+
+        public void SelectSuggestion(ItemSuggestionOption? suggestion)
+        {
+            if (suggestion == null) return;
+
+            _suppressSuggestions = true;
+            IsSuggestionsOpen = false;
+            FilteredSuggestions.Clear();
+
+            LoadItem(suggestion.ItemType, suggestion.OriginalItem, ReturnRoute);
+
+            _suppressSuggestions = false;
+        }
+
+        public void ResetToNew()
+        {
+            _suppressSuggestions = true;
+            IsSuggestionsOpen = false;
+            FilteredSuggestions.Clear();
+
+            LoadItem(_itemType, null, ReturnRoute);
+
+            _suppressSuggestions = false;
+        }
+
+        public void TrySelectExactMatch(string? typedName)
+        {
+            if (_isEditMode || string.IsNullOrWhiteSpace(typedName)) return;
+
+            string name = typedName.Trim();
+            if (IsProductType)
+            {
+                var match = _dataService.Products.FirstOrDefault(p =>
+                    string.Equals(p.Name.Trim(), name, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                {
+                    SelectSuggestion(new ItemSuggestionOption
+                    {
+                        ItemType = match.IsReadymade ? "ready" : "mfg",
+                        OriginalItem = match
+                    });
+                }
+            }
+            else if (ItemType == "raw")
+            {
+                var match = _dataService.RawMaterials.FirstOrDefault(r =>
+                    string.Equals(r.Name.Trim(), name, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                {
+                    SelectSuggestion(new ItemSuggestionOption
+                    {
+                        ItemType = "raw",
+                        OriginalItem = match
+                    });
+                }
+            }
+            else if (ItemType == "gen")
+            {
+                var match = _dataService.GeneralItems.FirstOrDefault(g =>
+                    string.Equals(g.Name.Trim(), name, StringComparison.OrdinalIgnoreCase));
+                if (match != null)
+                {
+                    SelectSuggestion(new ItemSuggestionOption
+                    {
+                        ItemType = "gen",
+                        OriginalItem = match
+                    });
+                }
             }
         }
 
