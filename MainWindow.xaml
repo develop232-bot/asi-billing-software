@@ -33,6 +33,9 @@
 
         <!-- MODERN HIGH-CONTRAST SIDEBAR (Compact 220px, Prominently Visible) -->
         <Border x:Name="SidebarBorder" Grid.Column="0" Width="220" Background="#0A1128" BorderBrush="#1E293B" BorderThickness="0,0,1.5,0">
+            <Border.CacheMode>
+                <BitmapCache EnableClearType="True" SnapsToDevicePixels="True"/>
+            </Border.CacheMode>
             <Border.Effect>
                 <DropShadowEffect BlurRadius="18" Direction="0" ShadowDepth="3" Color="#000000" Opacity="0.18"/>
             </Border.Effect>

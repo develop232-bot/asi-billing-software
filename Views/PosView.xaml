@@ -236,9 +236,6 @@
 
                 <!-- RIGHT: Cart -->
                 <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
                     <StackPanel>
                         <DockPanel Margin="0,0,0,14">
                             <TextBlock Text="Current Bill" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
@@ -366,14 +363,13 @@
 
             <!-- Recent Retail Bills Table -->
             <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                </Border.Effect>
+
                 <DockPanel>
                     <TextBlock DockPanel.Dock="Top" Text="Recent Retail Bills" FontWeight="Bold" FontSize="14.5" Foreground="#0F172A" Margin="0,0,0,14"/>
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled"
                                   CanContentScroll="False" helpers:SmoothScrollHelper.IsDragScrollEnabled="True">
-                        <DataGrid ItemsSource="{Binding RecentBills}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38" MinWidth="750">
+                        <DataGrid ItemsSource="{Binding RecentBills}" AutoGenerateColumns="False" CanUserAddRows="False" HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="38" MinWidth="750"
+                                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Item" ScrollViewer.CanContentScroll="True" helpers:SmoothScrollHelper.BubbleMouseWheel="True">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Bill No" Binding="{Binding InvoiceNo}" Width="110" FontWeight="Bold"/>
                                 <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>

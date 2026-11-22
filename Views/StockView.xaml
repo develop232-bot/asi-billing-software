@@ -38,9 +38,6 @@
             <!-- 4 Stats Tiles -->
             <UniformGrid Columns="4" Margin="0,0,0,20">
                 <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Total SKUs / Items" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding Items.Count}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
@@ -48,9 +45,6 @@
                 </Border>
 
                 <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Total Stock Value" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding TotalValue, Converter={StaticResource InrShortConv}}" FontSize="22" FontWeight="Bold" Foreground="#0F172A" Margin="0,5,0,0"/>
@@ -59,9 +53,6 @@
 
                 <!-- (3) Total Stock -->
                 <Border Background="White" Padding="18" Margin="0,0,14,0" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Total Stock" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding TotalUnitsOnHand, StringFormat={}{0:N0}}" FontSize="22" FontWeight="Bold" Foreground="#10B981" Margin="0,5,0,0"/>
@@ -70,9 +61,6 @@
 
                 <!-- (4) Low Stock -->
                 <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <Border.Effect>
-                        <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                    </Border.Effect>
                     <StackPanel>
                         <TextBlock Text="Low Stock" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding LowStockCount}" FontSize="22" FontWeight="Bold" Foreground="#DC2626" Margin="0,5,0,0"/>
@@ -82,9 +70,6 @@
 
             <!-- Table Container -->
             <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                </Border.Effect>
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Margin="0,0,0,16">
                         <!-- Search Box with Hint & Clean Focus -->
@@ -121,9 +106,11 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               VirtualizingPanel.IsVirtualizing="True"
                               VirtualizingPanel.VirtualizationMode="Recycling"
-                              VirtualizingPanel.ScrollUnit="Pixel"
+                              VirtualizingPanel.ScrollUnit="Item"
                               ScrollViewer.CanContentScroll="True"
+                              helpers:SmoothScrollHelper.BubbleMouseWheel="True"
                               MaxHeight="680"
+                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                         <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="130">

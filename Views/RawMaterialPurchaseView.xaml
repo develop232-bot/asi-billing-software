@@ -309,7 +309,7 @@
                         <DataGrid ItemsSource="{Binding RecentBills}" AutoGenerateColumns="False" CanUserAddRows="False"
                                   IsReadOnly="True" HeadersVisibility="Column" GridLinesVisibility="Horizontal"
                                   BorderThickness="0" Background="White" RowHeight="42" MinWidth="850"
-                                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.CanContentScroll="True" MaxHeight="520">
+                                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling" VirtualizingPanel.ScrollUnit="Item" ScrollViewer.CanContentScroll="True" helpers:SmoothScrollHelper.BubbleMouseWheel="True" MaxHeight="520">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Date" Binding="{Binding Date, Converter={StaticResource DateConv}}" Width="95"/>
                                 <DataGridTextColumn Header="Invoice no" Binding="{Binding InvoiceNo}" Width="125" FontWeight="Bold"/>

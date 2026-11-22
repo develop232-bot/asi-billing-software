@@ -188,8 +188,9 @@
                                   ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                                   VirtualizingPanel.IsVirtualizing="True"
                                   VirtualizingPanel.VirtualizationMode="Recycling"
-                                  VirtualizingPanel.ScrollUnit="Pixel"
+                                  VirtualizingPanel.ScrollUnit="Item"
                                   ScrollViewer.CanContentScroll="True"
+                                  helpers:SmoothScrollHelper.BubbleMouseWheel="True"
                                   MaxHeight="680"
                                   HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                             <DataGrid.Columns>

@@ -109,13 +109,30 @@ namespace AsiErp.Helpers
         {
             if (sender is not UIElement element || e.Handled) return;
 
+            // Find if element itself or any child has an inner ScrollViewer
+            ScrollViewer? innerScroll = element as ScrollViewer ?? FindVisualChild<ScrollViewer>(element);
+
+            if (innerScroll != null && innerScroll.ScrollableHeight > 0)
+            {
+                // If scrolling down and inner scroll hasn't reached the bottom, let it scroll internally
+                if (e.Delta < 0 && innerScroll.VerticalOffset < (innerScroll.ScrollableHeight - 0.5))
+                {
+                    return;
+                }
+                // If scrolling up and inner scroll hasn't reached the top, let it scroll internally
+                if (e.Delta > 0 && innerScroll.VerticalOffset > 0.5)
+                {
+                    return;
+                }
+            }
+
             // Find parent ScrollViewer
             DependencyObject current = element;
             ScrollViewer? parentScroll = null;
             while (current != null)
             {
                 current = System.Windows.Media.VisualTreeHelper.GetParent(current);
-                if (current is ScrollViewer sv)
+                if (current is ScrollViewer sv && !ReferenceEquals(sv, innerScroll))
                 {
                     parentScroll = sv;
                     break;
@@ -133,6 +150,20 @@ namespace AsiErp.Helpers
                 parentScroll.RaiseEvent(eventArg);
                 e.Handled = true;
             }
+        }
+
+        private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        {
+            if (parent == null) return null;
+            int count = System.Windows.Media.VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < count; i++)
+            {
+                var child = System.Windows.Media.VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild) return typedChild;
+                var found = FindVisualChild<T>(child);
+                if (found != null) return found;
+            }
+            return null;
         }
 
         private static void ScrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)

@@ -85,9 +85,6 @@
 
                     <!-- ROW 0, COL 0: Retail Sale (Blue) -->
                     <Border Grid.Row="0" Grid.Column="0" Tag="PreserveTheme" Background="#2563EB" CornerRadius="12" Padding="16,14" Margin="0,0,12,12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#2563EB" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <Path Data="M 2,3 L 5,3 L 7,12 L 17,12 L 19,6 L 6,6 M 7.5,15 A 1.5,1.5 0 1,1 7.5,15.01 M 15.5,15 A 1.5,1.5 0 1,1 15.5,15.01"
@@ -102,9 +99,6 @@
 
                     <!-- ROW 0, COL 1: Domestic Sale (Green) -->
                     <Border Grid.Row="0" Grid.Column="1" Tag="PreserveTheme" Background="#15803D" CornerRadius="12" Padding="16,14" Margin="0,0,12,12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#15803D" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <Path Data="M 3,2 L 10,2 L 14,6 L 14,16 L 3,16 Z M 10,2 L 10,6 L 14,6 M 5,9 L 11,9 M 5,12 L 11,12"
@@ -119,9 +113,6 @@
 
                     <!-- ROW 0, COL 2: Export Sale (Teal) -->
                     <Border Grid.Row="0" Grid.Column="2" Tag="PreserveTheme" Background="#0D9488" CornerRadius="12" Padding="16,14" Margin="0,0,12,12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#0D9488" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <Path Data="M 11,2 L 13,2 L 13,9 L 20,13 L 20,15 L 13,13 L 13,18 L 15,20 L 15,21.5 L 12,20.5 L 9,21.5 L 9,20 L 11,18 L 11,13 L 4,15 L 4,13 L 11,9 Z"
@@ -135,9 +126,6 @@
 
                     <!-- ROW 0, COL 3: Total Sale (Purple) -->
                     <Border Grid.Row="0" Grid.Column="3" Tag="PreserveTheme" Background="#7C3AED" CornerRadius="12" Padding="16,14" Margin="0,0,0,12">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#7C3AED" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <Path Data="M 2,12 L 6,8 L 10,11 L 16,4 M 11,4 L 16,4 L 16,9"
@@ -155,9 +143,6 @@
 
                     <!-- ROW 1, COL 1: Domestic Outstanding to Receive (Amber) -->
                     <Border Grid.Row="1" Grid.Column="1" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#D97706" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -170,9 +155,6 @@
 
                     <!-- ROW 1, COL 2: Export Outstanding to Receive (Amber) -->
                     <Border Grid.Row="1" Grid.Column="2" Tag="PreserveTheme" Background="#D97706" CornerRadius="12" Padding="16,14" Margin="0,0,12,0">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#D97706" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -185,9 +167,6 @@
 
                     <!-- ROW 1, COL 3: Total Outstanding to Receive (Red) -->
                     <Border Grid.Row="1" Grid.Column="3" Tag="PreserveTheme" Background="#DC2626" CornerRadius="12" Padding="16,14" Margin="0,0,0,0">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="12" Direction="270" ShadowDepth="2" Color="#DC2626" Opacity="0.25"/>
-                        </Border.Effect>
                         <StackPanel>
                             <Border Tag="PreserveTheme" Width="28" Height="28" CornerRadius="6" Background="#26FFFFFF" HorizontalAlignment="Left">
                                 <TextBlock Text="₹" Foreground="#FFFFFF" FontWeight="Bold" FontSize="13" HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -202,10 +181,6 @@
 
             <!-- 3. Custom Report & Data Table Section -->
             <Border Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="16" Direction="270" ShadowDepth="2" Color="#0F172A" Opacity="0.04"/>
-                </Border.Effect>
-
                 <DockPanel>
                     <!-- Custom Report Filter Bar (Exact Match to Prototype & Screenshot) -->
                     <Border DockPanel.Dock="Top" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,12">
@@ -327,8 +302,9 @@
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               VirtualizingPanel.IsVirtualizing="True"
                               VirtualizingPanel.VirtualizationMode="Recycling"
-                              VirtualizingPanel.ScrollUnit="Pixel"
+                              VirtualizingPanel.ScrollUnit="Item"
                               ScrollViewer.CanContentScroll="True"
+                              helpers:SmoothScrollHelper.BubbleMouseWheel="True"
                               MaxHeight="680"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                         <DataGrid.Columns>

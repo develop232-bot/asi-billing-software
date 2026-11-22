@@ -49,47 +49,6 @@ namespace AsiErp.Services
             LightTextSecondary.Freeze();
             LightInputBg.Freeze();
             LightInputBorder.Freeze();
-
-            EventManager.RegisterClassHandler(typeof(Window), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
-            {
-                if (s is Window win && win.Name != "LoginWindow")
-                {
-                    ApplyToElement(win, IsDark);
-                }
-            }));
-
-            EventManager.RegisterClassHandler(typeof(UserControl), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
-            {
-                if (s is UserControl uc)
-                {
-                    ApplyToElement(uc, IsDark);
-                }
-            }));
-
-            EventManager.RegisterClassHandler(typeof(DataGrid), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
-            {
-                if (s is DataGrid dg)
-                {
-                    ApplyToElement(dg, IsDark);
-                }
-            }));
-
-            EventManager.RegisterClassHandler(typeof(DataGridRow), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
-            {
-                if (s is DataGridRow row)
-                {
-                    row.Foreground = IsDark ? DarkTextPrimary : LightTextPrimary;
-                    row.Background = IsDark ? DarkCardBg : LightCardBg;
-                }
-            }));
-
-            EventManager.RegisterClassHandler(typeof(DataGridCell), FrameworkElement.LoadedEvent, new RoutedEventHandler((s, e) =>
-            {
-                if (s is DataGridCell cell)
-                {
-                    cell.Foreground = IsDark ? DarkTextPrimary : LightTextPrimary;
-                }
-            }));
         }
 
         public static void ApplyTheme(bool isDark, Window? window = null)
@@ -112,27 +71,21 @@ namespace AsiErp.Services
                 {
                     try
                     {
-                        ApplyToElement(win, isDark);
+                        ApplyRecursive(win, isDark, 0);
                     }
                     catch { }
                 }
             }
             else if (window != null)
             {
-                ApplyToElement(window, isDark);
+                ApplyRecursive(window, isDark, 0);
             }
         }
 
         public static void ApplyToElement(DependencyObject root, bool isDark)
         {
-            if (root == null) return;
+            if (root == null || !isDark) return;
             ApplyRecursive(root, isDark, 0);
-
-            if (root is FrameworkElement fe)
-            {
-                fe.Loaded -= OnElementLoaded;
-                fe.Loaded += OnElementLoaded;
-            }
         }
 
         private static void OnElementLoaded(object sender, RoutedEventArgs e)

@@ -15,6 +15,13 @@ namespace AsiErp
         {
             base.OnStartup(e);
 
+            // Enable GPU Hardware Acceleration
+            try
+            {
+                System.Windows.Media.RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
+            }
+            catch { }
+
             // Global exception traps to prevent app from ever closing unexpectedly or freezing
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;

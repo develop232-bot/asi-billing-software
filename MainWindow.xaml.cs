@@ -179,25 +179,11 @@ namespace AsiErp
             if (view != null)
             {
                 view.DataContext = currentVm;
-                ThemeService.ApplyToElement(view, ThemeService.IsDark);
                 if (!ReferenceEquals(MainContentArea.Content, view))
                 {
+                    view.RenderTransform = null;
+                    view.Opacity = 1.0;
                     MainContentArea.Content = view;
-                    var translate = new TranslateTransform(0, 8);
-                    view.RenderTransform = translate;
-                    view.Opacity = 0.0;
-
-                    var fadeIn = new System.Windows.Media.Animation.DoubleAnimation(0.0, 1.0, TimeSpan.FromMilliseconds(220))
-                    {
-                        EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
-                    };
-                    var slideIn = new System.Windows.Media.Animation.DoubleAnimation(8.0, 0.0, TimeSpan.FromMilliseconds(220))
-                    {
-                        EasingFunction = new System.Windows.Media.Animation.CubicEase { EasingMode = System.Windows.Media.Animation.EasingMode.EaseOut }
-                    };
-
-                    view.BeginAnimation(UIElement.OpacityProperty, fadeIn);
-                    translate.BeginAnimation(TranslateTransform.YProperty, slideIn);
                 }
             }
         }
