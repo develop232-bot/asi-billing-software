@@ -233,6 +233,7 @@ namespace AsiErp.Dialogs
             bool autoBarcode = ChkAutoBarcode.IsChecked == true;
             bool updateExisting = ChkUpdateExisting.IsChecked == true;
             var batchUsedBarcodes = _dataService.GetAllUsedBarcodes();
+            var batchProducts = new List<ProductItem>();
 
             try
             {
@@ -372,10 +373,25 @@ namespace AsiErp.Dialogs
                         // 3. ITEM (MANUFACTURED) OR 4. READYMADE PRODUCT
                         bool isReady = classification.Contains("ready") || (!classification.Contains("finish") && !classification.Contains("item") && !classification.Contains("mfg") && _targetType == "ready");
 
+                        string sizes = GetVal(r, "Sizes", "Free size");
+                        var sizeList = sizes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
+                        if (sizeList.Count == 0) sizeList.Add("Free size");
+                        string normalizedSizes = string.Join(",", sizeList.OrderBy(s => s));
+
                         string sku = GetVal(r, "SKU");
                         if (string.IsNullOrWhiteSpace(sku))
                         {
-                            sku = "ASI-" + (isReady ? "RDY" : "MFG") + "-" + (_dataService.Products.Count + importedCount + 1).ToString("D3");
+                            // If same item name exists in database or batch, inherit the exact same SKU!
+                            var sameNameProd = _dataService.Products.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                                ?? batchProducts.FirstOrDefault(p => p.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                            if (sameNameProd != null && !string.IsNullOrWhiteSpace(sameNameProd.Sku))
+                            {
+                                sku = sameNameProd.Sku;
+                            }
+                            else
+                            {
+                                sku = "ASI-" + (isReady ? "RDY" : "MFG") + "-" + (_dataService.Products.Count + importedCount + 1).ToString("D3");
+                            }
                         }
 
                         string category = GetVal(r, "Category");
@@ -384,7 +400,6 @@ namespace AsiErp.Dialogs
                             category = isReady ? "Readymade" : "Shoe";
                         }
                         string unit = GetVal(r, "Unit", isReady ? "pcs" : "pair");
-                        string sizes = GetVal(r, "Sizes", "Free size");
                         string hsn = GetVal(r, "HSN", isReady ? "4202" : "6403");
 
                         double.TryParse(GetVal(r, "Cost", "0"), out double cost);
@@ -404,10 +419,15 @@ namespace AsiErp.Dialogs
                         }
                         batchUsedBarcodes.Add(barcode);
 
-                        // Check existing
+                        // Match existing record ONLY if updateExisting is true AND BOTH Name AND Size match!
                         var existing = updateExisting ? _dataService.Products.FirstOrDefault(p =>
-                            (!string.IsNullOrEmpty(sku) && p.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
-                            p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
+                        {
+                            if (!p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) return false;
+                            var pSizes = (p.Sizes ?? new List<string>()).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).OrderBy(s => s).ToList();
+                            if (pSizes.Count == 0) pSizes.Add("Free size");
+                            string pNorm = string.Join(",", pSizes);
+                            return string.Equals(pNorm, normalizedSizes, StringComparison.OrdinalIgnoreCase);
+                        }) : null;
 
                         if (existing != null)
                         {
@@ -428,9 +448,6 @@ namespace AsiErp.Dialogs
                         }
                         else
                         {
-                            var sizeList = sizes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).ToList();
-                            if (sizeList.Count == 0) sizeList.Add("Free size");
-
                             var newProd = new ProductItem
                             {
                                 Id = "p_" + Guid.NewGuid().ToString("N")[..8],
@@ -452,6 +469,7 @@ namespace AsiErp.Dialogs
                             };
 
                             await _dataService.SaveProductAsync(newProd);
+                            batchProducts.Add(newProd);
                             importedCount++;
                         }
                     }

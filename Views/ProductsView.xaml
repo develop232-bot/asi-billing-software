@@ -207,7 +207,10 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <!-- 3. Unit -->
+                        <!-- 3. Size -->
+                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="60" MinWidth="45"/>
+
+                        <!-- 4. Unit -->
                         <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="50" MinWidth="40"/>
 
                         <!-- 4. Type -->

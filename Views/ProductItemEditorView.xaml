@@ -76,18 +76,18 @@
                     <DropShadowEffect BlurRadius="10" Direction="270" ShadowDepth="1" Color="#0F172A" Opacity="0.04"/>
                 </Border.Effect>
                 <StackPanel>
-                    <!-- Edit Mode Notice & Reset to New Product Banner -->
-                    <Border Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVis}}"
-                            Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,16">
+                    <!-- Edit Mode / Same SKU Variant Notice & Reset to New Product Banner -->
+                    <Border Visibility="{Binding IsNoticeVisible, Converter={StaticResource BoolToVis}}"
+                            Background="{Binding NoticeBg}" BorderBrush="{Binding NoticeBorder}" BorderThickness="1" CornerRadius="8" Padding="12,9" Margin="0,0,0,16">
                         <DockPanel LastChildFill="True">
-                            <Button DockPanel.Dock="Right" Content="Clear / Add New Instead" Command="{Binding ResetToNewCommand}"
-                                    Padding="10,5" Background="White" BorderBrush="#93C5FD" Foreground="#1D4ED8" FontWeight="SemiBold" FontSize="11" Cursor="Hand">
+                            <Button DockPanel.Dock="Right" Content="{Binding NoticeBtnText}" Command="{Binding ResetToNewCommand}"
+                                    Padding="10,5" Background="White" BorderBrush="{Binding NoticeBorder}" Foreground="{Binding NoticeFg}" FontWeight="SemiBold" FontSize="11" Cursor="Hand">
                                 <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="5"/></Style></Button.Resources>
                             </Button>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="✏ " FontSize="12.5" Foreground="#2563EB"/>
-                                <TextBlock Text="Editing Existing Record: " FontWeight="Bold" Foreground="#1E40AF" FontSize="12"/>
-                                <TextBlock Text="{Binding ExistingRecordNotice}" Foreground="#1E3A8A" FontWeight="SemiBold" FontSize="12"/>
+                                <TextBlock Text="{Binding NoticeIcon}" FontSize="12.5" Foreground="{Binding NoticeFg}"/>
+                                <TextBlock Text="{Binding NoticePrefix}" FontWeight="Bold" Foreground="{Binding NoticeTitleFg}" FontSize="12"/>
+                                <TextBlock Text="{Binding ExistingRecordNotice}" Foreground="{Binding NoticeFg}" FontWeight="SemiBold" FontSize="12"/>
                             </StackPanel>
                         </DockPanel>
                     </Border>

@@ -16,6 +16,7 @@ namespace AsiErp.ViewModels
         public string TypeKey { get; set; } = "mfg"; // raw, mfg, ready, gen
         public string Date { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public string Sku { get; set; } = string.Empty;
         public string Hsn { get; set; } = string.Empty;
@@ -26,6 +27,7 @@ namespace AsiErp.ViewModels
         public double Quantity { get; set; }
 
         public string DateDisplay => string.IsNullOrWhiteSpace(Date) ? DateTime.Now.ToString("yyyy-MM-dd") : Date;
+        public string SizeDisplay => !string.IsNullOrWhiteSpace(Size) ? Size : "—";
         public string HsnDisplay => (!string.IsNullOrWhiteSpace(Hsn) && Hsn != "—" && Hsn != "-") ? Hsn : "—";
         public string BarcodeDisplay => (!string.IsNullOrWhiteSpace(Barcode) && Barcode != "—" && Barcode != "-") ? Barcode : "—";
         public string CostPriceDisplay => CostPrice > 0 ? $"₹{CostPrice:N0}" : "₹0";
@@ -321,6 +323,7 @@ namespace AsiErp.ViewModels
                     TypeKey = isMfg ? "mfg" : "ready",
                     Date = string.IsNullOrWhiteSpace(p.CreatedAt) ? DateTime.Now.ToString("yyyy-MM-dd") : p.CreatedAt,
                     Name = p.Name,
+                    Size = p.SizesDisplay,
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit,
                     Sku = !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku : _dataService.GetNextSku(p.IsManufactured ? "mfg" : "ready"),
                     Hsn = p.Hsn ?? "",
@@ -342,6 +345,7 @@ namespace AsiErp.ViewModels
                     TypeKey = "raw",
                     Date = string.IsNullOrWhiteSpace(r.CreatedAt) ? DateTime.Now.ToString("yyyy-MM-dd") : r.CreatedAt,
                     Name = r.Name,
+                    Size = "—",
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "meter" : r.Unit,
                     Sku = !string.IsNullOrWhiteSpace(r.Sku) && !r.Sku.Contains("pur_it_") ? r.Sku : _dataService.GetNextSku("raw"),
                     Hsn = r.Hsn ?? "",
@@ -363,6 +367,7 @@ namespace AsiErp.ViewModels
                     TypeKey = "gen",
                     Date = string.IsNullOrWhiteSpace(g.CreatedAt) ? DateTime.Now.ToString("yyyy-MM-dd") : g.CreatedAt,
                     Name = g.Name,
+                    Size = "—",
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit,
                     Sku = !string.IsNullOrWhiteSpace(g.Sku) && !g.Sku.Contains("pur_it_") ? g.Sku : _dataService.GetNextSku("gen"),
                     Hsn = g.Hsn ?? "",
@@ -442,7 +447,7 @@ namespace AsiErp.ViewModels
             {
                 bool matchType = ActiveFilter == "all" || row.TypeKey == ActiveFilter;
                 bool matchQ = string.IsNullOrEmpty(q) ||
-                              (row.Name + " " + row.Sku + " " + row.Barcode + " " + row.Unit + " " + row.TypeLabel).ToLowerInvariant().Contains(q);
+                              (row.Name + " " + row.Sku + " " + row.Barcode + " " + row.Unit + " " + row.TypeLabel + " " + row.SizeDisplay).ToLowerInvariant().Contains(q);
 
                 if (matchType && matchQ)
                 {
@@ -570,10 +575,10 @@ namespace AsiErp.ViewModels
                 {
                     var sb = new System.Text.StringBuilder();
 
-                    sb.AppendLine("Date,Item Description,Unit of Measurement,Type,SKU,Barcode,Cost Price,Selling Price,GST,Quantity");
+                    sb.AppendLine("Date,Item Description,Size,Unit of Measurement,Type,SKU,Barcode,Cost Price,Selling Price,GST,Quantity");
                     foreach (var r in FilteredRows)
                     {
-                        sb.AppendLine($"\"{EscapeCsv(r.DateDisplay)}\",\"{EscapeCsv(r.Name)}\",\"{EscapeCsv(r.Unit)}\",\"{EscapeCsv(r.TypeLabel)}\",\"{EscapeCsv(r.Sku)}\",\"{EscapeCsv(r.Barcode)}\",{r.CostPrice},{r.SellingPrice},{r.Gst},{r.Quantity}");
+                        sb.AppendLine($"\"{EscapeCsv(r.DateDisplay)}\",\"{EscapeCsv(r.Name)}\",\"{EscapeCsv(r.SizeDisplay)}\",\"{EscapeCsv(r.Unit)}\",\"{EscapeCsv(r.TypeLabel)}\",\"{EscapeCsv(r.Sku)}\",\"{EscapeCsv(r.Barcode)}\",{r.CostPrice},{r.SellingPrice},{r.Gst},{r.Quantity}");
                     }
 
                     System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), System.Text.Encoding.UTF8);
