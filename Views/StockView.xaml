@@ -111,7 +111,6 @@
                               helpers:SmoothScrollHelper.BubbleMouseWheel="True"
                               MaxHeight="680"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
-                              HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                         <DataGrid.Columns>
                         <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="130">
                             <DataGridTemplateColumn.CellTemplate>
