@@ -137,6 +137,8 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
+                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="65" MinWidth="45" Foreground="#334155"/>
+
                         <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="105" MinWidth="70" FontWeight="SemiBold" Foreground="#334155"/>
                         <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="55" MinWidth="45" Foreground="#475569"/>
                         <DataGridTextColumn Header="Stock" Binding="{Binding Stock, StringFormat={}{0:N0}}" Width="75" MinWidth="55" FontWeight="Bold" Foreground="#0F172A"/>

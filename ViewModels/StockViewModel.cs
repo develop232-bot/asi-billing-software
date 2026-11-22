@@ -13,6 +13,8 @@ namespace AsiErp.ViewModels
         public string Id { get; set; } = string.Empty;
         public string Kind { get; set; } = "raw"; // raw, gen, prod
         public string Name { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty;
+        public string SizeDisplay => !string.IsNullOrWhiteSpace(Size) ? Size : "—";
         public string Sku { get; set; } = string.Empty;
         public string Subtitle { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
@@ -268,6 +270,7 @@ namespace AsiErp.ViewModels
                         Id = primary.Id,
                         Kind = "raw",
                         Name = primary.Name,
+                        Size = "—",
                         Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
                         Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · GST {primary.Gst}%",
                         Unit = primary.Unit,
@@ -294,6 +297,7 @@ namespace AsiErp.ViewModels
                         Id = primary.Id,
                         Kind = "gen",
                         Name = primary.Name,
+                        Size = "—",
                         Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
                         Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · GST {primary.Gst}%",
                         Unit = primary.Unit,
@@ -308,7 +312,11 @@ namespace AsiErp.ViewModels
             {
                 var grouped = _dataService.Products
                     .Where(p => p.IsManufactured && !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
-                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+                    .GroupBy(p => {
+                        string skuOrName = !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim();
+                        string sizeKey = p.Sizes != null && p.Sizes.Count > 0 ? string.Join(",", p.Sizes.Select(s => s.Trim()).OrderBy(s => s)) : "free";
+                        return $"{skuOrName}||{sizeKey}";
+                    }, StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
@@ -320,8 +328,9 @@ namespace AsiErp.ViewModels
                         Id = primary.Id,
                         Kind = "mfg",
                         Name = primary.Name,
+                        Size = primary.SizesDisplay,
                         Sku = primary.Sku,
-                        Subtitle = $"{primary.Category} · Sizes: {primary.SizesDisplay}",
+                        Subtitle = $"{primary.Category} · Size: {primary.SizesDisplay}",
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
@@ -334,7 +343,11 @@ namespace AsiErp.ViewModels
             {
                 var grouped = _dataService.Products
                     .Where(p => p.IsReadymade && !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
-                    .GroupBy(p => !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+                    .GroupBy(p => {
+                        string skuOrName = !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim();
+                        string sizeKey = p.Sizes != null && p.Sizes.Count > 0 ? string.Join(",", p.Sizes.Select(s => s.Trim()).OrderBy(s => s)) : "free";
+                        return $"{skuOrName}||{sizeKey}";
+                    }, StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
@@ -346,8 +359,9 @@ namespace AsiErp.ViewModels
                         Id = primary.Id,
                         Kind = "ready",
                         Name = primary.Name,
+                        Size = primary.SizesDisplay,
                         Sku = primary.Sku,
-                        Subtitle = $"{primary.Category} · Sizes: {primary.SizesDisplay}",
+                        Subtitle = $"{primary.Category} · Size: {primary.SizesDisplay}",
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
@@ -364,11 +378,14 @@ namespace AsiErp.ViewModels
                 return match.Success && int.TryParse(match.Value, out int n) ? n : int.MaxValue;
             }
 
-            list = list.OrderBy(x => ParseSkuNum(x.Sku)).ThenBy(x => x.Name).ToList();
+            list = list.OrderBy(x => ParseSkuNum(x.Sku))
+                       .ThenBy(x => x.Name)
+                       .ThenBy(x => x.Size)
+                       .ToList();
 
             foreach (var it in list)
             {
-                if (string.IsNullOrEmpty(q) || (it.Name + " " + it.Sku + " " + it.Subtitle).ToLowerInvariant().Contains(q))
+                if (string.IsNullOrEmpty(q) || (it.Name + " " + it.Sku + " " + it.Subtitle + " " + it.SizeDisplay).ToLowerInvariant().Contains(q))
                 {
                     Items.Add(it);
                 }
@@ -493,10 +510,10 @@ namespace AsiErp.ViewModels
                 try
                 {
                     var sb = new System.Text.StringBuilder();
-                    sb.AppendLine("ItemName,Details,Unit,CurrentStock,ReorderAlertLevel,CostOrRate,TotalValueINR,Status");
+                    sb.AppendLine("ItemName,Details,Size,Unit,CurrentStock,ReorderAlertLevel,CostOrRate,TotalValueINR,Status");
                     foreach (var it in Items)
                     {
-                        sb.AppendLine($"\"{EscapeCsv(it.Name)}\",\"{EscapeCsv(it.Subtitle)}\",\"{EscapeCsv(it.Unit)}\",{it.Stock},{it.ReorderLevel},{it.RateOrCost},{it.TotalValue},\"{EscapeCsv(it.StatusLevelText)}\"");
+                        sb.AppendLine($"\"{EscapeCsv(it.Name)}\",\"{EscapeCsv(it.Subtitle)}\",\"{EscapeCsv(it.SizeDisplay)}\",\"{EscapeCsv(it.Unit)}\",{it.Stock},{it.ReorderLevel},{it.RateOrCost},{it.TotalValue},\"{EscapeCsv(it.StatusLevelText)}\"");
                     }
 
                     System.IO.File.WriteAllText(sfd.FileName, sb.ToString(), System.Text.Encoding.UTF8);
