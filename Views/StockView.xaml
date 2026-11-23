@@ -102,7 +102,7 @@
                     </DockPanel>
 
                     <!-- Stock Table (Virtualized & Fast) -->
-                    <DataGrid ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True"
+                    <DataGrid x:Name="StockGrid" ItemsSource="{Binding Items}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserResizeColumns="True"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               VirtualizingPanel.IsVirtualizing="True"
                               VirtualizingPanel.VirtualizationMode="Recycling"
@@ -112,7 +112,7 @@
                               MaxHeight="680"
                               HeadersVisibility="Column" GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="42">
                         <DataGrid.Columns>
-                        <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="130">
+                        <DataGridTemplateColumn Header="Item Description" SortMemberPath="Name" Width="*" MinWidth="130">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel VerticalAlignment="Center">
@@ -123,13 +123,13 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="65" MinWidth="45" Foreground="#334155"/>
+                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" SortMemberPath="SizeRank" Width="65" MinWidth="45" Foreground="#334155"/>
 
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="105" MinWidth="70" FontWeight="SemiBold" Foreground="#334155"/>
-                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="55" MinWidth="45" Foreground="#475569"/>
-                        <DataGridTextColumn Header="Stock" Binding="{Binding Stock, StringFormat={}{0:N0}}" Width="75" MinWidth="55" FontWeight="Bold" Foreground="#0F172A"/>
-                        <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" Width="85" MinWidth="65" FontWeight="SemiBold"/>
-                        <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" Width="90" MinWidth="70" FontWeight="Bold" Foreground="#0F172A"/>
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" SortMemberPath="SkuSortKey" Width="105" MinWidth="70" FontWeight="SemiBold" Foreground="#334155"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" SortMemberPath="Unit" Width="55" MinWidth="45" Foreground="#475569"/>
+                        <DataGridTextColumn Header="Stock" Binding="{Binding Stock, StringFormat={}{0:N0}}" SortMemberPath="Stock" Width="75" MinWidth="55" FontWeight="Bold" Foreground="#0F172A"/>
+                        <DataGridTextColumn Header="Cost Price" Binding="{Binding RateOrCost, Converter={StaticResource InrConv}}" SortMemberPath="RateOrCost" Width="85" MinWidth="65" FontWeight="SemiBold"/>
+                        <DataGridTextColumn Header="Stock Value" Binding="{Binding TotalValue, Converter={StaticResource InrConv}}" SortMemberPath="TotalValue" Width="90" MinWidth="70" FontWeight="Bold" Foreground="#0F172A"/>
 
                         <!-- Level Meter (Reliable percentage fill without template bugs) -->
                         <DataGridTemplateColumn Header="Level Meter" Width="105" MinWidth="80">

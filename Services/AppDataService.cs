@@ -874,6 +874,14 @@ namespace AsiErp.Services
                         maxNum = n;
                     }
                 }
+                else if (type == "raw" && (sku.StartsWith("ASI-RM-", StringComparison.OrdinalIgnoreCase) || sku.StartsWith("RM-", StringComparison.OrdinalIgnoreCase)))
+                {
+                    var m = System.Text.RegularExpressions.Regex.Match(sku, @"\d+");
+                    if (m.Success && int.TryParse(m.Value, out int n) && n > maxNum)
+                    {
+                        maxNum = n;
+                    }
+                }
             }
 
             int next = maxNum + 1;

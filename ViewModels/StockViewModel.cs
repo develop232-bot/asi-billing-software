@@ -15,7 +15,9 @@ namespace AsiErp.ViewModels
         public string Name { get; set; } = string.Empty;
         public string Size { get; set; } = string.Empty;
         public string SizeDisplay => !string.IsNullOrWhiteSpace(Size) ? Size : "—";
+        public double SizeRank => AsiErp.Helpers.NaturalSortHelper.GetSizeRank(SizeDisplay);
         public string Sku { get; set; } = string.Empty;
+        public string SkuSortKey => AsiErp.Helpers.NaturalSortHelper.GetSkuSortKey(Sku);
         public string Subtitle { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public double Stock { get; set; }
@@ -371,16 +373,9 @@ namespace AsiErp.ViewModels
                 }).Where(it => it != null).Select(it => it!).ToList();
             }
 
-            int ParseSkuNum(string? sku)
-            {
-                if (string.IsNullOrWhiteSpace(sku)) return int.MaxValue;
-                var match = System.Text.RegularExpressions.Regex.Match(sku, @"\d+");
-                return match.Success && int.TryParse(match.Value, out int n) ? n : int.MaxValue;
-            }
-
-            list = list.OrderBy(x => ParseSkuNum(x.Sku))
+            list = list.OrderBy(x => x.SkuSortKey)
                        .ThenBy(x => x.Name)
-                       .ThenBy(x => x.Size)
+                       .ThenBy(x => x.SizeRank)
                        .ToList();
 
             foreach (var it in list)

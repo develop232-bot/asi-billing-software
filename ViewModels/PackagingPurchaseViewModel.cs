@@ -45,6 +45,10 @@ namespace AsiErp.ViewModels
                 AvailableItems.Add(new SourcingItemOption { Id = "gen_carton", Name = "Corrugated Master Carton (24 prs)", Sku = "ASI-GEN-004", Unit = "pcs", Rate = 85, Gst = 18 });
                 AvailableItems.Add(new SourcingItemOption { Id = "gen_hang_tag", Name = "Product Price / Brand Hang Tag", Sku = "ASI-GEN-005", Unit = "pcs", Rate = 2, Gst = 18 });
             }
+
+            var sorted = AvailableItems.OrderBy(x => AsiErp.Helpers.NaturalSortHelper.GetSkuSortKey(x.Sku)).ThenBy(x => x.Name).ToList();
+            AvailableItems.Clear();
+            foreach (var it in sorted) AvailableItems.Add(it);
         }
     }
 }

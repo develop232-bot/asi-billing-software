@@ -257,7 +257,12 @@ namespace AsiErp.Dialogs
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
                         double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
                         double.TryParse(GetVal(r, "Cost", "0"), out double rate);
-                        double.TryParse(GetVal(r, "Gst", "5"), out double gst);
+                        string gstVal = GetVal(r, "Gst");
+                        double gst = 5;
+                        if (!string.IsNullOrWhiteSpace(gstVal) && double.TryParse(gstVal, out double parsedGst))
+                        {
+                            gst = parsedGst;
+                        }
 
                         string barcode = GetVal(r, "Barcode");
                         if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode) || autoBarcode)
@@ -319,7 +324,12 @@ namespace AsiErp.Dialogs
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
                         double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
                         double.TryParse(GetVal(r, "Cost", "0"), out double rate);
-                        double.TryParse(GetVal(r, "Gst", "5"), out double gst);
+                        string gstVal = GetVal(r, "Gst");
+                        double gst = 5;
+                        if (!string.IsNullOrWhiteSpace(gstVal) && double.TryParse(gstVal, out double parsedGst))
+                        {
+                            gst = parsedGst;
+                        }
 
                         string barcode = GetVal(r, "Barcode");
                         if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode) || autoBarcode)
@@ -409,8 +419,12 @@ namespace AsiErp.Dialogs
 
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
                         double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
-                        double.TryParse(GetVal(r, "Gst", "5"), out double gst);
-                        if (gst <= 0) gst = 5;
+                        string gstVal = GetVal(r, "Gst");
+                        double gst = 5;
+                        if (!string.IsNullOrWhiteSpace(gstVal) && double.TryParse(gstVal, out double parsedGst))
+                        {
+                            gst = parsedGst;
+                        }
 
                         string barcode = GetVal(r, "Barcode");
                         if (string.IsNullOrWhiteSpace(barcode) || barcode == "—" || batchUsedBarcodes.Contains(barcode) || (string.IsNullOrWhiteSpace(barcode) && autoBarcode))

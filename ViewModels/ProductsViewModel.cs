@@ -28,6 +28,8 @@ namespace AsiErp.ViewModels
 
         public string DateDisplay => string.IsNullOrWhiteSpace(Date) ? DateTime.Now.ToString("yyyy-MM-dd") : Date;
         public string SizeDisplay => !string.IsNullOrWhiteSpace(Size) ? Size : "—";
+        public double SizeRank => AsiErp.Helpers.NaturalSortHelper.GetSizeRank(SizeDisplay);
+        public string SkuSortKey => AsiErp.Helpers.NaturalSortHelper.GetSkuSortKey(Sku);
         public string HsnDisplay => (!string.IsNullOrWhiteSpace(Hsn) && Hsn != "—" && Hsn != "-") ? Hsn : "—";
         public string BarcodeDisplay => (!string.IsNullOrWhiteSpace(Barcode) && Barcode != "—" && Barcode != "-") ? Barcode : "—";
         public string CostPriceDisplay => CostPrice > 0 ? $"₹{CostPrice:N0}" : "₹0";
@@ -165,6 +167,8 @@ namespace AsiErp.ViewModels
         public RelayCommand PrintBarcodeOptionsCommand { get; }
         public RelayCommand BulkImportCommand { get; }
         public RelayCommand ExportCsvCommand { get; }
+        public event Action? SortResetRequested;
+
         public RelayCommand DownloadFileCommand { get; }
         public RelayCommand ClearDateFilterCommand { get; }
 
@@ -173,13 +177,18 @@ namespace AsiErp.ViewModels
             _dataService = dataService;
             _openDialogAction = openDialogAction;
 
-            SetFilterCommand = new RelayCommand(p => ActiveFilter = p?.ToString() ?? "all");
+            SetFilterCommand = new RelayCommand(p =>
+            {
+                SortResetRequested?.Invoke();
+                ActiveFilter = p?.ToString() ?? "all";
+            });
             ClearDateFilterCommand = new RelayCommand(_ =>
             {
                 _fromDate = null;
                 _toDate = null;
                 OnPropertyChanged(nameof(FromDate));
                 OnPropertyChanged(nameof(ToDate));
+                SortResetRequested?.Invoke();
                 ApplyFilter();
             });
 
@@ -330,7 +339,7 @@ namespace AsiErp.ViewModels
                     Barcode = p.Barcode ?? "",
                     CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice * 0.7),
                     SellingPrice = p.RetailPrice,
-                    Gst = p.AutoGstRate,
+                    Gst = p.Gst,
                     Quantity = p.Stock
                 });
             }
@@ -429,17 +438,11 @@ namespace AsiErp.ViewModels
                 TotalSkusCount = genCount;
             }
 
-            int ParseSkuNum(string? sku)
-            {
-                if (string.IsNullOrWhiteSpace(sku)) return int.MaxValue;
-                var match = System.Text.RegularExpressions.Regex.Match(sku, @"\d+");
-                return match.Success && int.TryParse(match.Value, out int n) ? n : int.MaxValue;
-            }
-
             var sortedCandidates = dateFiltered
                 .OrderBy(r => r.TypeKey switch { "raw" => 1, "mfg" => 2, "ready" => 3, "gen" => 4, _ => 5 })
-                .ThenBy(r => ParseSkuNum(r.Sku))
+                .ThenBy(r => r.SkuSortKey)
                 .ThenBy(r => r.Name)
+                .ThenBy(r => r.SizeRank)
                 .ToList();
 
             // Populate FilteredRows by ActiveFilter and SearchQuery

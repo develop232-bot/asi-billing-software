@@ -131,7 +131,7 @@ namespace AsiErp.Models
             set { }
         }
 
-        public double AutoGstRate { get => RetailPrice <= 2500 ? 5 : 18; set { } }
+        public double AutoGstRate { get => Gst; set { Gst = value; } }
 
         public string DisplayBarcode
         {

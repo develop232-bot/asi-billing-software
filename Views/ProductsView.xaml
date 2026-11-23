@@ -167,7 +167,7 @@
                     </WrapPanel>
 
                     <!-- Catalog Table (Virtualized & Fast) -->
-                    <DataGrid ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                    <DataGrid x:Name="ProductsGrid" ItemsSource="{Binding FilteredRows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
                               ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                               VirtualizingPanel.IsVirtualizing="True"
                               VirtualizingPanel.VirtualizationMode="Recycling"
@@ -179,10 +179,10 @@
                               GridLinesVisibility="Horizontal" BorderThickness="0" Background="White" RowHeight="40">
                         <DataGrid.Columns>
                         <!-- 1. Date -->
-                        <DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" Width="75" MinWidth="60"/>
+                        <DataGridTextColumn Header="Date" Binding="{Binding DateDisplay}" SortMemberPath="Date" Width="75" MinWidth="60"/>
 
                         <!-- 2. Item Description -->
-                        <DataGridTemplateColumn Header="Item Description" Width="*" MinWidth="110">
+                        <DataGridTemplateColumn Header="Item Description" SortMemberPath="Name" Width="*" MinWidth="110">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBlock Text="{Binding Name}" ToolTip="{Binding Name}" FontWeight="Bold" FontSize="12" Foreground="#0F172A" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
@@ -191,13 +191,13 @@
                         </DataGridTemplateColumn>
 
                         <!-- 3. Size -->
-                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" Width="60" MinWidth="45"/>
+                        <DataGridTextColumn Header="Size" Binding="{Binding SizeDisplay}" SortMemberPath="SizeRank" Width="60" MinWidth="45"/>
 
                         <!-- 4. Unit -->
-                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" Width="50" MinWidth="40"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" SortMemberPath="Unit" Width="50" MinWidth="40"/>
 
                         <!-- 4. Type -->
-                        <DataGridTemplateColumn Header="Type" Width="125" MinWidth="105">
+                        <DataGridTemplateColumn Header="Type" SortMemberPath="TypeKey" Width="125" MinWidth="105">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#F1F5F9" VerticalAlignment="Center">
@@ -208,22 +208,22 @@
                         </DataGridTemplateColumn>
 
                         <!-- 5. SKU -->
-                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" Width="85" MinWidth="65" FontWeight="SemiBold"/>
+                        <DataGridTextColumn Header="SKU" Binding="{Binding Sku}" SortMemberPath="SkuSortKey" Width="85" MinWidth="65" FontWeight="SemiBold"/>
 
                         <!-- 6. HSN -->
-                        <DataGridTextColumn Header="HSN" Binding="{Binding HsnDisplay}" Width="55" MinWidth="45"/>
+                        <DataGridTextColumn Header="HSN" Binding="{Binding HsnDisplay}" SortMemberPath="Hsn" Width="55" MinWidth="45"/>
 
                         <!-- 7. Cost Price -->
-                        <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPriceDisplay}" Width="80" MinWidth="60"/>
+                        <DataGridTextColumn Header="Cost Price" Binding="{Binding CostPriceDisplay}" SortMemberPath="CostPrice" Width="80" MinWidth="60"/>
 
                         <!-- 8. Selling Price -->
-                        <DataGridTextColumn Header="Selling Price" Binding="{Binding SellingPriceDisplay}" Width="80" MinWidth="60"/>
+                        <DataGridTextColumn Header="Selling Price" Binding="{Binding SellingPriceDisplay}" SortMemberPath="SellingPrice" Width="80" MinWidth="60"/>
 
                         <!-- 9. GST -->
-                        <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" Width="50" MinWidth="40"/>
+                        <DataGridTextColumn Header="GST" Binding="{Binding GstDisplay}" SortMemberPath="Gst" Width="50" MinWidth="40"/>
 
                         <!-- 10. Stock -->
-                        <DataGridTextColumn Header="Stock" Binding="{Binding QuantityDisplay}" Width="65" MinWidth="50" FontWeight="Bold"/>
+                        <DataGridTextColumn Header="Stock" Binding="{Binding QuantityDisplay}" SortMemberPath="Quantity" Width="65" MinWidth="50" FontWeight="Bold"/>
 
                         <!-- 11. Actions -->
                         <DataGridTemplateColumn Header="Actions" Width="140" MinWidth="130">

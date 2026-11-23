@@ -84,6 +84,10 @@ namespace AsiErp.ViewModels
                     AvailableItems.Add(opt);
                 }
             }
+
+            var sorted = AvailableItems.OrderBy(x => AsiErp.Helpers.NaturalSortHelper.GetSkuSortKey(x.Sku)).ThenBy(x => x.Name).ToList();
+            AvailableItems.Clear();
+            foreach (var it in sorted) AvailableItems.Add(it);
         }
     }
 }

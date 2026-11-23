@@ -518,6 +518,7 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
+                    GstPercent = p.Gst;
                     ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku})";
                     NoticeIsNewVariant = false;
                 }
@@ -810,6 +811,7 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = first.ReorderLevel;
                     MediumAlertLevel = first.ReorderLevel * 2;
                 }
+                GstPercent = first.Gst;
 
                 // Check if an existing product record has BOTH the same name AND the same size
                 ProductItem? exactMatch = null;
@@ -832,6 +834,7 @@ namespace AsiErp.ViewModels
                     // Exact same product and size found -> this is an edit of that existing record
                     _isEditMode = true;
                     _existingItem = exactMatch;
+                    GstPercent = exactMatch.Gst;
                     ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku})";
                     NoticeIsNewVariant = false;
                     Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizesDisplay})";
@@ -893,6 +896,7 @@ namespace AsiErp.ViewModels
                 LowAlertLevel = p.ReorderLevel;
                 MediumAlertLevel = p.ReorderLevel * 2;
                 HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
+                GstPercent = p.Gst;
 
                 CheckNameAndSizeMatch();
             }
@@ -1198,7 +1202,7 @@ namespace AsiErp.ViewModels
                             Stock = Quantity,
                             RegisteredQty = Quantity,
                             ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel,
-                            Gst = SellingPrice <= 2500 ? 5 : 18,
+                            Gst = GstPercent,
                             Bom = new()
                         };
                         await _dataService.SaveProductAsync(newProd);
@@ -1223,7 +1227,7 @@ namespace AsiErp.ViewModels
                         prod.DomesticPrice = DomesticPrice;
                         prod.ExportPrice = ExportPrice;
                         prod.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
-                        prod.Gst = SellingPrice <= 2500 ? 5 : 18;
+                        prod.Gst = GstPercent;
                         prod.Stock = Quantity;
                         prod.RegisteredQty = Quantity;
 

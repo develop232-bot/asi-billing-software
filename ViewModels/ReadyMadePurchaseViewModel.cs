@@ -50,6 +50,10 @@ namespace AsiErp.ViewModels
                 AvailableItems.Add(new SourcingItemOption { Id = "rdy_uniform_pant", Name = "School Uniform Navy Pant", Sku = "ASI-RDY-006", Unit = "pcs", Rate = 240, SellingPrice = 490, Gst = 5 });
                 AvailableItems.Add(new SourcingItemOption { Id = "rdy_socks_pack", Name = "Cotton Socks (Pack of 3)", Sku = "ASI-RDY-007", Unit = "pair", Rate = 45, SellingPrice = 99, Gst = 5 });
             }
+
+            var sorted = AvailableItems.OrderBy(x => AsiErp.Helpers.NaturalSortHelper.GetSkuSortKey(x.Sku)).ThenBy(x => x.Name).ToList();
+            AvailableItems.Clear();
+            foreach (var it in sorted) AvailableItems.Add(it);
         }
     }
 }

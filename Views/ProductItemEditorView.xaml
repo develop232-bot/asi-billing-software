@@ -230,9 +230,10 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- ROW 3: Cost price, Selling price in next down row -->
+                        <!-- ROW 3: Cost price, Selling price, GST Rate in next down row -->
                         <Grid Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" Margin="0,0,0,16">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
@@ -244,9 +245,15 @@
                             </StackPanel>
 
                             <!-- Selling Price -->
-                            <StackPanel Grid.Column="1">
+                            <StackPanel Grid.Column="1" Margin="0,0,14,0">
                                 <TextBlock Text="Selling Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding SellingPrice, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <!-- GST Rate % -->
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="GST Rate (%)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding GstPercent, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </Grid>
 
@@ -381,7 +388,7 @@
                             </StackPanel>
                         </Grid>
 
-                        <!-- ROW 3: Cost Price & Selling Price below SKU -->
+                        <!-- ROW 3: Cost Price & GST Rate % below SKU -->
                         <Grid Margin="0,0,0,16">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
@@ -394,10 +401,10 @@
                                 <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
 
-                            <!-- Selling Price -->
+                            <!-- GST Rate % -->
                             <StackPanel Grid.Column="1">
-                                <TextBlock Text="Selling Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="—" IsReadOnly="True" Background="#F8FAFC" Foreground="#64748B" FontWeight="Bold" ToolTip="Raw Material Stock and General Supplies do not have a selling price."/>
+                                <TextBlock Text="GST Rate (%)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding GstPercent, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
                         </Grid>
 
