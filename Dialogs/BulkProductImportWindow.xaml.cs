@@ -73,27 +73,27 @@ namespace AsiErp.Dialogs
         private string GetSampleCsvContent(string type)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("ITEM CLASSIFICATION,CATEGORY,UNIT OF MEASUREMENT,ITEM NAME,SIZES,QTY,SKU,HSN,BARCODE,COST PRICE,SELLING PRICE,LOW ALERT,MEDIUM ALERT");
+            sb.AppendLine("ITEM CLASSIFICATION,CATEGORY,UNIT OF MEASUREMENT,ITEM NAME,SIZES,QTY,SKU,HSN,BARCODE,COST PRICE,SELLING PRICE,GST RATE (%),LOW ALERT,MEDIUM ALERT");
 
             if (type == "ready" || type == "all")
             {
-                sb.AppendLine("\"Readymade Product\",\"Bag\",\"pcs\",\"Ladies checked bag\",\"Medium\",\"20\",\"ASI-RDY-004\",\"42022110\",\"\",\"500\",\"1501\",\"3\",\"7\"");
-                sb.AppendLine("\"Readymade Product\",\"Shoe\",\"pair\",\"Brown lofar\",\"7,8,9,10,11\",\"28\",\"ASI-RDY-007\",\"6403\",\"\",\"320\",\"961\",\"3\",\"7\"");
+                sb.AppendLine("\"Readymade Product\",\"Bag\",\"pcs\",\"Ladies checked bag\",\"Medium\",\"20\",\"ASI-RDY-004\",\"42022110\",\"\",\"500\",\"1501\",\"0\",\"0\",\"0\"");
+                sb.AppendLine("\"Readymade Product\",\"Shoe\",\"pair\",\"Brown lofar\",\"7,8,9,10,11\",\"28\",\"ASI-RDY-007\",\"6403\",\"\",\"320\",\"961\",\"0\",\"0\",\"0\"");
             }
             if (type == "mfg" || type == "all")
             {
-                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Leather Formal Derby\",\"6,7,8,9,10,11\",\"50\",\"ASI-MFG-001\",\"6403\",\"\",\"850\",\"2499\",\"10\",\"25\"");
-                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Safety Shoe Steel Toe\",\"7,8,9,10\",\"35\",\"ASI-MFG-002\",\"64031990\",\"\",\"950\",\"2899\",\"5\",\"15\"");
+                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Leather Formal Derby\",\"6,7,8,9,10,11\",\"50\",\"ASI-MFG-001\",\"6403\",\"\",\"850\",\"2499\",\"0\",\"0\",\"0\"");
+                sb.AppendLine("\"Finished Product\",\"Shoe\",\"pair\",\"Safety Shoe Steel Toe\",\"7,8,9,10\",\"35\",\"ASI-MFG-002\",\"64031990\",\"\",\"950\",\"2899\",\"0\",\"0\",\"0\"");
             }
             if (type == "raw" || type == "all")
             {
-                sb.AppendLine("\"Raw Material\",\"\",\"sq ft\",\"Upper Full Grain Leather\",\"\",\"300\",\"ASI-RM-001\",\"4107\",\"\",\"140\",\"0\",\"50\",\"100\"");
-                sb.AppendLine("\"Raw Material\",\"\",\"pair\",\"PU Sole Unit\",\"6,7,8,9,10\",\"250\",\"ASI-RM-002\",\"64062000\",\"\",\"160\",\"0\",\"40\",\"80\"");
+                sb.AppendLine("\"Raw Material\",\"\",\"sq ft\",\"Upper Full Grain Leather\",\"\",\"300\",\"ASI-RM-001\",\"4107\",\"\",\"140\",\"0\",\"0\",\"0\",\"0\"");
+                sb.AppendLine("\"Raw Material\",\"\",\"pair\",\"PU Sole Unit\",\"6,7,8,9,10\",\"250\",\"ASI-RM-002\",\"64062000\",\"\",\"160\",\"0\",\"0\",\"0\",\"0\"");
             }
             if (type == "gen" || type == "all")
             {
-                sb.AppendLine("\"General Packaging\",\"\",\"pcs\",\"ASI Shoe Packaging Box\",\"\",\"1000\",\"ASI-GEN-001\",\"48191010\",\"\",\"24\",\"0\",\"150\",\"300\"");
-                sb.AppendLine("\"General Packaging\",\"\",\"pcs\",\"Clear Poly Dust Bag\",\"\",\"2000\",\"ASI-GEN-002\",\"39232100\",\"\",\"4\",\"0\",\"300\",\"600\"");
+                sb.AppendLine("\"General Packaging\",\"\",\"pcs\",\"ASI Shoe Packaging Box\",\"\",\"1000\",\"ASI-GEN-001\",\"48191010\",\"\",\"24\",\"0\",\"0\",\"0\",\"0\"");
+                sb.AppendLine("\"General Packaging\",\"\",\"pcs\",\"Clear Poly Dust Bag\",\"\",\"2000\",\"ASI-GEN-002\",\"39232100\",\"\",\"4\",\"0\",\"0\",\"0\",\"0\"");
             }
 
             return sb.ToString();
@@ -268,10 +268,10 @@ namespace AsiErp.Dialogs
                         }
                         string hsn = GetVal(r, "HSN");
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
-                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
+                        double.TryParse(GetVal(r, "ReorderLevel", "0"), out double reorder);
                         double.TryParse(GetVal(r, "Cost", "0"), out double rate);
                         string gstVal = GetVal(r, "Gst");
-                        double gst = 5;
+                        double gst = 0;
                         if (!string.IsNullOrWhiteSpace(gstVal) && double.TryParse(gstVal, out double parsedGst))
                         {
                             gst = parsedGst;
@@ -355,10 +355,10 @@ namespace AsiErp.Dialogs
                         }
                         string hsn = GetVal(r, "HSN");
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
-                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
+                        double.TryParse(GetVal(r, "ReorderLevel", "0"), out double reorder);
                         double.TryParse(GetVal(r, "Cost", "0"), out double rate);
                         string gstVal = GetVal(r, "Gst");
-                        double gst = 5;
+                        double gst = 0;
                         if (!string.IsNullOrWhiteSpace(gstVal) && double.TryParse(gstVal, out double parsedGst))
                         {
                             gst = parsedGst;
@@ -460,9 +460,9 @@ namespace AsiErp.Dialogs
                         if (wholesale <= 0) wholesale = retail > 0 ? Math.Round(retail * 0.7, 0) : cost * 1.3;
 
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
-                        double.TryParse(GetVal(r, "ReorderLevel", "10"), out double reorder);
+                        double.TryParse(GetVal(r, "ReorderLevel", "0"), out double reorder);
                         string gstVal = GetVal(r, "Gst");
-                        double gst = 5;
+                        double gst = 0;
                         if (!string.IsNullOrWhiteSpace(gstVal) && double.TryParse(gstVal, out double parsedGst))
                         {
                             gst = parsedGst;

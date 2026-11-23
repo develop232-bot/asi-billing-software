@@ -30,11 +30,9 @@ namespace AsiErp.ViewModels
         {
             get
             {
-                // Below 10 -> Red
-                if (Stock < 10 || LevelPercent < 10) return "out";
-                // Medium -> Amber / Orange
-                if (Stock <= ReorderLevel || LevelPercent < 50) return "low";
-                // Above average -> Green
+                if (Stock <= 0) return "out";
+                if (ReorderLevel <= 0) return "ok";
+                if (Stock <= ReorderLevel) return "low";
                 return "ok";
             }
         }
@@ -44,8 +42,8 @@ namespace AsiErp.ViewModels
             get
             {
                 if (Stock <= 0) return "Out";
-                if (Stock < 10 || LevelPercent < 10) return "Low";
-                if (Stock <= ReorderLevel || LevelPercent < 50) return "Medium";
+                if (ReorderLevel <= 0) return "In stock";
+                if (Stock <= ReorderLevel) return "Low";
                 return "In stock";
             }
         }
@@ -54,8 +52,10 @@ namespace AsiErp.ViewModels
         {
             get
             {
-                double target = Math.Max(ReorderLevel, 1) * 2.0;
-                return Math.Min(100, Math.Max(0, (Stock / target) * 100));
+                if (Stock <= 0) return 0;
+                if (ReorderLevel <= 0) return 100;
+                double target = ReorderLevel * 2.0;
+                return Math.Min(100, Math.Max(10, (Stock / target) * 100));
             }
         }
 

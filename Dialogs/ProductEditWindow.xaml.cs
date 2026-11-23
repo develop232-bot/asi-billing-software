@@ -36,6 +36,9 @@ namespace AsiErp.Dialogs
             if (_isEdit)
             {
                 CbItemType.IsEnabled = false;
+                TxtSku.IsReadOnly = true;
+                TxtHsn.IsReadOnly = true;
+                TxtBarcode.IsReadOnly = true;
                 TxtTitle.Text = "Edit Product";
                 LoadExistingData();
             }

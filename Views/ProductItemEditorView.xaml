@@ -9,6 +9,14 @@
             <Setter Property="Padding" Value="10,0"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="BorderBrush" Value="#CBD5E1"/>
+            <Style.Triggers>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" Value="#F8FAFC"/>
+                    <Setter Property="Foreground" Value="#64748B"/>
+                    <Setter Property="BorderBrush" Value="#E2E8F0"/>
+                    <Setter Property="Cursor" Value="No"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
         <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type ComboBox}}">
             <Setter Property="Height" Value="36"/>
@@ -196,7 +204,7 @@
 
                             <!-- Quantity -->
                             <StackPanel Grid.Column="1">
-                                <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBlock Text="{Binding QuantityFieldLabel}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBlock Text="{Binding InwardNoticeText}" Visibility="{Binding IsInwardNoticeVisible, Converter={StaticResource BoolToVis}}"
                                            FontSize="11" Foreground="#0284C7" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,0"/>
@@ -214,19 +222,19 @@
                             <!-- SKU -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
                                 <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}"/>
                             </StackPanel>
 
                             <!-- HSN -->
                             <StackPanel Grid.Column="1" Margin="0,0,14,0">
                                 <TextBlock Text="HSN" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding HsnCode, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Text="{Binding HsnCode, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}"/>
                             </StackPanel>
 
                             <!-- Barcode -->
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Barcode" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold" IsReadOnly="{Binding IsEditMode}"/>
                             </StackPanel>
                         </Grid>
 
@@ -361,7 +369,7 @@
 
                             <!-- Quantity -->
                             <StackPanel Grid.Column="2">
-                                <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBlock Text="{Binding QuantityFieldLabel}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBlock Text="{Binding InwardNoticeText}" Visibility="{Binding IsInwardNoticeVisible, Converter={StaticResource BoolToVis}}"
                                            FontSize="11" Foreground="#0284C7" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,4,0,0"/>
@@ -379,19 +387,19 @@
                             <!-- SKU -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
                                 <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}"/>
                             </StackPanel>
 
                             <!-- HSN -->
                             <StackPanel Grid.Column="1" Margin="0,0,14,0">
                                 <TextBlock Text="HSN" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding HsnCode, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBox Text="{Binding HsnCode, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}"/>
                             </StackPanel>
 
                             <!-- Barcode -->
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Barcode" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
+                                <TextBox Text="{Binding Barcode, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold" IsReadOnly="{Binding IsEditMode}"/>
                             </StackPanel>
                         </Grid>
 

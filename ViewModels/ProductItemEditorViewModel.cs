@@ -48,10 +48,10 @@ namespace AsiErp.ViewModels
         private double _domesticPrice = 0;
         private double _exportPrice = 0;
         private double _purchaseRate = 0;
-        private double _gstPercent = 5;
+        private double _gstPercent = 0;
         private double _stock = 0;
-        private double _reorderLevel = 50;
-        private string _hsnCode = "6403";
+        private double _reorderLevel = 0;
+        private string _hsnCode = "";
         private bool _isSaving;
 
         public string Title
@@ -276,9 +276,11 @@ namespace AsiErp.ViewModels
         private double _originalQuantity;
         private string _originalDate = "";
 
-        public bool IsInwardNoticeVisible => _isEditMode && Quantity > _originalQuantity;
+        public string QuantityFieldLabel => _isEditMode ? $"Add Quantity (Stock on Hand: {_originalQuantity:N0}) *" : "Quantity *";
 
-        public string InwardNoticeText => $"📅 Adding +{(Quantity - _originalQuantity):N0} stock creates a new entry for today ({DateTime.Now:yyyy-MM-dd}) in Products, while Inventory consolidates total stock ({Quantity:N0}) under SKU {Sku}.";
+        public bool IsInwardNoticeVisible => _isEditMode && Quantity > 0;
+
+        public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku} (Cost: ₹{CostPrice:N0}).";
 
         public double Quantity
         {
@@ -330,7 +332,7 @@ namespace AsiErp.ViewModels
             }
         }
 
-        private double _mediumAlertLevel = 100;
+        private double _mediumAlertLevel = 0;
         public double MediumAlertLevel
         {
             get => _mediumAlertLevel;
@@ -512,14 +514,14 @@ namespace AsiErp.ViewModels
                     ExportPrice = p.ExportPrice;
 
                     Stock = p.Stock;
-                    Quantity = p.Stock;
+                    Quantity = 0;
                     _originalQuantity = p.Stock;
                     ReorderLevel = p.ReorderLevel;
                     LowAlertLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                     GstPercent = p.Gst;
-                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku})";
+                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {p.Stock} {Unit}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is RawMaterialItem r)
@@ -543,7 +545,7 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = r.Stock;
 
                     Stock = totalStock;
-                    Quantity = totalStock;
+                    Quantity = 0;
                     _originalQuantity = totalStock;
                     ReorderLevel = r.ReorderLevel;
                     LowAlertLevel = r.ReorderLevel;
@@ -551,7 +553,7 @@ namespace AsiErp.ViewModels
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
-                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku})";
+                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku}) · Current Stock: {totalStock} {Unit}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is GeneralItem g)
@@ -575,7 +577,7 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = g.Stock;
 
                     Stock = totalStock;
-                    Quantity = totalStock;
+                    Quantity = 0;
                     _originalQuantity = totalStock;
                     ReorderLevel = g.ReorderLevel;
                     LowAlertLevel = g.ReorderLevel;
@@ -583,13 +585,14 @@ namespace AsiErp.ViewModels
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
-                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku})";
+                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku}) · Current Stock: {totalStock} {Unit}";
                     NoticeIsNewVariant = false;
                 }
 
                 if (string.IsNullOrWhiteSpace(_originalDate)) _originalDate = DateTime.Now.ToString("yyyy-MM-dd");
                 OnPropertyChanged(nameof(IsInwardNoticeVisible));
                 OnPropertyChanged(nameof(InwardNoticeText));
+                OnPropertyChanged(nameof(QuantityFieldLabel));
 
                 OnPropertyChanged(nameof(ItemType));
                 OnPropertyChanged(nameof(IsProductType));
@@ -612,16 +615,21 @@ namespace AsiErp.ViewModels
                 PurchaseRate = 0;
                 CostPrice = 0;
                 SellingPrice = 0;
-                GstPercent = 5;
+                GstPercent = 0;
                 Stock = 0;
                 Quantity = 0;
-                ReorderLevel = 50;
-                LowAlertLevel = 50;
-                MediumAlertLevel = 100;
+                _originalQuantity = 0;
+                ReorderLevel = 0;
+                LowAlertLevel = 0;
+                MediumAlertLevel = 0;
                 HsnCode = "";
                 Barcode = "";
                 ExistingRecordNotice = "";
                 NoticeIsNewVariant = false;
+
+                OnPropertyChanged(nameof(QuantityFieldLabel));
+                OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                OnPropertyChanged(nameof(InwardNoticeText));
 
                 AutoSku();
             }
@@ -846,10 +854,38 @@ namespace AsiErp.ViewModels
                         // Exact same product and size found -> this is an edit of that existing record
                         _isEditMode = true;
                         _existingItem = exactMatch;
+                        _itemType = exactMatch.SourceType == "R" ? "ready" : "mfg";
+                        OnPropertyChanged(nameof(ItemType));
+                        OnPropertyChanged(nameof(IsProductType));
+                        OnPropertyChanged(nameof(IsRawOrGenType));
+                        OnPropertyChanged(nameof(ProductVisibility));
+                        OnPropertyChanged(nameof(RawOrGenVisibility));
+                        OnPropertyChanged(nameof(CanChangeType));
+
+                        Category = string.IsNullOrWhiteSpace(exactMatch.Category) ? "Shoe" : exactMatch.Category;
+                        Unit = string.IsNullOrWhiteSpace(exactMatch.Unit) ? "pair" : exactMatch.Unit;
+                        Sku = exactMatch.Sku ?? "";
+                        Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
+                        RetailPrice = exactMatch.RetailPrice;
+                        SellingPrice = exactMatch.RetailPrice;
+                        CostPrice = exactMatch.Cost;
+                        BulkPrice = exactMatch.BulkPrice;
+                        DomesticPrice = exactMatch.DomesticPrice;
+                        ExportPrice = exactMatch.ExportPrice;
+                        Stock = exactMatch.Stock;
+                        _originalQuantity = exactMatch.Stock;
+                        Quantity = 0;
+                        LowAlertLevel = exactMatch.ReorderLevel;
+                        MediumAlertLevel = exactMatch.ReorderLevel * 2;
+                        HsnCode = (string.IsNullOrWhiteSpace(exactMatch.Hsn) || exactMatch.Hsn == "—" || exactMatch.Hsn == "-") ? "" : exactMatch.Hsn;
                         GstPercent = exactMatch.Gst;
-                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku})";
+
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit}";
                         NoticeIsNewVariant = false;
                         Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizesDisplay})";
+                        OnPropertyChanged(nameof(QuantityFieldLabel));
+                        OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                        OnPropertyChanged(nameof(InwardNoticeText));
                     }
                     else
                     {
@@ -901,9 +937,34 @@ namespace AsiErp.ViewModels
                     {
                         _isEditMode = true;
                         _existingItem = exactMatch;
-                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku})";
+                        _itemType = "raw";
+                        OnPropertyChanged(nameof(ItemType));
+                        OnPropertyChanged(nameof(IsProductType));
+                        OnPropertyChanged(nameof(IsRawOrGenType));
+                        OnPropertyChanged(nameof(ProductVisibility));
+                        OnPropertyChanged(nameof(RawOrGenVisibility));
+                        OnPropertyChanged(nameof(CanChangeType));
+
+                        Unit = string.IsNullOrWhiteSpace(exactMatch.Unit) ? "sq ft" : exactMatch.Unit;
+                        Sku = exactMatch.Sku ?? "";
+                        Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
+                        CostPrice = exactMatch.Rate;
+                        PurchaseRate = exactMatch.Rate;
+                        SellingPrice = 0;
+                        Stock = exactMatch.Stock;
+                        _originalQuantity = exactMatch.Stock;
+                        Quantity = 0;
+                        LowAlertLevel = exactMatch.ReorderLevel;
+                        MediumAlertLevel = exactMatch.ReorderLevel * 2;
+                        HsnCode = (string.IsNullOrWhiteSpace(exactMatch.Hsn) || exactMatch.Hsn == "—" || exactMatch.Hsn == "-") ? "" : exactMatch.Hsn;
+                        GstPercent = exactMatch.Gst;
+
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit}";
                         NoticeIsNewVariant = false;
                         Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizeDisplay})";
+                        OnPropertyChanged(nameof(QuantityFieldLabel));
+                        OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                        OnPropertyChanged(nameof(InwardNoticeText));
                     }
                     else
                     {
@@ -954,9 +1015,34 @@ namespace AsiErp.ViewModels
                     {
                         _isEditMode = true;
                         _existingItem = exactMatch;
-                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku})";
+                        _itemType = "gen";
+                        OnPropertyChanged(nameof(ItemType));
+                        OnPropertyChanged(nameof(IsProductType));
+                        OnPropertyChanged(nameof(IsRawOrGenType));
+                        OnPropertyChanged(nameof(ProductVisibility));
+                        OnPropertyChanged(nameof(RawOrGenVisibility));
+                        OnPropertyChanged(nameof(CanChangeType));
+
+                        Unit = string.IsNullOrWhiteSpace(exactMatch.Unit) ? "pcs" : exactMatch.Unit;
+                        Sku = exactMatch.Sku ?? "";
+                        Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
+                        CostPrice = exactMatch.Rate;
+                        PurchaseRate = exactMatch.Rate;
+                        SellingPrice = 0;
+                        Stock = exactMatch.Stock;
+                        _originalQuantity = exactMatch.Stock;
+                        Quantity = 0;
+                        LowAlertLevel = exactMatch.ReorderLevel;
+                        MediumAlertLevel = exactMatch.ReorderLevel * 2;
+                        HsnCode = (string.IsNullOrWhiteSpace(exactMatch.Hsn) || exactMatch.Hsn == "—" || exactMatch.Hsn == "-") ? "" : exactMatch.Hsn;
+                        GstPercent = exactMatch.Gst;
+
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit}";
                         NoticeIsNewVariant = false;
                         Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizeDisplay})";
+                        OnPropertyChanged(nameof(QuantityFieldLabel));
+                        OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                        OnPropertyChanged(nameof(InwardNoticeText));
                     }
                     else
                     {
@@ -1214,8 +1300,8 @@ namespace AsiErp.ViewModels
                 }
 
                 string today = DateTime.Now.ToString("yyyy-MM-dd");
-                bool isStockAddition = _isEditMode && Quantity > _originalQuantity;
-                double addedQty = isStockAddition ? Math.Round(Quantity - _originalQuantity, 2) : 0;
+                double addedQty = _isEditMode ? Math.Max(0, Quantity) : 0;
+                bool isStockAddition = _isEditMode && addedQty > 0;
 
                 if (ItemType == "raw")
                 {
@@ -1231,12 +1317,17 @@ namespace AsiErp.ViewModels
                     rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
                     rm.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     rm.Gst = GstPercent;
-                    rm.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
+                    rm.ReorderLevel = LowAlertLevel;
                     rm.Hsn = cleanHsn;
                     rm.Barcode = cleanBarcode;
 
-                    if (isStockAddition)
+                    if (_isEditMode)
                     {
+                        if (addedQty > 0)
+                        {
+                            rm.Stock += addedQty;
+                            rm.RegisteredQty += addedQty;
+                        }
                         await _dataService.SaveRawMaterialAsync(rm);
 
                         var otherEntries = _dataService.RawMaterials
@@ -1254,30 +1345,12 @@ namespace AsiErp.ViewModels
                             other.Barcode = cleanBarcode;
                             await _dataService.SaveRawMaterialAsync(other);
                         }
-
-                        var newRm = new RawMaterialItem
-                        {
-                            Id = "r_" + Guid.NewGuid().ToString("N")[..8],
-                            CreatedAt = today,
-                            Name = trimmedName,
-                            Size = cleanSize,
-                            Unit = rm.Unit,
-                            Rate = rm.Rate,
-                            Gst = rm.Gst,
-                            Stock = addedQty,
-                            RegisteredQty = addedQty,
-                            ReorderLevel = rm.ReorderLevel,
-                            Hsn = cleanHsn,
-                            Barcode = cleanBarcode,
-                            Sku = cleanSku
-                        };
-                        await _dataService.SaveRawMaterialAsync(newRm);
                     }
                     else
                     {
                         rm.Stock = Quantity;
                         rm.RegisteredQty = Quantity;
-                        if (!_isEditMode) rm.CreatedAt = today;
+                        rm.CreatedAt = today;
                         await _dataService.SaveRawMaterialAsync(rm);
                     }
                 }
@@ -1295,12 +1368,17 @@ namespace AsiErp.ViewModels
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
                     gi.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     gi.Gst = GstPercent;
-                    gi.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
+                    gi.ReorderLevel = LowAlertLevel;
                     gi.Hsn = cleanHsn;
                     gi.Barcode = cleanBarcode;
 
-                    if (isStockAddition)
+                    if (_isEditMode)
                     {
+                        if (addedQty > 0)
+                        {
+                            gi.Stock += addedQty;
+                            gi.RegisteredQty += addedQty;
+                        }
                         await _dataService.SaveGeneralItemAsync(gi);
 
                         var otherEntries = _dataService.GeneralItems
@@ -1318,30 +1396,12 @@ namespace AsiErp.ViewModels
                             other.Barcode = cleanBarcode;
                             await _dataService.SaveGeneralItemAsync(other);
                         }
-
-                        var newGen = new GeneralItem
-                        {
-                            Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
-                            CreatedAt = today,
-                            Name = trimmedName,
-                            Size = cleanSize,
-                            Unit = gi.Unit,
-                            Rate = gi.Rate,
-                            Gst = gi.Gst,
-                            Stock = addedQty,
-                            RegisteredQty = addedQty,
-                            ReorderLevel = gi.ReorderLevel,
-                            Hsn = cleanHsn,
-                            Barcode = cleanBarcode,
-                            Sku = cleanSku
-                        };
-                        await _dataService.SaveGeneralItemAsync(newGen);
                     }
                     else
                     {
                         gi.Stock = Quantity;
                         gi.RegisteredQty = Quantity;
-                        if (!_isEditMode) gi.CreatedAt = today;
+                        gi.CreatedAt = today;
                         await _dataService.SaveGeneralItemAsync(gi);
                     }
                 }
@@ -1371,7 +1431,7 @@ namespace AsiErp.ViewModels
                             ExportPrice = ExportPrice,
                             Stock = Quantity,
                             RegisteredQty = Quantity,
-                            ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel,
+                            ReorderLevel = LowAlertLevel,
                             Gst = GstPercent,
                             Bom = new()
                         };
@@ -1396,10 +1456,18 @@ namespace AsiErp.ViewModels
                         prod.BulkPrice = BulkPrice;
                         prod.DomesticPrice = DomesticPrice;
                         prod.ExportPrice = ExportPrice;
-                        prod.ReorderLevel = LowAlertLevel > 0 ? LowAlertLevel : ReorderLevel;
+                        prod.ReorderLevel = LowAlertLevel;
                         prod.Gst = GstPercent;
-                        prod.Stock = Quantity;
-                        prod.RegisteredQty = Quantity;
+
+                        if (addedQty > 0)
+                        {
+                            prod.Stock = _originalQuantity + addedQty;
+                            prod.RegisteredQty += addedQty;
+                        }
+                        else
+                        {
+                            prod.Stock = _originalQuantity;
+                        }
 
                         await _dataService.SaveProductAsync(prod);
                     }
