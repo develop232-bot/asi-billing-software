@@ -248,8 +248,9 @@
 
                             <!-- Cost Price -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
-                                <TextBlock Text="Cost Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBlock Text="{Binding CostPriceFieldLabel}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding InwardCostNoticeText}" Visibility="{Binding IsInwardCostNoticeVisible, Converter={StaticResource BoolToVis}}" FontSize="10.5" Foreground="#10B981" FontWeight="SemiBold" Margin="0,3,0,0"/>
                             </StackPanel>
 
                             <!-- Selling Price -->
@@ -412,8 +413,9 @@
 
                             <!-- Cost Price -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
-                                <TextBlock Text="Cost Price (₹)" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBlock Text="{Binding CostPriceFieldLabel}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Text="{Binding InwardCostNoticeText}" Visibility="{Binding IsInwardCostNoticeVisible, Converter={StaticResource BoolToVis}}" FontSize="10.5" Foreground="#10B981" FontWeight="SemiBold" Margin="0,3,0,0"/>
                             </StackPanel>
 
                             <!-- GST Rate % -->

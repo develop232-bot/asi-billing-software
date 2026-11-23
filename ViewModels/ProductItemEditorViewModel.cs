@@ -274,13 +274,20 @@ namespace AsiErp.ViewModels
         }
 
         private double _originalQuantity;
+        private double _originalCostPrice;
         private string _originalDate = "";
 
         public string QuantityFieldLabel => _isEditMode ? $"Add Quantity (Stock on Hand: {_originalQuantity:N0}) *" : "Quantity *";
 
         public bool IsInwardNoticeVisible => _isEditMode && Quantity > 0;
 
-        public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku} (Cost: ₹{CostPrice:N0}).";
+        public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku}.";
+
+        public string CostPriceFieldLabel => _isEditMode ? $"Add Cost Price (Current: ₹{_originalCostPrice:N0}) *" : "Cost Price (₹) *";
+
+        public bool IsInwardCostNoticeVisible => _isEditMode && CostPrice > 0;
+
+        public string InwardCostNoticeText => $"✓ Adding +₹{CostPrice:N0} will update cost price from ₹{_originalCostPrice:N0} to ₹{(_originalCostPrice + CostPrice):N0}.";
 
         public double Quantity
         {
@@ -304,6 +311,8 @@ namespace AsiErp.ViewModels
                 if (SetField(ref _purchaseRate, value))
                 {
                     OnPropertyChanged(nameof(PurchaseRate));
+                    OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                    OnPropertyChanged(nameof(InwardCostNoticeText));
                 }
             }
         }
@@ -508,7 +517,9 @@ namespace AsiErp.ViewModels
                     Barcode = (string.IsNullOrWhiteSpace(p.Barcode) || p.Barcode == "—" || p.Barcode == "-") ? "" : p.Barcode;
                     RetailPrice = p.RetailPrice;
                     SellingPrice = p.RetailPrice;
-                    CostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
+                    _originalCostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
+                    CostPrice = 0;
+                    PurchaseRate = 0;
                     BulkPrice = p.BulkPrice;
                     DomesticPrice = p.DomesticPrice;
                     ExportPrice = p.ExportPrice;
@@ -521,7 +532,7 @@ namespace AsiErp.ViewModels
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                     GstPercent = p.Gst;
-                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {p.Stock} {Unit}";
+                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {p.Stock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is RawMaterialItem r)
@@ -532,8 +543,9 @@ namespace AsiErp.ViewModels
                     Name = r.Name;
                     Sizes = r.Size ?? "";
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
-                    PurchaseRate = r.Rate;
-                    CostPrice = r.Rate;
+                    _originalCostPrice = r.Rate;
+                    CostPrice = 0;
+                    PurchaseRate = 0;
                     SellingPrice = 0;
                     GstPercent = r.Gst;
 
@@ -553,7 +565,7 @@ namespace AsiErp.ViewModels
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
-                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku}) · Current Stock: {totalStock} {Unit}";
+                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is GeneralItem g)
@@ -564,8 +576,9 @@ namespace AsiErp.ViewModels
                     Name = g.Name;
                     Sizes = g.Size ?? "";
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
-                    PurchaseRate = g.Rate;
-                    CostPrice = g.Rate;
+                    _originalCostPrice = g.Rate;
+                    CostPrice = 0;
+                    PurchaseRate = 0;
                     SellingPrice = 0;
                     GstPercent = g.Gst;
 
@@ -585,7 +598,7 @@ namespace AsiErp.ViewModels
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
-                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku}) · Current Stock: {totalStock} {Unit}";
+                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
 
@@ -593,6 +606,9 @@ namespace AsiErp.ViewModels
                 OnPropertyChanged(nameof(IsInwardNoticeVisible));
                 OnPropertyChanged(nameof(InwardNoticeText));
                 OnPropertyChanged(nameof(QuantityFieldLabel));
+                OnPropertyChanged(nameof(CostPriceFieldLabel));
+                OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                OnPropertyChanged(nameof(InwardCostNoticeText));
 
                 OnPropertyChanged(nameof(ItemType));
                 OnPropertyChanged(nameof(IsProductType));
@@ -614,6 +630,7 @@ namespace AsiErp.ViewModels
                 ExportPrice = 0;
                 PurchaseRate = 0;
                 CostPrice = 0;
+                _originalCostPrice = 0;
                 SellingPrice = 0;
                 GstPercent = 0;
                 Stock = 0;
@@ -628,6 +645,11 @@ namespace AsiErp.ViewModels
                 NoticeIsNewVariant = false;
 
                 OnPropertyChanged(nameof(QuantityFieldLabel));
+                OnPropertyChanged(nameof(CostPriceFieldLabel));
+                OnPropertyChanged(nameof(IsInwardNoticeVisible));
+                OnPropertyChanged(nameof(InwardNoticeText));
+                OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                OnPropertyChanged(nameof(InwardCostNoticeText));
                 OnPropertyChanged(nameof(IsInwardNoticeVisible));
                 OnPropertyChanged(nameof(InwardNoticeText));
 
@@ -868,7 +890,9 @@ namespace AsiErp.ViewModels
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
                         RetailPrice = exactMatch.RetailPrice;
                         SellingPrice = exactMatch.RetailPrice;
-                        CostPrice = exactMatch.Cost;
+                        _originalCostPrice = exactMatch.Cost;
+                        CostPrice = 0;
+                        PurchaseRate = 0;
                         BulkPrice = exactMatch.BulkPrice;
                         DomesticPrice = exactMatch.DomesticPrice;
                         ExportPrice = exactMatch.ExportPrice;
@@ -880,18 +904,27 @@ namespace AsiErp.ViewModels
                         HsnCode = (string.IsNullOrWhiteSpace(exactMatch.Hsn) || exactMatch.Hsn == "—" || exactMatch.Hsn == "-") ? "" : exactMatch.Hsn;
                         GstPercent = exactMatch.Gst;
 
-                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit}";
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                         NoticeIsNewVariant = false;
                         Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizesDisplay})";
                         OnPropertyChanged(nameof(QuantityFieldLabel));
+                        OnPropertyChanged(nameof(CostPriceFieldLabel));
                         OnPropertyChanged(nameof(IsInwardNoticeVisible));
                         OnPropertyChanged(nameof(InwardNoticeText));
+                        OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                        OnPropertyChanged(nameof(InwardCostNoticeText));
                     }
                     else
                     {
                         // Same item name but DIFFERENT size -> Create NEW record with the SAME SKU!
                         _isEditMode = false;
                         _existingItem = null;
+                        _originalCostPrice = 0;
+                        CostPrice = first.Cost;
+                        PurchaseRate = first.Cost;
+                        OnPropertyChanged(nameof(CostPriceFieldLabel));
+                        OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                        OnPropertyChanged(nameof(InwardCostNoticeText));
                         string sizeLabel = enteredSizes.Count > 0 ? $"Size {string.Join(",", enteredSizes)}" : "New Size";
                         ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
                         NoticeIsNewVariant = true;
@@ -902,6 +935,12 @@ namespace AsiErp.ViewModels
                 {
                     _isEditMode = false;
                     _existingItem = null;
+                    _originalCostPrice = 0;
+                    CostPrice = 0;
+                    PurchaseRate = 0;
+                    OnPropertyChanged(nameof(CostPriceFieldLabel));
+                    OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                    OnPropertyChanged(nameof(InwardCostNoticeText));
                     ExistingRecordNotice = "";
                     NoticeIsNewVariant = false;
                     Title = "Add Products";
@@ -948,8 +987,9 @@ namespace AsiErp.ViewModels
                         Unit = string.IsNullOrWhiteSpace(exactMatch.Unit) ? "sq ft" : exactMatch.Unit;
                         Sku = exactMatch.Sku ?? "";
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
-                        CostPrice = exactMatch.Rate;
-                        PurchaseRate = exactMatch.Rate;
+                        _originalCostPrice = exactMatch.Rate;
+                        CostPrice = 0;
+                        PurchaseRate = 0;
                         SellingPrice = 0;
                         Stock = exactMatch.Stock;
                         _originalQuantity = exactMatch.Stock;
@@ -959,17 +999,26 @@ namespace AsiErp.ViewModels
                         HsnCode = (string.IsNullOrWhiteSpace(exactMatch.Hsn) || exactMatch.Hsn == "—" || exactMatch.Hsn == "-") ? "" : exactMatch.Hsn;
                         GstPercent = exactMatch.Gst;
 
-                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit}";
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                         NoticeIsNewVariant = false;
                         Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizeDisplay})";
                         OnPropertyChanged(nameof(QuantityFieldLabel));
+                        OnPropertyChanged(nameof(CostPriceFieldLabel));
                         OnPropertyChanged(nameof(IsInwardNoticeVisible));
                         OnPropertyChanged(nameof(InwardNoticeText));
+                        OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                        OnPropertyChanged(nameof(InwardCostNoticeText));
                     }
                     else
                     {
                         _isEditMode = false;
                         _existingItem = null;
+                        _originalCostPrice = 0;
+                        CostPrice = first.Rate;
+                        PurchaseRate = first.Rate;
+                        OnPropertyChanged(nameof(CostPriceFieldLabel));
+                        OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                        OnPropertyChanged(nameof(InwardCostNoticeText));
                         string sizeLabel = !string.IsNullOrEmpty(enteredSize) ? $"Size {enteredSize}" : "New Size";
                         ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
                         NoticeIsNewVariant = true;
@@ -980,6 +1029,12 @@ namespace AsiErp.ViewModels
                 {
                     _isEditMode = false;
                     _existingItem = null;
+                    _originalCostPrice = 0;
+                    CostPrice = 0;
+                    PurchaseRate = 0;
+                    OnPropertyChanged(nameof(CostPriceFieldLabel));
+                    OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                    OnPropertyChanged(nameof(InwardCostNoticeText));
                     ExistingRecordNotice = "";
                     NoticeIsNewVariant = false;
                     Title = "Add Products";
@@ -1026,8 +1081,9 @@ namespace AsiErp.ViewModels
                         Unit = string.IsNullOrWhiteSpace(exactMatch.Unit) ? "pcs" : exactMatch.Unit;
                         Sku = exactMatch.Sku ?? "";
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
-                        CostPrice = exactMatch.Rate;
-                        PurchaseRate = exactMatch.Rate;
+                        _originalCostPrice = exactMatch.Rate;
+                        CostPrice = 0;
+                        PurchaseRate = 0;
                         SellingPrice = 0;
                         Stock = exactMatch.Stock;
                         _originalQuantity = exactMatch.Stock;
@@ -1037,17 +1093,26 @@ namespace AsiErp.ViewModels
                         HsnCode = (string.IsNullOrWhiteSpace(exactMatch.Hsn) || exactMatch.Hsn == "—" || exactMatch.Hsn == "-") ? "" : exactMatch.Hsn;
                         GstPercent = exactMatch.Gst;
 
-                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit}";
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku}) · Current Stock: {exactMatch.Stock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                         NoticeIsNewVariant = false;
                         Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizeDisplay})";
                         OnPropertyChanged(nameof(QuantityFieldLabel));
+                        OnPropertyChanged(nameof(CostPriceFieldLabel));
                         OnPropertyChanged(nameof(IsInwardNoticeVisible));
                         OnPropertyChanged(nameof(InwardNoticeText));
+                        OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                        OnPropertyChanged(nameof(InwardCostNoticeText));
                     }
                     else
                     {
                         _isEditMode = false;
                         _existingItem = null;
+                        _originalCostPrice = 0;
+                        CostPrice = first.Rate;
+                        PurchaseRate = first.Rate;
+                        OnPropertyChanged(nameof(CostPriceFieldLabel));
+                        OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                        OnPropertyChanged(nameof(InwardCostNoticeText));
                         string sizeLabel = !string.IsNullOrEmpty(enteredSize) ? $"Size {enteredSize}" : "New Size";
                         ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
                         NoticeIsNewVariant = true;
@@ -1058,6 +1123,12 @@ namespace AsiErp.ViewModels
                 {
                     _isEditMode = false;
                     _existingItem = null;
+                    _originalCostPrice = 0;
+                    CostPrice = 0;
+                    PurchaseRate = 0;
+                    OnPropertyChanged(nameof(CostPriceFieldLabel));
+                    OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
+                    OnPropertyChanged(nameof(InwardCostNoticeText));
                     ExistingRecordNotice = "";
                     NoticeIsNewVariant = false;
                     Title = "Add Products";
@@ -1303,6 +1374,9 @@ namespace AsiErp.ViewModels
                 double addedQty = _isEditMode ? Math.Max(0, Quantity) : 0;
                 bool isStockAddition = _isEditMode && addedQty > 0;
 
+                double addedCost = _isEditMode ? Math.Max(0, CostPrice) : 0;
+                double finalCostPrice = _isEditMode ? (_originalCostPrice + addedCost) : CostPrice;
+
                 if (ItemType == "raw")
                 {
                     string cleanSize = (Sizes ?? "").Trim();
@@ -1315,7 +1389,7 @@ namespace AsiErp.ViewModels
                     rm.Name = trimmedName;
                     rm.Size = cleanSize;
                     rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
-                    rm.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
+                    rm.Rate = finalCostPrice;
                     rm.Gst = GstPercent;
                     rm.ReorderLevel = LowAlertLevel;
                     rm.Hsn = cleanHsn;
@@ -1366,7 +1440,7 @@ namespace AsiErp.ViewModels
                     gi.Name = trimmedName;
                     gi.Size = cleanSize;
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
-                    gi.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
+                    gi.Rate = finalCostPrice;
                     gi.Gst = GstPercent;
                     gi.ReorderLevel = LowAlertLevel;
                     gi.Hsn = cleanHsn;
@@ -1451,7 +1525,7 @@ namespace AsiErp.ViewModels
                         prod.SourceType = ItemType == "mfg" ? "M" : "R";
                         prod.Unit = string.IsNullOrWhiteSpace(Unit) ? "pair" : Unit.Trim();
                         prod.Sizes = (Sizes ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-                        prod.Cost = CostPrice;
+                        prod.Cost = finalCostPrice;
                         prod.RetailPrice = SellingPrice;
                         prod.BulkPrice = BulkPrice;
                         prod.DomesticPrice = DomesticPrice;
