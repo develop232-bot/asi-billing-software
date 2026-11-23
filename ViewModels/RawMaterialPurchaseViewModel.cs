@@ -32,6 +32,7 @@ namespace AsiErp.ViewModels
                     {
                         Id = r.Id,
                         Name = r.Name,
+                        Size = r.Size ?? "",
                         Sku = !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku : r.Id,
                         Unit = !string.IsNullOrWhiteSpace(r.Unit) ? r.Unit : DefaultUnit,
                         Rate = r.Rate,

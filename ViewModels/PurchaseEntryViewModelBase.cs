@@ -14,6 +14,7 @@ namespace AsiErp.ViewModels
     {
         public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty;
         public string Sku { get; set; } = string.Empty;
         public string Unit { get; set; } = string.Empty;
         public double Rate { get; set; }
@@ -21,7 +22,9 @@ namespace AsiErp.ViewModels
         public double Gst { get; set; }
         public double Stock { get; set; }
 
-        public string DisplayText => string.IsNullOrWhiteSpace(Sku) ? Name : $"{Name} ({Sku})";
+        public string DisplayText => !string.IsNullOrWhiteSpace(Size) && Size != "—" && Size != "-"
+            ? (string.IsNullOrWhiteSpace(Sku) ? $"{Name} · Size {Size}" : $"{Name} · Size {Size} ({Sku})")
+            : (string.IsNullOrWhiteSpace(Sku) ? Name : $"{Name} ({Sku})");
         public override string ToString() => Name;
     }
 
@@ -263,6 +266,7 @@ namespace AsiErp.ViewModels
                         if (opt != null)
                         {
                             line.Name = opt.Name;
+                            if (!string.IsNullOrWhiteSpace(opt.Size)) line.Size = opt.Size;
                             if (string.IsNullOrWhiteSpace(line.Unit)) line.Unit = !string.IsNullOrWhiteSpace(opt.Unit) ? opt.Unit : DefaultUnit;
                             if (string.IsNullOrWhiteSpace(line.Sku)) line.Sku = opt.Sku;
                             if (opt.SellingPrice > 0 && line.SellingPrice <= 0) line.SellingPrice = opt.SellingPrice;

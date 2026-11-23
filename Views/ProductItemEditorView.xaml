@@ -339,21 +339,28 @@
                             </Grid>
                         </StackPanel>
 
-                        <!-- ROW 1: Unit of Measurement & Quantity below Item Name (both same size) -->
+                        <!-- ROW 1: Sizes, Unit of Measurement & Quantity -->
                         <Grid Margin="0,0,0,16">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- Unit of Measurement -->
+                            <!-- Sizes -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
+                                <TextBlock Text="Sizes" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
+                                <TextBox Text="{Binding Sizes, UpdateSourceTrigger=PropertyChanged}"/>
+                            </StackPanel>
+
+                            <!-- Unit of Measurement -->
+                            <StackPanel Grid.Column="1" Margin="0,0,14,0">
                                 <TextBlock Text="Unit of Measurement *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding Unit, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
 
                             <!-- Quantity -->
-                            <StackPanel Grid.Column="1">
+                            <StackPanel Grid.Column="2">
                                 <TextBlock Text="Quantity *" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
                                 <TextBox Text="{Binding Quantity, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBlock Text="{Binding InwardNoticeText}" Visibility="{Binding IsInwardNoticeVisible, Converter={StaticResource BoolToVis}}"

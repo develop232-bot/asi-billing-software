@@ -29,6 +29,7 @@ namespace AsiErp.ViewModels
                     {
                         Id = g.Id,
                         Name = g.Name,
+                        Size = g.Size ?? "",
                         Sku = g.Sku,
                         Unit = g.Unit,
                         Rate = g.Rate,

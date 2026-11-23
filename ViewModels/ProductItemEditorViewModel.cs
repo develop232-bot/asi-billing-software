@@ -526,8 +526,9 @@ namespace AsiErp.ViewModels
                 {
                     _originalDate = r.CreatedAt;
                     _itemType = "raw";
-                    Title = $"Edit Product: {r.Name}";
+                    Title = string.IsNullOrWhiteSpace(r.Size) ? $"Edit Product: {r.Name}" : $"Edit Product: {r.Name} ({r.Size})";
                     Name = r.Name;
+                    Sizes = r.Size ?? "";
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
                     PurchaseRate = r.Rate;
                     CostPrice = r.Rate;
@@ -535,8 +536,9 @@ namespace AsiErp.ViewModels
                     GstPercent = r.Gst;
 
                     double totalStock = _dataService.RawMaterials
-                        .Where(x => (!string.IsNullOrWhiteSpace(r.Sku) && x.Sku == r.Sku) ||
-                                    (string.IsNullOrWhiteSpace(r.Sku) && x.Name.Equals(r.Name, StringComparison.OrdinalIgnoreCase)))
+                        .Where(x => ((!string.IsNullOrWhiteSpace(r.Sku) && x.Sku == r.Sku) ||
+                                    (string.IsNullOrWhiteSpace(r.Sku) && x.Name.Equals(r.Name, StringComparison.OrdinalIgnoreCase))) &&
+                                    string.Equals(x.Size ?? "", r.Size ?? "", StringComparison.OrdinalIgnoreCase))
                         .Sum(x => x.Stock);
                     if (totalStock <= 0) totalStock = r.Stock;
 
@@ -549,13 +551,16 @@ namespace AsiErp.ViewModels
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
+                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku})";
+                    NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is GeneralItem g)
                 {
                     _originalDate = g.CreatedAt;
                     _itemType = "gen";
-                    Title = $"Edit Product: {g.Name}";
+                    Title = string.IsNullOrWhiteSpace(g.Size) ? $"Edit Product: {g.Name}" : $"Edit Product: {g.Name} ({g.Size})";
                     Name = g.Name;
+                    Sizes = g.Size ?? "";
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
                     PurchaseRate = g.Rate;
                     CostPrice = g.Rate;
@@ -563,8 +568,9 @@ namespace AsiErp.ViewModels
                     GstPercent = g.Gst;
 
                     double totalStock = _dataService.GeneralItems
-                        .Where(x => (!string.IsNullOrWhiteSpace(g.Sku) && x.Sku == g.Sku) ||
-                                    (string.IsNullOrWhiteSpace(g.Sku) && x.Name.Equals(g.Name, StringComparison.OrdinalIgnoreCase)))
+                        .Where(x => ((!string.IsNullOrWhiteSpace(g.Sku) && x.Sku == g.Sku) ||
+                                    (string.IsNullOrWhiteSpace(g.Sku) && x.Name.Equals(g.Name, StringComparison.OrdinalIgnoreCase))) &&
+                                    string.Equals(x.Size ?? "", g.Size ?? "", StringComparison.OrdinalIgnoreCase))
                         .Sum(x => x.Stock);
                     if (totalStock <= 0) totalStock = g.Stock;
 
@@ -577,6 +583,8 @@ namespace AsiErp.ViewModels
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
+                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku})";
+                    NoticeIsNewVariant = false;
                 }
 
                 if (string.IsNullOrWhiteSpace(_originalDate)) _originalDate = DateTime.Now.ToString("yyyy-MM-dd");
@@ -746,7 +754,7 @@ namespace AsiErp.ViewModels
 
         public void CheckNameAndSizeMatch()
         {
-            if (_isExplicitEditFromTable || !IsProductType) return;
+            if (_isExplicitEditFromTable) return;
 
             string trimmedName = (Name ?? "").Trim();
             if (string.IsNullOrWhiteSpace(trimmedName))
@@ -763,101 +771,211 @@ namespace AsiErp.ViewModels
                 return;
             }
 
-            // Normalize entered sizes
-            var enteredSizes = (Sizes ?? "")
-                .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                .OrderBy(s => s)
-                .ToList();
-            string enteredNorm = string.Join(",", enteredSizes);
+            string enteredSize = (Sizes ?? "").Trim();
 
-            // Find all existing products with the same item name (case-insensitive)
-            var prodsWithName = _dataService.Products
-                .Where(p => string.Equals(p.Name?.Trim(), trimmedName, StringComparison.OrdinalIgnoreCase))
-                .ToList();
-
-            if (prodsWithName.Count > 0)
+            if (IsProductType)
             {
-                // Re-use the existing SKU based on item name!
-                var first = prodsWithName[0];
-                if (!string.IsNullOrWhiteSpace(first.Sku))
-                {
-                    Sku = first.Sku;
-                }
+                // Normalize entered sizes
+                var enteredSizes = (Sizes ?? "")
+                    .Split(new[] { ',', ' ' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .OrderBy(s => s)
+                    .ToList();
+                string enteredNorm = string.Join(",", enteredSizes);
 
-                // If user hasn't customized fields, auto-fill from the existing product
-                if (string.IsNullOrWhiteSpace(Category) || Category == "Shoe")
-                {
-                    if (!string.IsNullOrWhiteSpace(first.Category)) Category = first.Category;
-                }
-                if (string.IsNullOrWhiteSpace(Unit) || Unit == "pair")
-                {
-                    if (!string.IsNullOrWhiteSpace(first.Unit)) Unit = first.Unit;
-                }
-                if (string.IsNullOrWhiteSpace(HsnCode))
-                {
-                    HsnCode = first.Hsn;
-                }
-                if (SellingPrice <= 0 && first.RetailPrice > 0)
-                {
-                    SellingPrice = first.RetailPrice;
-                    RetailPrice = first.RetailPrice;
-                }
-                if (CostPrice <= 0 && first.Cost > 0)
-                {
-                    CostPrice = first.Cost;
-                }
-                if (LowAlertLevel <= 0 && first.ReorderLevel > 0)
-                {
-                    LowAlertLevel = first.ReorderLevel;
-                    MediumAlertLevel = first.ReorderLevel * 2;
-                }
-                GstPercent = first.Gst;
+                // Find all existing products with the same item name (case-insensitive)
+                var prodsWithName = _dataService.Products
+                    .Where(p => string.Equals(p.Name?.Trim(), trimmedName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
 
-                // Check if an existing product record has BOTH the same name AND the same size
-                ProductItem? exactMatch = null;
-                if (enteredSizes.Count > 0)
+                if (prodsWithName.Count > 0)
                 {
-                    exactMatch = prodsWithName.FirstOrDefault(p =>
+                    // Re-use the existing SKU based on item name!
+                    var first = prodsWithName[0];
+                    if (!string.IsNullOrWhiteSpace(first.Sku))
                     {
-                        var pSizes = (p.Sizes ?? new List<string>())
-                            .Select(s => s.Trim())
-                            .Where(s => !string.IsNullOrEmpty(s))
-                            .OrderBy(s => s)
-                            .ToList();
-                        string pNorm = string.Join(",", pSizes);
-                        return string.Equals(pNorm, enteredNorm, StringComparison.OrdinalIgnoreCase);
-                    });
-                }
+                        Sku = first.Sku;
+                    }
 
-                if (exactMatch != null)
-                {
-                    // Exact same product and size found -> this is an edit of that existing record
-                    _isEditMode = true;
-                    _existingItem = exactMatch;
-                    GstPercent = exactMatch.Gst;
-                    ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku})";
-                    NoticeIsNewVariant = false;
-                    Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizesDisplay})";
+                    // If user hasn't customized fields, auto-fill from the existing product
+                    if (string.IsNullOrWhiteSpace(Category) || Category == "Shoe")
+                    {
+                        if (!string.IsNullOrWhiteSpace(first.Category)) Category = first.Category;
+                    }
+                    if (string.IsNullOrWhiteSpace(Unit) || Unit == "pair")
+                    {
+                        if (!string.IsNullOrWhiteSpace(first.Unit)) Unit = first.Unit;
+                    }
+                    if (string.IsNullOrWhiteSpace(HsnCode))
+                    {
+                        HsnCode = first.Hsn;
+                    }
+                    if (SellingPrice <= 0 && first.RetailPrice > 0)
+                    {
+                        SellingPrice = first.RetailPrice;
+                        RetailPrice = first.RetailPrice;
+                    }
+                    if (CostPrice <= 0 && first.Cost > 0)
+                    {
+                        CostPrice = first.Cost;
+                    }
+                    if (LowAlertLevel <= 0 && first.ReorderLevel > 0)
+                    {
+                        LowAlertLevel = first.ReorderLevel;
+                        MediumAlertLevel = first.ReorderLevel * 2;
+                    }
+                    GstPercent = first.Gst;
+
+                    // Check if an existing product record has BOTH the same name AND the same size
+                    ProductItem? exactMatch = null;
+                    if (enteredSizes.Count > 0)
+                    {
+                        exactMatch = prodsWithName.FirstOrDefault(p =>
+                        {
+                            var pSizes = (p.Sizes ?? new List<string>())
+                                .Select(s => s.Trim())
+                                .Where(s => !string.IsNullOrEmpty(s))
+                                .OrderBy(s => s)
+                                .ToList();
+                            string pNorm = string.Join(",", pSizes);
+                            return string.Equals(pNorm, enteredNorm, StringComparison.OrdinalIgnoreCase);
+                        });
+                    }
+
+                    if (exactMatch != null)
+                    {
+                        // Exact same product and size found -> this is an edit of that existing record
+                        _isEditMode = true;
+                        _existingItem = exactMatch;
+                        GstPercent = exactMatch.Gst;
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizesDisplay} (SKU: {exactMatch.Sku})";
+                        NoticeIsNewVariant = false;
+                        Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizesDisplay})";
+                    }
+                    else
+                    {
+                        // Same item name but DIFFERENT size -> Create NEW record with the SAME SKU!
+                        _isEditMode = false;
+                        _existingItem = null;
+                        string sizeLabel = enteredSizes.Count > 0 ? $"Size {string.Join(",", enteredSizes)}" : "New Size";
+                        ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
+                        NoticeIsNewVariant = true;
+                        Title = "Add Products";
+                    }
                 }
                 else
                 {
-                    // Same item name but DIFFERENT size -> Create NEW record with the SAME SKU!
                     _isEditMode = false;
                     _existingItem = null;
-                    string sizeLabel = enteredSizes.Count > 0 ? $"Size {string.Join(",", enteredSizes)}" : "New Size";
-                    ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
-                    NoticeIsNewVariant = true;
+                    ExistingRecordNotice = "";
+                    NoticeIsNewVariant = false;
                     Title = "Add Products";
                 }
             }
-            else
+            else if (ItemType == "raw")
             {
-                // Completely new product name
-                _isEditMode = false;
-                _existingItem = null;
-                ExistingRecordNotice = "";
-                NoticeIsNewVariant = false;
-                Title = "Add Products";
+                var rmsWithName = _dataService.RawMaterials
+                    .Where(r => string.Equals(r.Name?.Trim(), trimmedName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (rmsWithName.Count > 0)
+                {
+                    var first = rmsWithName[0];
+                    if (!string.IsNullOrWhiteSpace(first.Sku)) Sku = first.Sku;
+                    if (string.IsNullOrWhiteSpace(Unit)) Unit = first.Unit;
+                    if (string.IsNullOrWhiteSpace(HsnCode)) HsnCode = first.Hsn;
+                    if (CostPrice <= 0 && first.Rate > 0) CostPrice = first.Rate;
+                    if (LowAlertLevel <= 0 && first.ReorderLevel > 0)
+                    {
+                        LowAlertLevel = first.ReorderLevel;
+                        MediumAlertLevel = first.ReorderLevel * 2;
+                    }
+                    GstPercent = first.Gst;
+
+                    RawMaterialItem? exactMatch = null;
+                    if (!string.IsNullOrEmpty(enteredSize))
+                    {
+                        exactMatch = rmsWithName.FirstOrDefault(r => string.Equals((r.Size ?? "").Trim(), enteredSize, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    if (exactMatch != null)
+                    {
+                        _isEditMode = true;
+                        _existingItem = exactMatch;
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku})";
+                        NoticeIsNewVariant = false;
+                        Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizeDisplay})";
+                    }
+                    else
+                    {
+                        _isEditMode = false;
+                        _existingItem = null;
+                        string sizeLabel = !string.IsNullOrEmpty(enteredSize) ? $"Size {enteredSize}" : "New Size";
+                        ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
+                        NoticeIsNewVariant = true;
+                        Title = "Add Products";
+                    }
+                }
+                else
+                {
+                    _isEditMode = false;
+                    _existingItem = null;
+                    ExistingRecordNotice = "";
+                    NoticeIsNewVariant = false;
+                    Title = "Add Products";
+                }
+            }
+            else if (ItemType == "gen")
+            {
+                var gensWithName = _dataService.GeneralItems
+                    .Where(g => string.Equals(g.Name?.Trim(), trimmedName, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+
+                if (gensWithName.Count > 0)
+                {
+                    var first = gensWithName[0];
+                    if (!string.IsNullOrWhiteSpace(first.Sku)) Sku = first.Sku;
+                    if (string.IsNullOrWhiteSpace(Unit)) Unit = first.Unit;
+                    if (string.IsNullOrWhiteSpace(HsnCode)) HsnCode = first.Hsn;
+                    if (CostPrice <= 0 && first.Rate > 0) CostPrice = first.Rate;
+                    if (LowAlertLevel <= 0 && first.ReorderLevel > 0)
+                    {
+                        LowAlertLevel = first.ReorderLevel;
+                        MediumAlertLevel = first.ReorderLevel * 2;
+                    }
+                    GstPercent = first.Gst;
+
+                    GeneralItem? exactMatch = null;
+                    if (!string.IsNullOrEmpty(enteredSize))
+                    {
+                        exactMatch = gensWithName.FirstOrDefault(g => string.Equals((g.Size ?? "").Trim(), enteredSize, StringComparison.OrdinalIgnoreCase));
+                    }
+
+                    if (exactMatch != null)
+                    {
+                        _isEditMode = true;
+                        _existingItem = exactMatch;
+                        ExistingRecordNotice = $"{exactMatch.Name} · Size {exactMatch.SizeDisplay} (SKU: {exactMatch.Sku})";
+                        NoticeIsNewVariant = false;
+                        Title = $"Edit Product: {exactMatch.Name} ({exactMatch.SizeDisplay})";
+                    }
+                    else
+                    {
+                        _isEditMode = false;
+                        _existingItem = null;
+                        string sizeLabel = !string.IsNullOrEmpty(enteredSize) ? $"Size {enteredSize}" : "New Size";
+                        ExistingRecordNotice = $"New variant ({sizeLabel}) for '{first.Name}' (SKU: {first.Sku})";
+                        NoticeIsNewVariant = true;
+                        Title = "Add Products";
+                    }
+                }
+                else
+                {
+                    _isEditMode = false;
+                    _existingItem = null;
+                    ExistingRecordNotice = "";
+                    NoticeIsNewVariant = false;
+                    Title = "Add Products";
+                }
             }
 
             OnPropertyChanged(nameof(IsEditMode));
@@ -897,6 +1015,50 @@ namespace AsiErp.ViewModels
                 MediumAlertLevel = p.ReorderLevel * 2;
                 HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                 GstPercent = p.Gst;
+
+                CheckNameAndSizeMatch();
+            }
+            else if (suggestion.OriginalItem is RawMaterialItem r)
+            {
+                _itemType = "raw";
+                Name = r.Name;
+                Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
+                Sizes = r.Size ?? "";
+                Sku = r.Sku ?? "";
+                Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
+                CostPrice = r.Rate;
+                PurchaseRate = r.Rate;
+                SellingPrice = 0;
+                Stock = r.Stock;
+                Quantity = r.Stock;
+                _originalQuantity = r.Stock;
+                ReorderLevel = r.ReorderLevel;
+                LowAlertLevel = r.ReorderLevel;
+                MediumAlertLevel = r.ReorderLevel * 2;
+                HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
+                GstPercent = r.Gst;
+
+                CheckNameAndSizeMatch();
+            }
+            else if (suggestion.OriginalItem is GeneralItem g)
+            {
+                _itemType = "gen";
+                Name = g.Name;
+                Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
+                Sizes = g.Size ?? "";
+                Sku = g.Sku ?? "";
+                Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
+                CostPrice = g.Rate;
+                PurchaseRate = g.Rate;
+                SellingPrice = 0;
+                Stock = g.Stock;
+                Quantity = g.Stock;
+                _originalQuantity = g.Stock;
+                ReorderLevel = g.ReorderLevel;
+                LowAlertLevel = g.ReorderLevel;
+                MediumAlertLevel = g.ReorderLevel * 2;
+                HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
+                GstPercent = g.Gst;
 
                 CheckNameAndSizeMatch();
             }
@@ -1057,6 +1219,7 @@ namespace AsiErp.ViewModels
 
                 if (ItemType == "raw")
                 {
+                    string cleanSize = (Sizes ?? "").Trim();
                     var rm = (!string.IsNullOrEmpty(currentId) ? _dataService.RawMaterials.FirstOrDefault(x => x.Id == currentId) : null)
                         ?? (_existingItem as RawMaterialItem)
                         ?? new RawMaterialItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "r_" + Guid.NewGuid().ToString("N")[..8] };
@@ -1064,6 +1227,7 @@ namespace AsiErp.ViewModels
                     string cleanSku = !string.IsNullOrWhiteSpace(Sku) ? Sku.Trim() : (!string.IsNullOrWhiteSpace(rm.Sku) ? rm.Sku.Trim() : _dataService.GetNextSku("raw"));
                     rm.Sku = cleanSku;
                     rm.Name = trimmedName;
+                    rm.Size = cleanSize;
                     rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
                     rm.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     rm.Gst = GstPercent;
@@ -1076,11 +1240,12 @@ namespace AsiErp.ViewModels
                         await _dataService.SaveRawMaterialAsync(rm);
 
                         var otherEntries = _dataService.RawMaterials
-                            .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase))
+                            .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
                             .ToList();
                         foreach (var other in otherEntries)
                         {
                             other.Name = trimmedName;
+                            other.Size = cleanSize;
                             other.Unit = rm.Unit;
                             other.Rate = rm.Rate;
                             other.Gst = rm.Gst;
@@ -1095,6 +1260,7 @@ namespace AsiErp.ViewModels
                             Id = "r_" + Guid.NewGuid().ToString("N")[..8],
                             CreatedAt = today,
                             Name = trimmedName,
+                            Size = cleanSize,
                             Unit = rm.Unit,
                             Rate = rm.Rate,
                             Gst = rm.Gst,
@@ -1117,6 +1283,7 @@ namespace AsiErp.ViewModels
                 }
                 else if (ItemType == "gen")
                 {
+                    string cleanSize = (Sizes ?? "").Trim();
                     var gi = (!string.IsNullOrEmpty(currentId) ? _dataService.GeneralItems.FirstOrDefault(x => x.Id == currentId) : null)
                         ?? (_existingItem as GeneralItem)
                         ?? new GeneralItem { Id = !string.IsNullOrEmpty(currentId) ? currentId : "gen_" + Guid.NewGuid().ToString("N")[..8] };
@@ -1124,6 +1291,7 @@ namespace AsiErp.ViewModels
                     string cleanSku = !string.IsNullOrWhiteSpace(Sku) ? Sku.Trim() : (!string.IsNullOrWhiteSpace(gi.Sku) ? gi.Sku.Trim() : _dataService.GetNextSku("gen"));
                     gi.Sku = cleanSku;
                     gi.Name = trimmedName;
+                    gi.Size = cleanSize;
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
                     gi.Rate = CostPrice > 0 ? CostPrice : PurchaseRate;
                     gi.Gst = GstPercent;
@@ -1136,11 +1304,12 @@ namespace AsiErp.ViewModels
                         await _dataService.SaveGeneralItemAsync(gi);
 
                         var otherEntries = _dataService.GeneralItems
-                            .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase))
+                            .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
                             .ToList();
                         foreach (var other in otherEntries)
                         {
                             other.Name = trimmedName;
+                            other.Size = cleanSize;
                             other.Unit = gi.Unit;
                             other.Rate = gi.Rate;
                             other.Gst = gi.Gst;
@@ -1155,6 +1324,7 @@ namespace AsiErp.ViewModels
                             Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
                             CreatedAt = today,
                             Name = trimmedName,
+                            Size = cleanSize,
                             Unit = gi.Unit,
                             Rate = gi.Rate,
                             Gst = gi.Gst,

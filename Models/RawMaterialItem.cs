@@ -31,6 +31,11 @@ namespace AsiErp.Models
         [FirestoreProperty("name")]
         public string Name { get; set; } = string.Empty;
 
+        [FirestoreProperty("size")]
+        public string Size { get; set; } = string.Empty;
+
+        public string SizeDisplay => !string.IsNullOrWhiteSpace(Size) ? Size : "—";
+
         [FirestoreProperty("unit")]
         public string Unit { get; set; } = "sq ft";
 

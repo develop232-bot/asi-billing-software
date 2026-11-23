@@ -234,6 +234,8 @@ namespace AsiErp.Dialogs
             bool updateExisting = ChkUpdateExisting.IsChecked == true;
             var batchUsedBarcodes = _dataService.GetAllUsedBarcodes();
             var batchProducts = new List<ProductItem>();
+            var batchRawMaterials = new List<RawMaterialItem>();
+            var batchGeneralItems = new List<GeneralItem>();
 
             try
             {
@@ -248,10 +250,21 @@ namespace AsiErp.Dialogs
                     {
                         // 1. RAW MATERIAL
                         string unit = GetVal(r, "Unit", "units");
+                        string size = GetVal(r, "Sizes");
                         string sku = GetVal(r, "SKU");
                         if (string.IsNullOrWhiteSpace(sku))
                         {
-                            sku = "ASI-RM-" + (_dataService.RawMaterials.Count + importedCount + 1).ToString("D3");
+                            // If same item name exists in database or current batch, inherit the exact same SKU!
+                            var sameNameRm = _dataService.RawMaterials.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                                ?? batchRawMaterials.FirstOrDefault(m => m.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                            if (sameNameRm != null && !string.IsNullOrWhiteSpace(sameNameRm.Sku))
+                            {
+                                sku = sameNameRm.Sku;
+                            }
+                            else
+                            {
+                                sku = "ASI-RM-" + (_dataService.RawMaterials.Count + importedCount + 1).ToString("D3");
+                            }
                         }
                         string hsn = GetVal(r, "HSN");
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
@@ -274,9 +287,15 @@ namespace AsiErp.Dialogs
                         }
                         batchUsedBarcodes.Add(barcode);
 
-                        var existing = updateExisting ? _dataService.RawMaterials.FirstOrDefault(m =>
-                            (!string.IsNullOrEmpty(sku) && m.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
-                            m.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
+                        // Match existing record ONLY if updateExisting is true AND BOTH Name (or SKU) AND Size match!
+                        var existing = updateExisting ? (_dataService.RawMaterials.FirstOrDefault(m =>
+                            ((!string.IsNullOrEmpty(sku) && m.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                             m.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) &&
+                            string.Equals(m.Size?.Trim() ?? "", size.Trim(), StringComparison.OrdinalIgnoreCase))
+                            ?? batchRawMaterials.FirstOrDefault(m =>
+                            ((!string.IsNullOrEmpty(sku) && m.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                             m.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) &&
+                            string.Equals(m.Size?.Trim() ?? "", size.Trim(), StringComparison.OrdinalIgnoreCase))) : null;
 
                         if (existing != null)
                         {
@@ -284,6 +303,7 @@ namespace AsiErp.Dialogs
                             existing.Gst = gst;
                             existing.Stock += stock;
                             existing.ReorderLevel = reorder;
+                            if (!string.IsNullOrEmpty(size)) existing.Size = size.Trim();
                             if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
                             if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
                             {
@@ -299,6 +319,7 @@ namespace AsiErp.Dialogs
                                 Id = "rm_" + Guid.NewGuid().ToString("N")[..8],
                                 Name = name,
                                 Sku = sku,
+                                Size = size.Trim(),
                                 Hsn = hsn,
                                 Barcode = barcode,
                                 Unit = unit,
@@ -308,6 +329,7 @@ namespace AsiErp.Dialogs
                                 Gst = gst
                             };
                             await _dataService.SaveRawMaterialAsync(rm);
+                            batchRawMaterials.Add(rm);
                             importedCount++;
                         }
                     }
@@ -315,10 +337,21 @@ namespace AsiErp.Dialogs
                     {
                         // 2. GENERAL PACKAGING
                         string unit = GetVal(r, "Unit", "pcs");
+                        string size = GetVal(r, "Sizes");
                         string sku = GetVal(r, "SKU");
                         if (string.IsNullOrWhiteSpace(sku))
                         {
-                            sku = "ASI-GEN-" + (_dataService.GeneralItems.Count + importedCount + 1).ToString("D3");
+                            // If same item name exists in database or current batch, inherit the exact same SKU!
+                            var sameNameGen = _dataService.GeneralItems.FirstOrDefault(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                                ?? batchGeneralItems.FirstOrDefault(g => g.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                            if (sameNameGen != null && !string.IsNullOrWhiteSpace(sameNameGen.Sku))
+                            {
+                                sku = sameNameGen.Sku;
+                            }
+                            else
+                            {
+                                sku = "ASI-GEN-" + (_dataService.GeneralItems.Count + importedCount + 1).ToString("D3");
+                            }
                         }
                         string hsn = GetVal(r, "HSN");
                         double.TryParse(GetVal(r, "Stock", "0"), out double stock);
@@ -341,9 +374,15 @@ namespace AsiErp.Dialogs
                         }
                         batchUsedBarcodes.Add(barcode);
 
-                        var existing = updateExisting ? _dataService.GeneralItems.FirstOrDefault(g =>
-                            (!string.IsNullOrEmpty(sku) && g.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
-                            g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) : null;
+                        // Match existing record ONLY if updateExisting is true AND BOTH Name (or SKU) AND Size match!
+                        var existing = updateExisting ? (_dataService.GeneralItems.FirstOrDefault(g =>
+                            ((!string.IsNullOrEmpty(sku) && g.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                             g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) &&
+                            string.Equals(g.Size?.Trim() ?? "", size.Trim(), StringComparison.OrdinalIgnoreCase))
+                            ?? batchGeneralItems.FirstOrDefault(g =>
+                            ((!string.IsNullOrEmpty(sku) && g.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                             g.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) &&
+                            string.Equals(g.Size?.Trim() ?? "", size.Trim(), StringComparison.OrdinalIgnoreCase))) : null;
 
                         if (existing != null)
                         {
@@ -351,6 +390,7 @@ namespace AsiErp.Dialogs
                             existing.Gst = gst;
                             existing.Stock += stock;
                             existing.ReorderLevel = reorder;
+                            if (!string.IsNullOrEmpty(size)) existing.Size = size.Trim();
                             if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
                             if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
                             {
@@ -366,6 +406,7 @@ namespace AsiErp.Dialogs
                                 Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
                                 Name = name,
                                 Sku = sku,
+                                Size = size.Trim(),
                                 Hsn = hsn,
                                 Barcode = barcode,
                                 Unit = unit,
@@ -375,6 +416,7 @@ namespace AsiErp.Dialogs
                                 Gst = gst
                             };
                             await _dataService.SaveGeneralItemAsync(gi);
+                            batchGeneralItems.Add(gi);
                             importedCount++;
                         }
                     }

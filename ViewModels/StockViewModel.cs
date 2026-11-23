@@ -260,7 +260,11 @@ namespace AsiErp.ViewModels
             {
                 var grouped = _dataService.RawMaterials
                     .Where(r => !r.Id.StartsWith("pur_it_") && !r.Id.StartsWith("pur_") && !string.IsNullOrWhiteSpace(r.Name) && r.Name.Trim() != "—" && r.Name.Trim() != "-")
-                    .GroupBy(r => !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+                    .GroupBy(r => {
+                        string skuOrName = !string.IsNullOrWhiteSpace(r.Sku) ? r.Sku.Trim() : r.Name.Trim();
+                        string sizeKey = !string.IsNullOrWhiteSpace(r.Size) ? r.Size.Trim() : "free";
+                        return $"{skuOrName}||{sizeKey}";
+                    }, StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
@@ -272,9 +276,9 @@ namespace AsiErp.ViewModels
                         Id = primary.Id,
                         Kind = "raw",
                         Name = primary.Name,
-                        Size = "—",
+                        Size = primary.SizeDisplay,
                         Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
-                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · GST {primary.Gst}%",
+                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · Size: {primary.SizeDisplay} · GST {primary.Gst}%",
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
@@ -287,7 +291,11 @@ namespace AsiErp.ViewModels
             {
                 var grouped = _dataService.GeneralItems
                     .Where(g => !string.IsNullOrWhiteSpace(g.Name) && g.Name.Trim() != "—" && g.Name.Trim() != "-")
-                    .GroupBy(g => !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim(), StringComparer.OrdinalIgnoreCase);
+                    .GroupBy(g => {
+                        string skuOrName = !string.IsNullOrWhiteSpace(g.Sku) ? g.Sku.Trim() : g.Name.Trim();
+                        string sizeKey = !string.IsNullOrWhiteSpace(g.Size) ? g.Size.Trim() : "free";
+                        return $"{skuOrName}||{sizeKey}";
+                    }, StringComparer.OrdinalIgnoreCase);
 
                 list = grouped.Select(grp =>
                 {
@@ -299,9 +307,9 @@ namespace AsiErp.ViewModels
                         Id = primary.Id,
                         Kind = "gen",
                         Name = primary.Name,
-                        Size = "—",
+                        Size = primary.SizeDisplay,
                         Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
-                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · GST {primary.Gst}%",
+                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · Size: {primary.SizeDisplay} · GST {primary.Gst}%",
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
