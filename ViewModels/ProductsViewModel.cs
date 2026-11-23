@@ -49,7 +49,7 @@ namespace AsiErp.ViewModels
         public string TypeLabel => TypeKey switch
         {
             "raw" => "Raw Material Stock",
-            "mfg" => "Item",
+            "mfg" => "Finished Product",
             "ready" => "Readymade Stock",
             "gen" => "General Supplies",
             _ => TypeKey
@@ -57,11 +57,29 @@ namespace AsiErp.ViewModels
 
         public string TypeColor => TypeKey switch
         {
-            "raw" => "#0D9488",
-            "mfg" => "#2563EB",
-            "ready" => "#059669",
-            "gen" => "#D97706",
-            _ => "#64748B"
+            "raw" => "#B45309",
+            "mfg" => "#1D4ED8",
+            "ready" => "#15803D",
+            "gen" => "#7E22CE",
+            _ => "#475569"
+        };
+
+        public string TypeBackground => TypeKey switch
+        {
+            "raw" => "#FEF3C7",
+            "mfg" => "#DBEAFE",
+            "ready" => "#DCFCE7",
+            "gen" => "#F3E8FF",
+            _ => "#F1F5F9"
+        };
+
+        public string TypeBorderBrush => TypeKey switch
+        {
+            "raw" => "#FDE68A",
+            "mfg" => "#BFDBFE",
+            "ready" => "#BBF7D0",
+            "gen" => "#E9D5FF",
+            _ => "#E2E8F0"
         };
     }
 

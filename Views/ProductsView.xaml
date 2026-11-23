@@ -197,11 +197,12 @@
                         <DataGridTextColumn Header="Unit" Binding="{Binding Unit}" SortMemberPath="Unit" Width="50" MinWidth="40"/>
 
                         <!-- 4. Type -->
-                        <DataGridTemplateColumn Header="Type" SortMemberPath="TypeKey" Width="125" MinWidth="105">
+                        <DataGridTemplateColumn Header="Type" SortMemberPath="TypeKey" Width="135" MinWidth="110">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Border Padding="6,2" CornerRadius="6" HorizontalAlignment="Left" Background="#F1F5F9" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeColor}" FontSize="10" FontWeight="SemiBold"/>
+                                    <Border Padding="7,3" CornerRadius="6" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                            Background="{Binding TypeBackground}" BorderBrush="{Binding TypeBorderBrush}" BorderThickness="1">
+                                        <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeColor}" FontSize="10" FontWeight="Bold"/>
                                     </Border>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
