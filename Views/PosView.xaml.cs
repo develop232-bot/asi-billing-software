@@ -34,5 +34,13 @@ namespace AsiErp.Views
                 vm.ResetQuickAddFilter();
             }
         }
+
+        private void CbGsItem_DropDownOpened(object sender, EventArgs e)
+        {
+            if (DataContext is PosViewModel vm)
+            {
+                vm.ResetGsFilter();
+            }
+        }
     }
 }

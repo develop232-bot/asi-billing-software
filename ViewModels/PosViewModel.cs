@@ -50,6 +50,41 @@ namespace AsiErp.ViewModels
         }
     }
 
+    public class GsConsumptionItem : ViewModelBase
+    {
+        private double _qty = 1;
+
+        public GeneralItem Item { get; }
+        public string Name { get; set; } = string.Empty;
+        public string Size { get; set; } = string.Empty;
+        public string Unit { get; set; } = "pcs";
+        public double CurrentStock { get; set; }
+
+        public double Qty
+        {
+            get => _qty;
+            set
+            {
+                if (SetField(ref _qty, value))
+                {
+                    OnPropertyChanged(nameof(RemainingStock));
+                }
+            }
+        }
+
+        public double RemainingStock => Math.Max(0, Math.Round(CurrentStock - Qty, 2));
+
+        public GsConsumptionItem(GeneralItem item, string size, double qty = 1)
+        {
+            Item = item;
+            Name = item.Name;
+            Size = !string.IsNullOrWhiteSpace(size) ? size : (!string.IsNullOrWhiteSpace(item.Size) ? item.Size : "—");
+            Unit = !string.IsNullOrWhiteSpace(item.Unit) ? item.Unit : "pcs";
+            CurrentStock = item.Stock;
+            _qty = qty;
+        }
+    }
+
     public class PosViewModel : ViewModelBase
     {
         private readonly AppDataService _dataService;
@@ -75,6 +110,160 @@ namespace AsiErp.ViewModels
         public ObservableCollection<ProductItem> AvailableProducts { get; } = new();
         public ObservableCollection<PosCartItem> CartItems { get; } = new();
         public ObservableCollection<SaleDoc> RecentBills { get; } = new();
+
+        // --- GENERAL STOCK (PACKAGING CONSUMPTION) ---
+        private readonly List<GeneralItem> _allGsItems = new();
+        public ObservableCollection<GeneralItem> AvailableGsItems { get; } = new();
+        public ObservableCollection<string> AvailableGsSizes { get; } = new();
+        public ObservableCollection<GsConsumptionItem> GsConsumptionItems { get; } = new();
+
+        public bool HasGsConsumptionItems => GsConsumptionItems.Count > 0;
+
+        private GeneralItem? _selectedGsItem;
+        private string _gsItemText = string.Empty;
+        private string _selectedGsSize = string.Empty;
+        private double _gsQty = 1;
+        private bool _isFilteringGs = false;
+
+        public GeneralItem? SelectedGsItem
+        {
+            get => _selectedGsItem;
+            set
+            {
+                if (SetField(ref _selectedGsItem, value))
+                {
+                    if (value != null && !_isFilteringGs)
+                    {
+                        _isFilteringGs = true;
+                        try
+                        {
+                            GsItemText = value.Name;
+                        }
+                        finally
+                        {
+                            _isFilteringGs = false;
+                        }
+
+                        AvailableGsSizes.Clear();
+                        var matchingSizes = _allGsItems
+                            .Where(g => g.Name.Equals(value.Name, StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(g.Size) && g.Size != "—" && g.Size != "-")
+                            .Select(g => g.Size.Trim())
+                            .Distinct()
+                            .ToList();
+
+                        if (matchingSizes.Count > 0)
+                        {
+                            foreach (var s in matchingSizes) AvailableGsSizes.Add(s);
+                            SelectedGsSize = !string.IsNullOrWhiteSpace(value.Size) && value.Size != "—" && value.Size != "-" ? value.Size.Trim() : matchingSizes[0];
+                        }
+                        else
+                        {
+                            string defSize = !string.IsNullOrWhiteSpace(value.Size) && value.Size != "—" && value.Size != "-" ? value.Size.Trim() : "Standard";
+                            AvailableGsSizes.Add(defSize);
+                            SelectedGsSize = defSize;
+                        }
+                    }
+                }
+            }
+        }
+
+        public string GsItemText
+        {
+            get => _gsItemText;
+            set
+            {
+                if (SetField(ref _gsItemText, value))
+                {
+                    if (!_isFilteringGs)
+                    {
+                        FilterGs(value);
+                    }
+                }
+            }
+        }
+
+        public string SelectedGsSize
+        {
+            get => _selectedGsSize;
+            set => SetField(ref _selectedGsSize, value);
+        }
+
+        public double GsQty
+        {
+            get => _gsQty;
+            set => SetField(ref _gsQty, value);
+        }
+
+        public void FilterGs(string? query)
+        {
+            _isFilteringGs = true;
+            try
+            {
+                string q = (query ?? string.Empty).Trim().ToLowerInvariant();
+                if (string.IsNullOrEmpty(q))
+                {
+                    ResetGsFilter();
+                    return;
+                }
+
+                var matches = _allGsItems.Where(g =>
+                    g.Name.ToLowerInvariant().Contains(q) ||
+                    (!string.IsNullOrEmpty(g.Size) && g.Size.ToLowerInvariant().Contains(q)) ||
+                    (!string.IsNullOrEmpty(g.Sku) && g.Sku.ToLowerInvariant().Contains(q)) ||
+                    (!string.IsNullOrEmpty(g.Barcode) && g.Barcode.ToLowerInvariant().Contains(q))
+                ).ToList();
+
+                AvailableGsItems.Clear();
+                foreach (var g in matches)
+                {
+                    AvailableGsItems.Add(g);
+                }
+            }
+            finally
+            {
+                _isFilteringGs = false;
+            }
+        }
+
+        public void ResetGsFilter()
+        {
+            _isFilteringGs = true;
+            try
+            {
+                AvailableGsItems.Clear();
+                foreach (var g in _allGsItems)
+                {
+                    AvailableGsItems.Add(g);
+                }
+            }
+            finally
+            {
+                _isFilteringGs = false;
+            }
+        }
+
+        public void LoadGeneralItems()
+        {
+            _allGsItems.Clear();
+            AvailableGsItems.Clear();
+
+            var items = _dataService.GeneralItems
+                .Where(g => !string.IsNullOrWhiteSpace(g.Name) && g.Name.Trim() != "—" && g.Name.Trim() != "-")
+                .OrderBy(g => g.Name)
+                .ToList();
+
+            foreach (var g in items)
+            {
+                _allGsItems.Add(g);
+                AvailableGsItems.Add(g);
+            }
+
+            if (SelectedGsItem != null)
+            {
+                var refreshed = _allGsItems.FirstOrDefault(x => x.Id == SelectedGsItem.Id);
+                if (refreshed != null) SelectedGsItem = refreshed;
+            }
+        }
 
         private DispatcherTimer? _searchDebounceTimer;
         public string SearchQuery
@@ -263,6 +452,9 @@ namespace AsiErp.ViewModels
         public RelayCommand ViewBillCommand { get; }
         public RelayCommand AddNewProductCommand { get; }
         public RelayCommand BackToSalesCommand { get; }
+        public RelayCommand AddGsItemCommand { get; }
+        public RelayCommand RemoveGsItemCommand { get; }
+        public RelayCommand SubmitGsConsumptionCommand { get; }
 
         public PosViewModel(AppDataService dataService, Action<string, object?> openDialogAction, Action<string>? navigateAction = null)
         {
@@ -273,6 +465,19 @@ namespace AsiErp.ViewModels
             BackToSalesCommand = new RelayCommand(_ => _navigateAction?.Invoke("sales"));
 
             SetCategoryCommand = new RelayCommand(p => SelectedCategory = p?.ToString() ?? "all");
+
+            GsConsumptionItems.CollectionChanged += (s, e) => OnPropertyChanged(nameof(HasGsConsumptionItems));
+
+            AddGsItemCommand = new RelayCommand(_ => AddGsItem());
+            RemoveGsItemCommand = new RelayCommand(p =>
+            {
+                if (p is GsConsumptionItem ci)
+                {
+                    GsConsumptionItems.Remove(ci);
+                    OnPropertyChanged(nameof(HasGsConsumptionItems));
+                }
+            });
+            SubmitGsConsumptionCommand = new RelayCommand(async _ => await SubmitGsConsumptionAsync());
 
             QuickAddCommand = new RelayCommand(_ =>
             {
@@ -404,6 +609,8 @@ namespace AsiErp.ViewModels
                 RecentBills.Add(s);
 
             OnPropertyChanged(nameof(NextBillNo));
+
+            LoadGeneralItems();
         }
 
         private void ApplyProductFilter()
@@ -556,6 +763,39 @@ namespace AsiErp.ViewModels
 
             await _dataService.RecordSaleAsync(newSale);
 
+            // Deduct any General Stock (packaging) items that were added for this sale
+            if (GsConsumptionItems.Any())
+            {
+                foreach (var ci in GsConsumptionItems.ToList())
+                {
+                    double remainingToDeduct = ci.Qty;
+                    var matches = _dataService.GeneralItems
+                        .Where(g => g.Id == ci.Item.Id ||
+                                   (g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase) &&
+                                    (string.Equals(g.Size ?? "", ci.Size, StringComparison.OrdinalIgnoreCase) || ci.Size == "—" || ci.Size == "Standard")))
+                        .ToList();
+
+                    if (matches.Count == 0)
+                    {
+                        matches = _dataService.GeneralItems.Where(g => g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    foreach (var g in matches)
+                    {
+                        if (remainingToDeduct <= 0) break;
+                        double deduct = Math.Min(g.Stock, remainingToDeduct);
+                        if (deduct <= 0) deduct = remainingToDeduct;
+
+                        g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
+                        remainingToDeduct -= deduct;
+                        await _dataService.SaveGeneralItemAsync(g);
+                    }
+                }
+                GsConsumptionItems.Clear();
+                OnPropertyChanged(nameof(HasGsConsumptionItems));
+                LoadGeneralItems();
+            }
+
             // Clear cart
             CartItems.Clear();
             DiscountPercent = 0;
@@ -565,6 +805,99 @@ namespace AsiErp.ViewModels
 
             // Directly print without preview window
             DocumentPrinter.PrintDirect(newSale, silent: true);
+        }
+
+        private void AddGsItem()
+        {
+            var item = SelectedGsItem;
+            if (item == null && !string.IsNullOrWhiteSpace(GsItemText))
+            {
+                item = _allGsItems.FirstOrDefault(g => g.Name.Equals(GsItemText.Trim(), StringComparison.OrdinalIgnoreCase))
+                    ?? _allGsItems.FirstOrDefault(g => g.Name.Contains(GsItemText.Trim(), StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (item == null)
+            {
+                MessageBox.Show("Please select or type a valid General Stock (GS) item.", "Item Required", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            if (GsQty <= 0)
+            {
+                MessageBox.Show("Please enter a valid quantity greater than 0.", "Invalid Quantity", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            string size = !string.IsNullOrWhiteSpace(SelectedGsSize) ? SelectedGsSize.Trim() : (!string.IsNullOrWhiteSpace(item.Size) && item.Size != "—" && item.Size != "-" ? item.Size.Trim() : "Standard");
+
+            var specific = _allGsItems.FirstOrDefault(g => g.Name.Equals(item.Name, StringComparison.OrdinalIgnoreCase) && string.Equals(g.Size ?? "", size, StringComparison.OrdinalIgnoreCase)) ?? item;
+
+            var existing = GsConsumptionItems.FirstOrDefault(x => x.Name.Equals(item.Name, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size, size, StringComparison.OrdinalIgnoreCase));
+            if (existing != null)
+            {
+                existing.Qty += GsQty;
+            }
+            else
+            {
+                GsConsumptionItems.Add(new GsConsumptionItem(specific, size, GsQty));
+            }
+
+            GsQty = 1;
+            GsItemText = string.Empty;
+            SelectedGsItem = null;
+            SelectedGsSize = string.Empty;
+            ResetGsFilter();
+            OnPropertyChanged(nameof(HasGsConsumptionItems));
+        }
+
+        private async Task SubmitGsConsumptionAsync()
+        {
+            if (!GsConsumptionItems.Any())
+            {
+                MessageBox.Show("No general stock items added to deduct. Please add items using the form above.", "List Empty", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var deductedDetails = new List<string>();
+
+            foreach (var ci in GsConsumptionItems.ToList())
+            {
+                double remainingToDeduct = ci.Qty;
+
+                var matches = _dataService.GeneralItems
+                    .Where(g => g.Id == ci.Item.Id ||
+                               (g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase) &&
+                                (string.Equals(g.Size ?? "", ci.Size, StringComparison.OrdinalIgnoreCase) || ci.Size == "—" || ci.Size == "Standard")))
+                    .ToList();
+
+                if (matches.Count == 0)
+                {
+                    matches = _dataService.GeneralItems.Where(g => g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                }
+
+                foreach (var g in matches)
+                {
+                    if (remainingToDeduct <= 0) break;
+                    double deduct = Math.Min(g.Stock, remainingToDeduct);
+                    if (deduct <= 0) deduct = remainingToDeduct;
+
+                    g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
+                    remainingToDeduct -= deduct;
+                    await _dataService.SaveGeneralItemAsync(g);
+                }
+
+                deductedDetails.Add($"{ci.Name} ({ci.Size}) : -{ci.Qty} {ci.Unit}");
+            }
+
+            GsConsumptionItems.Clear();
+            OnPropertyChanged(nameof(HasGsConsumptionItems));
+            LoadGeneralItems();
+
+            MessageBox.Show(
+                $"General stock deducted from inventory successfully:\n\n• {string.Join("\n• ", deductedDetails)}",
+                "GS Stock Deducted",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
         }
     }
 }

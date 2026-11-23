@@ -356,6 +356,124 @@
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
+
+                            <!-- ================= GENERAL STOCK (PACKAGING CONSUMPTION) ================= -->
+                            <Border Margin="0,18,0,0" Padding="14,14" Background="#F8FAFC" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="10">
+                                <StackPanel>
+                                    <!-- Title & Badge -->
+                                    <DockPanel Margin="0,0,0,8">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Border Background="#EEF2FF" CornerRadius="5" Padding="5,2" Margin="0,0,6,0">
+                                                <TextBlock Text="📦 GS" FontWeight="Bold" FontSize="11" Foreground="#4F46E5"/>
+                                            </Border>
+                                            <TextBlock Text="General Stock (Packaging)" FontWeight="Bold" FontSize="12.5" Foreground="#0F172A" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding GsConsumptionItems.Count, StringFormat='{}{0} added'}" FontSize="10.5" Foreground="#64748B" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                    </DockPanel>
+
+                                    <!-- Subtitle explanation -->
+                                    <TextBlock Text="Deduct shoe boxes, poly bags, and packing supplies used for this sale." FontSize="10.5" Foreground="#64748B" Margin="0,0,0,10" TextWrapping="Wrap"/>
+
+                                    <!-- Row: GS (typo + choose), Size, Quantity, Add Button -->
+                                    <Grid Margin="0,0,0,8">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="130"/> <!-- GS Typo + Choose -->
+                                            <ColumnDefinition Width="65"/>  <!-- Size -->
+                                            <ColumnDefinition Width="55"/>  <!-- Quantity -->
+                                            <ColumnDefinition Width="*"/>   <!-- + Add -->
+                                        </Grid.ColumnDefinitions>
+
+                                        <!-- 1. GS Typo + Choose -->
+                                        <StackPanel Grid.Column="0" Margin="0,0,5,0">
+                                            <TextBlock Text="GS Item *" FontSize="10" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,3"/>
+                                            <ComboBox ItemsSource="{Binding AvailableGsItems}"
+                                                      SelectedItem="{Binding SelectedGsItem}"
+                                                      Text="{Binding GsItemText, UpdateSourceTrigger=PropertyChanged}"
+                                                      IsEditable="True"
+                                                      IsTextSearchEnabled="False"
+                                                      TextSearch.TextPath="Name"
+                                                      DropDownOpened="CbGsItem_DropDownOpened"
+                                                      Height="32" FontSize="11" VerticalContentAlignment="Center" Padding="5,0"
+                                                      ToolTip="Type to search or choose general supply">
+                                                <ComboBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <DockPanel Margin="2,2">
+                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="11" Foreground="#0F172A"/>
+                                                            <TextBlock Text="{Binding Stock, StringFormat='({0:N0})'}" FontSize="10" Foreground="#10B981" HorizontalAlignment="Right" Margin="4,0,0,0"/>
+                                                        </DockPanel>
+                                                    </DataTemplate>
+                                                </ComboBox.ItemTemplate>
+                                            </ComboBox>
+                                        </StackPanel>
+
+                                        <!-- 2. Size -->
+                                        <StackPanel Grid.Column="1" Margin="0,0,5,0">
+                                            <TextBlock Text="Size" FontSize="10" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,3"/>
+                                            <ComboBox ItemsSource="{Binding AvailableGsSizes}"
+                                                      SelectedItem="{Binding SelectedGsSize}"
+                                                      Text="{Binding SelectedGsSize, UpdateSourceTrigger=PropertyChanged}"
+                                                      IsEditable="True"
+                                                      Height="32" FontSize="11" VerticalContentAlignment="Center" Padding="4,0"
+                                                      ToolTip="Size of general supply"/>
+                                        </StackPanel>
+
+                                        <!-- 3. Quantity (Type Option) -->
+                                        <StackPanel Grid.Column="2" Margin="0,0,5,0">
+                                            <TextBlock Text="Qty *" FontSize="10" FontWeight="SemiBold" Foreground="#475569" Margin="0,0,0,3"/>
+                                            <TextBox Text="{Binding GsQty, UpdateSourceTrigger=PropertyChanged}"
+                                                     Height="32" FontSize="11.5" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                                     ToolTip="Enter quantity to deduct"/>
+                                        </StackPanel>
+
+                                        <!-- 4. Add Option -->
+                                        <StackPanel Grid.Column="3" VerticalAlignment="Bottom">
+                                            <Button Content="+ Add" Command="{Binding AddGsItemCommand}"
+                                                    Height="32" Background="#2563EB" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="11" Cursor="Hand" Padding="0">
+                                                <Button.Resources>
+                                                    <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                                                </Button.Resources>
+                                            </Button>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <!-- Table / List of Added Items -->
+                                    <ScrollViewer MaxHeight="130" VerticalScrollBarVisibility="Auto" Margin="0,2,0,8"
+                                                  Visibility="{Binding HasGsConsumptionItems, Converter={StaticResource BoolToVis}}">
+                                        <ItemsControl ItemsSource="{Binding GsConsumptionItems}">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="8,5" Margin="0,0,0,4">
+                                                        <DockPanel>
+                                                            <Button DockPanel.Dock="Right" Content="✕" Command="{Binding DataContext.RemoveGsItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
+                                                                    Width="20" Height="20" Background="#FEE2E2" Foreground="#DC2626" BorderThickness="0" FontWeight="Bold" FontSize="9" Cursor="Hand" ToolTip="Remove">
+                                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                            </Button>
+                                                            <StackPanel VerticalAlignment="Center">
+                                                                <StackPanel Orientation="Horizontal">
+                                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="11" Foreground="#0F172A"/>
+                                                                    <TextBlock Text="{Binding Size, StringFormat=' [{0}]'}" FontSize="10" Foreground="#64748B" Margin="3,0,0,0"/>
+                                                                    <TextBlock Text="{Binding Qty, StringFormat=' · -{0}'}" FontWeight="Bold" FontSize="11" Foreground="#DC2626" Margin="4,0,0,0"/>
+                                                                    <TextBlock Text="{Binding Unit, StringFormat=' {0}'}" FontSize="10" Foreground="#64748B"/>
+                                                                </StackPanel>
+                                                                <TextBlock Text="{Binding RemainingStock, StringFormat='Stock after deduct: {0:N0}'}" FontSize="9.5" Foreground="#10B981" Margin="0,2,0,0"/>
+                                                            </StackPanel>
+                                                        </DockPanel>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ScrollViewer>
+
+                                    <!-- Down Submit Option -->
+                                    <Button Content="Submit &amp; Deduct GS Stock" Command="{Binding SubmitGsConsumptionCommand}"
+                                            Height="34" Background="#0F172A" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="11.5" Cursor="Hand" Margin="0,2,0,0"
+                                            Visibility="{Binding HasGsConsumptionItems, Converter={StaticResource BoolToVis}}">
+                                        <Button.Resources>
+                                            <Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style>
+                                        </Button.Resources>
+                                    </Button>
+                                </StackPanel>
+                            </Border>
                         </StackPanel>
                     </StackPanel>
                 </Border>
