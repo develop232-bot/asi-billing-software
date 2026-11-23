@@ -94,6 +94,14 @@ namespace AsiErp.Services
                 {
                     var pIds = new HashSet<string>(Purchases.SelectMany(p => p.Lines ?? new()).Select(l => l.ItemId).Where(id => !string.IsNullOrWhiteSpace(id)), StringComparer.OrdinalIgnoreCase);
                     Products = list.Where(p => !pIds.Contains(p.Id) && !p.Id.StartsWith("pur_it_") && !p.Id.StartsWith("pur_")).OrderBy(p => p.Name).ToList();
+                    foreach (var p in Products)
+                    {
+                        if (p.RegisteredQty <= 0 && p.Stock > 0)
+                        {
+                            double sold = Sales?.SelectMany(s => s.Lines ?? new()).Where(l => l.Pid == p.Id).Sum(l => l.Qty) ?? 0;
+                            p.RegisteredQty = p.Stock + sold;
+                        }
+                    }
                     NotifyDataChanged();
                 });
             };
@@ -381,6 +389,29 @@ namespace AsiErp.Services
                     Sequences = bundle.Sequences;
                 }
 
+                foreach (var p in Products)
+                {
+                    if (p.RegisteredQty <= 0 && p.Stock > 0)
+                    {
+                        double sold = Sales?.SelectMany(s => s.Lines ?? new()).Where(l => l.Pid == p.Id).Sum(l => l.Qty) ?? 0;
+                        p.RegisteredQty = p.Stock + sold;
+                    }
+                }
+                foreach (var r in RawMaterials)
+                {
+                    if (r.RegisteredQty <= 0 && r.Stock > 0)
+                    {
+                        r.RegisteredQty = r.Stock;
+                    }
+                }
+                foreach (var g in GeneralItems)
+                {
+                    if (g.RegisteredQty <= 0 && g.Stock > 0)
+                    {
+                        g.RegisteredQty = g.Stock;
+                    }
+                }
+
                 Auth.MergeCloudUsers(bundle.Users);
 
                 CleanLegacyBarcodesAndHsn();
@@ -563,6 +594,11 @@ namespace AsiErp.Services
                     if (remaining <= 0) break;
                     if (p.Stock <= 0) continue;
 
+                    if (p.RegisteredQty <= 0 && p.Stock > 0)
+                    {
+                        p.RegisteredQty = p.Stock;
+                    }
+
                     double deduct = Math.Min(p.Stock, remaining);
                     p.Stock = Math.Round(p.Stock - deduct, 2);
                     remaining -= deduct;
@@ -574,6 +610,10 @@ namespace AsiErp.Services
 
                 if (remaining > 0 && target != null)
                 {
+                    if (target.RegisteredQty <= 0 && target.Stock > 0)
+                    {
+                        target.RegisteredQty = target.Stock;
+                    }
                     target.Stock = Math.Max(0, Math.Round(target.Stock - remaining, 2));
                     if (Firebase != null && Firebase.IsConnected)
                     {

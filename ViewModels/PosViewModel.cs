@@ -786,6 +786,7 @@ namespace AsiErp.ViewModels
                         double deduct = Math.Min(g.Stock, remainingToDeduct);
                         if (deduct <= 0) deduct = remainingToDeduct;
 
+                        if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
                         g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
                         remainingToDeduct -= deduct;
                         await _dataService.SaveGeneralItemAsync(g);
@@ -881,6 +882,7 @@ namespace AsiErp.ViewModels
                     double deduct = Math.Min(g.Stock, remainingToDeduct);
                     if (deduct <= 0) deduct = remainingToDeduct;
 
+                    if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
                     g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
                     remainingToDeduct -= deduct;
                     await _dataService.SaveGeneralItemAsync(g);

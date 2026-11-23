@@ -444,9 +444,29 @@
                                                 <DataTemplate>
                                                     <Border Background="White" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="6" Padding="8,5" Margin="0,0,0,4">
                                                         <DockPanel>
-                                                            <Button DockPanel.Dock="Right" Content="✕" Command="{Binding DataContext.RemoveGsItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                                    Width="20" Height="20" Background="#FEE2E2" Foreground="#DC2626" BorderThickness="0" FontWeight="Bold" FontSize="9" Cursor="Hand" ToolTip="Remove">
-                                                                <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
+                                                            <Button DockPanel.Dock="Right"
+                                                                    Command="{Binding DataContext.RemoveGsItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                                    CommandParameter="{Binding}"
+                                                                    Cursor="Hand" ToolTip="Remove item"
+                                                                    VerticalAlignment="Center" Margin="8,0,0,0">
+                                                                <Button.Template>
+                                                                    <ControlTemplate TargetType="Button">
+                                                                        <Border x:Name="btnBorder" Background="#FEE2E2" BorderBrush="#FCA5A5" BorderThickness="1" CornerRadius="6" Padding="8,4">
+                                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                                <TextBlock Text="✕" Foreground="#DC2626" FontWeight="Bold" FontSize="11" Margin="0,0,4,0" VerticalAlignment="Center"/>
+                                                                                <TextBlock Text="Remove" Foreground="#DC2626" FontWeight="Bold" FontSize="10.5" VerticalAlignment="Center"/>
+                                                                            </StackPanel>
+                                                                        </Border>
+                                                                        <ControlTemplate.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter TargetName="btnBorder" Property="Background" Value="#FCA5A5"/>
+                                                                            </Trigger>
+                                                                            <Trigger Property="IsPressed" Value="True">
+                                                                                <Setter TargetName="btnBorder" Property="Background" Value="#F87171"/>
+                                                                            </Trigger>
+                                                                        </ControlTemplate.Triggers>
+                                                                    </ControlTemplate>
+                                                                </Button.Template>
                                                             </Button>
                                                             <StackPanel VerticalAlignment="Center">
                                                                 <StackPanel Orientation="Horizontal">
