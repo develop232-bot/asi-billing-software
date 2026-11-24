@@ -283,7 +283,7 @@ namespace AsiErp.ViewModels
 
         public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku}.";
 
-        public string CostPriceFieldLabel => _isEditMode ? "Cost Price (₹) 🔒" : "Cost Price (₹) *";
+        public string CostPriceFieldLabel => "Cost Price (₹) *";
 
         public bool IsInwardCostNoticeVisible => false;
 
@@ -1381,8 +1381,8 @@ namespace AsiErp.ViewModels
                 double addedQty = _isEditMode ? Math.Max(0, Quantity) : 0;
                 bool isStockAddition = _isEditMode && addedQty > 0;
 
-                // Cost price is locked in Edit mode and cannot be increased
-                double finalCostPrice = _isEditMode ? _originalCostPrice : CostPrice;
+                // Cost price is unlocked: new inward additions use the entered CostPrice on the new record while keeping older records intact
+                double finalCostPrice = CostPrice;
 
                 if (ItemType == "raw")
                 {
@@ -1396,7 +1396,7 @@ namespace AsiErp.ViewModels
                     rm.Name = trimmedName;
                     rm.Size = cleanSize;
                     rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
-                    rm.Rate = finalCostPrice;
+                    rm.Rate = isStockAddition ? _originalCostPrice : finalCostPrice;
                     rm.Gst = GstPercent;
                     rm.ReorderLevel = LowAlertLevel;
                     rm.Hsn = cleanHsn;
@@ -1437,7 +1437,6 @@ namespace AsiErp.ViewModels
                             other.Name = trimmedName;
                             other.Size = cleanSize;
                             other.Unit = rm.Unit;
-                            other.Rate = rm.Rate;
                             other.Gst = rm.Gst;
                             other.ReorderLevel = rm.ReorderLevel;
                             other.Hsn = cleanHsn;
@@ -1465,7 +1464,7 @@ namespace AsiErp.ViewModels
                     gi.Name = trimmedName;
                     gi.Size = cleanSize;
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
-                    gi.Rate = finalCostPrice;
+                    gi.Rate = isStockAddition ? _originalCostPrice : finalCostPrice;
                     gi.Gst = GstPercent;
                     gi.ReorderLevel = LowAlertLevel;
                     gi.Hsn = cleanHsn;
@@ -1506,7 +1505,6 @@ namespace AsiErp.ViewModels
                             other.Name = trimmedName;
                             other.Size = cleanSize;
                             other.Unit = gi.Unit;
-                            other.Rate = gi.Rate;
                             other.Gst = gi.Gst;
                             other.ReorderLevel = gi.ReorderLevel;
                             other.Hsn = cleanHsn;
@@ -1568,7 +1566,7 @@ namespace AsiErp.ViewModels
                         prod.SourceType = ItemType == "mfg" ? "M" : "R";
                         prod.Unit = string.IsNullOrWhiteSpace(Unit) ? "pair" : Unit.Trim();
                         prod.Sizes = (Sizes ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-                        prod.Cost = finalCostPrice;
+                        prod.Cost = isStockAddition ? _originalCostPrice : finalCostPrice;
                         prod.RetailPrice = SellingPrice;
                         prod.BulkPrice = BulkPrice;
                         prod.DomesticPrice = DomesticPrice;

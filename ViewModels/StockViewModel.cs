@@ -271,6 +271,8 @@ namespace AsiErp.ViewModels
                     var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
                     if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    var validCosts = grp.Select(x => x.Rate).Where(c => c > 0).ToList();
+                    double avgCost = validCosts.Count > 0 ? Math.Round(validCosts.Average(), 2) : 0;
                     return new StockDisplayItem
                     {
                         Id = primary.Id,
@@ -278,11 +280,11 @@ namespace AsiErp.ViewModels
                         Name = primary.Name,
                         Size = primary.SizeDisplay,
                         Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
-                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · Size: {primary.SizeDisplay} · GST {primary.Gst}%",
+                        Subtitle = $"Rate: ₹{avgCost:N0} / {primary.Unit} · Size: {primary.SizeDisplay} · GST {primary.Gst}%",
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
-                        RateOrCost = primary.Rate,
+                        RateOrCost = avgCost,
                         RawItem = primary
                     };
                 }).Where(it => it != null).Select(it => it!).ToList();
@@ -302,6 +304,8 @@ namespace AsiErp.ViewModels
                     var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
                     if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    var validCosts = grp.Select(x => x.Rate).Where(c => c > 0).ToList();
+                    double avgCost = validCosts.Count > 0 ? Math.Round(validCosts.Average(), 2) : 0;
                     return new StockDisplayItem
                     {
                         Id = primary.Id,
@@ -309,11 +313,11 @@ namespace AsiErp.ViewModels
                         Name = primary.Name,
                         Size = primary.SizeDisplay,
                         Sku = !string.IsNullOrWhiteSpace(primary.Sku) ? primary.Sku : primary.Name,
-                        Subtitle = $"Rate: ₹{primary.Rate:N0} / {primary.Unit} · Size: {primary.SizeDisplay} · GST {primary.Gst}%",
+                        Subtitle = $"Rate: ₹{avgCost:N0} / {primary.Unit} · Size: {primary.SizeDisplay} · GST {primary.Gst}%",
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
-                        RateOrCost = primary.Rate,
+                        RateOrCost = avgCost,
                         RawItem = primary
                     };
                 }).Where(it => it != null).Select(it => it!).ToList();
@@ -333,6 +337,8 @@ namespace AsiErp.ViewModels
                     var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
                     if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    var validCosts = grp.Select(x => x.EffectiveCost).Where(c => c > 0).ToList();
+                    double avgCost = validCosts.Count > 0 ? Math.Round(validCosts.Average(), 2) : 0;
                     return new StockDisplayItem
                     {
                         Id = primary.Id,
@@ -344,7 +350,7 @@ namespace AsiErp.ViewModels
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
-                        RateOrCost = primary.EffectiveCost,
+                        RateOrCost = avgCost,
                         RawItem = primary
                     };
                 }).Where(it => it != null).Select(it => it!).ToList();
@@ -364,6 +370,8 @@ namespace AsiErp.ViewModels
                     var primary = grp.FirstOrDefault(x => !string.IsNullOrWhiteSpace(x.Name)) ?? grp.OrderByDescending(x => x.CreatedAt).First();
                     if (string.IsNullOrWhiteSpace(primary.Name)) return null;
                     double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                    var validCosts = grp.Select(x => x.Cost).Where(c => c > 0).ToList();
+                    double avgCost = validCosts.Count > 0 ? Math.Round(validCosts.Average(), 2) : 0;
                     return new StockDisplayItem
                     {
                         Id = primary.Id,
@@ -375,7 +383,7 @@ namespace AsiErp.ViewModels
                         Unit = primary.Unit,
                         Stock = totalStock,
                         ReorderLevel = primary.ReorderLevel,
-                        RateOrCost = primary.Cost,
+                        RateOrCost = avgCost,
                         RawItem = primary
                     };
                 }).Where(it => it != null).Select(it => it!).ToList();

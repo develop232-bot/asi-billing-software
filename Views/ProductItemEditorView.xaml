@@ -249,7 +249,7 @@
                             <!-- Cost Price -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
                                 <TextBlock Text="{Binding CostPriceFieldLabel}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}" ToolTip="Cost Price is locked in Edit mode"/>
+                                <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
 
                             <!-- Selling Price -->
@@ -413,7 +413,7 @@
                             <!-- Cost Price -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
                                 <TextBlock Text="{Binding CostPriceFieldLabel}" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}" ToolTip="Cost Price is locked in Edit mode"/>
+                                <TextBox Text="{Binding CostPrice, UpdateSourceTrigger=PropertyChanged}"/>
                             </StackPanel>
 
                             <!-- GST Rate % -->
