@@ -337,6 +337,9 @@ namespace AsiErp.ViewModels
         public double DashAllTimeProfit => BsProfit;
 
         // Commands
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public RelayCommand SetTabCommand { get; }
         public RelayCommand SetPeriodCommand { get; }
         public RelayCommand SetIncomeChannelCommand { get; }
@@ -479,7 +482,16 @@ namespace AsiErp.ViewModels
             {
                 if (p is ExpenseItem exp && !exp.IsAuto)
                 {
-                    await _dataService.DeleteExpenseAsync(exp.Id);
+                    try
+                    {
+                        ShowLoaderAction?.Invoke("Deleting Expense...", "Updating expense records in database...");
+                        await Task.Delay(80);
+                        await _dataService.DeleteExpenseAsync(exp.Id);
+                    }
+                    finally
+                    {
+                        HideLoaderAction?.Invoke();
+                    }
                 }
             });
 
@@ -488,7 +500,16 @@ namespace AsiErp.ViewModels
             {
                 if (p is InvestmentItem inv)
                 {
-                    await _dataService.DeleteInvestmentAsync(inv.Id);
+                    try
+                    {
+                        ShowLoaderAction?.Invoke("Deleting Investment...", "Updating investment records in database...");
+                        await Task.Delay(80);
+                        await _dataService.DeleteInvestmentAsync(inv.Id);
+                    }
+                    finally
+                    {
+                        HideLoaderAction?.Invoke();
+                    }
                 }
             });
 
@@ -509,7 +530,16 @@ namespace AsiErp.ViewModels
                         "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)
                     {
-                        await _dataService.DeleteLoanAsync(loan.Id);
+                        try
+                        {
+                            ShowLoaderAction?.Invoke("Deleting Loan...", "Updating loan records in database...");
+                            await Task.Delay(80);
+                            await _dataService.DeleteLoanAsync(loan.Id);
+                        }
+                        finally
+                        {
+                            HideLoaderAction?.Invoke();
+                        }
                     }
                 }
             });
@@ -523,7 +553,16 @@ namespace AsiErp.ViewModels
                         "Confirm Delete", MessageBoxButton.YesNo, MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)
                     {
-                        await _dataService.DeleteAssetAsync(asset.Id);
+                        try
+                        {
+                            ShowLoaderAction?.Invoke("Deleting Asset...", "Updating asset records in database...");
+                            await Task.Delay(80);
+                            await _dataService.DeleteAssetAsync(asset.Id);
+                        }
+                        finally
+                        {
+                            HideLoaderAction?.Invoke();
+                        }
                     }
                 }
             });

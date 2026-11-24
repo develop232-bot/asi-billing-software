@@ -227,6 +227,9 @@ namespace AsiErp.ViewModels
         // Commands
         public RelayCommand SetChannelCommand { get; }
         public RelayCommand SetStatusCommand { get; }
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public RelayCommand NavigateCommand { get; }
         public RelayCommand OpenDialogCommand { get; }
         public RelayCommand ViewSaleCommand { get; }
@@ -277,8 +280,17 @@ namespace AsiErp.ViewModels
                         MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)
                     {
-                        await _dataService.DeleteSaleAsync(sale.Id);
-                        RefreshData();
+                        try
+                        {
+                            ShowLoaderAction?.Invoke("Deleting Invoice...", $"Removing invoice '{sale.InvoiceNo}' from database...");
+                            await Task.Delay(80);
+                            await _dataService.DeleteSaleAsync(sale.Id);
+                            RefreshData();
+                        }
+                        finally
+                        {
+                            HideLoaderAction?.Invoke();
+                        }
                     }
                 }
             });

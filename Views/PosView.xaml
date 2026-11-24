@@ -235,8 +235,9 @@
                 </Border>
 
                 <!-- RIGHT: Cart -->
-                <Border Grid.Column="1" Background="White" Padding="18" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
-                    <StackPanel>
+                <Border Grid.Column="1" Background="White" Padding="14,16" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="12">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,4,0">
                         <DockPanel Margin="0,0,0,14">
                             <TextBlock Text="Current Bill" FontWeight="Bold" FontSize="15" Foreground="#0F172A"/>
                             <TextBlock Text="{Binding CartItems.Count, StringFormat='({0} items)'}" Foreground="#64748B" Margin="6,2,0,0"/>
@@ -344,7 +345,7 @@
                             <TextBox Text="{Binding CustomerPhone, UpdateSourceTrigger=PropertyChanged}" Height="36" Padding="10,0" VerticalContentAlignment="Center" Margin="0,0,0,14"/>
 
                             <!-- Complete Sale Button -->
-                            <Button Content="Complete Sale &amp; Print Bill" Command="{Binding CompleteSaleCommand}" Height="42" Background="#10B981" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="13" Cursor="Hand">
+                            <Button Content="{Binding CompleteSaleButtonText}" Command="{Binding CompleteSaleCommand}" IsEnabled="{Binding CanCompleteSale}" Height="42" Background="#10B981" Foreground="White" BorderThickness="0" FontWeight="Bold" FontSize="13" Cursor="Hand">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
@@ -496,7 +497,8 @@
                             </Border>
                         </StackPanel>
                     </StackPanel>
-                </Border>
+                </ScrollViewer>
+            </Border>
             </Grid>
 
             <!-- Recent Retail Bills Table -->

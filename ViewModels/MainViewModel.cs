@@ -64,7 +64,7 @@ namespace AsiErp.ViewModels
             set => SetField(ref _currentBreadcrumb, value);
         }
 
-        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.29"}";
+        public string AppVersion => $"v{System.Reflection.Assembly.GetExecutingAssembly().GetName().Version?.ToString(3) ?? "2.8.31"}";
 
         public bool IsSidebarExpanded
         {
@@ -282,6 +282,20 @@ namespace AsiErp.ViewModels
             PackagingPurchaseVM.HideLoaderAction = HideLoader;
             ProductItemEditorVM.ShowLoaderAction = ShowLoader;
             ProductItemEditorVM.HideLoaderAction = HideLoader;
+            PosVM.ShowLoaderAction = ShowLoader;
+            PosVM.HideLoaderAction = HideLoader;
+            DomesticInvoiceVM.ShowLoaderAction = ShowLoader;
+            DomesticInvoiceVM.HideLoaderAction = HideLoader;
+            ExportInvoiceVM.ShowLoaderAction = ShowLoader;
+            ExportInvoiceVM.HideLoaderAction = HideLoader;
+            SalesVM.ShowLoaderAction = ShowLoader;
+            SalesVM.HideLoaderAction = HideLoader;
+            ProductsVM.ShowLoaderAction = ShowLoader;
+            ProductsVM.HideLoaderAction = HideLoader;
+            ProductionVM.ShowLoaderAction = ShowLoader;
+            ProductionVM.HideLoaderAction = HideLoader;
+            AccountsVM.ShowLoaderAction = ShowLoader;
+            AccountsVM.HideLoaderAction = HideLoader;
 
             // Sync subtabs when clicked inside the views back to ActiveRoute and Breadcrumb
             PurchaseVM.PropertyChanged += (s, e) =>

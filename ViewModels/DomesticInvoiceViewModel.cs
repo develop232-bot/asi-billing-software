@@ -32,6 +32,9 @@ namespace AsiErp.ViewModels
         private double _taxAmount;
         private double _grossAmount;
 
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public List<ProductItem> AvailableProducts { get; }
         public ObservableCollection<SaleLine> Lines { get; } = new();
         public ObservableCollection<string> PartySuggestions { get; } = new();
@@ -378,18 +381,29 @@ namespace AsiErp.ViewModels
                 Lines = validLines
             };
 
-            var recorded = await _dataService.RecordSaleAsync(sale);
-
-            var printRes = MessageBox.Show($"Domestic Tax Invoice '{recorded.InvoiceNo}' saved successfully!\n\nWould you like to print the tax invoice now?",
-                "Invoice Saved", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-            if (printRes == MessageBoxResult.Yes)
+            try
             {
-                DocumentPrinter.PrintDirect(recorded, silent: false);
-            }
+                ShowLoaderAction?.Invoke("Saving Domestic Invoice...", $"Recording invoice for '{party}' and updating inventory...");
+                await Task.Delay(80);
 
-            // Navigate back to sales register so they see their new invoice immediately
-            _navigateAction("sales");
+                var recorded = await _dataService.RecordSaleAsync(sale);
+                HideLoaderAction?.Invoke();
+
+                var printRes = MessageBox.Show($"Domestic Tax Invoice '{recorded.InvoiceNo}' saved successfully!\n\nWould you like to print the tax invoice now?",
+                    "Invoice Saved", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                if (printRes == MessageBoxResult.Yes)
+                {
+                    DocumentPrinter.PrintDirect(recorded, silent: false);
+                }
+
+                // Navigate back to sales register so they see their new invoice immediately
+                _navigateAction("sales");
+            }
+            finally
+            {
+                HideLoaderAction?.Invoke();
+            }
         }
     }
 }

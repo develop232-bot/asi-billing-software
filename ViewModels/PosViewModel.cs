@@ -440,6 +440,26 @@ namespace AsiErp.ViewModels
 
         public string NextBillNo => _dataService.NextDocNo("retail", increment: false);
 
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
+        private bool _isProcessingSale;
+        public bool IsProcessingSale
+        {
+            get => _isProcessingSale;
+            set
+            {
+                if (SetField(ref _isProcessingSale, value))
+                {
+                    OnPropertyChanged(nameof(CanCompleteSale));
+                    OnPropertyChanged(nameof(CompleteSaleButtonText));
+                }
+            }
+        }
+
+        public bool CanCompleteSale => !_isProcessingSale;
+        public string CompleteSaleButtonText => _isProcessingSale ? "Processing Sale & Printing..." : "Complete Sale & Print Bill";
+
         public RelayCommand SetCategoryCommand { get; }
         public RelayCommand QuickAddCommand { get; }
         public RelayCommand ScanBarcodeCommand { get; }
@@ -699,6 +719,8 @@ namespace AsiErp.ViewModels
 
         private async void CompleteSale()
         {
+            if (IsProcessingSale) return;
+
             if (!CartItems.Any())
             {
                 MessageBox.Show("Please add at least one item to the cart.", "Cart Empty", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -717,100 +739,118 @@ namespace AsiErp.ViewModels
                 return;
             }
 
-            var saleLines = CartItems.Select(ci =>
-            {
-                double lineGross = ci.LineTotal * (1.0 - DiscountPercent / 100.0);
-                double gstRate = ci.Product.AutoGstRate;
-                double net = lineGross / (1.0 + gstRate / 100.0);
-                double tax = lineGross - net;
+            IsProcessingSale = true;
+            ShowLoaderAction?.Invoke("Completing Sale & Printing...", "Recording retail sale, deducting inventory & generating bill...");
 
-                return new SaleLine
+            try
+            {
+                // Yield to UI to allow overlay to appear immediately
+                await Task.Delay(80);
+
+                var saleLines = CartItems.Select(ci =>
                 {
-                    Pid = ci.Product.Id,
-                    Name = ci.Product.Name,
-                    Hsn = ci.Product.Hsn,
-                    Size = ci.SelectedSize,
-                    Qty = ci.Qty,
-                    Unit = ci.Product.Unit,
-                    Rate = ci.UnitPrice,
-                    DiscPercent = DiscountPercent,
-                    GstPercent = gstRate,
-                    NetAmount = Math.Round(net, 2),
-                    TaxAmount = Math.Round(tax, 2),
-                    GrossAmount = Math.Round(lineGross, 2)
+                    double lineGross = ci.LineTotal * (1.0 - DiscountPercent / 100.0);
+                    double gstRate = ci.Product.AutoGstRate;
+                    double net = lineGross / (1.0 + gstRate / 100.0);
+                    double tax = lineGross - net;
+
+                    return new SaleLine
+                    {
+                        Pid = ci.Product.Id,
+                        Name = ci.Product.Name,
+                        Hsn = ci.Product.Hsn,
+                        Size = ci.SelectedSize,
+                        Qty = ci.Qty,
+                        Unit = ci.Product.Unit,
+                        Rate = ci.UnitPrice,
+                        DiscPercent = DiscountPercent,
+                        GstPercent = gstRate,
+                        NetAmount = Math.Round(net, 2),
+                        TaxAmount = Math.Round(tax, 2),
+                        GrossAmount = Math.Round(lineGross, 2)
+                    };
+                }).ToList();
+
+                double totalNet = saleLines.Sum(l => l.NetAmount);
+                double totalTax = saleLines.Sum(l => l.TaxAmount);
+                double totalGross = GrandTotal;
+
+                var newSale = new SaleDoc
+                {
+                    Id = "s_" + Guid.NewGuid().ToString("N")[..8],
+                    Type = "retail",
+                    InvoiceNo = _dataService.NextDocNo("retail", increment: true),
+                    Date = DateTime.Now.ToString("yyyy-MM-dd"),
+                    Party = CustomerName.Trim(),
+                    Phone = CustomerPhone.Trim(),
+                    Event = SoldAtLocation,
+                    PaymentMode = PaymentMode,
+                    SaleType = "Cash",
+                    CreditDays = 0,
+                    PaymentDueDate = DateTime.Now.ToString("yyyy-MM-dd"),
+                    DiscountPercent = DiscountPercent,
+                    NetAmount = Math.Round(totalNet, 2),
+                    TaxAmount = Math.Round(totalTax, 2),
+                    GrossAmount = Math.Round(totalGross, 2),
+                    PaidAmount = Math.Round(totalGross, 2),
+                    Lines = saleLines
                 };
-            }).ToList();
 
-            double totalNet = saleLines.Sum(l => l.NetAmount);
-            double totalTax = saleLines.Sum(l => l.TaxAmount);
-            double totalGross = GrandTotal;
+                await _dataService.RecordSaleAsync(newSale);
 
-            var newSale = new SaleDoc
-            {
-                Id = "s_" + Guid.NewGuid().ToString("N")[..8],
-                Type = "retail",
-                InvoiceNo = _dataService.NextDocNo("retail", increment: true),
-                Date = DateTime.Now.ToString("yyyy-MM-dd"),
-                Party = CustomerName.Trim(),
-                Phone = CustomerPhone.Trim(),
-                Event = SoldAtLocation,
-                PaymentMode = PaymentMode,
-                SaleType = "Cash",
-                CreditDays = 0,
-                PaymentDueDate = DateTime.Now.ToString("yyyy-MM-dd"),
-                DiscountPercent = DiscountPercent,
-                NetAmount = Math.Round(totalNet, 2),
-                TaxAmount = Math.Round(totalTax, 2),
-                GrossAmount = Math.Round(totalGross, 2),
-                PaidAmount = Math.Round(totalGross, 2),
-                Lines = saleLines
-            };
-
-            await _dataService.RecordSaleAsync(newSale);
-
-            // Deduct any General Stock (packaging) items that were added for this sale
-            if (GsConsumptionItems.Any())
-            {
-                foreach (var ci in GsConsumptionItems.ToList())
+                // Deduct any General Stock (packaging) items that were added for this sale
+                if (GsConsumptionItems.Any())
                 {
-                    double remainingToDeduct = ci.Qty;
-                    var matches = _dataService.GeneralItems
-                        .Where(g => g.Id == ci.Item.Id ||
-                                   (g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase) &&
-                                    (string.Equals(g.Size ?? "", ci.Size, StringComparison.OrdinalIgnoreCase) || ci.Size == "—" || ci.Size == "Standard")))
-                        .ToList();
-
-                    if (matches.Count == 0)
+                    foreach (var ci in GsConsumptionItems.ToList())
                     {
-                        matches = _dataService.GeneralItems.Where(g => g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase)).ToList();
-                    }
+                        double remainingToDeduct = ci.Qty;
+                        var matches = _dataService.GeneralItems
+                            .Where(g => g.Id == ci.Item.Id ||
+                                       (g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase) &&
+                                        (string.Equals(g.Size ?? "", ci.Size, StringComparison.OrdinalIgnoreCase) || ci.Size == "—" || ci.Size == "Standard")))
+                            .ToList();
 
-                    foreach (var g in matches)
-                    {
-                        if (remainingToDeduct <= 0) break;
-                        double deduct = Math.Min(g.Stock, remainingToDeduct);
-                        if (deduct <= 0) deduct = remainingToDeduct;
+                        if (matches.Count == 0)
+                        {
+                            matches = _dataService.GeneralItems.Where(g => g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                        }
 
-                        if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
-                        g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
-                        remainingToDeduct -= deduct;
-                        await _dataService.SaveGeneralItemAsync(g);
+                        foreach (var g in matches)
+                        {
+                            if (remainingToDeduct <= 0) break;
+                            double deduct = Math.Min(g.Stock, remainingToDeduct);
+                            if (deduct <= 0) deduct = remainingToDeduct;
+
+                            if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
+                            g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
+                            remainingToDeduct -= deduct;
+                            await _dataService.SaveGeneralItemAsync(g);
+                        }
                     }
+                    GsConsumptionItems.Clear();
+                    OnPropertyChanged(nameof(HasGsConsumptionItems));
+                    LoadGeneralItems();
                 }
-                GsConsumptionItems.Clear();
-                OnPropertyChanged(nameof(HasGsConsumptionItems));
-                LoadGeneralItems();
+
+                // Clear cart
+                CartItems.Clear();
+                DiscountPercent = 0;
+                CustomerName = string.Empty;
+                CustomerPhone = string.Empty;
+                RecalculateCart();
+
+                // Directly print without preview window
+                DocumentPrinter.PrintDirect(newSale, silent: true);
             }
-
-            // Clear cart
-            CartItems.Clear();
-            DiscountPercent = 0;
-            CustomerName = string.Empty;
-            CustomerPhone = string.Empty;
-            RecalculateCart();
-
-            // Directly print without preview window
-            DocumentPrinter.PrintDirect(newSale, silent: true);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to complete sale: {ex.Message}", "Sale Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            finally
+            {
+                HideLoaderAction?.Invoke();
+                IsProcessingSale = false;
+            }
         }
 
         private void AddGsItem()
@@ -864,47 +904,59 @@ namespace AsiErp.ViewModels
                 return;
             }
 
-            var deductedDetails = new List<string>();
-
-            foreach (var ci in GsConsumptionItems.ToList())
+            try
             {
-                double remainingToDeduct = ci.Qty;
+                ShowLoaderAction?.Invoke("Deducting Packaging Stock...", "Updating packaging and general supplies in live database...");
+                await Task.Delay(80);
 
-                var matches = _dataService.GeneralItems
-                    .Where(g => g.Id == ci.Item.Id ||
-                               (g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase) &&
-                                (string.Equals(g.Size ?? "", ci.Size, StringComparison.OrdinalIgnoreCase) || ci.Size == "—" || ci.Size == "Standard")))
-                    .ToList();
+                var deductedDetails = new List<string>();
 
-                if (matches.Count == 0)
+                foreach (var ci in GsConsumptionItems.ToList())
                 {
-                    matches = _dataService.GeneralItems.Where(g => g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                    double remainingToDeduct = ci.Qty;
+
+                    var matches = _dataService.GeneralItems
+                        .Where(g => g.Id == ci.Item.Id ||
+                                   (g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase) &&
+                                    (string.Equals(g.Size ?? "", ci.Size, StringComparison.OrdinalIgnoreCase) || ci.Size == "—" || ci.Size == "Standard")))
+                        .ToList();
+
+                    if (matches.Count == 0)
+                    {
+                        matches = _dataService.GeneralItems.Where(g => g.Name.Equals(ci.Name, StringComparison.OrdinalIgnoreCase)).ToList();
+                    }
+
+                    foreach (var g in matches)
+                    {
+                        if (remainingToDeduct <= 0) break;
+                        double deduct = Math.Min(g.Stock, remainingToDeduct);
+                        if (deduct <= 0) deduct = remainingToDeduct;
+
+                        if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
+                        g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
+                        remainingToDeduct -= deduct;
+                        await _dataService.SaveGeneralItemAsync(g);
+                    }
+
+                    deductedDetails.Add($"{ci.Name} ({ci.Size}) : -{ci.Qty} {ci.Unit}");
                 }
 
-                foreach (var g in matches)
-                {
-                    if (remainingToDeduct <= 0) break;
-                    double deduct = Math.Min(g.Stock, remainingToDeduct);
-                    if (deduct <= 0) deduct = remainingToDeduct;
+                GsConsumptionItems.Clear();
+                OnPropertyChanged(nameof(HasGsConsumptionItems));
+                LoadGeneralItems();
 
-                    if (g.RegisteredQty <= 0 && g.Stock > 0) g.RegisteredQty = g.Stock;
-                    g.Stock = Math.Max(0, Math.Round(g.Stock - deduct, 2));
-                    remainingToDeduct -= deduct;
-                    await _dataService.SaveGeneralItemAsync(g);
-                }
+                HideLoaderAction?.Invoke();
 
-                deductedDetails.Add($"{ci.Name} ({ci.Size}) : -{ci.Qty} {ci.Unit}");
+                MessageBox.Show(
+                    $"General stock deducted from inventory successfully:\n\n• {string.Join("\n• ", deductedDetails)}",
+                    "GS Stock Deducted",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
             }
-
-            GsConsumptionItems.Clear();
-            OnPropertyChanged(nameof(HasGsConsumptionItems));
-            LoadGeneralItems();
-
-            MessageBox.Show(
-                $"General stock deducted from inventory successfully:\n\n• {string.Join("\n• ", deductedDetails)}",
-                "GS Stock Deducted",
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
+            finally
+            {
+                HideLoaderAction?.Invoke();
+            }
         }
     }
 }

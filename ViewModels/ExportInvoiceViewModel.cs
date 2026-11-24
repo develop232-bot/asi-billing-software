@@ -36,6 +36,9 @@ namespace AsiErp.ViewModels
         private double _grossAmountCurrency;
         private double _grossAmountInr;
 
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public List<ProductItem> AvailableProducts { get; }
         public ObservableCollection<SaleLine> Lines { get; } = new();
         public ObservableCollection<string> BuyerSuggestions { get; } = new();
@@ -425,17 +428,28 @@ namespace AsiErp.ViewModels
                 Lines = validLines
             };
 
-            var recorded = await _dataService.RecordSaleAsync(sale);
-
-            var printRes = MessageBox.Show($"Export Commercial Invoice '{recorded.InvoiceNo}' saved successfully!\n\nWould you like to print / preview the invoice now?",
-                "Invoice Saved", MessageBoxButton.YesNo, MessageBoxImage.Information);
-
-            if (printRes == MessageBoxResult.Yes)
+            try
             {
-                DocumentPrinter.PrintDirect(recorded, silent: false);
-            }
+                ShowLoaderAction?.Invoke("Saving Export Invoice...", $"Recording invoice for '{party}' and updating inventory...");
+                await Task.Delay(80);
 
-            _navigateAction("sales");
+                var recorded = await _dataService.RecordSaleAsync(sale);
+                HideLoaderAction?.Invoke();
+
+                var printRes = MessageBox.Show($"Export Commercial Invoice '{recorded.InvoiceNo}' saved successfully!\n\nWould you like to print / preview the invoice now?",
+                    "Invoice Saved", MessageBoxButton.YesNo, MessageBoxImage.Information);
+
+                if (printRes == MessageBoxResult.Yes)
+                {
+                    DocumentPrinter.PrintDirect(recorded, silent: false);
+                }
+
+                _navigateAction("sales");
+            }
+            finally
+            {
+                HideLoaderAction?.Invoke();
+            }
         }
     }
 }

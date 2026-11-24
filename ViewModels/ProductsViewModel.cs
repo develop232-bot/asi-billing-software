@@ -177,6 +177,9 @@ namespace AsiErp.ViewModels
             private set => SetField(ref _generalItemsCount, value);
         }
 
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public RelayCommand SetFilterCommand { get; }
         public RelayCommand AddItemCommand { get; }
         public RelayCommand EditItemCommand { get; }
@@ -252,10 +255,19 @@ namespace AsiErp.ViewModels
                         MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)
                     {
-                        if (row.TypeKey == "raw") await _dataService.DeleteRawMaterialAsync(row.Id);
-                        else if (row.TypeKey == "gen") await _dataService.DeleteGeneralItemAsync(row.Id);
-                        else await _dataService.DeleteProductAsync(row.Id);
-                        RefreshData();
+                        try
+                        {
+                            ShowLoaderAction?.Invoke("Deleting Product...", $"Removing '{row.Name}' from live database...");
+                            await Task.Delay(80);
+                            if (row.TypeKey == "raw") await _dataService.DeleteRawMaterialAsync(row.Id);
+                            else if (row.TypeKey == "gen") await _dataService.DeleteGeneralItemAsync(row.Id);
+                            else await _dataService.DeleteProductAsync(row.Id);
+                            RefreshData();
+                        }
+                        finally
+                        {
+                            HideLoaderAction?.Invoke();
+                        }
                     }
                 }
             });
@@ -415,46 +427,12 @@ namespace AsiErp.ViewModels
             int readyCount = dateFiltered.Count(x => x.TypeKey == "ready");
             int genCount = dateFiltered.Count(x => x.TypeKey == "gen");
 
-            if (ActiveFilter == "all")
-            {
-                RawMaterialsCount = rawCount;
-                FinishedProductsCount = mfgCount;
-                ReadymadeProductsCount = readyCount;
-                GeneralItemsCount = genCount;
-                TotalSkusCount = rawCount + mfgCount + readyCount + genCount;
-            }
-            else if (ActiveFilter == "raw")
-            {
-                RawMaterialsCount = rawCount;
-                FinishedProductsCount = 0;
-                ReadymadeProductsCount = 0;
-                GeneralItemsCount = 0;
-                TotalSkusCount = rawCount;
-            }
-            else if (ActiveFilter == "mfg")
-            {
-                RawMaterialsCount = 0;
-                FinishedProductsCount = mfgCount;
-                ReadymadeProductsCount = 0;
-                GeneralItemsCount = 0;
-                TotalSkusCount = mfgCount;
-            }
-            else if (ActiveFilter == "ready")
-            {
-                RawMaterialsCount = 0;
-                FinishedProductsCount = 0;
-                ReadymadeProductsCount = readyCount;
-                GeneralItemsCount = 0;
-                TotalSkusCount = readyCount;
-            }
-            else if (ActiveFilter == "gen")
-            {
-                RawMaterialsCount = 0;
-                FinishedProductsCount = 0;
-                ReadymadeProductsCount = 0;
-                GeneralItemsCount = genCount;
-                TotalSkusCount = genCount;
-            }
+            // Summary KPI cards always reflect the active date range across all product categories
+            RawMaterialsCount = rawCount;
+            FinishedProductsCount = mfgCount;
+            ReadymadeProductsCount = readyCount;
+            GeneralItemsCount = genCount;
+            TotalSkusCount = rawCount + mfgCount + readyCount + genCount;
 
             var sortedCandidates = dateFiltered
                 .OrderBy(r => r.TypeKey switch { "raw" => 1, "mfg" => 2, "ready" => 3, "gen" => 4, _ => 5 })

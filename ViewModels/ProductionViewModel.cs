@@ -282,6 +282,9 @@ namespace AsiErp.ViewModels
         public RelayCommand SetTypeFilterCommand { get; }
         public RelayCommand NewWorkOrderCommand { get; }
         public RelayCommand EditWorkOrderCommand { get; }
+        public Action<string, string>? ShowLoaderAction { get; set; }
+        public Action? HideLoaderAction { get; set; }
+
         public RelayCommand DeleteWorkOrderCommand { get; }
 
         public RelayCommand PrevMonthCommand { get; }
@@ -314,8 +317,17 @@ namespace AsiErp.ViewModels
                         MessageBoxImage.Warning);
                     if (res == MessageBoxResult.Yes)
                     {
-                        await _dataService.DeleteWorkOrderAsync(doc.Id);
-                        RefreshData();
+                        try
+                        {
+                            ShowLoaderAction?.Invoke("Deleting Work Order...", $"Removing {doc.OrderNo} from live database...");
+                            await Task.Delay(80);
+                            await _dataService.DeleteWorkOrderAsync(doc.Id);
+                            RefreshData();
+                        }
+                        finally
+                        {
+                            HideLoaderAction?.Invoke();
+                        }
                     }
                 }
             });
