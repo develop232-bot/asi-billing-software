@@ -163,7 +163,7 @@ namespace AsiErp.ViewModels
             _navigateAction = navigateAction;
             _openDialogAction = openDialogAction;
 
-            AvailableProducts = _dataService.Products.ToList();
+            AvailableProducts = _dataService.GetGroupedAvailableProducts();
 
             AddLineCommand = new RelayCommand(_ => AddLine());
             DeleteLineCommand = new RelayCommand(p =>

@@ -524,15 +524,22 @@ namespace AsiErp.ViewModels
                     DomesticPrice = p.DomesticPrice;
                     ExportPrice = p.ExportPrice;
 
-                    Stock = p.Stock;
+                    double totalStock = _dataService.Products
+                        .Where(x => ((!string.IsNullOrWhiteSpace(p.Sku) && x.Sku == p.Sku) ||
+                                    (string.IsNullOrWhiteSpace(p.Sku) && x.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase))) &&
+                                    string.Equals(x.SizesDisplay, p.SizesDisplay, StringComparison.OrdinalIgnoreCase))
+                        .Sum(x => x.Stock);
+                    if (totalStock <= 0) totalStock = p.Stock;
+
+                    Stock = totalStock;
                     Quantity = 0;
-                    _originalQuantity = p.Stock;
+                    _originalQuantity = totalStock;
                     ReorderLevel = p.ReorderLevel;
                     LowAlertLevel = p.ReorderLevel;
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                     GstPercent = p.Gst;
-                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {p.Stock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
+                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is RawMaterialItem r)
@@ -1354,12 +1361,12 @@ namespace AsiErp.ViewModels
                 }
                 else if (!string.IsNullOrWhiteSpace(cleanBarcode))
                 {
-                    var usedBarcodes = _dataService.GetAllUsedBarcodes(currentId);
+                    var usedBarcodes = _dataService.GetAllUsedBarcodes(currentId, Sku);
                     if (usedBarcodes.Contains(cleanBarcode))
                     {
                         if (!_isEditMode)
                         {
-                            cleanBarcode = _dataService.GetNextUniqueBarcode(ItemType, Category);
+                            cleanBarcode = _dataService.GetNextUniqueBarcode(ItemType, Category, null, Sku);
                             Barcode = cleanBarcode;
                         }
                         else
@@ -1397,12 +1404,30 @@ namespace AsiErp.ViewModels
 
                     if (_isEditMode)
                     {
+                        // 1. Update existing rm attributes (leaving its original stock & registeredQty intact)
+                        await _dataService.SaveRawMaterialAsync(rm);
+
+                        // 2. If quantity was added, create a separate record for this inward addition with today's date!
                         if (addedQty > 0)
                         {
-                            rm.Stock += addedQty;
-                            rm.RegisteredQty += addedQty;
+                            var additionRecord = new RawMaterialItem
+                            {
+                                Id = "r_" + Guid.NewGuid().ToString("N")[..8],
+                                CreatedAt = today,
+                                Name = trimmedName,
+                                Sku = cleanSku,
+                                Barcode = cleanBarcode,
+                                Hsn = cleanHsn,
+                                Size = cleanSize,
+                                Unit = rm.Unit,
+                                Rate = finalCostPrice,
+                                Gst = GstPercent,
+                                ReorderLevel = LowAlertLevel,
+                                Stock = addedQty,
+                                RegisteredQty = addedQty
+                            };
+                            await _dataService.SaveRawMaterialAsync(additionRecord);
                         }
-                        await _dataService.SaveRawMaterialAsync(rm);
 
                         var otherEntries = _dataService.RawMaterials
                             .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
@@ -1448,12 +1473,30 @@ namespace AsiErp.ViewModels
 
                     if (_isEditMode)
                     {
+                        // 1. Update existing gi attributes (leaving its original stock & registeredQty intact)
+                        await _dataService.SaveGeneralItemAsync(gi);
+
+                        // 2. If quantity was added, create a separate record for this inward addition with today's date!
                         if (addedQty > 0)
                         {
-                            gi.Stock += addedQty;
-                            gi.RegisteredQty += addedQty;
+                            var additionRecord = new GeneralItem
+                            {
+                                Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                                CreatedAt = today,
+                                Name = trimmedName,
+                                Sku = cleanSku,
+                                Barcode = cleanBarcode,
+                                Hsn = cleanHsn,
+                                Size = cleanSize,
+                                Unit = gi.Unit,
+                                Rate = finalCostPrice,
+                                Gst = GstPercent,
+                                ReorderLevel = LowAlertLevel,
+                                Stock = addedQty,
+                                RegisteredQty = addedQty
+                            };
+                            await _dataService.SaveGeneralItemAsync(additionRecord);
                         }
-                        await _dataService.SaveGeneralItemAsync(gi);
 
                         var otherEntries = _dataService.GeneralItems
                             .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
@@ -1533,17 +1576,37 @@ namespace AsiErp.ViewModels
                         prod.ReorderLevel = LowAlertLevel;
                         prod.Gst = GstPercent;
 
+                        // 1. Update existing prod attributes (leaving its original stock & registeredQty intact)
+                        await _dataService.SaveProductAsync(prod);
+
+                        // 2. If quantity was added, create a separate record for this inward addition with today's date!
                         if (addedQty > 0)
                         {
-                            prod.Stock = _originalQuantity + addedQty;
-                            prod.RegisteredQty += addedQty;
+                            var additionRecord = new ProductItem
+                            {
+                                Id = "p_" + Guid.NewGuid().ToString("N")[..8],
+                                CreatedAt = today,
+                                Name = trimmedName,
+                                Sku = cleanSku,
+                                Barcode = cleanBarcode,
+                                Hsn = cleanHsn,
+                                Category = prod.Category,
+                                SourceType = prod.SourceType,
+                                Unit = prod.Unit,
+                                Sizes = prod.Sizes != null ? new List<string>(prod.Sizes) : new List<string>(),
+                                Cost = finalCostPrice,
+                                RetailPrice = SellingPrice,
+                                BulkPrice = BulkPrice,
+                                DomesticPrice = DomesticPrice,
+                                ExportPrice = ExportPrice,
+                                ReorderLevel = LowAlertLevel,
+                                Gst = GstPercent,
+                                Stock = addedQty,
+                                RegisteredQty = addedQty,
+                                Bom = new()
+                            };
+                            await _dataService.SaveProductAsync(additionRecord);
                         }
-                        else
-                        {
-                            prod.Stock = _originalQuantity;
-                        }
-
-                        await _dataService.SaveProductAsync(prod);
                     }
                 }
 

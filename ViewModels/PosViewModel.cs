@@ -596,7 +596,7 @@ namespace AsiErp.ViewModels
         {
             _allAvailableProducts.Clear();
             AvailableProducts.Clear();
-            foreach (var p in _dataService.Products.Where(x => x.Stock > 0))
+            foreach (var p in _dataService.GetGroupedAvailableProducts().Where(x => x.Stock > 0))
             {
                 _allAvailableProducts.Add(p);
                 AvailableProducts.Add(p);
@@ -618,7 +618,7 @@ namespace AsiErp.ViewModels
             FilteredProducts.Clear();
             string q = SearchQuery.Trim().ToLowerInvariant();
 
-            foreach (var p in _dataService.Products)
+            foreach (var p in _dataService.GetGroupedAvailableProducts())
             {
                 bool matchesCat = SelectedCategory == "all" || p.Category.Equals(SelectedCategory, StringComparison.OrdinalIgnoreCase);
                 bool matchesQ = string.IsNullOrEmpty(q) || (p.Name + " " + p.Sku + " " + (p.Barcode ?? "")).ToLowerInvariant().Contains(q);
@@ -655,29 +655,34 @@ namespace AsiErp.ViewModels
 
         public void AddProductToCart(ProductItem prod, int qty = 1)
         {
-            if (prod.Stock <= 0)
+            double availableStock = _dataService.Products
+                .Where(p => (!string.IsNullOrWhiteSpace(prod.Sku) && p.Sku.Equals(prod.Sku, StringComparison.OrdinalIgnoreCase)) ||
+                            (p.Name.Equals(prod.Name, StringComparison.OrdinalIgnoreCase) && string.Equals(p.SizesDisplay, prod.SizesDisplay, StringComparison.OrdinalIgnoreCase)))
+                .Sum(p => p.Stock);
+
+            if (availableStock <= 0)
             {
                 MessageBox.Show($"{prod.Name} is out of stock.", "Out of Stock", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
             string defaultSize = prod.Sizes?.FirstOrDefault() ?? "";
-            var existing = CartItems.FirstOrDefault(x => x.Product.Id == prod.Id && x.SelectedSize == defaultSize);
+            var existing = CartItems.FirstOrDefault(x => (x.Product.Id == prod.Id || (!string.IsNullOrWhiteSpace(prod.Sku) && x.Product.Sku.Equals(prod.Sku, StringComparison.OrdinalIgnoreCase))) && x.SelectedSize == defaultSize);
 
             if (existing != null)
             {
-                if (existing.Qty + qty <= prod.Stock)
+                if (existing.Qty + qty <= availableStock)
                 {
                     existing.Qty += qty;
                 }
                 else
                 {
-                    MessageBox.Show($"Only {prod.Stock} {prod.Unit} of {prod.Name} in stock.", "Stock Limit", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show($"Only {availableStock} {prod.Unit} of {prod.Name} in stock.", "Stock Limit", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
             }
             else
             {
-                int addQty = Math.Min(qty, (int)prod.Stock);
+                int addQty = Math.Min(qty, (int)availableStock);
                 CartItems.Add(new PosCartItem(prod, defaultSize, addQty));
             }
 

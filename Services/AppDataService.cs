@@ -580,11 +580,13 @@ namespace AsiErp.Services
                 var target = Products.FirstOrDefault(x => x.Id == line.Pid);
                 string targetSku = target?.Sku ?? "";
                 string targetName = target?.Name ?? line.Name ?? "";
+                string targetSize = !string.IsNullOrWhiteSpace(line.Size) ? line.Size.Trim() : (target?.SizesDisplay ?? "");
 
                 var matching = Products
-                    .Where(x => x.Id == line.Pid ||
-                                (!string.IsNullOrWhiteSpace(targetSku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(targetSku, StringComparison.OrdinalIgnoreCase)) ||
-                                (!string.IsNullOrWhiteSpace(targetName) && x.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase)))
+                    .Where(x => (x.Id == line.Pid ||
+                                 (!string.IsNullOrWhiteSpace(targetSku) && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(targetSku, StringComparison.OrdinalIgnoreCase)) ||
+                                 (!string.IsNullOrWhiteSpace(targetName) && x.Name.Equals(targetName, StringComparison.OrdinalIgnoreCase))) &&
+                                (string.IsNullOrWhiteSpace(targetSize) || targetSize == "—" || targetSize == "-" || string.Equals(x.SizesDisplay, targetSize, StringComparison.OrdinalIgnoreCase)))
                     .OrderBy(x => x.CreatedAt)
                     .ToList();
 
@@ -1483,26 +1485,67 @@ namespace AsiErp.Services
             }
         }
 
-        public HashSet<string> GetAllUsedBarcodes(string? excludeId = null)
+        public List<ProductItem> GetGroupedAvailableProducts()
+        {
+            var grouped = Products
+                .Where(p => !string.IsNullOrWhiteSpace(p.Name) && p.Name.Trim() != "—" && p.Name.Trim() != "-")
+                .GroupBy(p => {
+                    string sku = !string.IsNullOrWhiteSpace(p.Sku) ? p.Sku.Trim() : p.Name.Trim();
+                    string size = p.SizesDisplay;
+                    return $"{sku}||{size}";
+                }, StringComparer.OrdinalIgnoreCase);
+
+            var list = new List<ProductItem>();
+            foreach (var grp in grouped)
+            {
+                var rep = grp.OrderByDescending(x => x.CreatedAt).First();
+                double totalStock = Math.Round(grp.Sum(x => x.Stock), 2);
+                list.Add(new ProductItem
+                {
+                    Id = rep.Id,
+                    Name = rep.Name,
+                    Sku = rep.Sku,
+                    Barcode = rep.Barcode,
+                    Hsn = rep.Hsn,
+                    Category = rep.Category,
+                    SourceType = rep.SourceType,
+                    Unit = rep.Unit,
+                    Sizes = rep.Sizes != null ? new List<string>(rep.Sizes) : new List<string>(),
+                    Cost = rep.Cost,
+                    RetailPrice = rep.RetailPrice,
+                    BulkPrice = rep.BulkPrice,
+                    DomesticPrice = rep.DomesticPrice,
+                    ExportPrice = rep.ExportPrice,
+                    Stock = totalStock,
+                    RegisteredQty = Math.Round(grp.Sum(x => x.RegisteredQty > 0 ? x.RegisteredQty : x.Stock), 2),
+                    ReorderLevel = rep.ReorderLevel,
+                    Gst = rep.Gst,
+                    CreatedAt = rep.CreatedAt
+                });
+            }
+            return list;
+        }
+
+        public HashSet<string> GetAllUsedBarcodes(string? excludeId = null, string? excludeSku = null)
         {
             var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var p in Products)
             {
-                if (p.Id != excludeId && !string.IsNullOrWhiteSpace(p.Barcode) && p.Barcode != "—")
+                if (p.Id != excludeId && (string.IsNullOrWhiteSpace(excludeSku) || !string.Equals(p.Sku, excludeSku, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrWhiteSpace(p.Barcode) && p.Barcode != "—")
                 {
                     set.Add(p.Barcode.Trim());
                 }
             }
             foreach (var r in RawMaterials)
             {
-                if (r.Id != excludeId && !string.IsNullOrWhiteSpace(r.Barcode) && r.Barcode != "—")
+                if (r.Id != excludeId && (string.IsNullOrWhiteSpace(excludeSku) || !string.Equals(r.Sku, excludeSku, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrWhiteSpace(r.Barcode) && r.Barcode != "—")
                 {
                     set.Add(r.Barcode.Trim());
                 }
             }
             foreach (var g in GeneralItems)
             {
-                if (g.Id != excludeId && !string.IsNullOrWhiteSpace(g.Barcode) && g.Barcode != "—")
+                if (g.Id != excludeId && (string.IsNullOrWhiteSpace(excludeSku) || !string.Equals(g.Sku, excludeSku, StringComparison.OrdinalIgnoreCase)) && !string.IsNullOrWhiteSpace(g.Barcode) && g.Barcode != "—")
                 {
                     set.Add(g.Barcode.Trim());
                 }
@@ -1510,9 +1553,9 @@ namespace AsiErp.Services
             return set;
         }
 
-        public string GetNextUniqueBarcode(string itemType = "mfg", string category = "Shoe", string? excludeId = null)
+        public string GetNextUniqueBarcode(string itemType = "mfg", string category = "Shoe", string? excludeId = null, string? excludeSku = null)
         {
-            var used = GetAllUsedBarcodes(excludeId);
+            var used = GetAllUsedBarcodes(excludeId, excludeSku);
             return BarcodeService.GenerateUniqueBarcode(used, itemType, category);
         }
 
@@ -1549,10 +1592,17 @@ namespace AsiErp.Services
                 if (p.SourceType == "R")
                 {
                     string current = p.Barcode?.Trim() ?? "";
+                    bool isSameProductBatch = !string.IsNullOrEmpty(current) &&
+                        Products.Any(other => other.Id != p.Id &&
+                                              !string.IsNullOrWhiteSpace(other.Barcode) &&
+                                              other.Barcode.Equals(current, StringComparison.OrdinalIgnoreCase) &&
+                                              string.Equals(other.Sku ?? "", p.Sku ?? "", StringComparison.OrdinalIgnoreCase) &&
+                                              string.Equals(other.SizesDisplay, p.SizesDisplay, StringComparison.OrdinalIgnoreCase));
+
                     bool needsNew = string.IsNullOrEmpty(current)
                                     || current == "—"
                                     || current == "-"
-                                    || usedBarcodes.Contains(current);
+                                    || (usedBarcodes.Contains(current) && !isSameProductBatch);
 
                     if (needsNew)
                     {
@@ -1683,11 +1733,11 @@ namespace AsiErp.Services
 
             bool modified = false;
 
-            // 1. Consolidate duplicate raw materials by name (e.g. Leather ASI-RAW-001 vs Leather ASI-RAW-004)
+            // 1. Consolidate accidental duplicate raw materials with differing SKUs
             var groups = RawMaterials
                 .Where(r => !string.IsNullOrWhiteSpace(r.Name) && !r.Id.StartsWith("pur_it_"))
                 .GroupBy(r => r.Name.Trim(), StringComparer.OrdinalIgnoreCase)
-                .Where(g => g.Count() > 1)
+                .Where(g => g.Count() > 1 && g.Select(x => x.Sku ?? "").Distinct(StringComparer.OrdinalIgnoreCase).Count() > 1)
                 .ToList();
 
             foreach (var g in groups)
