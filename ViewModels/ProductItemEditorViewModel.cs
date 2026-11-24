@@ -283,11 +283,11 @@ namespace AsiErp.ViewModels
 
         public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku}.";
 
-        public string CostPriceFieldLabel => _isEditMode ? $"Add Cost Price (Current: ₹{_originalCostPrice:N0}) *" : "Cost Price (₹) *";
+        public string CostPriceFieldLabel => _isEditMode ? "Cost Price (₹) 🔒" : "Cost Price (₹) *";
 
-        public bool IsInwardCostNoticeVisible => _isEditMode && CostPrice > 0;
+        public bool IsInwardCostNoticeVisible => false;
 
-        public string InwardCostNoticeText => $"✓ Adding +₹{CostPrice:N0} will update cost price from ₹{_originalCostPrice:N0} to ₹{(_originalCostPrice + CostPrice):N0}.";
+        public string InwardCostNoticeText => "";
 
         public double Quantity
         {
@@ -518,7 +518,7 @@ namespace AsiErp.ViewModels
                     RetailPrice = p.RetailPrice;
                     SellingPrice = p.RetailPrice;
                     _originalCostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
-                    CostPrice = 0;
+                    CostPrice = _originalCostPrice;
                     PurchaseRate = 0;
                     BulkPrice = p.BulkPrice;
                     DomesticPrice = p.DomesticPrice;
@@ -551,7 +551,7 @@ namespace AsiErp.ViewModels
                     Sizes = r.Size ?? "";
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
                     _originalCostPrice = r.Rate;
-                    CostPrice = 0;
+                    CostPrice = _originalCostPrice;
                     PurchaseRate = 0;
                     SellingPrice = 0;
                     GstPercent = r.Gst;
@@ -584,7 +584,7 @@ namespace AsiErp.ViewModels
                     Sizes = g.Size ?? "";
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
                     _originalCostPrice = g.Rate;
-                    CostPrice = 0;
+                    CostPrice = _originalCostPrice;
                     PurchaseRate = 0;
                     SellingPrice = 0;
                     GstPercent = g.Gst;
@@ -898,7 +898,7 @@ namespace AsiErp.ViewModels
                         RetailPrice = exactMatch.RetailPrice;
                         SellingPrice = exactMatch.RetailPrice;
                         _originalCostPrice = exactMatch.Cost;
-                        CostPrice = 0;
+                        CostPrice = _originalCostPrice;
                         PurchaseRate = 0;
                         BulkPrice = exactMatch.BulkPrice;
                         DomesticPrice = exactMatch.DomesticPrice;
@@ -995,7 +995,7 @@ namespace AsiErp.ViewModels
                         Sku = exactMatch.Sku ?? "";
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
                         _originalCostPrice = exactMatch.Rate;
-                        CostPrice = 0;
+                        CostPrice = _originalCostPrice;
                         PurchaseRate = 0;
                         SellingPrice = 0;
                         Stock = exactMatch.Stock;
@@ -1089,7 +1089,7 @@ namespace AsiErp.ViewModels
                         Sku = exactMatch.Sku ?? "";
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
                         _originalCostPrice = exactMatch.Rate;
-                        CostPrice = 0;
+                        CostPrice = _originalCostPrice;
                         PurchaseRate = 0;
                         SellingPrice = 0;
                         Stock = exactMatch.Stock;
@@ -1381,8 +1381,8 @@ namespace AsiErp.ViewModels
                 double addedQty = _isEditMode ? Math.Max(0, Quantity) : 0;
                 bool isStockAddition = _isEditMode && addedQty > 0;
 
-                double addedCost = _isEditMode ? Math.Max(0, CostPrice) : 0;
-                double finalCostPrice = _isEditMode ? (_originalCostPrice + addedCost) : CostPrice;
+                // Cost price is locked in Edit mode and cannot be increased
+                double finalCostPrice = _isEditMode ? _originalCostPrice : CostPrice;
 
                 if (ItemType == "raw")
                 {
