@@ -104,7 +104,12 @@
                                                 <Border Padding="4,4">
                                                     <DockPanel>
                                                         <StackPanel VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Foreground="#0F172A"/>
+                                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="12" Foreground="#0F172A"/>
+                                                                <Border Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="4" Padding="5,0" Margin="6,0,0,0" VerticalAlignment="Center">
+                                                                    <TextBlock Text="{Binding SizesDisplay, StringFormat='Size: {0}'}" FontSize="10" FontWeight="Bold" Foreground="#1D4ED8"/>
+                                                                </Border>
+                                                            </StackPanel>
                                                             <StackPanel Orientation="Horizontal" Margin="0,2,0,0">
                                                                 <Border Background="#F1F5F9" CornerRadius="4" Padding="5,1" Margin="0,0,6,0">
                                                                     <TextBlock Text="{Binding Category}" FontSize="9.5" FontWeight="SemiBold" Foreground="#475569"/>
@@ -201,10 +206,18 @@
                                     <DataTemplate>
                                         <Border Padding="16,12" BorderBrush="#F1F5F9" BorderThickness="0,0,0,1">
                                             <DockPanel>
-                                                <StackPanel MaxWidth="320">
-                                                    <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                <StackPanel MaxWidth="340">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="13" Foreground="#0F172A"/>
+                                                        <Border Background="#EFF6FF" BorderBrush="#BFDBFE" BorderThickness="1" CornerRadius="4" Padding="6,1" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding SizesDisplay, StringFormat='Size: {0}'}" FontSize="11" FontWeight="Bold" Foreground="#1D4ED8"/>
+                                                        </Border>
+                                                    </StackPanel>
                                                     <TextBlock FontSize="11" Foreground="#64748B" Margin="0,3,0,0">
                                                         <Run Text="{Binding Category, Mode=OneWay}"/>
+                                                        <Run Text=" · "/>
+                                                        <Run Text="Size: " FontWeight="SemiBold" Foreground="#475569"/>
+                                                        <Run Text="{Binding SizesDisplay, Mode=OneWay}" FontWeight="Bold" Foreground="#2563EB"/>
                                                         <Run Text=" · "/>
                                                         <Run Text="{Binding Stock, Mode=OneWay, StringFormat={}{0:N0}}"/>
                                                         <Run Text=" "/>
