@@ -275,6 +275,7 @@ namespace AsiErp.ViewModels
         }
 
         private double _originalQuantity;
+        private double _originalLoadedQuantity;
         private double _originalCostPrice;
         private string _originalDate = "";
         private string _originalSku = "";
@@ -543,6 +544,7 @@ namespace AsiErp.ViewModels
                     double displayStock = (_isExplicitEditFromTable && !fromStock) ? p.Stock : totalStock;
                     Stock = totalStock;
                     Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : p.Stock) : 0;
+                    _originalLoadedQuantity = Quantity;
                     _originalQuantity = totalStock;
                     ReorderLevel = p.ReorderLevel;
                     LowAlertLevel = p.ReorderLevel;
@@ -577,6 +579,7 @@ namespace AsiErp.ViewModels
                     double displayStock = (_isExplicitEditFromTable && !fromStock) ? r.Stock : totalStock;
                     Stock = totalStock;
                     Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : r.Stock) : 0;
+                    _originalLoadedQuantity = Quantity;
                     _originalQuantity = totalStock;
                     ReorderLevel = r.ReorderLevel;
                     LowAlertLevel = r.ReorderLevel;
@@ -613,6 +616,7 @@ namespace AsiErp.ViewModels
                     double displayStock = (_isExplicitEditFromTable && !fromStock) ? g.Stock : totalStock;
                     Stock = totalStock;
                     Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : g.Stock) : 0;
+                    _originalLoadedQuantity = Quantity;
                     _originalQuantity = totalStock;
                     ReorderLevel = g.ReorderLevel;
                     LowAlertLevel = g.ReorderLevel;
@@ -1408,6 +1412,8 @@ namespace AsiErp.ViewModels
                 bool isCostChanged = isInwardAdditionMode && CostPrice > 0 && Math.Abs(CostPrice - _originalCostPrice) > 0.001;
                 bool createNewRecord = isInwardAdditionMode && (isStockAddition || isCostChanged);
                 bool isDirectFullEdit = _isEditMode && !isInwardAdditionMode;
+                bool directQtyChanged = isDirectFullEdit && Math.Abs(Quantity - _originalLoadedQuantity) > 0.001;
+                bool directCostChanged = isDirectFullEdit && Math.Abs(CostPrice - _originalCostPrice) > 0.001;
 
                 // Cost price is unlocked: inward additions create a new dated record; direct table Edit updates in-place everywhere
                 double finalCostPrice = CostPrice;
@@ -1424,7 +1430,10 @@ namespace AsiErp.ViewModels
                     rm.Name = trimmedName;
                     rm.Size = cleanSize;
                     rm.Unit = string.IsNullOrWhiteSpace(Unit) ? "sq ft" : Unit.Trim();
-                    rm.Rate = createNewRecord ? _originalCostPrice : finalCostPrice;
+                    if (!isDirectFullEdit || directCostChanged)
+                    {
+                        rm.Rate = createNewRecord ? _originalCostPrice : finalCostPrice;
+                    }
                     rm.Gst = GstPercent;
                     rm.ReorderLevel = LowAlertLevel;
                     rm.Hsn = cleanHsn;
@@ -1432,7 +1441,7 @@ namespace AsiErp.ViewModels
 
                     if (_isEditMode)
                     {
-                        if (isDirectFullEdit)
+                        if (directQtyChanged)
                         {
                             bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
                             if (fromStock)
@@ -1512,7 +1521,10 @@ namespace AsiErp.ViewModels
                     gi.Name = trimmedName;
                     gi.Size = cleanSize;
                     gi.Unit = string.IsNullOrWhiteSpace(Unit) ? "pcs" : Unit.Trim();
-                    gi.Rate = createNewRecord ? _originalCostPrice : finalCostPrice;
+                    if (!isDirectFullEdit || directCostChanged)
+                    {
+                        gi.Rate = createNewRecord ? _originalCostPrice : finalCostPrice;
+                    }
                     gi.Gst = GstPercent;
                     gi.ReorderLevel = LowAlertLevel;
                     gi.Hsn = cleanHsn;
@@ -1520,7 +1532,7 @@ namespace AsiErp.ViewModels
 
                     if (_isEditMode)
                     {
-                        if (isDirectFullEdit)
+                        if (directQtyChanged)
                         {
                             bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
                             if (fromStock)
@@ -1634,7 +1646,10 @@ namespace AsiErp.ViewModels
                         prod.SourceType = ItemType == "mfg" ? "M" : "R";
                         prod.Unit = string.IsNullOrWhiteSpace(Unit) ? "pair" : Unit.Trim();
                         prod.Sizes = (Sizes ?? "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
-                        prod.Cost = createNewRecord ? _originalCostPrice : finalCostPrice;
+                        if (!isDirectFullEdit || directCostChanged)
+                        {
+                            prod.Cost = createNewRecord ? _originalCostPrice : finalCostPrice;
+                        }
                         prod.RetailPrice = SellingPrice;
                         prod.BulkPrice = BulkPrice;
                         prod.DomesticPrice = DomesticPrice;
@@ -1642,7 +1657,7 @@ namespace AsiErp.ViewModels
                         prod.ReorderLevel = LowAlertLevel;
                         prod.Gst = GstPercent;
 
-                        if (isDirectFullEdit)
+                        if (directQtyChanged)
                         {
                             bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
                             if (fromStock)
