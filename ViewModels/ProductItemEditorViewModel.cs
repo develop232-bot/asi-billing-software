@@ -277,8 +277,10 @@ namespace AsiErp.ViewModels
         private double _originalQuantity;
         private double _originalCostPrice;
         private string _originalDate = "";
+        private string _originalSku = "";
 
         public bool IsInwardAdditionMode => _isEditMode && !_isExplicitEditFromTable;
+        public bool IsSkuReadOnly => IsInwardAdditionMode;
 
         public string QuantityFieldLabel => IsInwardAdditionMode ? $"Add Quantity (Stock on Hand: {_originalQuantity:N0}) *" : "Quantity *";
 
@@ -519,6 +521,7 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(p.Unit) ? "pair" : p.Unit;
                     Sizes = string.Join(",", p.Sizes ?? new List<string>());
                     Sku = p.Sku ?? "";
+                    _originalSku = Sku;
                     Barcode = (string.IsNullOrWhiteSpace(p.Barcode) || p.Barcode == "—" || p.Barcode == "-") ? "" : p.Barcode;
                     RetailPrice = p.RetailPrice;
                     SellingPrice = p.RetailPrice;
@@ -577,6 +580,7 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = r.ReorderLevel;
                     MediumAlertLevel = r.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(r.Sku) ? r.Id : r.Sku;
+                    _originalSku = Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
                     ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
@@ -611,6 +615,7 @@ namespace AsiErp.ViewModels
                     LowAlertLevel = g.ReorderLevel;
                     MediumAlertLevel = g.ReorderLevel * 2;
                     Sku = string.IsNullOrWhiteSpace(g.Sku) ? g.Id : g.Sku;
+                    _originalSku = Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
                     ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
@@ -624,6 +629,8 @@ namespace AsiErp.ViewModels
                 OnPropertyChanged(nameof(CostPriceFieldLabel));
                 OnPropertyChanged(nameof(IsInwardCostNoticeVisible));
                 OnPropertyChanged(nameof(InwardCostNoticeText));
+                OnPropertyChanged(nameof(IsInwardAdditionMode));
+                OnPropertyChanged(nameof(IsSkuReadOnly));
 
                 OnPropertyChanged(nameof(ItemType));
                 OnPropertyChanged(nameof(IsProductType));
@@ -652,6 +659,7 @@ namespace AsiErp.ViewModels
                 Stock = 0;
                 Quantity = 0;
                 _originalQuantity = 0;
+                _originalSku = "";
                 ReorderLevel = 0;
                 LowAlertLevel = 0;
                 MediumAlertLevel = 0;
@@ -675,6 +683,8 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(SaveButtonText));
             OnPropertyChanged(nameof(TopSaveButtonText));
+            OnPropertyChanged(nameof(IsInwardAdditionMode));
+            OnPropertyChanged(nameof(IsSkuReadOnly));
             OnPropertyChanged(nameof(ExistingRecordNotice));
             OnPropertyChanged(nameof(CanChangeType));
             OnPropertyChanged(nameof(IsSuggestionsOpen));
@@ -1155,6 +1165,8 @@ namespace AsiErp.ViewModels
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(SaveButtonText));
             OnPropertyChanged(nameof(TopSaveButtonText));
+            OnPropertyChanged(nameof(IsInwardAdditionMode));
+            OnPropertyChanged(nameof(IsSkuReadOnly));
         }
 
         public void SelectSuggestion(ItemSuggestionOption? suggestion)
@@ -1459,15 +1471,20 @@ namespace AsiErp.ViewModels
                             await _dataService.SaveRawMaterialAsync(additionRecord);
                         }
 
+                        string matchSku = !string.IsNullOrWhiteSpace(_originalSku) ? _originalSku : cleanSku;
                         var otherEntries = _dataService.RawMaterials
-                            .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
+                            .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(matchSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
                             .ToList();
                         foreach (var other in otherEntries)
                         {
                             other.Name = trimmedName;
                             other.Size = cleanSize;
                             other.Unit = rm.Unit;
-                            if (isDirectFullEdit) other.Rate = finalCostPrice;
+                            if (isDirectFullEdit)
+                            {
+                                other.Sku = cleanSku;
+                                other.Rate = finalCostPrice;
+                            }
                             other.Gst = rm.Gst;
                             other.ReorderLevel = rm.ReorderLevel;
                             other.Hsn = cleanHsn;
@@ -1545,15 +1562,20 @@ namespace AsiErp.ViewModels
                             await _dataService.SaveGeneralItemAsync(additionRecord);
                         }
 
+                        string matchSku = !string.IsNullOrWhiteSpace(_originalSku) ? _originalSku : cleanSku;
                         var otherEntries = _dataService.GeneralItems
-                            .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
+                            .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(matchSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
                             .ToList();
                         foreach (var other in otherEntries)
                         {
                             other.Name = trimmedName;
                             other.Size = cleanSize;
                             other.Unit = gi.Unit;
-                            if (isDirectFullEdit) other.Rate = finalCostPrice;
+                            if (isDirectFullEdit)
+                            {
+                                other.Sku = cleanSku;
+                                other.Rate = finalCostPrice;
+                            }
                             other.Gst = gi.Gst;
                             other.ReorderLevel = gi.ReorderLevel;
                             other.Hsn = cleanHsn;
@@ -1648,14 +1670,16 @@ namespace AsiErp.ViewModels
 
                         if (isDirectFullEdit)
                         {
+                            string matchSku = !string.IsNullOrWhiteSpace(_originalSku) ? _originalSku : cleanSku;
                             var otherEntries = _dataService.Products
                                 .Where(x => x.Id != prod.Id &&
-                                    ((!string.IsNullOrWhiteSpace(cleanSku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase)) ||
-                                     (string.IsNullOrWhiteSpace(cleanSku) && x.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase))) &&
+                                    ((!string.IsNullOrWhiteSpace(matchSku) && x.Sku.Equals(matchSku, StringComparison.OrdinalIgnoreCase)) ||
+                                     (string.IsNullOrWhiteSpace(matchSku) && x.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase))) &&
                                     string.Equals(x.SizesDisplay, prod.SizesDisplay, StringComparison.OrdinalIgnoreCase))
                                 .ToList();
                             foreach (var other in otherEntries)
                             {
+                                other.Sku = cleanSku;
                                 other.Name = trimmedName;
                                 other.Category = prod.Category;
                                 other.SourceType = prod.SourceType;

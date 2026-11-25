@@ -222,7 +222,7 @@
                             <!-- SKU -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
                                 <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}"/>
+                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsSkuReadOnly}"/>
                                 <TextBlock Text="{Binding LastSkuHintText}" FontSize="10.5" Foreground="#4F46E5" FontWeight="SemiBold" FontFamily="Consolas, Segoe UI" Margin="0,4,0,0"/>
                             </StackPanel>
 
@@ -388,7 +388,7 @@
                             <!-- SKU -->
                             <StackPanel Grid.Column="0" Margin="0,0,14,0">
                                 <TextBlock Text="SKU" FontWeight="SemiBold" FontSize="12" Foreground="#334155" Margin="0,0,0,6"/>
-                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsEditMode}"/>
+                                <TextBox Text="{Binding Sku, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsSkuReadOnly}"/>
                                 <TextBlock Text="{Binding LastSkuHintText}" FontSize="10.5" Foreground="#4F46E5" FontWeight="SemiBold" FontFamily="Consolas, Segoe UI" Margin="0,4,0,0"/>
                             </StackPanel>
 
