@@ -278,9 +278,11 @@ namespace AsiErp.ViewModels
         private double _originalCostPrice;
         private string _originalDate = "";
 
-        public string QuantityFieldLabel => _isEditMode ? $"Add Quantity (Stock on Hand: {_originalQuantity:N0}) *" : "Quantity *";
+        public bool IsInwardAdditionMode => _isEditMode && !_isExplicitEditFromTable;
 
-        public bool IsInwardNoticeVisible => _isEditMode && Quantity > 0;
+        public string QuantityFieldLabel => IsInwardAdditionMode ? $"Add Quantity (Stock on Hand: {_originalQuantity:N0}) *" : "Quantity *";
+
+        public bool IsInwardNoticeVisible => IsInwardAdditionMode && Quantity > 0;
 
         public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku}.";
 
@@ -534,8 +536,9 @@ namespace AsiErp.ViewModels
                         .Sum(x => x.Stock);
                     if (totalStock <= 0) totalStock = p.Stock;
 
+                    bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
                     Stock = totalStock;
-                    Quantity = 0;
+                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : p.Stock) : 0;
                     _originalQuantity = totalStock;
                     ReorderLevel = p.ReorderLevel;
                     LowAlertLevel = p.ReorderLevel;
@@ -566,8 +569,9 @@ namespace AsiErp.ViewModels
                         .Sum(x => x.Stock);
                     if (totalStock <= 0) totalStock = r.Stock;
 
+                    bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
                     Stock = totalStock;
-                    Quantity = 0;
+                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : r.Stock) : 0;
                     _originalQuantity = totalStock;
                     ReorderLevel = r.ReorderLevel;
                     LowAlertLevel = r.ReorderLevel;
@@ -599,8 +603,9 @@ namespace AsiErp.ViewModels
                         .Sum(x => x.Stock);
                     if (totalStock <= 0) totalStock = g.Stock;
 
+                    bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
                     Stock = totalStock;
-                    Quantity = 0;
+                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : g.Stock) : 0;
                     _originalQuantity = totalStock;
                     ReorderLevel = g.ReorderLevel;
                     LowAlertLevel = g.ReorderLevel;
@@ -1382,12 +1387,14 @@ namespace AsiErp.ViewModels
                 }
 
                 string today = DateTime.Now.ToString("yyyy-MM-dd");
-                double addedQty = _isEditMode ? Math.Max(0, Quantity) : 0;
-                bool isStockAddition = _isEditMode && addedQty > 0;
-                bool isCostChanged = _isEditMode && CostPrice > 0 && Math.Abs(CostPrice - _originalCostPrice) > 0.001;
-                bool createNewRecord = _isEditMode && (isStockAddition || isCostChanged);
+                bool isInwardAdditionMode = _isEditMode && !_isExplicitEditFromTable;
+                double addedQty = isInwardAdditionMode ? Math.Max(0, Quantity) : 0;
+                bool isStockAddition = isInwardAdditionMode && addedQty > 0;
+                bool isCostChanged = isInwardAdditionMode && CostPrice > 0 && Math.Abs(CostPrice - _originalCostPrice) > 0.001;
+                bool createNewRecord = isInwardAdditionMode && (isStockAddition || isCostChanged);
+                bool isDirectFullEdit = _isEditMode && !isInwardAdditionMode;
 
-                // Cost price is unlocked: new inward additions or cost price changes create a new dated record while keeping older records intact
+                // Cost price is unlocked: inward additions create a new dated record; direct table Edit updates in-place everywhere
                 double finalCostPrice = CostPrice;
 
                 if (ItemType == "raw")
@@ -1410,10 +1417,27 @@ namespace AsiErp.ViewModels
 
                     if (_isEditMode)
                     {
-                        // 1. Update existing rm attributes (leaving its original stock & registeredQty intact)
+                        if (isDirectFullEdit)
+                        {
+                            bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
+                            if (fromStock)
+                            {
+                                double otherStock = _dataService.RawMaterials
+                                    .Where(x => x.Id != rm.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
+                                    .Sum(x => x.Stock);
+                                rm.Stock = Math.Max(0, Quantity - otherStock);
+                            }
+                            else
+                            {
+                                rm.Stock = Math.Max(0, Quantity);
+                                rm.RegisteredQty = Math.Max(0, Quantity);
+                            }
+                        }
+
+                        // 1. Update existing rm attributes
                         await _dataService.SaveRawMaterialAsync(rm);
 
-                        // 2. If quantity was added or cost price changed, create a separate record with today's date!
+                        // 2. If inward addition mode & quantity/cost changed, create a separate record with today's date!
                         if (createNewRecord)
                         {
                             var additionRecord = new RawMaterialItem
@@ -1443,6 +1467,7 @@ namespace AsiErp.ViewModels
                             other.Name = trimmedName;
                             other.Size = cleanSize;
                             other.Unit = rm.Unit;
+                            if (isDirectFullEdit) other.Rate = finalCostPrice;
                             other.Gst = rm.Gst;
                             other.ReorderLevel = rm.ReorderLevel;
                             other.Hsn = cleanHsn;
@@ -1478,10 +1503,27 @@ namespace AsiErp.ViewModels
 
                     if (_isEditMode)
                     {
-                        // 1. Update existing gi attributes (leaving its original stock & registeredQty intact)
+                        if (isDirectFullEdit)
+                        {
+                            bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
+                            if (fromStock)
+                            {
+                                double otherStock = _dataService.GeneralItems
+                                    .Where(x => x.Id != gi.Id && !string.IsNullOrWhiteSpace(x.Sku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase) && string.Equals(x.Size ?? "", cleanSize, StringComparison.OrdinalIgnoreCase))
+                                    .Sum(x => x.Stock);
+                                gi.Stock = Math.Max(0, Quantity - otherStock);
+                            }
+                            else
+                            {
+                                gi.Stock = Math.Max(0, Quantity);
+                                gi.RegisteredQty = Math.Max(0, Quantity);
+                            }
+                        }
+
+                        // 1. Update existing gi attributes
                         await _dataService.SaveGeneralItemAsync(gi);
 
-                        // 2. If quantity was added or cost price changed, create a separate record with today's date!
+                        // 2. If inward addition mode & quantity/cost changed, create a separate record with today's date!
                         if (createNewRecord)
                         {
                             var additionRecord = new GeneralItem
@@ -1511,6 +1553,7 @@ namespace AsiErp.ViewModels
                             other.Name = trimmedName;
                             other.Size = cleanSize;
                             other.Unit = gi.Unit;
+                            if (isDirectFullEdit) other.Rate = finalCostPrice;
                             other.Gst = gi.Gst;
                             other.ReorderLevel = gi.ReorderLevel;
                             other.Hsn = cleanHsn;
@@ -1580,10 +1623,56 @@ namespace AsiErp.ViewModels
                         prod.ReorderLevel = LowAlertLevel;
                         prod.Gst = GstPercent;
 
-                        // 1. Update existing prod attributes (leaving its original stock & registeredQty intact)
+                        if (isDirectFullEdit)
+                        {
+                            bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
+                            if (fromStock)
+                            {
+                                double otherStock = _dataService.Products
+                                    .Where(x => x.Id != prod.Id &&
+                                        ((!string.IsNullOrWhiteSpace(cleanSku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase)) ||
+                                         (string.IsNullOrWhiteSpace(cleanSku) && x.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase))) &&
+                                        string.Equals(x.SizesDisplay, prod.SizesDisplay, StringComparison.OrdinalIgnoreCase))
+                                    .Sum(x => x.Stock);
+                                prod.Stock = Math.Max(0, Quantity - otherStock);
+                            }
+                            else
+                            {
+                                prod.Stock = Math.Max(0, Quantity);
+                                prod.RegisteredQty = Math.Max(0, Quantity);
+                            }
+                        }
+
+                        // 1. Update existing prod attributes
                         await _dataService.SaveProductAsync(prod);
 
-                        // 2. If quantity was added or cost price changed, create a separate record with today's date!
+                        if (isDirectFullEdit)
+                        {
+                            var otherEntries = _dataService.Products
+                                .Where(x => x.Id != prod.Id &&
+                                    ((!string.IsNullOrWhiteSpace(cleanSku) && x.Sku.Equals(cleanSku, StringComparison.OrdinalIgnoreCase)) ||
+                                     (string.IsNullOrWhiteSpace(cleanSku) && x.Name.Equals(trimmedName, StringComparison.OrdinalIgnoreCase))) &&
+                                    string.Equals(x.SizesDisplay, prod.SizesDisplay, StringComparison.OrdinalIgnoreCase))
+                                .ToList();
+                            foreach (var other in otherEntries)
+                            {
+                                other.Name = trimmedName;
+                                other.Category = prod.Category;
+                                other.SourceType = prod.SourceType;
+                                other.Unit = prod.Unit;
+                                other.Sizes = prod.Sizes != null ? new List<string>(prod.Sizes) : new List<string>();
+                                other.Cost = finalCostPrice;
+                                other.RetailPrice = SellingPrice;
+                                other.BulkPrice = BulkPrice;
+                                other.DomesticPrice = DomesticPrice;
+                                other.ExportPrice = ExportPrice;
+                                other.ReorderLevel = LowAlertLevel;
+                                other.Gst = GstPercent;
+                                await _dataService.SaveProductAsync(other);
+                            }
+                        }
+
+                        // 2. If inward addition mode & quantity/cost changed, create a separate record with today's date!
                         if (createNewRecord)
                         {
                             var additionRecord = new ProductItem
