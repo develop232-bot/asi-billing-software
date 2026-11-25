@@ -540,6 +540,7 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = p.Stock;
 
                     bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
+                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? p.Stock : totalStock;
                     Stock = totalStock;
                     Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : p.Stock) : 0;
                     _originalQuantity = totalStock;
@@ -548,7 +549,7 @@ namespace AsiErp.ViewModels
                     MediumAlertLevel = p.ReorderLevel * 2;
                     HsnCode = (string.IsNullOrWhiteSpace(p.Hsn) || p.Hsn == "—" || p.Hsn == "-") ? "" : p.Hsn;
                     GstPercent = p.Gst;
-                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
+                    ExistingRecordNotice = $"{p.Name} · Size {p.SizesDisplay} (SKU: {p.Sku}) · Current Stock: {displayStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is RawMaterialItem r)
@@ -573,6 +574,7 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = r.Stock;
 
                     bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
+                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? r.Stock : totalStock;
                     Stock = totalStock;
                     Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : r.Stock) : 0;
                     _originalQuantity = totalStock;
@@ -583,7 +585,7 @@ namespace AsiErp.ViewModels
                     _originalSku = Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(r.Hsn) || r.Hsn == "—" || r.Hsn == "-") ? "" : r.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(r.Barcode) || r.Barcode == "—" || r.Barcode == "-") ? "" : r.Barcode;
-                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
+                    ExistingRecordNotice = $"{r.Name} · Size {r.SizeDisplay} (SKU: {r.Sku}) · Current Stock: {displayStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
                 else if (_existingItem is GeneralItem g)
@@ -608,6 +610,7 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = g.Stock;
 
                     bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
+                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? g.Stock : totalStock;
                     Stock = totalStock;
                     Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : g.Stock) : 0;
                     _originalQuantity = totalStock;
@@ -618,7 +621,7 @@ namespace AsiErp.ViewModels
                     _originalSku = Sku;
                     HsnCode = (string.IsNullOrWhiteSpace(g.Hsn) || g.Hsn == "—" || g.Hsn == "-") ? "" : g.Hsn;
                     Barcode = (string.IsNullOrWhiteSpace(g.Barcode) || g.Barcode == "—" || g.Barcode == "-") ? "" : g.Barcode;
-                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku}) · Current Stock: {totalStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
+                    ExistingRecordNotice = $"{g.Name} · Size {g.SizeDisplay} (SKU: {g.Sku}) · Current Stock: {displayStock} {Unit} · Cost: ₹{_originalCostPrice:N0}";
                     NoticeIsNewVariant = false;
                 }
 
@@ -1477,19 +1480,16 @@ namespace AsiErp.ViewModels
                             .ToList();
                         foreach (var other in otherEntries)
                         {
-                            other.Name = trimmedName;
-                            other.Size = cleanSize;
-                            other.Unit = rm.Unit;
-                            if (isDirectFullEdit)
-                            {
-                                other.Sku = cleanSku;
-                                other.Rate = finalCostPrice;
-                            }
-                            other.Gst = rm.Gst;
-                            other.ReorderLevel = rm.ReorderLevel;
-                            other.Hsn = cleanHsn;
-                            other.Barcode = cleanBarcode;
-                            await _dataService.SaveRawMaterialAsync(other);
+                            bool changed = false;
+                            if (other.Name != trimmedName) { other.Name = trimmedName; changed = true; }
+                            if ((other.Size ?? "") != cleanSize) { other.Size = cleanSize; changed = true; }
+                            if (other.Unit != rm.Unit) { other.Unit = rm.Unit; changed = true; }
+                            if (isDirectFullEdit && other.Sku != cleanSku) { other.Sku = cleanSku; changed = true; }
+                            if (other.Gst != rm.Gst) { other.Gst = rm.Gst; changed = true; }
+                            if (other.ReorderLevel != rm.ReorderLevel) { other.ReorderLevel = rm.ReorderLevel; changed = true; }
+                            if ((other.Hsn ?? "") != cleanHsn) { other.Hsn = cleanHsn; changed = true; }
+                            if ((other.Barcode ?? "") != cleanBarcode) { other.Barcode = cleanBarcode; changed = true; }
+                            if (changed) await _dataService.SaveRawMaterialAsync(other);
                         }
                     }
                     else
@@ -1568,19 +1568,16 @@ namespace AsiErp.ViewModels
                             .ToList();
                         foreach (var other in otherEntries)
                         {
-                            other.Name = trimmedName;
-                            other.Size = cleanSize;
-                            other.Unit = gi.Unit;
-                            if (isDirectFullEdit)
-                            {
-                                other.Sku = cleanSku;
-                                other.Rate = finalCostPrice;
-                            }
-                            other.Gst = gi.Gst;
-                            other.ReorderLevel = gi.ReorderLevel;
-                            other.Hsn = cleanHsn;
-                            other.Barcode = cleanBarcode;
-                            await _dataService.SaveGeneralItemAsync(other);
+                            bool changed = false;
+                            if (other.Name != trimmedName) { other.Name = trimmedName; changed = true; }
+                            if ((other.Size ?? "") != cleanSize) { other.Size = cleanSize; changed = true; }
+                            if (other.Unit != gi.Unit) { other.Unit = gi.Unit; changed = true; }
+                            if (isDirectFullEdit && other.Sku != cleanSku) { other.Sku = cleanSku; changed = true; }
+                            if (other.Gst != gi.Gst) { other.Gst = gi.Gst; changed = true; }
+                            if (other.ReorderLevel != gi.ReorderLevel) { other.ReorderLevel = gi.ReorderLevel; changed = true; }
+                            if ((other.Hsn ?? "") != cleanHsn) { other.Hsn = cleanHsn; changed = true; }
+                            if ((other.Barcode ?? "") != cleanBarcode) { other.Barcode = cleanBarcode; changed = true; }
+                            if (changed) await _dataService.SaveGeneralItemAsync(other);
                         }
                     }
                     else
@@ -1679,20 +1676,19 @@ namespace AsiErp.ViewModels
                                 .ToList();
                             foreach (var other in otherEntries)
                             {
-                                other.Sku = cleanSku;
-                                other.Name = trimmedName;
-                                other.Category = prod.Category;
-                                other.SourceType = prod.SourceType;
-                                other.Unit = prod.Unit;
-                                other.Sizes = prod.Sizes != null ? new List<string>(prod.Sizes) : new List<string>();
-                                other.Cost = finalCostPrice;
-                                other.RetailPrice = SellingPrice;
-                                other.BulkPrice = BulkPrice;
-                                other.DomesticPrice = DomesticPrice;
-                                other.ExportPrice = ExportPrice;
-                                other.ReorderLevel = LowAlertLevel;
-                                other.Gst = GstPercent;
-                                await _dataService.SaveProductAsync(other);
+                                bool changed = false;
+                                if (other.Sku != cleanSku) { other.Sku = cleanSku; changed = true; }
+                                if (other.Name != trimmedName) { other.Name = trimmedName; changed = true; }
+                                if (other.Category != prod.Category) { other.Category = prod.Category; changed = true; }
+                                if (other.SourceType != prod.SourceType) { other.SourceType = prod.SourceType; changed = true; }
+                                if (other.Unit != prod.Unit) { other.Unit = prod.Unit; changed = true; }
+                                if (other.RetailPrice != SellingPrice) { other.RetailPrice = SellingPrice; changed = true; }
+                                if (other.BulkPrice != BulkPrice) { other.BulkPrice = BulkPrice; changed = true; }
+                                if (other.DomesticPrice != DomesticPrice) { other.DomesticPrice = DomesticPrice; changed = true; }
+                                if (other.ExportPrice != ExportPrice) { other.ExportPrice = ExportPrice; changed = true; }
+                                if (other.ReorderLevel != LowAlertLevel) { other.ReorderLevel = LowAlertLevel; changed = true; }
+                                if (other.Gst != GstPercent) { other.Gst = GstPercent; changed = true; }
+                                if (changed) await _dataService.SaveProductAsync(other);
                             }
                         }
 
