@@ -528,7 +528,6 @@ namespace AsiErp.ViewModels
                     SellingPrice = p.RetailPrice;
                     _originalCostPrice = p.Cost > 0 ? p.Cost : (p.RetailPrice > 0 ? p.RetailPrice * 0.7 : 0);
                     CostPrice = _originalCostPrice;
-                    PurchaseRate = 0;
                     BulkPrice = p.BulkPrice;
                     DomesticPrice = p.DomesticPrice;
                     ExportPrice = p.ExportPrice;
@@ -541,9 +540,10 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = p.Stock;
 
                     bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
-                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? p.Stock : totalStock;
+                    double rowDisplayQty = p.RegisteredQty > 0 ? p.RegisteredQty : p.Stock;
+                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? rowDisplayQty : totalStock;
                     Stock = totalStock;
-                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : p.Stock) : 0;
+                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : rowDisplayQty) : 0;
                     _originalLoadedQuantity = Quantity;
                     _originalQuantity = totalStock;
                     ReorderLevel = p.ReorderLevel;
@@ -564,7 +564,6 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(r.Unit) ? "sq ft" : r.Unit;
                     _originalCostPrice = r.Rate;
                     CostPrice = _originalCostPrice;
-                    PurchaseRate = 0;
                     SellingPrice = 0;
                     GstPercent = r.Gst;
 
@@ -576,9 +575,10 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = r.Stock;
 
                     bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
-                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? r.Stock : totalStock;
+                    double rowDisplayQty = r.RegisteredQty > 0 ? r.RegisteredQty : r.Stock;
+                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? rowDisplayQty : totalStock;
                     Stock = totalStock;
-                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : r.Stock) : 0;
+                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : rowDisplayQty) : 0;
                     _originalLoadedQuantity = Quantity;
                     _originalQuantity = totalStock;
                     ReorderLevel = r.ReorderLevel;
@@ -601,7 +601,6 @@ namespace AsiErp.ViewModels
                     Unit = string.IsNullOrWhiteSpace(g.Unit) ? "pcs" : g.Unit;
                     _originalCostPrice = g.Rate;
                     CostPrice = _originalCostPrice;
-                    PurchaseRate = 0;
                     SellingPrice = 0;
                     GstPercent = g.Gst;
 
@@ -613,9 +612,10 @@ namespace AsiErp.ViewModels
                     if (totalStock <= 0) totalStock = g.Stock;
 
                     bool fromStock = _returnRoute.StartsWith("stock:", StringComparison.OrdinalIgnoreCase);
-                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? g.Stock : totalStock;
+                    double rowDisplayQty = g.RegisteredQty > 0 ? g.RegisteredQty : g.Stock;
+                    double displayStock = (_isExplicitEditFromTable && !fromStock) ? rowDisplayQty : totalStock;
                     Stock = totalStock;
-                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : g.Stock) : 0;
+                    Quantity = _isExplicitEditFromTable ? (fromStock ? totalStock : rowDisplayQty) : 0;
                     _originalLoadedQuantity = Quantity;
                     _originalQuantity = totalStock;
                     ReorderLevel = g.ReorderLevel;
@@ -925,7 +925,6 @@ namespace AsiErp.ViewModels
                         SellingPrice = exactMatch.RetailPrice;
                         _originalCostPrice = exactMatch.Cost;
                         CostPrice = _originalCostPrice;
-                        PurchaseRate = 0;
                         BulkPrice = exactMatch.BulkPrice;
                         DomesticPrice = exactMatch.DomesticPrice;
                         ExportPrice = exactMatch.ExportPrice;
@@ -1022,7 +1021,6 @@ namespace AsiErp.ViewModels
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
                         _originalCostPrice = exactMatch.Rate;
                         CostPrice = _originalCostPrice;
-                        PurchaseRate = 0;
                         SellingPrice = 0;
                         Stock = exactMatch.Stock;
                         _originalQuantity = exactMatch.Stock;
@@ -1116,7 +1114,6 @@ namespace AsiErp.ViewModels
                         Barcode = (string.IsNullOrWhiteSpace(exactMatch.Barcode) || exactMatch.Barcode == "—" || exactMatch.Barcode == "-") ? "" : exactMatch.Barcode;
                         _originalCostPrice = exactMatch.Rate;
                         CostPrice = _originalCostPrice;
-                        PurchaseRate = 0;
                         SellingPrice = 0;
                         Stock = exactMatch.Stock;
                         _originalQuantity = exactMatch.Stock;
