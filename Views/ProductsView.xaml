@@ -53,6 +53,7 @@
                     <StackPanel>
                         <TextBlock Text="Raw Material Stock" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding RawMaterialsCount}" FontSize="24" FontWeight="Bold" Foreground="#0D9488" Margin="0,5,0,2"/>
+                        <TextBlock Text="{Binding LastRawSku, StringFormat='Last: {0}'}" FontSize="10.5" Foreground="#64748B" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
                     </StackPanel>
                 </Border>
 
@@ -61,6 +62,7 @@
                     <StackPanel>
                         <TextBlock Text="Finished Products" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding FinishedProductsCount}" FontSize="24" FontWeight="Bold" Foreground="#2563EB" Margin="0,5,0,2"/>
+                        <TextBlock Text="{Binding LastMfgSku, StringFormat='Last: {0}'}" FontSize="10.5" Foreground="#64748B" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
                     </StackPanel>
                 </Border>
 
@@ -69,6 +71,7 @@
                     <StackPanel>
                         <TextBlock Text="Readymade Stock" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding ReadymadeProductsCount}" FontSize="24" FontWeight="Bold" Foreground="#059669" Margin="0,5,0,2"/>
+                        <TextBlock Text="{Binding LastReadySku, StringFormat='Last: {0}'}" FontSize="10.5" Foreground="#64748B" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
                     </StackPanel>
                 </Border>
 
@@ -77,6 +80,7 @@
                     <StackPanel>
                         <TextBlock Text="General Supplies" FontSize="11.5" Foreground="#64748B" FontWeight="SemiBold"/>
                         <TextBlock Text="{Binding GeneralItemsCount}" FontSize="24" FontWeight="Bold" Foreground="#D97706" Margin="0,5,0,2"/>
+                        <TextBlock Text="{Binding LastGenSku, StringFormat='Last: {0}'}" FontSize="10.5" Foreground="#64748B" FontFamily="Consolas, Segoe UI" FontWeight="SemiBold"/>
                     </StackPanel>
                 </Border>
             </UniformGrid>

@@ -880,7 +880,7 @@ namespace AsiErp.Services
             NotifyDataChanged();
         }
 
-        public string GetNextSku(string type)
+        private (string prefix, int maxNum, string lastSku, HashSet<string> allSkus) InspectSkuSequence(string type)
         {
             string prefix = type switch
             {
@@ -897,15 +897,16 @@ namespace AsiErp.Services
             foreach (var g in GeneralItems) if (!string.IsNullOrWhiteSpace(g.Sku)) allSkus.Add(g.Sku.Trim());
 
             int maxNum = 0;
+            string lastSku = "";
             foreach (var sku in allSkus)
             {
-                string pfx = prefix;
-                if (sku.StartsWith(pfx, StringComparison.OrdinalIgnoreCase))
+                if (sku.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    string numPart = sku.Substring(pfx.Length);
+                    string numPart = sku.Substring(prefix.Length);
                     if (int.TryParse(numPart, out int n) && n > maxNum)
                     {
                         maxNum = n;
+                        lastSku = sku.ToUpperInvariant();
                     }
                 }
                 else if (type == "gen" && sku.StartsWith("ASI-PKG-", StringComparison.OrdinalIgnoreCase))
@@ -914,6 +915,7 @@ namespace AsiErp.Services
                     if (int.TryParse(numPart, out int n) && n > maxNum)
                     {
                         maxNum = n;
+                        lastSku = sku.ToUpperInvariant();
                     }
                 }
                 else if (type == "raw" && (sku.StartsWith("ASI-RM-", StringComparison.OrdinalIgnoreCase) || sku.StartsWith("RM-", StringComparison.OrdinalIgnoreCase)))
@@ -922,10 +924,24 @@ namespace AsiErp.Services
                     if (m.Success && int.TryParse(m.Value, out int n) && n > maxNum)
                     {
                         maxNum = n;
+                        lastSku = sku.ToUpperInvariant();
                     }
                 }
             }
 
+            if (string.IsNullOrEmpty(lastSku) && maxNum > 0)
+            {
+                lastSku = $"{prefix}{maxNum:D3}";
+            }
+
+            return (prefix, maxNum, string.IsNullOrEmpty(lastSku) ? "None" : lastSku, allSkus);
+        }
+
+        public string GetLastSku(string type) => InspectSkuSequence(type).lastSku;
+
+        public string GetNextSku(string type)
+        {
+            var (prefix, maxNum, _, allSkus) = InspectSkuSequence(type);
             int next = maxNum + 1;
             string candidate = $"{prefix}{next:D3}";
             while (allSkus.Contains(candidate))

@@ -20,6 +20,14 @@
             <DockPanel Margin="0,0,0,14">
                 <!-- Top Action Buttons (Wraps on smaller screens) -->
                 <WrapPanel DockPanel.Dock="Right" HorizontalAlignment="Right" VerticalAlignment="Center">
+                    <Border Background="#EEF2FF" BorderBrush="#C7D2FE" BorderThickness="1" CornerRadius="6" Padding="10,5" Margin="0,0,10,6" VerticalAlignment="Center">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Last SKU: " FontSize="11" Foreground="#475569" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding LastSkuText}" FontSize="11.5" Foreground="#1E293B" FontWeight="Bold" FontFamily="Consolas, Segoe UI"/>
+                            <TextBlock Text="  →  Next: " FontSize="11" Foreground="#64748B" FontWeight="SemiBold"/>
+                            <TextBlock Text="{Binding NextSkuText}" FontSize="11.5" Foreground="#4F46E5" FontWeight="Bold" FontFamily="Consolas, Segoe UI"/>
+                        </StackPanel>
+                    </Border>
                     <Button Content="Download file" Command="{Binding DownloadFileCommand}" Padding="11,6" Background="#F8FAFC" Foreground="#0F172A" BorderBrush="#CBD5E1" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold" FontSize="11" Margin="0,0,0,6">
                         <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="6"/></Style></Button.Resources>
                     </Button>

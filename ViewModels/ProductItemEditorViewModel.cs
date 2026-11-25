@@ -107,6 +107,7 @@ namespace AsiErp.ViewModels
                     OnPropertyChanged(nameof(IsRawOrGenType));
                     OnPropertyChanged(nameof(ProductVisibility));
                     OnPropertyChanged(nameof(RawOrGenVisibility));
+                    OnPropertyChanged(nameof(LastSkuHintText));
 
                     if (!_isEditMode)
                     {
@@ -284,6 +285,8 @@ namespace AsiErp.ViewModels
         public string InwardNoticeText => $"✓ Adding +{Quantity:N0} will increase total stock from {_originalQuantity:N0} to {(_originalQuantity + Quantity):N0} under SKU {Sku}.";
 
         public string CostPriceFieldLabel => "Cost Price (₹) *";
+
+        public string LastSkuHintText => $"Last: {_dataService.GetLastSku(ItemType)} · Next: {_dataService.GetNextSku(ItemType)}";
 
         public bool IsInwardCostNoticeVisible => false;
 
@@ -622,6 +625,7 @@ namespace AsiErp.ViewModels
                 OnPropertyChanged(nameof(IsRawOrGenType));
                 OnPropertyChanged(nameof(ProductVisibility));
                 OnPropertyChanged(nameof(RawOrGenVisibility));
+                OnPropertyChanged(nameof(LastSkuHintText));
             }
             else
             {

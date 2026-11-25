@@ -241,12 +241,18 @@ namespace AsiErp.ViewModels
             RefreshData();
         }
 
+        private string SkuTypeKey => ActiveTab == "fg" ? "mfg" : ActiveTab;
+        public string LastSkuText => _dataService.GetLastSku(SkuTypeKey);
+        public string NextSkuText => _dataService.GetNextSku(SkuTypeKey);
+
         public override void RefreshData()
         {
             ApplyFilter();
             OnPropertyChanged(nameof(TotalValue));
             OnPropertyChanged(nameof(LowStockCount));
             OnPropertyChanged(nameof(TotalUnitsOnHand));
+            OnPropertyChanged(nameof(LastSkuText));
+            OnPropertyChanged(nameof(NextSkuText));
         }
 
         private void ApplyFilter()

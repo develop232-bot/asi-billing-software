@@ -310,9 +310,18 @@ namespace AsiErp.ViewModels
             RefreshData();
         }
 
+        public string LastRawSku => _dataService.GetLastSku("raw");
+        public string LastMfgSku => _dataService.GetLastSku("mfg");
+        public string LastReadySku => _dataService.GetLastSku("ready");
+        public string LastGenSku => _dataService.GetLastSku("gen");
+
         public override void RefreshData()
         {
             ApplyFilter();
+            OnPropertyChanged(nameof(LastRawSku));
+            OnPropertyChanged(nameof(LastMfgSku));
+            OnPropertyChanged(nameof(LastReadySku));
+            OnPropertyChanged(nameof(LastGenSku));
         }
 
         private bool MatchDate(string? dateStr)
