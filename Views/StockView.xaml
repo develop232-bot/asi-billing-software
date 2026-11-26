@@ -166,16 +166,12 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Action" Width="125" MinWidth="110">
+                        <DataGridTemplateColumn Header="Action" Width="90" MinWidth="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                         <Button Content="Adjust" Command="{Binding DataContext.AdjustStockCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="9,3" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold" Margin="0,0,4,0">
-                                            <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
-                                        </Button>
-                                        <Button Content="Edit" Command="{Binding DataContext.EditItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"
-                                                Padding="9,3" Background="#F8FAFC" BorderBrush="#E2E8F0" Foreground="#0F172A" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
+                                                Padding="12,3" Background="#172443" Foreground="White" BorderThickness="0" Cursor="Hand" FontSize="10.5" FontWeight="SemiBold">
                                             <Button.Resources><Style TargetType="Border"><Setter Property="CornerRadius" Value="4"/></Style></Button.Resources>
                                         </Button>
                                     </StackPanel>
