@@ -263,7 +263,7 @@ namespace AsiErp.Dialogs
                             }
                             else
                             {
-                                sku = "ASI-RM-" + (_dataService.RawMaterials.Count + importedCount + 1).ToString("D3");
+                                sku = _dataService.GetNextSku("raw");
                             }
                         }
                         string hsn = GetVal(r, "HSN");
@@ -299,17 +299,40 @@ namespace AsiErp.Dialogs
 
                         if (existing != null)
                         {
-                            existing.Rate = rate;
-                            existing.Gst = gst;
-                            existing.Stock += stock;
-                            existing.ReorderLevel = reorder;
-                            if (!string.IsNullOrEmpty(size)) existing.Size = size.Trim();
-                            if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
-                            if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                            string today = DateTime.Now.ToString("yyyy-MM-dd");
+                            if (stock > 0 || (rate > 0 && Math.Abs(rate - existing.Rate) > 0.001))
                             {
-                                existing.Barcode = barcode;
+                                var additionRm = new RawMaterialItem
+                                {
+                                    Id = "rm_" + Guid.NewGuid().ToString("N")[..8],
+                                    CreatedAt = today,
+                                    Name = name,
+                                    Sku = !string.IsNullOrWhiteSpace(sku) ? sku : existing.Sku,
+                                    Size = !string.IsNullOrEmpty(size) ? size.Trim() : existing.Size,
+                                    Hsn = !string.IsNullOrEmpty(hsn) ? hsn : existing.Hsn,
+                                    Barcode = !string.IsNullOrWhiteSpace(existing.Barcode) ? existing.Barcode : barcode,
+                                    Unit = !string.IsNullOrWhiteSpace(unit) ? unit : existing.Unit,
+                                    Stock = stock,
+                                    RegisteredQty = stock,
+                                    ReorderLevel = reorder > 0 ? reorder : existing.ReorderLevel,
+                                    Rate = rate > 0 ? rate : existing.Rate,
+                                    Gst = gst
+                                };
+                                await _dataService.SaveRawMaterialAsync(additionRm);
+                                batchRawMaterials.Add(additionRm);
                             }
-                            await _dataService.SaveRawMaterialAsync(existing);
+                            else
+                            {
+                                existing.Gst = gst;
+                                existing.ReorderLevel = reorder;
+                                if (!string.IsNullOrEmpty(size)) existing.Size = size.Trim();
+                                if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                                if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                                {
+                                    existing.Barcode = barcode;
+                                }
+                                await _dataService.SaveRawMaterialAsync(existing);
+                            }
                             updatedCount++;
                         }
                         else
@@ -317,6 +340,7 @@ namespace AsiErp.Dialogs
                             var rm = new RawMaterialItem
                             {
                                 Id = "rm_" + Guid.NewGuid().ToString("N")[..8],
+                                CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                                 Name = name,
                                 Sku = sku,
                                 Size = size.Trim(),
@@ -324,6 +348,7 @@ namespace AsiErp.Dialogs
                                 Barcode = barcode,
                                 Unit = unit,
                                 Stock = stock,
+                                RegisteredQty = stock,
                                 ReorderLevel = reorder,
                                 Rate = rate,
                                 Gst = gst
@@ -350,7 +375,7 @@ namespace AsiErp.Dialogs
                             }
                             else
                             {
-                                sku = "ASI-GEN-" + (_dataService.GeneralItems.Count + importedCount + 1).ToString("D3");
+                                sku = _dataService.GetNextSku("gen");
                             }
                         }
                         string hsn = GetVal(r, "HSN");
@@ -386,17 +411,40 @@ namespace AsiErp.Dialogs
 
                         if (existing != null)
                         {
-                            existing.Rate = rate;
-                            existing.Gst = gst;
-                            existing.Stock += stock;
-                            existing.ReorderLevel = reorder;
-                            if (!string.IsNullOrEmpty(size)) existing.Size = size.Trim();
-                            if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
-                            if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                            string today = DateTime.Now.ToString("yyyy-MM-dd");
+                            if (stock > 0 || (rate > 0 && Math.Abs(rate - existing.Rate) > 0.001))
                             {
-                                existing.Barcode = barcode;
+                                var additionGi = new GeneralItem
+                                {
+                                    Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                                    CreatedAt = today,
+                                    Name = name,
+                                    Sku = !string.IsNullOrWhiteSpace(sku) ? sku : existing.Sku,
+                                    Size = !string.IsNullOrEmpty(size) ? size.Trim() : existing.Size,
+                                    Hsn = !string.IsNullOrEmpty(hsn) ? hsn : existing.Hsn,
+                                    Barcode = !string.IsNullOrWhiteSpace(existing.Barcode) ? existing.Barcode : barcode,
+                                    Unit = !string.IsNullOrWhiteSpace(unit) ? unit : existing.Unit,
+                                    Stock = stock,
+                                    RegisteredQty = stock,
+                                    ReorderLevel = reorder > 0 ? reorder : existing.ReorderLevel,
+                                    Rate = rate > 0 ? rate : existing.Rate,
+                                    Gst = gst
+                                };
+                                await _dataService.SaveGeneralItemAsync(additionGi);
+                                batchGeneralItems.Add(additionGi);
                             }
-                            await _dataService.SaveGeneralItemAsync(existing);
+                            else
+                            {
+                                existing.Gst = gst;
+                                existing.ReorderLevel = reorder;
+                                if (!string.IsNullOrEmpty(size)) existing.Size = size.Trim();
+                                if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                                if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                                {
+                                    existing.Barcode = barcode;
+                                }
+                                await _dataService.SaveGeneralItemAsync(existing);
+                            }
                             updatedCount++;
                         }
                         else
@@ -404,6 +452,7 @@ namespace AsiErp.Dialogs
                             var gi = new GeneralItem
                             {
                                 Id = "gen_" + Guid.NewGuid().ToString("N")[..8],
+                                CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                                 Name = name,
                                 Sku = sku,
                                 Size = size.Trim(),
@@ -411,6 +460,7 @@ namespace AsiErp.Dialogs
                                 Barcode = barcode,
                                 Unit = unit,
                                 Stock = stock,
+                                RegisteredQty = stock,
                                 ReorderLevel = reorder,
                                 Rate = rate,
                                 Gst = gst
@@ -442,7 +492,7 @@ namespace AsiErp.Dialogs
                             }
                             else
                             {
-                                sku = "ASI-" + (isReady ? "RDY" : "MFG") + "-" + (_dataService.Products.Count + importedCount + 1).ToString("D3");
+                                sku = _dataService.GetNextSku(isReady ? "ready" : "mfg");
                             }
                         }
 
@@ -475,31 +525,63 @@ namespace AsiErp.Dialogs
                         }
                         batchUsedBarcodes.Add(barcode);
 
-                        // Match existing record ONLY if updateExisting is true AND BOTH Name AND Size match!
-                        var existing = updateExisting ? _dataService.Products.FirstOrDefault(p =>
+                        // Match existing record ONLY if updateExisting is true AND BOTH Name (or SKU) AND Size match!
+                        bool MatchProd(ProductItem p)
                         {
-                            if (!p.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) return false;
+                            bool nameOrSku = (!string.IsNullOrEmpty(sku) && p.Sku.Equals(sku, StringComparison.OrdinalIgnoreCase)) ||
+                                             p.Name.Equals(name, StringComparison.OrdinalIgnoreCase);
+                            if (!nameOrSku) return false;
                             var pSizes = (p.Sizes ?? new List<string>()).Select(s => s.Trim()).Where(s => !string.IsNullOrEmpty(s)).OrderBy(s => s).ToList();
                             if (pSizes.Count == 0) pSizes.Add("Free size");
                             string pNorm = string.Join(",", pSizes);
                             return string.Equals(pNorm, normalizedSizes, StringComparison.OrdinalIgnoreCase);
-                        }) : null;
+                        }
+
+                        var existing = updateExisting ? (_dataService.Products.FirstOrDefault(MatchProd) ?? batchProducts.FirstOrDefault(MatchProd)) : null;
 
                         if (existing != null)
                         {
-                            existing.RetailPrice = retail;
-                            existing.Cost = cost;
-                            existing.BulkPrice = wholesale;
-                            existing.DomesticPrice = wholesale;
-                            existing.Stock += stock;
-                            existing.ReorderLevel = reorder;
-                            existing.Gst = gst;
-                            if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
-                            if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                            string today = DateTime.Now.ToString("yyyy-MM-dd");
+                            if (stock > 0 || (cost > 0 && Math.Abs(cost - existing.Cost) > 0.001))
                             {
-                                existing.Barcode = barcode;
+                                var additionProd = new ProductItem
+                                {
+                                    Id = "p_" + Guid.NewGuid().ToString("N")[..8],
+                                    CreatedAt = today,
+                                    Name = name,
+                                    Sku = !string.IsNullOrWhiteSpace(sku) ? sku : existing.Sku,
+                                    Hsn = !string.IsNullOrEmpty(hsn) ? hsn : existing.Hsn,
+                                    Category = !string.IsNullOrWhiteSpace(category) ? category : existing.Category,
+                                    SourceType = isReady ? "R" : "M",
+                                    Unit = !string.IsNullOrWhiteSpace(unit) ? unit : existing.Unit,
+                                    Sizes = sizeList,
+                                    Cost = cost > 0 ? cost : existing.Cost,
+                                    RetailPrice = retail > 0 ? retail : existing.RetailPrice,
+                                    BulkPrice = wholesale > 0 ? wholesale : existing.BulkPrice,
+                                    DomesticPrice = wholesale > 0 ? wholesale : existing.DomesticPrice,
+                                    Stock = stock,
+                                    RegisteredQty = stock,
+                                    ReorderLevel = reorder > 0 ? reorder : existing.ReorderLevel,
+                                    Barcode = !string.IsNullOrWhiteSpace(existing.Barcode) ? existing.Barcode : barcode,
+                                    Gst = gst
+                                };
+                                await _dataService.SaveProductAsync(additionProd);
+                                batchProducts.Add(additionProd);
                             }
-                            await _dataService.SaveProductAsync(existing);
+                            else
+                            {
+                                existing.RetailPrice = retail;
+                                existing.BulkPrice = wholesale;
+                                existing.DomesticPrice = wholesale;
+                                existing.ReorderLevel = reorder;
+                                existing.Gst = gst;
+                                if (!string.IsNullOrEmpty(hsn)) existing.Hsn = hsn;
+                                if (string.IsNullOrEmpty(existing.Barcode) && !string.IsNullOrEmpty(barcode))
+                                {
+                                    existing.Barcode = barcode;
+                                }
+                                await _dataService.SaveProductAsync(existing);
+                            }
                             updatedCount++;
                         }
                         else
@@ -507,6 +589,7 @@ namespace AsiErp.Dialogs
                             var newProd = new ProductItem
                             {
                                 Id = "p_" + Guid.NewGuid().ToString("N")[..8],
+                                CreatedAt = DateTime.Now.ToString("yyyy-MM-dd"),
                                 Name = name,
                                 Sku = sku,
                                 Hsn = hsn,
@@ -519,6 +602,7 @@ namespace AsiErp.Dialogs
                                 BulkPrice = wholesale,
                                 DomesticPrice = wholesale,
                                 Stock = stock,
+                                RegisteredQty = stock,
                                 ReorderLevel = reorder,
                                 Barcode = barcode,
                                 Gst = gst
